@@ -145,12 +145,15 @@
             return '<span class="xz-st-ver" style="flex:none;white-space:nowrap;font-size:10px;color:var(--xz-muted);">'
                 + esc(VERSION) + ' · 核对世界书…</span>';
         }
+        /* ★★★ 最终口径（用户 2026-11-01 第二轮）：「以我们卡的版本号为主」★★★
+           主号永远是卡版本 `st.build`；世界书只作为附加提示（跟上 / 没跟上）。
+           与 05 那枚徽章**同一口径**，两处必须印同一个号（否则玩家会以为看到两个版本）。 */
         var same = !!st.same;
-        var txt = same ? ('已是最新版本 ' + st.ver) : ('非最新版本（书 ' + st.ver + '）');
+        var txt = same ? ('已是最新版本 ' + st.build) : (st.build + ' · 世界书 ' + st.ver + ' 未同步');
         var tip = same
-            ? ('世界书与世界书版本一致：' + st.ver + '。脚本与引擎会热更新，世界书以你导入的那本为准。')
-            : ('世界书不是最新版本：书里是 ' + st.ver + '，本卡是 ' + st.build
-               + '。世界书不能热更新，请去酒馆「导入卡内世界书」覆盖一次。');
+            ? ('本卡 ' + st.build + '，已是最新版本。脚本与引擎会自动热更新，不需要重新导入卡。')
+            : ('本卡 ' + st.build + '。世界书还是 ' + st.ver + '，没跟上 —— 世界书不能热更新，'
+               + '请去酒馆「导入卡内世界书」覆盖一次。');
         return '<span class="xz-st-ver" style="flex:none;white-space:nowrap;font-size:10px;color:'
             + (same ? '#4ade80' : '#fbbf24') + ';" title="' + esc(tip) + '">'
             + esc(txt) + '</span>';
