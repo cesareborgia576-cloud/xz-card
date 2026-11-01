@@ -2730,6 +2730,20 @@
     });
   }
 
+  /* ★ v1.08：把补丁入口挂出去 —— 两个用途：
+     ① 单测（`工具/_v108_wb_patch.mjs`）能直接调，不用整个 08 跑起来；
+     ② 玩家侧出了问题，作者可以在控制台 `__XZ_WBP__.apply()` 手动重跑一次看结果。 */
+  try {
+    if (typeof globalThis !== 'undefined') {
+      globalThis.__XZ_WBP__ = {
+        ver: WBP_VER,
+        patches: WBP_PATCHES,
+        stateEntry: WBP_STATE,
+        apply: wbpApply
+      };
+    }
+  } catch (eExpWbp) {}
+
   /* 双写：世界书（给 AI）+ 聊天变量（给界面）。两边内容必须同源。 */
   function writeTicker(res, plan) {
     var hotText = tickerHotText(res.hot);
