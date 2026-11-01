@@ -2632,7 +2632,7 @@
        所以失败要 console.warn + 在状态里记一笔，别塞进空 catch。
      ══════════════════════════════════════════════════════════════════════════ */
   var WBP_STATE = '[热更] 已应用';
-  var WBP_VER = 1;
+  var WBP_VER = 2;
   /* ★★★ v1.12：自动执行**重新打开** ★★★
      历史：v1.09 自动跑过一次，因为 updater 把 `entries` 的对象形状换成了数组，
      整本书结构损坏 ⇒ MVU 读不到《变量列表》⇒ 变量更新报错 ⇒ 05/07 连锁崩。
@@ -2648,7 +2648,12 @@
        addKeys  要加进去的关键词（已有的不重复加）
        note     给人看的说明，会写进状态条目的 log 里 */
   var WBP_PATCHES = [
-    { v: 1, entry: '人物-姜绾绾', addKeys: ['三剑宗'], note: '姜绾绾挂到三剑宗：提到三剑宗就带出这条' }
+    { v: 1, entry: '人物-姜绾绾', addKeys: ['三剑宗'], note: '姜绾绾挂到三剑宗：提到三剑宗就带出这条' },
+    /* v2 与 v1 内容相同 —— 专门用来**补做**。
+       来由：v1.12 三份 08 并发写同一本书，关键词加了又被另一份的快照覆盖回去，
+       而状态条目已经记成 ver:1 ⇒ v1 永远不会再跑。升到 v2 让它重来一遍。
+       （补丁本身是幂等的：已经有这个词就只记一句"已存在，跳过"，不会加两遍。） */
+    { v: 2, entry: '人物-姜绾绾', addKeys: ['三剑宗'], note: '补做：确认三剑宗关键词真的在' }
   ];
 
   function wbpApply() {
@@ -2708,11 +2713,19 @@
           }
           return Object.assign({}, wbData || {}, { entries: list });
         }
-        var stIdx = -1;
+        /* ★ v1.13：状态条目可能有多条（v1.12 三份 loader 并发留下的）。
+           保留第一条，其余删掉 —— 否则世界书面板里会一直挂着几个一模一样的
+           `[热更] 已应用`，玩家看着像"脚本在乱建条目"。
+           ⚠ 从后往前删：正序删会让后面的下标整体前移，删漏。 */
+        var _stAll = [];
         for (var i = 0; i < list.length; i++) {
           var it = list[i];
-          if (it && (String(it.comment || '') === WBP_STATE || String(it.name || '') === WBP_STATE)) { stIdx = i; break; }
+          if (it && (String(it.comment || '') === WBP_STATE || String(it.name || '') === WBP_STATE)) _stAll.push(i);
         }
+        var _stDup = _stAll.length - 1;
+        for (var d = _stAll.length - 1; d >= 1; d--) list.splice(_stAll[d], 1);
+        var stIdx = _stAll.length ? _stAll[0] : -1;
+        if (_stDup > 0) changed.push('清理重复状态条目 ' + _stDup + ' 条');
         var done = 0;
         if (stIdx >= 0) {
           try { done = Number((JSON.parse(String(list[stIdx].content || '{}')) || {}).ver) || 0; } catch (e) { done = 0; }
