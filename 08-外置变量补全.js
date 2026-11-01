@@ -2632,7 +2632,7 @@
        所以失败要 console.warn + 在状态里记一笔，别塞进空 catch。
      ══════════════════════════════════════════════════════════════════════════ */
   var WBP_STATE = '[热更] 已应用';
-  var WBP_VER = 3;
+  var WBP_VER = 4;
   /* ★★★ v1.14：改成**以酒馆助手真实数据形状为准** ★★★
      事故：v1.08~v1.13 一直"写入成功、关键词一个没多"。
      查源码（`data/default-user/extensions/JS-Slash-Runner/dist/index.js`）才看清：
@@ -2664,20 +2664,27 @@
      v1.13 起改为"入参不是数组就原地不动"，不会再写坏结构。
      ⚠ 如果哪天又出现"导入后变量全线报错"，第一件事仍是把它改回 false。 */
   var WBP_AUTO = true;
-  /* 补丁表：一条一个版本号，只增不改。
+  /* ★★★ 补丁表 = **期望终态清单**，不是历史日志 ★★★
+     这一条的语义在 v1.15 被掰正过来，很重要：
+
+       门禁是"每次按 addKeys / delKeys 实查"（见 `_wbpApply`），
+       ⇒ 表里每一条**每次启动都会被重新施加一遍**。
+       ⇒ 所以表的内容必须等于"这本书现在**应该**长什么样"，不能当成 changelog。
+       ⇒ 想让某个改动**失效**（比如这次把三剑宗删掉），唯一正确做法就是
+         **把那条从表里拿掉**，再写一条反向的。留着它 + 加一条反向的，
+         两条会互相打架，谁在后面谁赢 —— 下个版本一改顺序就翻车。
+
      字段：
-       v        版本序号（必须递增、唯一）
+       v        版本序号（递增即可，只用于日志，不再当门禁）
        entry    条目名（= 酒馆助手条目里的 `name`，老格式里叫 `comment`）
-       addKeys  要加进去的关键词（已有的不重复加）
-       note     给人看的说明，会写进状态条目的 log 里 */
+       addKeys  必须**在**的关键词（缺就补）
+       delKeys  必须**不在**的关键词（有就删）
+       note     给人看的说明（写进状态条目的 log） */
   var WBP_PATCHES = [
-    { v: 1, entry: '人物-姜绾绾', addKeys: ['三剑宗'], note: '姜绾绾挂到三剑宗：提到三剑宗就带出这条' },
-    /* v2/v3 与 v1 内容相同 —— 用来**补做**。
-       来由：v1.08~v1.13 一直"报成功但关键词没进"，状态却已记成 ver:2
-       ⇒ 旧门禁把它永久跳过。v1.14 起门禁改成"实查关键词"，
-       所以这两条现在只是把"要补的东西"再声明一遍，不会重复写。 */
-    { v: 2, entry: '人物-姜绾绾', addKeys: ['三剑宗'], note: '补做：确认三剑宗关键词真的在' },
-    { v: 3, entry: '人物-姜绾绾', addKeys: ['三剑宗'], note: '补做：按酒馆助手新格式（strategy.keys）重写' }
+    /* v1.15 测试：把 v1.14 加进去的「三剑宗」删掉，验证热更新能不能"删"。
+       ⚠ 原来那三条 addKeys:['三剑宗'] 必须一起拿掉 —— 留着它们，
+         同一轮里先加后删（或先删后加），结果取决于循环顺序，等于掷骰子。 */
+    { v: 4, entry: '人物-姜绾绾', delKeys: ['三剑宗'], note: '测试：删掉三剑宗，验证热更新能删关键词' }
   ];
 
   /* ── 条目形状小工具（全部以酒馆助手为准，老字段兜底） ────────────── */
@@ -2814,13 +2821,23 @@
       if (cur === null) cur = [];
       cur = cur.slice();
       var added = [];
+      var removed = [];
       var addList = patch.addKeys || [];
       for (var q = 0; q < addList.length; q++) {
         if (cur.indexOf(addList[q]) < 0) { cur.push(addList[q]); added.push(addList[q]); }
       }
-      if (!added.length) continue;
+      /* delKeys：必须不在的，有就删。删是"从数组里剔除"，不是置空整个 keys ——
+         其它关键词一个都不许动（玩家/AI 自己加的也算）。 */
+      var delList = patch.delKeys || [];
+      for (var d2 = 0; d2 < delList.length; d2++) {
+        var at = cur.indexOf(delList[d2]);
+        if (at >= 0) { cur.splice(at, 1); removed.push(delList[d2]); }
+      }
+      if (!added.length && !removed.length) continue;
       _wbpSetKeys(hit, cur);
-      changed.push(patch.entry + ' +' + added.join('/'));
+      changed.push(patch.entry
+        + (added.length ? ' +' + added.join('/') : '')
+        + (removed.length ? ' -' + removed.join('/') : ''));
     }
     var need = (changed.length > 0) || (dup > 0) || (keep < 0);
     if (keep >= 0 && !need) {
@@ -2844,7 +2861,8 @@
     }
     return { list: out, need: need, changed: changed, dup: dup };
   }
-  /* 写完回读验证 —— "返回成功"不算数，得在回读结果里看见关键词 */
+  /* 写完回读验证 —— "返回成功"不算数，得在回读结果里看见关键词。
+     addKeys 要**在**、delKeys 要**不在**，两个方向都验。 */
   function _wbpVerify(list) {
     var bad = [];
     for (var p = 0; p < WBP_PATCHES.length; p++) {
@@ -2854,9 +2872,13 @@
       if (!hit) { bad.push(patch.entry + '·条目没找到'); continue; }
       var cur = _wbpKeys(hit) || [];
       var miss = [];
+      var left = [];
       var addList = patch.addKeys || [];
       for (var q = 0; q < addList.length; q++) { if (cur.indexOf(addList[q]) < 0) miss.push(addList[q]); }
+      var delList = patch.delKeys || [];
+      for (var d3 = 0; d3 < delList.length; d3++) { if (cur.indexOf(delList[d3]) >= 0) left.push(delList[d3]); }
       if (miss.length) bad.push(patch.entry + '·仍缺 ' + miss.join('/'));
+      if (left.length) bad.push(patch.entry + '·没删掉 ' + left.join('/'));
     }
     return bad;
   }
