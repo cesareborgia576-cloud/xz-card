@@ -2633,6 +2633,12 @@
      ══════════════════════════════════════════════════════════════════════════ */
   var WBP_STATE = '[热更] 已应用';
   var WBP_VER = 1;
+  /* ★★★ v1.10：自动执行**默认关** ★★★
+     为什么关掉：v1.09 一导入就 6 秒后自动跑补丁，结果世界书被写坏 ⇒
+     MVU 的《变量列表》读不到 ⇒ 变量更新报错 ⇒ 05/07 连锁崩（状态栏和开局一起消失）。
+     在"形状还原"这条修法被真实环境验证过之前，**不许再自动动玩家的书**。
+     要手动测：控制台 `__XZ_WBP__.apply()`；确认没问题再把这里改回 true。 */
+  var WBP_AUTO = false;
   /* 补丁表：一条一个版本号，只增不改（改了旧补丁的内容会导致已应用的机器永远拿不到新内容）。
      字段：
        v        版本序号（必须递增、唯一）
@@ -2660,8 +2666,46 @@
     var r;
     try {
       r = upd(book, function (wbData) {
-        var list = Array.isArray(wbData) ? wbData.slice()
-          : ((wbData && Array.isArray(wbData.entries)) ? wbData.entries.slice() : []);
+        /* ══════════════════════════════════════════════════════════════════
+           ⚠⚠⚠ 容器形状必须**原样还回去**，这是 v1.09 把整本书写坏的地方 ⚠⚠⚠
+           `updateWorldbookWith` 的入参有三种可能形状：
+             (a) 数组                    → 条目就是数组
+             (b) `{entries: [ … ]}`      → entries 是数组
+             (c) `{entries: {uid: …}}`   → entries 是**对象**（酒馆内部常见）
+           上面第一版写成「不是数组就取 `entries`，取不到就给 `[]`」，
+           然后**一律返回 `{entries: 数组}`** ——
+           遇到 (c) 时等于把对象形式的 entries 换成数组，整本书结构当场损坏。
+           后果是连锁的：MVU 的《变量列表》条目读不到 ⇒ 变量结构失效 ⇒
+           `[MVU] 发生变量更新错误`（玩家截图里那堆 `&quot;`）⇒
+           05/07 读变量失败 ⇒ **状态栏和开局脚本一起消失**。
+           ⇒ 现在：进来什么形状，出去什么形状。三路各走各的。
+           ══════════════════════════════════════════════════════════════════ */
+        var _isArr = Array.isArray(wbData);
+        var _rawEnt = _isArr ? wbData : (wbData && wbData.entries);
+        var _isMap = (!_isArr) && !!_rawEnt && !Array.isArray(_rawEnt) && (typeof _rawEnt === 'object');
+        var list = [];
+        if (_isArr) list = _rawEnt.slice();
+        else if (Array.isArray(_rawEnt)) list = _rawEnt.slice();
+        else if (_isMap) {
+          Object.keys(_rawEnt).forEach(function (k) {
+            var v = _rawEnt[k];
+            if (v && typeof v === 'object') list.push(v);
+          });
+        }
+        /* 把 list 还原成进来的形状 */
+        function _packList() {
+          if (_isArr) return list;
+          if (_isMap) {
+            var m = {};
+            list.forEach(function (e, idx) {
+              if (!e || typeof e !== 'object') return;
+              var k = (e.uid !== undefined && e.uid !== null) ? e.uid : (e.id !== undefined ? e.id : idx);
+              m[k] = e;
+            });
+            return Object.assign({}, wbData || {}, { entries: m });
+          }
+          return Object.assign({}, wbData || {}, { entries: list });
+        }
         var stIdx = -1;
         for (var i = 0; i < list.length; i++) {
           var it = list[i];
@@ -2673,7 +2717,7 @@
         }
         if (done >= WBP_VER) {
           /* 已是最新，原样返回 —— **不加任何改动**，否则每次刷新都会重写一遍世界书 */
-          return Array.isArray(wbData) ? list : Object.assign({}, wbData || {}, { entries: list });
+          return _packList();
         }
         for (var p = 0; p < WBP_PATCHES.length; p++) {
           var patch = WBP_PATCHES[p];
@@ -2702,17 +2746,28 @@
         } else {
           /* 新条目：`enabled: false` 让它不进上下文，纯粹当状态位用。
              字段给全一点 —— 缺字段时某些酒馆版本会把整本书写成空。 */
+          /* ⚠ 字段只用 ST 标准名。v1.09 这里塞了 `name`（卡格式才有），
+             导入器严格时可能把它当非法字段 ⇒ 整本书加载失败。
+             `disable: true` + `enabled: false` 两个都写：不同版本认不同的那个。 */
           list.push({
-            uid: Date.now(), comment: WBP_STATE, name: WBP_STATE,
-            key: [WBP_STATE], keys: [WBP_STATE],
+            uid: Date.now(),
+            comment: WBP_STATE,
+            key: [WBP_STATE],
+            keys: [WBP_STATE],
             content: JSON.stringify(stObj),
-            enabled: false, disable: true, constant: false, selective: true,
-            insertion_order: 9999, order: 9999, position: 0,
-            excludeRecursion: true, preventRecursion: true,
+            enabled: false,
+            disable: true,
+            constant: false,
+            selective: true,
+            insertion_order: 9999,
+            order: 9999,
+            position: 0,
+            excludeRecursion: true,
+            preventRecursion: true,
             extensions: { exclude_recursion: true, prevent_recursion: true, display_index: 9999 }
           });
         }
-        return Array.isArray(wbData) ? list : Object.assign({}, wbData || {}, { entries: list });
+        return _packList();
       });
     } catch (eCall) {
       try { console.warn('[天元录·世界书热更] 调用写接口就抛了：' + String(eCall && eCall.message || eCall)); } catch (e) {}
@@ -3694,9 +3749,11 @@
          这时候 `updateWorldbookWith` 拿到的是一本**空书**，
          写回去就等于把整本书清了。等它稳定再动手。
        ⚠ 失败不阻断其它功能（补丁只是锦上添花，界面不能因此起不来）。 */
-    setTimeout(function () {
-      try { wbpApply(); } catch (e) {}
-    }, 6000);
+    if (WBP_AUTO) {
+      setTimeout(function () {
+        try { wbpApply(); } catch (e) {}
+      }, 6000);
+    }
     try {
       if (typeof waitGlobalInitialized === 'function') {
         waitGlobalInitialized('Mvu').then(init).catch(init);
