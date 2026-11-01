@@ -150,6 +150,12 @@
            与 05 那枚徽章**同一口径**，两处必须印同一个号（否则玩家会以为看到两个版本）。 */
         var same = !!st.same;
         var txt = same ? ('已是最新版本 ' + st.build) : (st.build + ' · 世界书 ' + st.ver + ' 未同步');
+        /* ★ v1.06：开发卡打标，与 05 那枚徽章同一口径 */
+        try {
+            var _ch = (typeof window !== 'undefined' && window.__XZ_CHAN__)
+                || (window.top && window.top.__XZ_CHAN__) || '';
+            if (_ch === 'dev') { txt = 'DEV · ' + txt; }
+        } catch (eCh) {}
         var tip = same
             ? ('本卡 ' + st.build + '，已是最新版本。脚本与引擎会自动热更新，不需要重新导入卡。')
             : ('本卡 ' + st.build + '。世界书还是 ' + st.ver + '，没跟上 —— 世界书不能热更新，'
