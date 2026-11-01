@@ -2632,29 +2632,234 @@
        所以失败要 console.warn + 在状态里记一笔，别塞进空 catch。
      ══════════════════════════════════════════════════════════════════════════ */
   var WBP_STATE = '[热更] 已应用';
-  var WBP_VER = 2;
+  var WBP_VER = 3;
+  /* ★★★ v1.14：改成**以酒馆助手真实数据形状为准** ★★★
+     事故：v1.08~v1.13 一直"写入成功、关键词一个没多"。
+     查源码（`data/default-user/extensions/JS-Slash-Runner/dist/index.js`）才看清：
+
+       getWorldbook(name)  →  返回**数组**，条目是这样的：
+         { uid, name, enabled,
+           strategy: { type, keys: [...], keys_secondary: { logic, keys: [...] }, scan_depth },
+           position: { type, role, depth, order },
+           content, probability, recursion, effect, extra }
+
+       写回时它走 `OH(entry)` 重新拼 ST 条目，**只读** `e.name` / `e.strategy.keys`。
+       顶层 `comment`、`key`、`keys` 它**根本不看**。
+
+     所以老写法 `hit.key = [...]` 等于把关键词写进了一个马上被丢弃的字段：
+     日志说"加了"，条目上却一个都没有。状态条目更惨 —— 用 `comment` 起名，
+     回写时 `name` 是空 ⇒ 世界书面板里多出**无名条目**（就是玩家看到的"多了几个条目"）。
+
+     现在：`strategy.keys` 是唯一真身，`name` 是唯一真名；老字段仍然冗余写一份
+     （万一哪天宿主换实现），但**判据只看新的**。
+
+     ★ 另外两条：
+       ① 不信状态条目里的 `ver` 当门禁 —— 它曾经记成"已应用"而实际没写进去，
+          于是补丁永远不再跑。改成**每次按 addKeys 实查**，缺就补（幂等）。
+       ② 没变化就**根本不调** `updateWorldbookWith` —— 它内部无条件 saveWorldInfo，
+          就算你返回原数组也会重写一遍世界书文件、重绘面板。 */
   /* ★★★ v1.12：自动执行**重新打开** ★★★
      历史：v1.09 自动跑过一次，因为 updater 把 `entries` 的对象形状换成了数组，
      整本书结构损坏 ⇒ MVU 读不到《变量列表》⇒ 变量更新报错 ⇒ 05/07 连锁崩。
-     v1.10 起 `_packList()` 已做到"进什么形状还什么形状"，并且单测把
-     三种形状（数组 / {entries:[]} / {entries:{uid:…}}）各跑了一遍才允许上线，
-     ⇒ 这里可以重新打开。
+     v1.13 起改为"入参不是数组就原地不动"，不会再写坏结构。
      ⚠ 如果哪天又出现"导入后变量全线报错"，第一件事仍是把它改回 false。 */
   var WBP_AUTO = true;
-  /* 补丁表：一条一个版本号，只增不改（改了旧补丁的内容会导致已应用的机器永远拿不到新内容）。
+  /* 补丁表：一条一个版本号，只增不改。
      字段：
        v        版本序号（必须递增、唯一）
-       entry    条目名（= 世界书条目的 comment / name）
+       entry    条目名（= 酒馆助手条目里的 `name`，老格式里叫 `comment`）
        addKeys  要加进去的关键词（已有的不重复加）
        note     给人看的说明，会写进状态条目的 log 里 */
   var WBP_PATCHES = [
     { v: 1, entry: '人物-姜绾绾', addKeys: ['三剑宗'], note: '姜绾绾挂到三剑宗：提到三剑宗就带出这条' },
-    /* v2 与 v1 内容相同 —— 专门用来**补做**。
-       来由：v1.12 三份 08 并发写同一本书，关键词加了又被另一份的快照覆盖回去，
-       而状态条目已经记成 ver:1 ⇒ v1 永远不会再跑。升到 v2 让它重来一遍。
-       （补丁本身是幂等的：已经有这个词就只记一句"已存在，跳过"，不会加两遍。） */
-    { v: 2, entry: '人物-姜绾绾', addKeys: ['三剑宗'], note: '补做：确认三剑宗关键词真的在' }
+    /* v2/v3 与 v1 内容相同 —— 用来**补做**。
+       来由：v1.08~v1.13 一直"报成功但关键词没进"，状态却已记成 ver:2
+       ⇒ 旧门禁把它永久跳过。v1.14 起门禁改成"实查关键词"，
+       所以这两条现在只是把"要补的东西"再声明一遍，不会重复写。 */
+    { v: 2, entry: '人物-姜绾绾', addKeys: ['三剑宗'], note: '补做：确认三剑宗关键词真的在' },
+    { v: 3, entry: '人物-姜绾绾', addKeys: ['三剑宗'], note: '补做：按酒馆助手新格式（strategy.keys）重写' }
   ];
+
+  /* ── 条目形状小工具（全部以酒馆助手为准，老字段兜底） ────────────── */
+  function _wbpStr(v) { return (v === undefined || v === null) ? '' : String(v); }
+  function _wbpName(e) {
+    if (!e) return '';
+    var a = _wbpStr(e.name).trim();
+    if (a) return a;
+    var b = _wbpStr(e.comment).trim();
+    if (b) return b;
+    return _wbpStr(e.title).trim();
+  }
+  function _wbpKeys(e) {
+    if (!e) return null;
+    if (e.strategy && typeof e.strategy === 'object' && Array.isArray(e.strategy.keys)) return e.strategy.keys;
+    if (Array.isArray(e.key)) return e.key;
+    if (Array.isArray(e.keys)) return e.keys;
+    return null;
+  }
+  /* 写关键词：strategy.keys 是真身，顶层 key/keys 冗余一份。
+     ⚠ 必须**新建** strategy 对象再赋回，不能直接改 `e.strategy.keys` ——
+       浅拷贝的条目会跟原对象共用同一个 strategy 引用，一改就污染源数据。 */
+  function _wbpSetKeys(e, arr) {
+    var a = arr.slice();
+    if (!e.strategy || typeof e.strategy !== 'object' || Array.isArray(e.strategy)) {
+      e.strategy = {
+        type: e.constant ? 'constant' : 'selective',
+        keys: a.slice(),
+        keys_secondary: { logic: 'and_any', keys: Array.isArray(e.keysecondary) ? e.keysecondary.slice() : [] },
+        scan_depth: 'same_as_global'
+      };
+    } else {
+      e.strategy = Object.assign({}, e.strategy, { keys: a.slice() });
+      if (!e.strategy.keys_secondary || typeof e.strategy.keys_secondary !== 'object') {
+        e.strategy.keys_secondary = { logic: 'and_any', keys: [] };
+      }
+      if (!e.strategy.type) e.strategy.type = e.constant ? 'constant' : 'selective';
+    }
+    e.key = a.slice();
+    e.keys = a.slice();
+  }
+  /* 名字双向补齐：宿主只认 `name`，卡格式只认 `comment`。
+     只补不覆盖 —— 已有名字一个都不许动。 */
+  function _wbpFixName(e) {
+    if (!e || typeof e !== 'object') return;
+    var nm = _wbpStr(e.name).trim();
+    var cm = _wbpStr(e.comment).trim();
+    if (!nm && cm) e.name = cm;
+    if (!cm && nm) e.comment = nm;
+  }
+  /* 认状态条目：名字对，或"无名 + 无关键词 + content 是 {ver,log,at}"的孤儿。
+     后者是 v1.13 之前的产物（当时用 comment 起名，回写时名字被抹成空） */
+  function _wbpIsState(e) {
+    if (!e || typeof e !== 'object') return false;
+    if (_wbpName(e) === WBP_STATE) return true;
+    if (_wbpName(e)) return false;
+    var ks = _wbpKeys(e);
+    if (ks && ks.length) return false;
+    var c = _wbpStr(e.content).trim();
+    if (c.charAt(0) !== '{') return false;
+    try {
+      var o = JSON.parse(c);
+      return !!(o && typeof o.ver !== 'undefined' && Array.isArray(o.log));
+    } catch (x) { return false; }
+  }
+  function _wbpStVer(e) {
+    try {
+      var o = JSON.parse(_wbpStr(e && e.content) || '{}') || {};
+      return Number(o.ver) || 0;
+    } catch (x) { return 0; }
+  }
+  function _wbpMakeState(stObj) {
+    return {
+      uid: Date.now(),
+      name: WBP_STATE,
+      comment: WBP_STATE,
+      enabled: false,
+      disable: true,
+      content: JSON.stringify(stObj),
+      strategy: {
+        type: 'selective',
+        keys: [WBP_STATE],
+        keys_secondary: { logic: 'and_any', keys: [] },
+        scan_depth: 'same_as_global'
+      },
+      position: { type: 'after_character_definition', role: 'system', depth: 4, order: 9999 },
+      probability: 100,
+      recursion: { prevent_incoming: true, prevent_outgoing: true, delay_until: null },
+      effect: { sticky: null, cooldown: null, delay: null },
+      /* 老格式冗余（换实现时还有一层兜底）。注意 `position` 不能同时是数字，冲突时以新格式为准。 */
+      key: [WBP_STATE],
+      keys: [WBP_STATE],
+      constant: false,
+      selective: true,
+      insertion_order: 9999,
+      excludeRecursion: true,
+      preventRecursion: true
+    };
+  }
+  /* 在数组上做全部改动，返回 {list, need, changed, dup}。
+     need=false 表示"一个字都不用改"，调用方就不要去碰写接口。 */
+  function _wbpApply(arr) {
+    var out = [];
+    var i;
+    for (i = 0; i < arr.length; i++) {
+      var src = arr[i];
+      if (!src || typeof src !== 'object') { out.push(src); continue; }
+      var cp = Object.assign({}, src);
+      _wbpFixName(cp);
+      out.push(cp);
+    }
+    /* 状态条目：留第一条，其余删（玩家看到的"多出来几个条目"就是这些） */
+    var sts = [];
+    for (i = 0; i < out.length; i++) { if (_wbpIsState(out[i])) sts.push(i); }
+    var keep = -1;
+    var dup = 0;
+    for (var t = 0; t < sts.length; t++) {
+      var idx = sts[t];
+      if (keep < 0) { keep = idx; continue; }
+      out.splice(idx, 1);
+      dup++;
+      for (var u = t + 1; u < sts.length; u++) sts[u]--;
+    }
+    /* 关键词：**实查**，不看状态里的 ver */
+    var changed = [];
+    for (var p = 0; p < WBP_PATCHES.length; p++) {
+      var patch = WBP_PATCHES[p];
+      var hit = null;
+      for (var j = 0; j < out.length; j++) {
+        if (_wbpName(out[j]) === patch.entry) { hit = out[j]; break; }
+      }
+      if (!hit) { if (changed.indexOf('缺条目：' + patch.entry) < 0) changed.push('缺条目：' + patch.entry); continue; }
+      var cur = _wbpKeys(hit);
+      if (cur === null) cur = [];
+      cur = cur.slice();
+      var added = [];
+      var addList = patch.addKeys || [];
+      for (var q = 0; q < addList.length; q++) {
+        if (cur.indexOf(addList[q]) < 0) { cur.push(addList[q]); added.push(addList[q]); }
+      }
+      if (!added.length) continue;
+      _wbpSetKeys(hit, cur);
+      changed.push(patch.entry + ' +' + added.join('/'));
+    }
+    var need = (changed.length > 0) || (dup > 0) || (keep < 0);
+    if (keep >= 0 && !need) {
+      var se0 = out[keep];
+      if (_wbpName(se0) !== WBP_STATE || _wbpStVer(se0) !== WBP_VER) need = true;
+    }
+    if (need) {
+      var stObj = {
+        ver: WBP_VER,
+        at: new Date().toISOString(),
+        log: changed.length ? changed : ['无需改动：关键词已在，仅整理状态条目']
+      };
+      if (keep >= 0) {
+        var oldUid = out[keep].uid;
+        var merged = Object.assign({}, out[keep], _wbpMakeState(stObj));
+        if (oldUid !== undefined && oldUid !== null) merged.uid = oldUid;
+        out[keep] = merged;
+      } else {
+        out.push(_wbpMakeState(stObj));
+      }
+    }
+    return { list: out, need: need, changed: changed, dup: dup };
+  }
+  /* 写完回读验证 —— "返回成功"不算数，得在回读结果里看见关键词 */
+  function _wbpVerify(list) {
+    var bad = [];
+    for (var p = 0; p < WBP_PATCHES.length; p++) {
+      var patch = WBP_PATCHES[p];
+      var hit = null;
+      for (var j = 0; j < list.length; j++) { if (_wbpName(list[j]) === patch.entry) { hit = list[j]; break; } }
+      if (!hit) { bad.push(patch.entry + '·条目没找到'); continue; }
+      var cur = _wbpKeys(hit) || [];
+      var miss = [];
+      var addList = patch.addKeys || [];
+      for (var q = 0; q < addList.length; q++) { if (cur.indexOf(addList[q]) < 0) miss.push(addList[q]); }
+      if (miss.length) bad.push(patch.entry + '·仍缺 ' + miss.join('/'));
+    }
+    return bad;
+  }
 
   function wbpApply() {
     var book = tickerBookName();
@@ -2663,141 +2868,67 @@
       return Promise.resolve({ ok: false, why: 'no-book' });
     }
     var _G = (typeof globalThis !== 'undefined') ? globalThis : {};
-    var upd = (typeof _G.updateWorldbookWith === 'function') ? _G.updateWorldbookWith : null;
-    if (!upd) {
+    var _get = (typeof _G.getWorldbook === 'function') ? _G.getWorldbook : null;
+    var _upd = (typeof _G.updateWorldbookWith === 'function') ? _G.updateWorldbookWith : null;
+    if (!_upd) {
       try { console.warn('[天元录·世界书热更] 宿主没有 updateWorldbookWith，本批补丁跳过'); } catch (e) {}
       return Promise.resolve({ ok: false, why: 'no-api' });
     }
+    var changedAll = [];
 
-    var changed = [];
-    var r;
-    try {
-      r = upd(book, function (wbData) {
-        /* ══════════════════════════════════════════════════════════════════
-           ⚠⚠⚠ 容器形状必须**原样还回去**，这是 v1.09 把整本书写坏的地方 ⚠⚠⚠
-           `updateWorldbookWith` 的入参有三种可能形状：
-             (a) 数组                    → 条目就是数组
-             (b) `{entries: [ … ]}`      → entries 是数组
-             (c) `{entries: {uid: …}}`   → entries 是**对象**（酒馆内部常见）
-           上面第一版写成「不是数组就取 `entries`，取不到就给 `[]`」，
-           然后**一律返回 `{entries: 数组}`** ——
-           遇到 (c) 时等于把对象形式的 entries 换成数组，整本书结构当场损坏。
-           后果是连锁的：MVU 的《变量列表》条目读不到 ⇒ 变量结构失效 ⇒
-           `[MVU] 发生变量更新错误`（玩家截图里那堆 `&quot;`）⇒
-           05/07 读变量失败 ⇒ **状态栏和开局脚本一起消失**。
-           ⇒ 现在：进来什么形状，出去什么形状。三路各走各的。
-           ══════════════════════════════════════════════════════════════════ */
-        var _isArr = Array.isArray(wbData);
-        var _rawEnt = _isArr ? wbData : (wbData && wbData.entries);
-        var _isMap = (!_isArr) && !!_rawEnt && !Array.isArray(_rawEnt) && (typeof _rawEnt === 'object');
-        var list = [];
-        if (_isArr) list = _rawEnt.slice();
-        else if (Array.isArray(_rawEnt)) list = _rawEnt.slice();
-        else if (_isMap) {
-          Object.keys(_rawEnt).forEach(function (k) {
-            var v = _rawEnt[k];
-            if (v && typeof v === 'object') list.push(v);
-          });
-        }
-        /* 把 list 还原成进来的形状 */
-        function _packList() {
-          if (_isArr) return list;
-          if (_isMap) {
-            var m = {};
-            list.forEach(function (e, idx) {
-              if (!e || typeof e !== 'object') return;
-              var k = (e.uid !== undefined && e.uid !== null) ? e.uid : (e.id !== undefined ? e.id : idx);
-              m[k] = e;
-            });
-            return Object.assign({}, wbData || {}, { entries: m });
+    function doWrite() {
+      var r;
+      try {
+        r = _upd(book, function (wbData) {
+          /* ⚠ 入参不是数组 ⇒ 什么都不动，原样还回去。
+             这里换了形状会把整本书写坏（v1.09 事故）。宁可不生效，不许写坏。 */
+          if (!Array.isArray(wbData)) {
+            try { console.warn('[天元录·世界书热更] 世界书不是数组形状，为免写坏整本书，本次放弃写入'); } catch (e1) {}
+            return wbData;
           }
-          return Object.assign({}, wbData || {}, { entries: list });
+          var res = _wbpApply(wbData);
+          changedAll = res.changed.slice();
+          return res.list;
+        });
+      } catch (eCall) {
+        try { console.warn('[天元录·世界书热更] 调用写接口就抛了：' + String(eCall && eCall.message || eCall)); } catch (e2) {}
+        return Promise.resolve({ ok: false, why: String(eCall && eCall.message || eCall) });
+      }
+      return Promise.resolve(r).then(function (after) {
+        var logTxt = changedAll.length ? changedAll.join('；') : '无改动';
+        if (!Array.isArray(after)) {
+          try { console.log('[天元录·世界书热更] 已应用到 v' + WBP_VER + '｜' + logTxt + '（宿主没回读，无法二次验证）'); } catch (e3) {}
+          return { ok: true, changed: changedAll, verified: null };
         }
-        /* ★ v1.13：状态条目可能有多条（v1.12 三份 loader 并发留下的）。
-           保留第一条，其余删掉 —— 否则世界书面板里会一直挂着几个一模一样的
-           `[热更] 已应用`，玩家看着像"脚本在乱建条目"。
-           ⚠ 从后往前删：正序删会让后面的下标整体前移，删漏。 */
-        var _stAll = [];
-        for (var i = 0; i < list.length; i++) {
-          var it = list[i];
-          if (it && (String(it.comment || '') === WBP_STATE || String(it.name || '') === WBP_STATE)) _stAll.push(i);
+        var bad = _wbpVerify(after);
+        if (bad.length) {
+          try { console.warn('[天元录·世界书热更] ⚠ 写完了但回读不对：' + bad.join('；') + '｜已写：' + logTxt); } catch (e4) {}
+          return { ok: false, changed: changedAll, bad: bad, why: bad.join('；') };
         }
-        var _stDup = _stAll.length - 1;
-        for (var d = _stAll.length - 1; d >= 1; d--) list.splice(_stAll[d], 1);
-        var stIdx = _stAll.length ? _stAll[0] : -1;
-        if (_stDup > 0) changed.push('清理重复状态条目 ' + _stDup + ' 条');
-        var done = 0;
-        if (stIdx >= 0) {
-          try { done = Number((JSON.parse(String(list[stIdx].content || '{}')) || {}).ver) || 0; } catch (e) { done = 0; }
-        }
-        if (done >= WBP_VER) {
-          /* 已是最新，原样返回 —— **不加任何改动**，否则每次刷新都会重写一遍世界书 */
-          return _packList();
-        }
-        for (var p = 0; p < WBP_PATCHES.length; p++) {
-          var patch = WBP_PATCHES[p];
-          if (patch.v <= done) continue;
-          var hit = null;
-          for (var j = 0; j < list.length; j++) {
-            var e2 = list[j];
-            if (e2 && (String(e2.comment || '') === patch.entry || String(e2.name || '') === patch.entry)) { hit = e2; break; }
-          }
-          if (!hit) { changed.push('缺条目：' + patch.entry); continue; }
-          var cur = Array.isArray(hit.key) ? hit.key.slice()
-            : (Array.isArray(hit.keys) ? hit.keys.slice() : []);
-          var added = [];
-          (patch.addKeys || []).forEach(function (k) {
-            if (cur.indexOf(k) < 0) { cur.push(k); added.push(k); }
-          });
-          if (!added.length) { changed.push(patch.entry + '：关键词已存在，跳过'); continue; }
-          /* 两个字段都写（见函数头注释），并保持引用同一份数组内容 */
-          hit.key = cur.slice();
-          hit.keys = cur.slice();
-          changed.push(patch.entry + ' +' + added.join('/') + (patch.note ? '（' + patch.note + '）' : ''));
-        }
-        var stObj = { ver: WBP_VER, at: new Date().toISOString(), log: changed };
-        if (stIdx >= 0) {
-          list[stIdx] = Object.assign({}, list[stIdx], { content: JSON.stringify(stObj) });
-        } else {
-          /* 新条目：`enabled: false` 让它不进上下文，纯粹当状态位用。
-             字段给全一点 —— 缺字段时某些酒馆版本会把整本书写成空。 */
-          /* ⚠ 字段只用 ST 标准名。v1.09 这里塞了 `name`（卡格式才有），
-             导入器严格时可能把它当非法字段 ⇒ 整本书加载失败。
-             `disable: true` + `enabled: false` 两个都写：不同版本认不同的那个。 */
-          list.push({
-            uid: Date.now(),
-            comment: WBP_STATE,
-            key: [WBP_STATE],
-            keys: [WBP_STATE],
-            content: JSON.stringify(stObj),
-            enabled: false,
-            disable: true,
-            constant: false,
-            selective: true,
-            insertion_order: 9999,
-            order: 9999,
-            position: 0,
-            excludeRecursion: true,
-            preventRecursion: true,
-            extensions: { exclude_recursion: true, prevent_recursion: true, display_index: 9999 }
-          });
-        }
-        return _packList();
+        try { console.log('[天元录·世界书热更] 已应用到 v' + WBP_VER + '｜' + logTxt + '｜回读验证：关键词全部在'); } catch (e5) {}
+        return { ok: true, changed: changedAll, verified: true };
+      }, function (e) {
+        try { console.warn('[天元录·世界书热更] 写入失败（AI 那边还是旧的）：' + String(e && e.message || e)); } catch (e6) {}
+        return { ok: false, why: String(e && e.message || e) };
       });
-    } catch (eCall) {
-      try { console.warn('[天元录·世界书热更] 调用写接口就抛了：' + String(eCall && eCall.message || eCall)); } catch (e) {}
-      return Promise.resolve({ ok: false, why: String(eCall && eCall.message || eCall) });
     }
 
-    return Promise.resolve(r).then(function () {
-      try {
-        console.log('[天元录·世界书热更] 已应用到 v' + WBP_VER + '｜' + (changed.join('；') || '无改动'));
-      } catch (e) {}
-      return { ok: true, changed: changed };
-    }, function (e) {
-      try { console.warn('[天元录·世界书热更] 写入失败（AI 那边还是旧的）：' + String(e && e.message || e)); } catch (e2) {}
-      return { ok: false, why: String(e && e.message || e) };
-    });
+    /* 先读一遍做"要不要动"的判断：没变化就一次都不写（写接口内部无条件落盘+重绘） */
+    var readP = null;
+    if (_get) {
+      try { readP = Promise.resolve(_get(book)); } catch (eR) { readP = null; }
+    }
+    if (!readP) return doWrite();
+    return readP.then(function (wb) {
+      if (Array.isArray(wb)) {
+        var pre = _wbpApply(wb);
+        if (!pre.need) {
+          try { console.log('[天元录·世界书热更] 无需写入：关键词已在，状态 v' + WBP_VER); } catch (e7) {}
+          return { ok: true, changed: [], skipped: true, verified: true };
+        }
+      }
+      return doWrite();
+    }, function () { return doWrite(); });
   }
 
   /* ★ v1.08：把补丁入口挂出去 —— 两个用途：
