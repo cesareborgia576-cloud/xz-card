@@ -111,6 +111,51 @@
         /* 05 那边有 `/^v\d+(?:\.\d+)?$/` 自校验，这里照样卡一遍：占位符/空值都不许当版本号印出去 */
         return /^v\d+(?:\.\d+)?$/.test(v) ? v : 'v0';
     })();
+    /* ══════════════════════════════════════════════════════════════════════
+       ★★★ v1.04：开局第 1 页也印世界书版本状态 ★★★
+       用户 2026-11-01：「开局脚本的第一页也是，如果世界书跟不上，就显示非最新版本，
+         以世界书为主，因为世界书是不能热更新的。」
+       ── 数据只从 05 取，不自己再读一遍世界书 ─────────────────────────────
+       05 那边已经有一份 `state.wbVer`（{ok, ver, build, same}），由
+       `xzWBVersionState` 异步读回来。这里通过 `XZ05('xzWbVerState')` 取，
+       两处共用一个真相源 —— 各读一次必然分叉（本项目铁律，栽过好几次）。
+       ── 三种状态必须可区分 ──────────────────────────────────────────────
+         · 还没读到（04/05 刚起）→ 「核对中」，并且**安排一次重绘**把结果补上
+         · 读到且号相同         → 「已是最新版本 v1.04」绿
+         · 读到但号不同         → 「非最新版本（书 v1.03）」橙
+       ⚠ 不许把"没读到"印成"非最新"：那会让玩家白去导入一遍世界书。
+       ══════════════════════════════════════════════════════════════════════ */
+    var _wbVerRetry = 0;
+    function wbVerState() {
+        try {
+            var f = XZ05('xzWbVerState');
+            if (typeof f === 'function') return f() || null;
+        } catch (e) {}
+        return null;
+    }
+    function wbVerLabelHtml() {
+        var st = wbVerState();
+        if (!st || !st.ok) {
+            /* 没读到：**只安排有限次重绘**（最多 3 次）。无限轮询会把这个面板拖卡，
+               而且 04 真没起来时永远等不到 —— 那时应该停在"核对中"，不是死循环。 */
+            if (_wbVerRetry < 3) {
+                _wbVerRetry++;
+                setTimeout(function () { try { render(true); } catch (e) {} }, 1200);
+            }
+            return '<span class="xz-st-ver" style="flex:none;white-space:nowrap;font-size:10px;color:var(--xz-muted);">'
+                + esc(VERSION) + ' · 核对世界书…</span>';
+        }
+        var same = !!st.same;
+        var txt = same ? ('已是最新版本 ' + st.ver) : ('非最新版本（书 ' + st.ver + '）');
+        var tip = same
+            ? ('世界书与世界书版本一致：' + st.ver + '。脚本与引擎会热更新，世界书以你导入的那本为准。')
+            : ('世界书不是最新版本：书里是 ' + st.ver + '，本卡是 ' + st.build
+               + '。世界书不能热更新，请去酒馆「导入卡内世界书」覆盖一次。');
+        return '<span class="xz-st-ver" style="flex:none;white-space:nowrap;font-size:10px;color:'
+            + (same ? '#4ade80' : '#fbbf24') + ';" title="' + esc(tip) + '">'
+            + esc(txt) + '</span>';
+    }
+
     var REV = 'xz-rev-6';
     var MARK_RE = /【开局(?:\s*[·・][^】]*)?】/;
     var DONE_KEY = 'xzStartDone';
@@ -6661,7 +6706,7 @@ d.attrs[a] = v;
         h += cardOpen('');
         h += '<div class="xz-st-head"><span class="xz-st-seal">开</span>'
             + '<span class="xz-st-title"><span class="xz-st-titlebox"><span>开局设置</span></span></span>'
-            + '<span class="xz-st-ver">' + esc(VERSION) + '</span></div>';
+            + wbVerLabelHtml() + '</div>';
         h += '<div class="xz-st-body">';
         h += wizBarHtml();
 
