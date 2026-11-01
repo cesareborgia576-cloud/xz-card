@@ -2603,6 +2603,133 @@
     });
   }
 
+  /* ══════════════════════════════════════════════════════════════════════════
+     ★★★ 世界书热更新（补丁通道）· v1.08 ★★★
+     ──────────────────────────────────────────────────────────────────────────
+     用户 2026-11-01：「现在搞世界书热更新。先简单测试一下，把姜绾绾的关键词
+       新增一个三剑宗。」
+     第一条补丁就是它 —— 但它不是重点，**通道本身**才是：通道通了，
+     以后改世界书条目（关键词、正文、开关）都不用玩家重新导入卡。
+
+     ── 为什么走"补丁"而不是"整本覆盖" ──────────────────────────────────
+       整本覆盖会**把玩家自己加的条目、自己改过的内容一起抹掉**，而且不可逆。
+       补丁只做声明过的改动，每加一条都要写清楚改谁、改什么。
+
+     ── 幂等怎么做 ──────────────────────────────────────────────────────
+       世界书里放一条 `[热更] 已应用`（`enabled: false`，不进上下文、玩家看不见），
+       内容是 `{ver, at, log}`。启动时读它，`ver >= 当前补丁版本` 就直接跳过。
+       ⚠ 只有"写成功了"才更新这个版本号 —— 写失败还标成功，等于这批补丁永远不再执行。
+
+     ── 字段名为什么要写两遍（`key` 与 `keys`）────────────────────────────
+       卡里（`character_book.entries`）字段叫 `key`；
+       ST 内部 `world_info.entries` 也是 `key`；
+       而酒馆助手的条目 API 多半用 `keys`。
+       这套代码要同时面对两边 ⇒ **两个都写**。只写一个的话，另一半读到的还是旧的，
+       表现就是"改了、也返回成功、但 AI 那边一个关键词都没多"。
+
+     ── 失败必须出声 ────────────────────────────────────────────────────
+       世界书写不进去时玩家毫无察觉，只会觉得"AI 怎么不提三剑宗"。
+       所以失败要 console.warn + 在状态里记一笔，别塞进空 catch。
+     ══════════════════════════════════════════════════════════════════════════ */
+  var WBP_STATE = '[热更] 已应用';
+  var WBP_VER = 1;
+  /* 补丁表：一条一个版本号，只增不改（改了旧补丁的内容会导致已应用的机器永远拿不到新内容）。
+     字段：
+       v        版本序号（必须递增、唯一）
+       entry    条目名（= 世界书条目的 comment / name）
+       addKeys  要加进去的关键词（已有的不重复加）
+       note     给人看的说明，会写进状态条目的 log 里 */
+  var WBP_PATCHES = [
+    { v: 1, entry: '人物-姜绾绾', addKeys: ['三剑宗'], note: '姜绾绾挂到三剑宗：提到三剑宗就带出这条' }
+  ];
+
+  function wbpApply() {
+    var book = tickerBookName();
+    if (!book) {
+      try { console.warn('[天元录·世界书热更] 找不到卡绑定的世界书，本批补丁跳过'); } catch (e) {}
+      return Promise.resolve({ ok: false, why: 'no-book' });
+    }
+    var _G = (typeof globalThis !== 'undefined') ? globalThis : {};
+    var upd = (typeof _G.updateWorldbookWith === 'function') ? _G.updateWorldbookWith : null;
+    if (!upd) {
+      try { console.warn('[天元录·世界书热更] 宿主没有 updateWorldbookWith，本批补丁跳过'); } catch (e) {}
+      return Promise.resolve({ ok: false, why: 'no-api' });
+    }
+
+    var changed = [];
+    var r;
+    try {
+      r = upd(book, function (wbData) {
+        var list = Array.isArray(wbData) ? wbData.slice()
+          : ((wbData && Array.isArray(wbData.entries)) ? wbData.entries.slice() : []);
+        var stIdx = -1;
+        for (var i = 0; i < list.length; i++) {
+          var it = list[i];
+          if (it && (String(it.comment || '') === WBP_STATE || String(it.name || '') === WBP_STATE)) { stIdx = i; break; }
+        }
+        var done = 0;
+        if (stIdx >= 0) {
+          try { done = Number((JSON.parse(String(list[stIdx].content || '{}')) || {}).ver) || 0; } catch (e) { done = 0; }
+        }
+        if (done >= WBP_VER) {
+          /* 已是最新，原样返回 —— **不加任何改动**，否则每次刷新都会重写一遍世界书 */
+          return Array.isArray(wbData) ? list : Object.assign({}, wbData || {}, { entries: list });
+        }
+        for (var p = 0; p < WBP_PATCHES.length; p++) {
+          var patch = WBP_PATCHES[p];
+          if (patch.v <= done) continue;
+          var hit = null;
+          for (var j = 0; j < list.length; j++) {
+            var e2 = list[j];
+            if (e2 && (String(e2.comment || '') === patch.entry || String(e2.name || '') === patch.entry)) { hit = e2; break; }
+          }
+          if (!hit) { changed.push('缺条目：' + patch.entry); continue; }
+          var cur = Array.isArray(hit.key) ? hit.key.slice()
+            : (Array.isArray(hit.keys) ? hit.keys.slice() : []);
+          var added = [];
+          (patch.addKeys || []).forEach(function (k) {
+            if (cur.indexOf(k) < 0) { cur.push(k); added.push(k); }
+          });
+          if (!added.length) { changed.push(patch.entry + '：关键词已存在，跳过'); continue; }
+          /* 两个字段都写（见函数头注释），并保持引用同一份数组内容 */
+          hit.key = cur.slice();
+          hit.keys = cur.slice();
+          changed.push(patch.entry + ' +' + added.join('/') + (patch.note ? '（' + patch.note + '）' : ''));
+        }
+        var stObj = { ver: WBP_VER, at: new Date().toISOString(), log: changed };
+        if (stIdx >= 0) {
+          list[stIdx] = Object.assign({}, list[stIdx], { content: JSON.stringify(stObj) });
+        } else {
+          /* 新条目：`enabled: false` 让它不进上下文，纯粹当状态位用。
+             字段给全一点 —— 缺字段时某些酒馆版本会把整本书写成空。 */
+          list.push({
+            uid: Date.now(), comment: WBP_STATE, name: WBP_STATE,
+            key: [WBP_STATE], keys: [WBP_STATE],
+            content: JSON.stringify(stObj),
+            enabled: false, disable: true, constant: false, selective: true,
+            insertion_order: 9999, order: 9999, position: 0,
+            excludeRecursion: true, preventRecursion: true,
+            extensions: { exclude_recursion: true, prevent_recursion: true, display_index: 9999 }
+          });
+        }
+        return Array.isArray(wbData) ? list : Object.assign({}, wbData || {}, { entries: list });
+      });
+    } catch (eCall) {
+      try { console.warn('[天元录·世界书热更] 调用写接口就抛了：' + String(eCall && eCall.message || eCall)); } catch (e) {}
+      return Promise.resolve({ ok: false, why: String(eCall && eCall.message || eCall) });
+    }
+
+    return Promise.resolve(r).then(function () {
+      try {
+        console.log('[天元录·世界书热更] 已应用到 v' + WBP_VER + '｜' + (changed.join('；') || '无改动'));
+      } catch (e) {}
+      return { ok: true, changed: changed };
+    }, function (e) {
+      try { console.warn('[天元录·世界书热更] 写入失败（AI 那边还是旧的）：' + String(e && e.message || e)); } catch (e2) {}
+      return { ok: false, why: String(e && e.message || e) };
+    });
+  }
+
   /* 双写：世界书（给 AI）+ 聊天变量（给界面）。两边内容必须同源。 */
   function writeTicker(res, plan) {
     var hotText = tickerHotText(res.hot);
@@ -3548,6 +3675,14 @@
 
   /* 等 Mvu 就位再起（等不到也照样起，写完会走 insertOrAssignVariables 兜底） */
   function boot() {
+    /* ★ v1.08：世界书补丁在启动后跑一次。
+       ⚠ 延迟 6 秒：酒馆刚打开时 `world_info` 可能还没加载完，
+         这时候 `updateWorldbookWith` 拿到的是一本**空书**，
+         写回去就等于把整本书清了。等它稳定再动手。
+       ⚠ 失败不阻断其它功能（补丁只是锦上添花，界面不能因此起不来）。 */
+    setTimeout(function () {
+      try { wbpApply(); } catch (e) {}
+    }, 6000);
     try {
       if (typeof waitGlobalInitialized === 'function') {
         waitGlobalInitialized('Mvu').then(init).catch(init);
