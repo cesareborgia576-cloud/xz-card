@@ -1068,6 +1068,17 @@
            ⚠ 已进 render 签名（见下面 sig 数组）—— 判据要求"渲染路径读到的内存态都在签名里"。
              展开/收起一次会多一次重建，但 `open` 是按本字段还原的，玩家看到的位置不变。 */
         npcOpen: {} };
+    /* ★★★ v1.06：把世界书版本状态交出去（给 07 的开局第 1 页用）★★★
+       放在 `state` 声明**正后方**，不是随便找个 IIFE 末尾 ——
+       这个文件里有好几个同名 `state`，位置写错就是「定义不报错、调用时 ReferenceError」，
+       而且会被调用方的 try/catch 吞掉，表现为永远停在"核对中"而没有任何报错（本轮就这么栽的）。
+       ⚠ 07 那边**不自己读世界书**，只走这一个入口：两处各读一次 = 两个真相源，必然分叉。 */
+    try {
+        if (typeof globalThis !== 'undefined') {
+            if (typeof globalThis.__XZ05__ !== 'object' || globalThis.__XZ05__ === null) globalThis.__XZ05__ = {};
+            globalThis.__XZ05__.xzWbVerState = function () { return state.wbVer; };
+        }
+    } catch (eExpWbV) {}
 /* 宽屏大字模式：只记住「要不要宽」，存在浏览器本地，不写进变量、不影响存档 */
 try { state.wide = localStorage.getItem('xzWideMode') === '1'; } catch (eW) { state.wide = false; }
 /* 立绘切到第几位也记在本地：状态栏每 1.5s 重渲染一次，别把玩家刚切到的那一位弹回去 */
@@ -9979,10 +9990,12 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             globalThis.__XZ05__.xzOpenPortrait = xzOpenPortrait;
             globalThis.__XZ05__.xzImgObserve = xzImgObserve;
             globalThis.__XZ05__.HOST_ID = HOST_ID;
-            /* ★ v1.04：开局脚本第 1 页也要印世界书版本状态，而"书里的号"只有 05 读得到
-               （它走 `xzWBVersionState`）。07 通过这个入口取，**不自己再读一遍** ——
-               两处各读一次 = 两个真相源，迟早分叉（本项目铁律）。 */
-            globalThis.__XZ05__.xzWbVerState = function () { return state.wbVer; };
+            /* ⚠ v1.06：这里**不许**再加 `xzWbVerState`。
+               那个函数要读 `state.wbVer`，而 `state`（带 wbVer 的那个，07 行附近声明）
+               只存在于「状态栏」那个 IIFE —— 本块是**人物管理器** IIFE，够不着。
+               写在这里，定义时不报错（函数体惰性），调用时抛 ReferenceError 被 07 的
+               try/catch 吞掉 ⇒ 开局第一页永远停在「核对世界书…」，而且没有任何报错。
+               正确位置：`state` 声明之后那一行（见那边的导出）。 */
         }
     } catch (eExp526) {}
 })();
