@@ -804,6 +804,13 @@
         /* 文字比旧版长（"世界书 v1.04" → "已是最新版本 v1.05"），字号收 0.5px 抵掉，
            免得把顶栏右侧那排按钮挤到换行。 */
         var txt = same ? ('已是最新版本 ' + st.build) : ('v' + String(st.build).replace(/^v/, '') + ' · 世界书 ' + st.ver + ' 未同步');
+        /* ★ v1.06：开发卡打个标。两张卡内容一样，只有热更通道不同 ——
+           不标的话，作者在 dev 上看到"已是最新版本"会以为稳定通道也已经是这一版。 */
+        try {
+            var _ch = (typeof window !== 'undefined' && window.__XZ_CHAN__)
+                || (window.top && window.top.__XZ_CHAN__) || '';
+            if (_ch === 'dev') { txt = 'DEV · ' + txt; }
+        } catch (eCh) {}
         return '<button type="button" class="xz-tianji-goto-btn" data-xz-act="wb-ver" ' +
             'style="' + base + 'font-size:10.5px;border:1px solid ' + bd + ';color:' + col + ';background:' + bg + ';" ' +
             'title="' + esc(tip) + '">📖 ' + esc(txt) + '</button>';
