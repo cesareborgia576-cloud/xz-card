@@ -14863,8 +14863,30 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
   var VER = 'v490-照抄自春日-v13';
   var STYLE_ID = 'th-illu-styles';
   var POLL_MS = 1000;
-  /* 自动轮播间隔：一张图停 2 秒（源卡实测值，别调，玩家已经习惯这个节奏） */
-  var ROTATE_MS = 2000;
+  /* 自动轮播间隔。
+     ★ v536：2 秒 → 3.5 秒（作者 2026-11-02：「玩家反应插图变速太快」）。
+     ⚠ 这段原来写着「源卡实测值，别调，玩家已经习惯这个节奏」—— 那是**另一张卡**的玩家，
+       本卡玩家明确说快。别照抄旧结论当护身符。 */
+  var ROTATE_MS = 3500;
+
+  /* ★★★ v536：插图也要「跨楼层记住玩家停在哪一张」★★★
+     作者 2026-11-02：「没有立绘一样的暂停缓存，总是新楼层就又自动了，
+     我要搞成这个动作都是玩家暂停的那张。」
+     ⇒ 与立绘（picMemGet/picPinGet）同一套做法：localStorage + 按「人物|动作」分开记。
+     ⚠ 记的是**每动作**的状态，不是全局开关：这一个动作停住不该连累别的动作也停。
+     ⚠ 默认**静止**：从没碰过的块也不许自己播 —— 玩家抱怨的就是新楼层又自动了。
+       要动就自己按「▶ 自动」。 */
+  var ILLU_AT_KEY = 'xzIlluAt:';
+  var ILLU_PIN_KEY = 'xzIlluPin:';
+  function illuAtGet(k) {
+    try { var v = parseInt(window.localStorage.getItem(ILLU_AT_KEY + k), 10); return (isFinite(v) && v >= 0) ? v : 0; } catch (e) { return 0; }
+  }
+  function illuAtSet(k, i) { try { window.localStorage.setItem(ILLU_AT_KEY + k, String(i)); } catch (e) {} }
+  /* 没记录过 ⇒ 视为**已固定**（默认静止）；只有显式存过 '0' 才算在自动播 */
+  function illuPinGet(k) {
+    try { var v = window.localStorage.getItem(ILLU_PIN_KEY + k); return (v === null) ? true : (v === '1'); } catch (e) { return true; }
+  }
+  function illuPinSet(k, on) { try { window.localStorage.setItem(ILLU_PIN_KEY + k, on ? '1' : '0'); } catch (e) {} }
 
   /* ══════════════════════════════════════════════════════════════════════
      图组库：键「人物|动作」→ 有序 URL 数组（顺序 = 播放顺序）
@@ -15101,9 +15123,11 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
     img.alt = item.who + '｜' + item.act;
     img.loading = 'lazy';
 
-    var idx = 0;
+    /* ★ v536：初始值从存档恢复（v490 恒 0 / 恒 false ⇒ 新楼层必然从头自动播） */
+    var ukey = item.who + "|" + item.act;
+    var idx = urls.length ? (illuAtGet(ukey) % urls.length) : 0;
     var one = urls.length <= 1;   /* 只有一张图就没什么可轮的 */
-    var pinned = false;           /* 固定：停掉自动轮播 */
+    var pinned = illuPinGet(ukey); /* 没存过 = true（默认静止），按过「▶ 自动」才变 false */
     var timer = null;
 
     var dots = null;
@@ -15120,6 +15144,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
           else ds[d].className = 'thillu-dot';
         }
       }
+      illuAtSet(ukey, idx);   /* ★ v536：翻到哪张就记哪张，新楼层从这里接着显示 */
     }
 
     function stopTimer() {
@@ -15189,9 +15214,10 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
       bar.appendChild(cap);
       bar.appendChild(next);
 
-      pinBtn.textContent = '⏸ 固定';
-      pinBtn.onclick = function () {
-        pinned = !pinned;
+      /* ★ v536：把'固定态'的 UI 收进一个函数 —— 建块时**也要按存档画一遍**，
+         否则玩家上次停住了，这次进来按钮却显示「⏸ 固定」（写着'可以固定'，
+         实际已经在固定状态），按一下反而开始播，跟记忆相反。 */
+      function applyPin() {
         if (pinned) {
           stopTimer();
           pinBtn.textContent = '▶ 自动';
@@ -15206,15 +15232,21 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
           pinBtn.className = 'thillu-btn';
           var old = frame.querySelector('.thillu-pin');
           if (old) old.parentNode.removeChild(old);
-          startTimer();
         }
+      }
+      pinBtn.onclick = function () {
+        pinned = !pinned;
+        illuPinSet(ukey, pinned);   /* ★ v536：固定态跨楼层记住 */
+        applyPin();
+        if (!pinned) startTimer();
       };
+      applyPin();   /* 建块时先按存档画一次 */
       bar.appendChild(pinBtn);
     }
     wrap.appendChild(bar);
 
     /* 图挂载后再设 src，保证 onerror 已就位 */
-    paint(0);
+    paint(idx);   /* ★ v536：从记住的那一张开始，不是从第一张 */
     startTimer();
     return wrap;
   }
