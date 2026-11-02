@@ -9080,7 +9080,11 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
     var HOTV = { latest: '', err: false, first: true };
     var HOTV_URL = 'https://raw.githubusercontent.com/cesareborgia576-cloud/xz-card/main/version.json';
     function xzHotVerHtml() {
-        var cv = (typeof CARD_VER === 'string') ? CARD_VER : '';
+        /* ⚠ 不能读 CARD_VER：它声明在**第一个 IIFE**里，状态栏这个 IIFE 看不见 ——
+           直接引用会抛 ReferenceError，整页渲染在这里断掉（lint 的 undef 就是抓这个）。
+           版本号由第一个 IIFE 写到 window.__XZ_CARD_VER__ 上，读那个才是同一个真源。 */
+        var cv = '';
+        try { cv = (typeof window !== 'undefined' && window.__XZ_CARD_VER__) ? String(window.__XZ_CARD_VER__) : ''; } catch (eCV2) { cv = ''; }
         var isNew = !!(HOTV.latest && cv && HOTV.latest !== cv);
         var txt, col;
         if (HOTV.first) { txt = '⋯ 检查更新'; col = 'var(--xz-muted)'; }
