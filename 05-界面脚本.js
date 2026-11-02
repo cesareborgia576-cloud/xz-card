@@ -8492,37 +8492,16 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
            ★ v310：判定逻辑已挪进 xzMapInfoTarget()（多了地点/人物两层，堆在页面函数里太乱）。 */
 
         var h = '<div class="xz-tianji-box">';
-        h += '<div class="xz-tianji-title"><span>🗺️</span><span>三州 · ' + (inState ? esc(reg.n) : '舆图') + '</span>';
-        /* ★★★ v330【用户：「地图加一个按钮返回上一层，而不是直接只能返回九州大地图」】★★★
-           舆图其实有**四层**：九州全图 → 州 → 域 → 地点/人物（v310 把百科并进来之后才凑齐）。
-           旧按钮只有「◀ 九州」一条，从「某个人物的资料卡」一路回全图要连点三次空白，
-           而且每点一次都不知道自己刚才在哪一层。
-           ⇒ 一颗「◀ 上一层」：按**深度**退一格（人物→地点→域→州→全图），
-             只有真的在某一层里才出现；全图状态不显示（那时没有"上一层"可回）。
-           ⚠ 判据必须把这五个字段**全算进去**：只判 mapRegion 的话，
-             人物卡（mapWho 有值、mapRegion 也有值）按一下会直接跳回九州 —— 又变成旧行为。 */
-        var _mapDepth = xzMapDepthOf(state);
-        if (_mapDepth > 0) {
-            h += '<button type="button" class="xz-tianji-goto-btn" data-xz-act="map-up" style="margin-left:8px;padding:2px 9px;font-size:11px;" title="退回上一级（州 → 域 → 地点 → 人物 逐级往回）">◀ 上一层</button>';
-        }
-        h += '<span style="font-size:11px;color:var(--xz-muted);margin-left:auto;">' +
-             (inState ? '点域放大' : '点州放大') + '</span></div>';
-
-        h += '<div class="xz-map-hint">当前所在：<b>' + esc(here.raw || '三州') + '</b>';
-        if (!inState) h += '　｜　已勘明 <b>' + litCount + ' / ' + XZ_MAP_STATES.length + '</b> 州';
-        if (state.mapNotice) h += '<div style="color:#f0a3a3;margin-top:4px;">' + esc(state.mapNotice) + '</div>';
-        h += '</div>';
-
-        /* ── ★★★ v464：「地点」搬进舆图（用户：「地点塞进舆图」）★★★ ──
-           它原来挂在状态栏顶栏的右栏（`.xz-place-col`），立绘块一删就跟着消失。
-           ⚠ 位置**必须在画布之前**。第一版放在画布之后（原注释还写了理由：
-             "放上面会把人推到点地图之前"），结果真 Chrome 实测：画布固定高、
-             直接把这块挤到首屏之外 —— 玩家进舆图页**根本看不见地点**，
-             要往下滚才有。判据只量了 getBoundingClientRect 有尺寸就过了，
-             是截图才看出来「它不在屏幕上」。这段与「当前所在 / 已勘明 N 州」
-             同属一条"我在哪"的情报线，紧跟其后才连贯。
-           ⚠ 全项目只有这一处调用；状态栏那边已经没有任何 `.xz-place-col`。 */
-        h += xzSectSideHtml();
+        /* ★★★ v535（作者 2026-11-02 截图）：
+             ① 「三州·舆图」那行标题栏**整行删掉**（连同上面的「◀ 上一层」与「点州放大」）
+             ② 「当前所在 / 已勘明 N 州」与「地点卡」从画布上方**搬到地图下面**
+             ③ 「◀ 上一层」只准出现在**域资料卡**里（见下面 area 分支），别处不许再加
+           为什么标题栏能整行删：它的三个内容各有去处 ——
+             · 标题「三州 · 州名」在资料卡里已经有（卡头就是州名）；
+             · 「◀ 上一层」搬到域资料卡（玩家真正需要它的时候就在那一屏）；
+             · 「点州放大」是操作提示，删掉不影响能否操作。
+           ⚠ 别再按老注释去标题栏里找那颗按钮：老注释说"标题栏那颗 ◀ 上一层"，
+             那句已经作废，判据也搬到了 _v535_map_layout.mjs。 */
 
         /* 地图画布：svg 只画地形与分区，文字是覆盖在上面的 HTML（见 xzMapRender 的说明） */
         h += '<div class="xz-map-canvas' + (zoomed ? ' is-zoom' : '') + '">' + view.svg;
@@ -8530,6 +8509,21 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             h += '<div class="xz-map-label ' + L.cls + '" style="left:' + L.l + '%;top:' + L.t + '%;">' + esc(L.txt) + '</div>';
         });
         h += '</div>';
+
+        /* ── ★ v535：情报块降到地图下面（作者 2026-11-02「上面这些全部放地图下面」）──
+           原来是「地图在上、情报在上」的顺序：玩家一进舆图页先看到三行字，
+           地图被推到折叠线以下。作者要的是**地图先出现**，字跟在图后面。
+           ⚠ 这段的**相对顺序**（当前所在 → 地点卡 → 资料卡）保持原样，只整段下沉：
+             它们是同一条"我在哪"的情报线，拆开就断。
+           ⚠ 别再搬回画布之前 —— 判据 _v535_map_layout.mjs 会量「地图顶边 < 情报块顶边」。 */
+        h += '<div class="xz-map-hint">当前所在：<b>' + esc(here.raw || '三州') + '</b>';
+        if (!inState) h += '　｜　已勘明 <b>' + litCount + ' / ' + XZ_MAP_STATES.length + '</b> 州';
+        if (state.mapNotice) h += '<div style="color:#f0a3a3;margin-top:4px;">' + esc(state.mapNotice) + '</div>';
+        h += '</div>';
+
+        /* ── 地点卡（v464 从状态栏顶栏搬进舆图）──
+           ⚠ 全项目只有这一处调用；状态栏那边已经没有任何 `.xz-place-col`。 */
+        h += xzSectSideHtml();
 
         /* ── 单张资料卡（★ v310：地点与人物也在这里展列，百科页随之删除）──
            口径：卡片永远只有一张，内容按「点中的粒度」决定 ——
@@ -8562,8 +8556,10 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 if (zoomed) h += '<button type="button" class="xz-map-info-btn is-ghost" data-xz-act="map-zoomout">⤢ 回全图</button>';
                 h += '</div>';
             } else if (info.kind === 'area') {
+                /* ★ v535：卡头那颗「极寒　·　人州」的药丸**删掉**（作者：「这个绿绿的字的显示删掉」）。
+                   —— 它是 `a.kind` + 州名，两块信息在别处都有：所属州已经在上一张卡的进入路径里，
+                      域的类型（极寒/干旱商道…）对玩家没有决策价值，只是把卡头挤乱。 */
                 h += '<div class="xz-map-info-top"><span class="xz-map-info-name">' + esc(info.a.n) + '</span>' +
-                     '<span class="xz-map-info-meta">' + esc(info.a.kind) + '　·　' + esc(info.s.n) + '</span>' +
                      (here.area === info.a.n ? '<span class="xz-map-here-tag">在此</span>' : '') + '</div>';
                 h += '<div class="xz-map-info-note">' + esc(info.a.note) + '</div>';
                 h += '<div class="xz-map-chips">';
@@ -8572,6 +8568,18 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                         + '<b>' + esc(c.n) + '</b><i>' + esc(c.t) + '</i></span>';
                 });
                 h += '</div>';
+                /* ★★★ v535：**「◀ 上一层」只放在这里**（作者 2026-11-02：
+                   「把返回上一层的按钮加到这里，不准加在别的地方」）。
+                   原来它在标题栏里，标题栏整行删掉之后，玩家进到域这一层就只剩
+                   「点地图空白处」能退 —— 那是靠猜的交互。
+                   ⚠ 别再往标题栏/工具栏里加第二颗：两颗同功能按钮，改一处漏一处，
+                     本项目在这个形状上栽过（两条并行判据是漏改温床）。
+                   ⚠ 只有真在某一层里才出现：全图状态没有"上一层"可回。 */
+                if (xzMapDepthOf(state) > 0) {
+                    h += '<div class="xz-map-info-actions">'
+                        + '<button type="button" class="xz-map-info-btn is-ghost" data-xz-act="map-up">◀ 上一层</button>'
+                        + '</div>';
+                }
             } else {
                 /* ── 地点详细：地名 / 类别 / 说明 / 相关人物（人物可继续点） ── */
                 h += '<div class="xz-map-info-top"><span class="xz-map-info-name">' + esc(info.c.n) + '</span>' +
@@ -9837,6 +9845,11 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                     return;
                 }
                 if (act === 'equip') { if (!openEquip()) openTermModal('法门详情'); return; }
+                /* ★ v535：淬炼页「说明」折叠（作者 2026-11-02：这些默认折叠起来，点击说明按钮才展开）。
+                   受控折叠，**不用原生 `<details>`** —— 那条路在状态栏里已经证明不可靠
+                   （v517：toggle 不冒泡 + 重建 DOM 后 open 丢失，玩家"展开又自己收起"）。
+                   `state.tpHelp` 不进 render 签名：它只在点击时变，而点击这条本来就走 render(true)。 */
+                if (act === 'tp-help') { state.tpHelp = !state.tpHelp; render(true); return; }
                 /* ★★★ v379：「淬炼」页的升级/洗练按钮。
                    走 `__XZ05__.doTemper`（装备台 IIFE 挂出来的），
                    不在这里重写淬炼逻辑 —— 判定/扣料/改招式全在 04 的 `xzTemperApply`。 */
@@ -10553,6 +10566,13 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             '.xz-tp-val{color:#fbbf24;font-variant-numeric:tabular-nums;}',
             '.xz-tp-val small{color:var(--xz-text-2);font-weight:400;}',
             '.xz-tp-note{font-size:11px;color:var(--xz-text-2);line-height:1.5;margin:3px 0;}',
+            /* ★ v535：淬炼页「说明」折叠按钮。做小、靠右——它是次要操作，
+               不能跟「升级/洗练」抢注意力。 */
+            '.xz-tp-help{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:2px 0 0;}',
+            '.xz-tp-helpbtn{flex:none;font:inherit;font-size:10px;line-height:1.4;padding:2px 8px;'
+              + 'border-radius:4px;cursor:pointer;background:transparent;color:var(--xz-text-2);'
+              + 'border:1px solid var(--xz-line);}',
+            '.xz-tp-helpbtn:hover{color:var(--xz-gold);border-color:var(--xz-gold);}',
             '.xz-tp-cost{font-size:11px;color:var(--xz-text-2);margin:5px 0 4px;}',
             '.xz-tp-cost b{color:#c4b5fd;font-weight:var(--xz-fw-med);}',
             '.xz-tp-btns{display:flex;gap:6px;flex-wrap:wrap;}',
@@ -10835,15 +10855,25 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 h += '<span style="margin-right:10px;">' + esc(tiers[ti]) + ' <b>' + n + '</b> 份</span>';
             }
             h += '</div>';
-            h += '<div class="xz-tp-note">淬晶会作为战利品随机掉落。升级一次要 2 份同档、洗练 1 份。</div>';
+            /* ★ v535：说明文字默认折叠（作者 2026-11-02 截图：「这些默认折叠起来，点击说明按钮才会展开」）。
+               折的是**说明**，不是读数：上面那三个「淬晶·X N 份」是仪表，必须一直看得见。
+               ⚠ 别改成原生 `<details>`：见 v517 那段（toggle 不冒泡 / 重建后 open 丢失）。 */
+            h += '<div class="xz-tp-help">'
+               + '<button type="button" class="xz-tp-helpbtn" data-xz-act="tp-help">'
+               + (state.tpHelp ? '收起说明 ▴' : '说明 ▾') + '</button>';
+            if (state.tpHelp) {
+                h += '<div class="xz-tp-note" style="margin-top:6px;">淬晶会作为战利品随机掉落。升级一次要 2 份同档、洗练 1 份。</div>';
+            }
+            h += '</div>';
         }
 
         /* 招式区。renderTemper 会按玄技/玄诀分组；没有可炼的招时返回空串 ——
-           那时补一句人话，否则整页只剩材料数字，看着像坏了。 */
+           那时补一句人话，否则整页只剩材料数字，看着像坏了。
+           ★ v535：这句也进「说明」折叠区（它同样是解释，不是读数）。 */
         var body = '';
         try { body = renderTemper(z, vars) || ''; } catch (eB) { body = ''; }
         if (body) h += body;
-        else h += '<div class="xz-tp-note" style="margin-top:10px;">还没有学会任何玄技 / 玄诀 —— ' +
+        else if (state.tpHelp) h += '<div class="xz-tp-note" style="margin-top:10px;">还没有学会任何玄技 / 玄诀 —— ' +
                   '学会了就会在这里出现，可以洗练与升级。</div>';
 
         /* 上一次淬炼的结果。toast 会消失，这条是玩家唯一能回头看的
