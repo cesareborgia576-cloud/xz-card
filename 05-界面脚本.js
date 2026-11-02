@@ -4144,6 +4144,16 @@ function xzTypeOf(name, fbT, fbA) {
              ⚠ `esc()` 必须留：原文里的 `<` 不能当标签解释。 */
           h += '<div style="font-size:11px;color:var(--xz-gold);line-height:1.55;margin-top:3px;word-break:break-word;">效果：' + esc(blEffect) + '</div>';
         }
+        /* ★★★ v536：把「检测更新」从悬浮球搬进血脉格（作者 2026-11-02）★★★
+           原话：「给检测更新的悬浮球做进状态栏里的主角里的血脉里吧，每15秒嗅探一次」。
+           ── 为什么搬 ──
+             悬浮球挂在酒馆页面顶上，手机端被 ST 的弹层（z-index 2147483647）和底部
+             safe-area 压掉，作者根本看不见 —— 它在桌面能看见、在手机上等于不存在。
+             血脉格是**每局都看**的地方，塞一行小字比浮层可靠得多。
+           ── 读数规矩 ──
+             这行是"会变的读数"，所以只做**一行**：状态 + 版本号，点一下就刷新页面。
+             不折、不滚、不弹窗（MEMORY：会变的读数不许折进滚动区）。 */
+        h += xzHotVerHtml();
         /* ★★★ v476（用户第 4 条修正）：「把可用属性点，改到和血脉一起」★★★
            ⇒ 挪到**血脉格底部**（不再是气血框里那行）。
            ⚠ `margin-top:auto` 是这一句的关键：血脉格现在是 height:auto、被 grid
@@ -9049,6 +9059,74 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
        理由同 `_viewScroll` —— `state` 的字段要求进签名，而这个标记进签名毫无意义。 */
     var _dlcKick = false;
 
+    /* ══════════════════════════════════════════════════════════════════
+       ★★★ v536 · 版本嗅探（原「热更新悬浮球」，搬进主角页血脉格）★★★
+       作者 2026-11-02：「给检测更新的悬浮球做进状态栏里的主角里的血脉里吧，每15秒嗅探一次」。
+       ── 为什么搬走 ──
+         球挂在酒馆页面右上（bottom:92px），手机端被 ST 自己的弹层（z-index 2147483647）
+         和底部 safe-area 压住，等于不存在。血脉格是每局都会看的格子，一行小字更可靠。
+       ── 口径 ──
+         15 秒一次，只拿 raw.githubusercontent 的 version.json（jsdelivr 会返回旧值，
+         用它当判据会让人降级，见 loader 里那段病历）。
+         读 .stable 与卡版本比：不相等就是有新版本，点一下刷新页面。
+       ── 为什么要防重入 ──
+         05 可能被打在多个 iframe 里（酒馆助手一脚本一 iframe）⇒ 每个 window 各起一个
+         interval 就是三倍请求。锁挂在 top 上（与 XZ_SHARED 那条铁律同一个原因）。
+       ══════════════════════════════════════════════════════════════════ */
+    var HOTV = { latest: '', err: false, first: true };
+    var HOTV_URL = 'https://raw.githubusercontent.com/cesareborgia576-cloud/xz-card/main/version.json';
+    function xzHotVerHtml() {
+        var cv = (typeof CARD_VER === 'string') ? CARD_VER : '';
+        var isNew = !!(HOTV.latest && cv && HOTV.latest !== cv);
+        var txt, col;
+        if (HOTV.first) { txt = '⋯ 检查更新'; col = 'var(--xz-muted)'; }
+        else if (HOTV.err) { txt = '？ 检查失败'; col = 'var(--xz-muted)'; }
+        else if (isNew) { txt = '📦 新版本 ' + HOTV.latest + ' · 点此刷新'; col = 'var(--xz-gold-bright)'; }
+        else { txt = '✓ 已是最新' + (cv ? ' ' + cv : ''); col = '#7ddc9a'; }
+        var tail = 'flex:0 1 auto;text-align:right;font-size:10.5px;color:' + col
+            + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+        var attrs = (!HOTV.first && (HOTV.err || isNew))
+            ? ' data-xz-act="hot-refresh" style="cursor:pointer;' + tail + '"'
+            : ' style="' + tail + '"';
+        return '<div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:6px;">'
+            + '<span style="flex:0 0 auto;font-size:10.5px;color:var(--xz-muted);letter-spacing:.04em;">卡版本</span>'
+            + '<span' + attrs + '>' + esc(txt) + '</span></div>';
+    }
+    function xzHotCheck() {
+        try {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', HOTV_URL + '?t=' + Date.now(), true);
+            xhr.timeout = 12000;
+            var done = function (ok, latest) {
+                var before = [HOTV.latest, HOTV.err, HOTV.first].join('|');
+                HOTV.first = false;
+                if (ok) { HOTV.err = false; HOTV.latest = latest; } else { HOTV.err = true; }
+                if ([HOTV.latest, HOTV.err, HOTV.first].join('|') !== before) {
+                    try { render(true); } catch (e) {}
+                }
+            };
+            xhr.onload = function () {
+                var j = null;
+                try { j = JSON.parse(xhr.responseText); } catch (e) { j = null; }
+                var st = (j && j.stable) ? String(j.stable) : '';
+                if (xhr.status !== 200 || !/^v[\d.]+$/.test(st)) done(false);
+                else done(true, st);
+            };
+            xhr.onerror = function () { done(false); };
+            xhr.ontimeout = function () { done(false); };
+            xhr.send();
+        } catch (e) { }
+    }
+    (function bootHotVer() {
+        var w = null;
+        try { w = window.top || window; } catch (e) { w = window; }
+        try {
+            if (w.__XZ_HOT_POLL__) return;
+            w.__XZ_HOT_POLL__ = 1;
+        } catch (e) { }
+        try { setTimeout(xzHotCheck, 1500); setInterval(xzHotCheck, 15000); } catch (e) { }
+    })();
+
     function render(force) {
         var doc = getDoc();
         ensureStyle(doc);
@@ -9847,6 +9925,13 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                    （v517：toggle 不冒泡 + 重建 DOM 后 open 丢失，玩家"展开又自己收起"）。
                    `state.tpHelp` 不进 render 签名：它只在点击时变，而点击这条本来就走 render(true)。 */
                 if (act === 'tp-help') { state.tpHelp = !state.tpHelp; render(true); return; }
+                /* ★ v536：血脉格那行版本号的点击 —— 只有「有新版本 / 检查失败」时可点。
+                   必须刷新整个页面：只重画状态栏的话，loader 不会重新去拉新脚本。 */
+                if (act === 'hot-refresh') {
+                    try { (window.top || window).location.reload(); }
+                    catch (eR) { try { location.reload(); } catch (eR2) {} }
+                    return;
+                }
                 /* ★★★ v379：「淬炼」页的升级/洗练按钮。
                    走 `__XZ05__.doTemper`（装备台 IIFE 挂出来的），
                    不在这里重写淬炼逻辑 —— 判定/扣料/改招式全在 04 的 `xzTemperApply`。 */
