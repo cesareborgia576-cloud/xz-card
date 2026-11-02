@@ -4298,8 +4298,10 @@ function xzTypeOf(name, fbT, fbA) {
         ];
         attrsList.forEach(function (a) {
             h += '<div class="xz-box" style="padding:6px 2px; min-height:48px;">';
-            h += '<div class="xz-box-k" style="justify-content:center; gap:2px; font-size:10px; margin-bottom:4px;"><span>' + a.k + '</span><button type="button" class="xz-tianji-goto-btn" data-xz-act="attr-effect" data-attr-name="' + a.k + '" style="padding:0 3px;font-size:9px;border-color:rgba(212,175,55,0.55);color:var(--xz-gold);flex:none;">?</button></div>';
-            h += '<div class="xz-box-v" style="color:var(--xz-text); text-align:center; font-size:13.5px; word-break:break-all;">' + a.v + '</div>';
+            /* ★ v1.051：四维小标题后面那颗「?」撤掉（作者 2026-11-03）。
+               弹窗入口挪到**数值本身**（点数字看属性效果），界面上不再有问号，功能不丢。 */
+            h += '<div class="xz-box-k" style="justify-content:center; gap:2px; font-size:10px; margin-bottom:4px;"><span>' + a.k + '</span></div>';
+            h += '<div class="xz-box-v" data-xz-act="attr-effect" data-attr-name="' + a.k + '" style="color:var(--xz-text); text-align:center; font-size:13.5px; word-break:break-all; cursor:pointer;">' + a.v + '</div>';
             h += '</div>';
         });
         h += '</div>';
@@ -9133,7 +9135,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             if (w.__XZ_HOT_POLL__) return;
             w.__XZ_HOT_POLL__ = 1;
         } catch (e) { }
-        try { setTimeout(xzHotCheck, 1500); setInterval(xzHotCheck, 15000); } catch (e) { }
+        try { setTimeout(xzHotCheck, 1500); setInterval(xzHotCheck, 20000); } catch (e) { }   /* ★ v1.051：20 秒一次（作者口径） */
     })();
 
     function render(force) {
