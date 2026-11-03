@@ -8449,17 +8449,6 @@ host.__xzGuard = true;
                 render(true);
                 return;
             }
-            /* ★ 2026-11-03：点名字直接加入/移除（取代下拉 + 加入两步） */
-            if (act === 'cast-toggle') {
-                var _tn = String(t.getAttribute('data-name') || '');
-                if (!_tn) return;
-                if (!d.cast || !Array.isArray(d.cast)) d.cast = [];
-                var _ti = d.cast.indexOf(_tn);
-                if (_ti >= 0) d.cast.splice(_ti, 1); else d.cast.push(_tn);
-                state.note = '';
-                render(true);
-                return;
-            }
             /* ★ v1.053c：在场人物 · 「加入」——把下拉里选中的人加进名单 */
             if (act === 'cast-add') {
                 var _pv = String(state.castPick || '');
