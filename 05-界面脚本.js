@@ -3082,7 +3082,9 @@ function xzTypeOf(name, fbT, fbA) {
            字号也只有 10.5px、颜色是 var(--xz-muted)，在手机上基本看不见。
            ⇒ 隐藏原生 marker，只留我们那个；文字随状态变（见 pagePeople 的渲染处）。 */
         '.xz-root .xz-npc-dtg{list-style:none;cursor:pointer;user-select:none;outline:none;'
-          + 'display:flex;align-items:center;gap:5px;font-size:11.5px;color:#b9b2a6;padding:4px 0 2px;}',
+          + 'display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--xz-gold-bright);'
+          + 'padding:2px 10px;border-radius:10px;background:rgba(212,175,55,.10);'
+          + 'border:1px solid rgba(212,175,55,.30);}',
         '.xz-root .xz-npc-dtg::-webkit-details-marker{display:none;}',
         '.xz-root .xz-npc-dtg::marker{content:"";}',
         '.xz-root .xz-npc-dtg:hover{color:#f0d9a4;}',
@@ -3920,18 +3922,18 @@ function xzTypeOf(name, fbT, fbA) {
         if (tj && tj !== '非天骄') { try { h += tianjiaoChip(tj); } catch (eTc) {} }
         h += '</div>';
 
-        /* 第二行：两颗元信息按钮。**紧挨着放**，因为它们是同一类东西 ——
-           一个说"变量补上没"，一个说"世界书换上没"，都是玩家看不见就会踩坑的。 */
+        /* ★ v1.053：变量补全与卡版本徽章挪到**第一行下面**（作者 12:04 截图）。
+           原来它们在第二行、和「世界书徽章」挤成一排补丁按钮。 */
         h += '<div class="xz-topinfo-line">';
-        /* 外置变量补全入口（原悬浮球点不到 → 搬进状态栏 → 现在搬进这一格）。
-           按钮颜色就是嗅探结果：补=待机 / 缺=最新一楼没变量块 / 算=正在补 /
-           全=上次成功 / 误=上次失败。 */
         try {
             var _vcs = xzVarCompleteStatus();
             h += '<button type="button" class="xz-tianji-goto-btn" data-xz-act="var-complete" ' +
                 'style="padding:2px 9px;font-size:11px;border-color:' + (_vcs.ok ? 'rgba(212,175,55,0.55)' : 'rgba(120,120,120,0.4)') + ';color:' + (_vcs.color || 'var(--xz-muted)') + ';font-weight:var(--xz-fw-med);" ' +
                 'title="' + esc(_vcs.title || '外置变量补全') + '">🩺 变量补全 ' + esc(_vcs.label || '补') + '</button>';
         } catch (eVcs) {}
+        try { h += xzHotVerHtml(); } catch (eHot) {}
+        h += '</div>';
+        h += '<div class="xz-topinfo-line">';
         try { h += xzWbVerHtml(); } catch (eWv) {
             /* 徽章自己坏了不许连累这一格 —— 但也**不许静默**：
                印一个能点重读的灰标，让人知道这里本该有个东西。 */
@@ -3943,6 +3945,13 @@ function xzTypeOf(name, fbT, fbA) {
            `state.wide` 开关本身留着（`.xz-wide` 那套 CSS 照旧生效），只是不暴露入口。 */
         /* ★ v310：`📍 地点` 那一格已删 —— 地点**只有一个真相源**：舆图。 */
         h += '</div>';
+
+        /* 第二行：两颗元信息按钮。**紧挨着放**，因为它们是同一类东西 ——
+           一个说"变量补上没"，一个说"世界书换上没"，都是玩家看不见就会踩坑的。 */
+        h += '<div class="xz-topinfo-line">';
+        /* 外置变量补全入口（原悬浮球点不到 → 搬进状态栏 → 现在搬进这一格）。
+           按钮颜色就是嗅探结果：补=待机 / 缺=最新一楼没变量块 / 算=正在补 /
+           全=上次成功 / 误=上次失败。 */
 
         /* 第三行：日期与时间。
            ★★★ v465（用户 2026-10-29）：「这个日期和事件的字体也改了，好难看，日历emoj去掉」★★★
@@ -4130,7 +4139,10 @@ function xzTypeOf(name, fbT, fbA) {
         var blColor = xzBloodTierColor(blTier);
         h += '<div class="xz-box">';
         h += '<div class="xz-box-k"><span>血脉</span></div>';
-        h += '<div class="xz-box-v" style="font-weight:var(--xz-fw-med);color:' + blColor + ';">『' + esc(blStr) + '』' +
+        /* ★ v1.053：血脉那行的『』删掉，改成一枚小框（作者 12:04：「这两个符号删了，好丑」）。 */
+        h += '<div class="xz-box-v" style="font-weight:var(--xz-fw-med);color:' + blColor + ';">'
+            + '<span style="display:inline-block;padding:2px 10px;border-radius:9px;background:rgba(255,255,255,.04);'
+            + 'border:1px solid rgba(201,168,106,.30);">' + esc(blStr) + '</span>' +
              (blPct ? ' <small style="color:var(--xz-muted);font-size:11px;font-weight:400;">' + esc(blPct) + '</small>' : '') +
              '</div>';
         /* ★ v72：血脉的「效果」直接摆在格子里（它是这条血的招牌，玩家要看得见）。
@@ -4157,7 +4169,6 @@ function xzTypeOf(name, fbT, fbA) {
            ── 读数规矩 ──
              这行是"会变的读数"，所以只做**一行**：状态 + 版本号，点一下就刷新页面。
              不折、不滚、不弹窗（MEMORY：会变的读数不许折进滚动区）。 */
-        h += xzHotVerHtml();
         /* ★★★ v476（用户第 4 条修正）：「把可用属性点，改到和血脉一起」★★★
            ⇒ 挪到**血脉格底部**（不再是气血框里那行）。
            ⚠ `margin-top:auto` 是这一句的关键：血脉格现在是 height:auto、被 grid
@@ -7348,12 +7359,17 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             h += '<span class="xz-map-sect-tag">' + esc(sect.data.tag) + '</span>';
         }
         h += '</div>';
+        /* ★ v1.053：这一格改成直接报「你在哪儿」——大地点 + 小位置。
+           原来那套「行旅在外 / 本楼不在条目地点」是拿**条目表**当判据，
+           而地名本来就不在条目里（玄京、栈桥、山门…），玩家看到只会以为走错了世界。
+           现在一律显示真实落点；两段都空时才留一句提示。 */
         if (!sect) {
-            /* ★★★ v479：文案按用户 2026-10-31 的口径改（截图：「本楼这一段改成不在条目地点」）。
-               判据仍然是「当前地理没匹配到任何宗门/坊市条目」——
-               但这一格说的是**条目**（舆图条目表里没有这个落点），
-               不是"世上没有这个地方"。措辞跟着判据说，别让玩家以为走错了世界。 */
-            h += '<div class="xz-map-sect-note">本楼不在条目地点（或尚未说明落点）。</div>';
+            var _big = ''; try { _big = String(at('地理.大位置') || '').trim(); } catch (eB) { _big = ''; }
+            var _small = ''; try { _small = String(at('地理.小位置') || '').trim(); } catch (eS) { _small = ''; }
+            h += '<div class="xz-map-sect-note" style="color:var(--xz-gold-bright);font-size:13px;">';
+            h += _big ? esc(_big) : '未说明落点';
+            if (_small) h += '<span style="color:var(--xz-muted);"> · ' + esc(_small) + '</span>';
+            h += '</div>';
             h += '</div>';
             return h;
         }
@@ -8586,10 +8602,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
            ⚠ 这段的**相对顺序**（当前所在 → 地点卡 → 资料卡）保持原样，只整段下沉：
              它们是同一条"我在哪"的情报线，拆开就断。
            ⚠ 别再搬回画布之前 —— 判据 _v535_map_layout.mjs 会量「地图顶边 < 情报块顶边」。 */
-        h += '<div class="xz-map-hint">当前所在：<b>' + esc(here.raw || '三州') + '</b>';
-        if (!inState) h += '　｜　已勘明 <b>' + litCount + ' / ' + XZ_MAP_STATES.length + '</b> 州';
-        if (state.mapNotice) h += '<div style="color:#f0a3a3;margin-top:4px;">' + esc(state.mapNotice) + '</div>';
-        h += '</div>';
+
 
         /* ── 地点卡（v464 从状态栏顶栏搬进舆图）──
            ⚠ 全项目只有这一处调用；状态栏那边已经没有任何 `.xz-place-col`。 */
@@ -10009,7 +10022,19 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                    受控折叠，**不用原生 `<details>`** —— 那条路在状态栏里已经证明不可靠
                    （v517：toggle 不冒泡 + 重建 DOM 后 open 丢失，玩家"展开又自己收起"）。
                    `state.tpHelp` 不进 render 签名：它只在点击时变，而点击这条本来就走 render(true)。 */
-                if (act === 'tp-help') { state.tpHelp = !state.tpHelp; render(true); return; }
+                /* ★ v1.053：折叠态在 IIFE⑤ 手里，这里只调出口。
+                   （原来直接翻 IIFE① 的 state.tpHelp —— 那是另一个对象，点了没反应。） */
+                if (act === 'tp-help') {
+                    try {
+                        if (globalThis.__XZ05__ && typeof globalThis.__XZ05__.toggleTpHelp === 'function') {
+                            state.tpHelp = globalThis.__XZ05__.toggleTpHelp();
+                        } else {
+                            state.tpHelp = state.tpHelp ? 0 : 1;
+                        }
+                    } catch (eTp) { state.tpHelp = state.tpHelp ? 0 : 1; }
+                    render(true);
+                    return;
+                }
                 /* ★ v536：血脉格那行版本号的点击 —— 只有「有新版本 / 检查失败」时可点。
                    必须刷新整个页面：只重画状态栏的话，loader 不会重新去拉新脚本。 */
                 if (act === 'hot-refresh') {
@@ -10241,7 +10266,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         return /^v\d+(?:\.\d+)?$/.test(v) ? v : 'v0';
     })();
 
-    var state = { open: false, tab: 0, sig: '', errored: false, errText: '', tpMsg: '' };
+    var state = { open: false, tab: 0, sig: '', errored: false, errText: '', tpMsg: '', tpHelp: 0 };
 
     function log() { try { console.log.apply(console, [TAG].concat(Array.prototype.slice.call(arguments))); } catch (e) {} }
     function warn() { try { console.warn.apply(console, [TAG].concat(Array.prototype.slice.call(arguments))); } catch (e) {} }
@@ -10734,8 +10759,8 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             /* ★ v535：淬炼页「说明」折叠按钮。做小、靠右——它是次要操作，
                不能跟「升级/洗练」抢注意力。 */
             '.xz-tp-help{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:2px 0 0;}',
-            '.xz-tp-helpbtn{flex:none;font:inherit;font-size:10px;line-height:1.4;padding:2px 8px;'
-              + 'border-radius:4px;cursor:pointer;background:transparent;color:var(--xz-text-2);'
+            '.xz-tp-helpbtn{flex:none;font:inherit;font-size:10.5px;line-height:1.5;padding:3px 11px;'
+              + 'border-radius:10px;cursor:pointer;background:rgba(212,175,55,.10);color:var(--xz-gold-bright);'
               + 'border:1px solid var(--xz-line);}',
             '.xz-tp-helpbtn:hover{color:var(--xz-gold);border-color:var(--xz-gold);}',
             '.xz-tp-cost{font-size:11px;color:var(--xz-text-2);margin:5px 0 4px;}',
@@ -11242,6 +11267,12 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                    状态栏 IIFE 拿不到 readVars/ensureStructure/renderTemper（都是本块私有），
                    所以内容在这里拼好，那边只套外框。 */
                 globalThis.__XZ05__.renderTemperPage = renderTemperPage;
+                /* ★ v1.053：淬炼页「说明」折叠态的出口（**本 IIFE 持有真相**）。
+                   点击方在状态栏 IIFE 里，翻的是另一个 state 对象 —— 跨 IIFE 要走这里。 */
+                globalThis.__XZ05__.tpHelpState = function () { try { return state.tpHelp ? 1 : 0; } catch (e1) { return 0; } };
+                globalThis.__XZ05__.toggleTpHelp = function () {
+                    try { state.tpHelp = state.tpHelp ? 0 : 1; return state.tpHelp ? 1 : 0; } catch (e2) { return 0; }
+                };
             }
         } catch (eTp) {}
         refresh(true);
@@ -12142,6 +12173,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             /* v526：`getVariables` 也从这里补一份 —— IIFE⑦ 里同样没有它。
                IIFE② 的导出块里有同名项，两处指向同一个宿主 API，不冲突。 */
             globalThis.__XZ05__.getVariables = getVariables;
+
         }
     } catch (eExpTj) {}
 
