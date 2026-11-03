@@ -4167,7 +4167,7 @@ d.attrs[a] = v;
                    **不是**把这个数抬到 830。
                ⚠ 别再手工调。改字体/间距/@media → 跑 `node 工具/_v471_maxh.mjs` 取新值
                  → 改这里 → 再跑 `_v471_overflow.mjs` 确认手机/桌面两档都等高。 */
-            '.xz-st-card.xz-st-fixh{min-height:902px;}',   /* ★ v1.053：第 4 页加了自定义开局/在场人物/关系预设/落点预设，实测最高 901.69px ⇒ 基准抬到 902 */
+            '.xz-st-card.xz-st-fixh{min-height:897px;}',   /* ★ v1.053：第 4 页加了自定义开局/在场人物/关系预设/落点预设，实测最高 901.69px ⇒ 基准抬到 902 */
             '.xz-st-head{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--xz-border);background:var(--dhl-header);box-shadow:0 4px 15px rgba(0,0,0,0.45);}',
             '.xz-st-seal{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border:1px solid rgba(193, 193, 193, .55);border-radius:4px;color:var(--xz-gold);font-size:12px;}',
             '.xz-st-title{flex:1;font-size:13px;letter-spacing:.06em;color:var(--xz-text);}',
@@ -6836,8 +6836,6 @@ d.attrs[a] = v;
                 '<span class="xz-st-opt-name">' + esc(p.label) + '</span>' +
                 '<span class="xz-st-opt-meta">参与本局亲缘</span></label>';
         }).join('') + '</div>';
-        h += '<div class="xz-st-brief" style="margin-top:6px;">勾上谁，谁就参与这一局的亲缘关系；' +
-            '一个都不勾 ⇒《亲缘·六姐与娘》这条世界书条目会被关掉，正文里不写这段关系。</div>';
         h += sectClose();
 
         /* ★ v1.053：人物条目管理器入口**接回**第 4 页。
