@@ -5433,7 +5433,7 @@ function xzTypeOf(name, fbT, fbA) {
         } catch (e3) {}
         try {
             var cv = (typeof window !== 'undefined' && window.__XZ_CARD_VER__) ? String(window.__XZ_CARD_VER__) : '';
-            if (HOTV.latest && cv && HOTV.latest !== cv) return true;
+            if (xzVerNewer(HOTV.latest, cv)) return true;
         } catch (e2) {}
         return false;
     }
@@ -9229,15 +9229,40 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
          05 可能被打在多个 iframe 里（酒馆助手一脚本一 iframe）⇒ 每个 window 各起一个
          interval 就是三倍请求。锁挂在 top 上（与 XZ_SHARED 那条铁律同一个原因）。
        ══════════════════════════════════════════════════════════════════ */
+    /* ★ 2026-11-03：版本比较按**数**比，不按字符串比。
+       为什么必须：原来用 `latest !== cv` 判「有新版本」，于是 CDN 那条号一旦回退
+       （raw 的 `/main/` 缓存给过旧值 v1.053），页面就会对着 v1.055 的卡喊
+       「📦 新版本 v1.053」—— 玩家看到的是**降级**提示。
+       ⇒ 只有 latest 真的比卡新才提示；相等或更旧一律当"已是最新"。 */
+    function xzVerNum(v) {
+        var a = String(v == null ? '' : v).replace(/^v/i, '').split('.');
+        var out = [];
+        for (var i = 0; i < a.length; i++) out.push(Number(a[i]) || 0);
+        return out;
+    }
+    function xzVerNewer(latest, cur) {
+        if (!latest || !cur) return false;
+        var a = xzVerNum(latest), b = xzVerNum(cur);
+        var n = Math.max(a.length, b.length);
+        for (var i = 0; i < n; i++) {
+            var x = a[i] || 0, y = b[i] || 0;
+            if (x > y) return true;
+            if (x < y) return false;
+        }
+        return false;
+    }
     var HOTV = { latest: '', err: false, first: true };
-    var HOTV_URL = 'https://raw.githubusercontent.com/cesareborgia576-cloud/xz-card/main/version.json';
+    /* ★★★ 2026-11-03：`/main/` → `/refs/heads/main/`（与 loader 同一个坑）★★★
+       实测同一分钟：`/main/` 给 v1.053（旧值，带 query 不换），`/refs/heads/main/` 给 v1.055。
+       写成 `/main/` 的话，作者推完新版看不到号变化 —— 「实时刷新」这条就永远是假的。 */
+    var HOTV_URL = 'https://raw.githubusercontent.com/cesareborgia576-cloud/xz-card/refs/heads/main/version.json';
     function xzHotVerHtml() {
         /* ⚠ 不能读 CARD_VER：它声明在**第一个 IIFE**里，状态栏这个 IIFE 看不见 ——
            直接引用会抛 ReferenceError，整页渲染在这里断掉（lint 的 undef 就是抓这个）。
            版本号由第一个 IIFE 写到 window.__XZ_CARD_VER__ 上，读那个才是同一个真源。 */
         var cv = '';
         try { cv = (typeof window !== 'undefined' && window.__XZ_CARD_VER__) ? String(window.__XZ_CARD_VER__) : ''; } catch (eCV2) { cv = ''; }
-        var isNew = !!(HOTV.latest && cv && HOTV.latest !== cv);
+        var isNew = xzVerNewer(HOTV.latest, cv);
         var txt, col, bc, bg;
         if (HOTV.first) {
             txt = '⋯ 检查更新'; col = 'var(--xz-muted)';
