@@ -5374,9 +5374,6 @@ function xzTypeOf(name, fbT, fbA) {
        ══════════════════════════════════════════════════════════════════════════ */
     function pageVersion() {
         var h = '<div class="xz-sub-head">✦ 版本与同步</div>';
-        h += '<div class="xz-rpg-desc" style="font-size:11.5px;line-height:1.75;margin-bottom:10px;">'
-            + '脚本与引擎会自己热更新；世界书不能热更新，只能靠你在酒馆里「导入卡内世界书」整本覆盖。'
-            + '这一页只回答三件事：变量补上没有、卡是不是最新、世界书跟没跟上。</div>';
 
         h += '<div style="display:flex;flex-direction:column;align-items:stretch;gap:10px;">';
         /* ① 变量补全：颜色就是嗅探结果（补=待机 / 缺=最新一楼没变量块 / 算 / 全 / 误） */
