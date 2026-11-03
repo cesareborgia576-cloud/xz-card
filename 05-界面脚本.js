@@ -3883,7 +3883,7 @@ function xzTypeOf(name, fbT, fbA) {
          · 世界书版本渲染抛错     → 印一颗能点重读的灰标，**不许静默**
          · 天骄字段是「非天骄」    → 什么都不印（普通人不该挂个"非天骄"的牌子）
        ══════════════════════════════════════════════════════════════════════════ */
-    function xzTopInfoHtml() {
+    function xzTopInfoHtml(part) {   /* ★ v1.053d：part = 'name' 只出名字行 / 'meta' 只出元信息三行 / 不传 = 全出 */
         var name = show(at('主角信息.姓名'), '待初始化');
         /* ★ v475（用户 2026-10-30）：「新弄一个变量，主角信息里面的，加个性别……界面脚本也同步显示」。
            显示位置就放在名字后面那串「(16岁) [引玄初期]」里，是同一行的身份信息，
@@ -3907,10 +3907,11 @@ function xzTypeOf(name, fbT, fbA) {
         var date = show(at('时间.日期'), '1月1号');
         var clock = show(at('时间.精确时间'), '06:00');
 
-        var h = '<div class="xz-topinfo">';
+        var hn = '';   /* 名字 (岁数) [境界] */
+        var hm = '';   /* 变量补全 / 卡版本 / 世界书 / 日期时辰 */
         /* 第一行：名字 (岁数) [境界] —— 用户 v48 的最终口径，不提「道号」二字。
            ★ v310：岁数不许用 var(--xz-muted) 的暗灰，那看着像被禁用。 */
-        h += '<div class="xz-topinfo-line">' +
+        hn += '<div class="xz-topinfo-line">' +
              '<span class="xz-box-v xz-top-name">' +
              '<b>' + esc(name) + '</b> ' +
              (gender ? ('<span class="xz-top-gender" title="性别">' + esc(gender) + '</span> ') : '') +
@@ -3919,36 +3920,36 @@ function xzTypeOf(name, fbT, fbA) {
         /* ★ v222：`条目天骄` 字段已删除，主角侧只认 `天骄`。 */
         var tj = '';
         try { tj = String(at('主角信息.天骄') || '非天骄'); } catch (eTj) { tj = '非天骄'; }
-        if (tj && tj !== '非天骄') { try { h += tianjiaoChip(tj); } catch (eTc) {} }
-        h += '</div>';
+        if (tj && tj !== '非天骄') { try { hn += tianjiaoChip(tj); } catch (eTc) {} }
+        hn += '</div>';
 
         /* ★ v1.053：变量补全与卡版本徽章挪到**第一行下面**（作者 12:04 截图）。
            原来它们在第二行、和「世界书徽章」挤成一排补丁按钮。 */
-        h += '<div class="xz-topinfo-line">';
+        hm += '<div class="xz-topinfo-line">';
         try {
             var _vcs = xzVarCompleteStatus();
-            h += '<button type="button" class="xz-tianji-goto-btn" data-xz-act="var-complete" ' +
+            hm += '<button type="button" class="xz-tianji-goto-btn" data-xz-act="var-complete" ' +
                 'style="padding:2px 9px;font-size:11px;border-color:' + (_vcs.ok ? 'rgba(212,175,55,0.55)' : 'rgba(120,120,120,0.4)') + ';color:' + (_vcs.color || 'var(--xz-muted)') + ';font-weight:var(--xz-fw-med);" ' +
                 'title="' + esc(_vcs.title || '外置变量补全') + '">🩺 变量补全 ' + esc(_vcs.label || '补') + '</button>';
         } catch (eVcs) {}
-        try { h += xzHotVerHtml(); } catch (eHot) {}
-        h += '</div>';
-        h += '<div class="xz-topinfo-line">';
-        try { h += xzWbVerHtml(); } catch (eWv) {
+        try { hm += xzHotVerHtml(); } catch (eHot) {}
+        hm += '</div>';
+        hm += '<div class="xz-topinfo-line">';
+        try { hm += xzWbVerHtml(); } catch (eWv) {
             /* 徽章自己坏了不许连累这一格 —— 但也**不许静默**：
                印一个能点重读的灰标，让人知道这里本该有个东西。 */
-            h += '<button type="button" class="xz-tianji-goto-btn" data-xz-act="wb-ver" ' +
+            hm += '<button type="button" class="xz-tianji-goto-btn" data-xz-act="wb-ver" ' +
                 'style="padding:2px 8px;font-size:11px;border:1px solid rgba(120,120,120,0.35);color:var(--xz-muted);" ' +
                 'title="版本徽章渲染出错：' + esc((eWv && eWv.message) || eWv) + '">📖 世界书 ?</button>';
         }
         /* ★ v324：原来这里还有颗「⤢ 宽屏大字」—— 已删。
            `state.wide` 开关本身留着（`.xz-wide` 那套 CSS 照旧生效），只是不暴露入口。 */
         /* ★ v310：`📍 地点` 那一格已删 —— 地点**只有一个真相源**：舆图。 */
-        h += '</div>';
+        hm += '</div>';
 
         /* 第二行：两颗元信息按钮。**紧挨着放**，因为它们是同一类东西 ——
            一个说"变量补上没"，一个说"世界书换上没"，都是玩家看不见就会踩坑的。 */
-        h += '<div class="xz-topinfo-line">';
+        hm += '<div class="xz-topinfo-line">';
         /* 外置变量补全入口（原悬浮球点不到 → 搬进状态栏 → 现在搬进这一格）。
            按钮颜色就是嗅探结果：补=待机 / 缺=最新一楼没变量块 / 算=正在补 /
            全=上次成功 / 误=上次失败。 */
@@ -3966,11 +3967,16 @@ function xzTypeOf(name, fbT, fbA) {
            ⚠ 别为了"好看看"再塞回 emoji：这个界面在手机/桌面/不同系统上都要能看，
              emoji 的渲染结果完全不受我们控制。 */
         var timeStyle = 'color:var(--xz-gold-bright); border:1px solid var(--xz-border-strong); border-radius:3px; padding:1px 5px; white-space:nowrap;';
-        h += '<div class="xz-topinfo-line xz-topinfo-time">' +
+        hm += '<div class="xz-topinfo-line xz-topinfo-time">' +
              '<span class="xz-top-time-box" style="display:flex;flex-wrap:wrap;gap:5px;align-items:center;">' +
              '<span style="' + timeStyle + '">日期 ' + esc(date) + '</span>' +
              '<span style="' + timeStyle + '">时辰 ' + esc(clock) + '</span>' +
              '</span></div>';
+        hm += '</div>';
+        var h = '<div class="xz-topinfo">';
+        if (part === 'name') h += hn;
+        else if (part === 'meta') h += hm;
+        else h += hn + hm;
         h += '</div>';
         return h;
     }
@@ -4176,6 +4182,11 @@ function xzTypeOf(name, fbT, fbA) {
              左右两格的底部基线因此对齐。换成 `margin-top:8px` 它会紧跟在效果标签
              后面浮在半空，右边那格矮的时候还会看起来像掉出框外。
            ⚠ 别把这一行挪回 `xz-box-eq` 那种定高滚动区里 —— 见上面那段注释。 */
+        /* ★ v1.053d：元信息三行（变量补全/卡版本、世界书、日期时辰）搬到血脉格。
+           它们原来堆在右格名字下面，把「火系」和读数条挤成一团；
+           左格又因为只有两行血脉而空着一大片。两边正好换位。 */
+        h += xzTopInfoHtml('meta');
+        h += '<div style="flex:1 1 auto;"></div>';   /* 撑开：元信息贴底、属性点再贴元信息之下 */
         h += '<div style="display:flex;align-items:center;justify-content:space-between;'
             + 'gap:6px;margin-top:auto;padding-top:7px;border-top:1px dashed rgba(201,168,106,.22);">'
             + '<span style="flex:0 0 auto;font-size:11.5px;color:var(--xz-gold);letter-spacing:.04em;">可用属性点</span>'
@@ -4210,7 +4221,24 @@ function xzTypeOf(name, fbT, fbA) {
              这一格在手机上只有 ~150px，长了就把标题挤成两行。 */
         h += '<div class="xz-box-k"><span>本命玄元属性</span>' + xzThemeBtnHtml() + '</div>';
         h += '<div class="xz-box-v" style="font-size:12px;font-weight:var(--xz-fw-med);color:' + rootColor + ';">' + esc(root) + '</div>';
-        h += xzTopInfoHtml();
+        h += xzTopInfoHtml('name');
+/* ★ v1.053d：四维搬进「本命玄元属性」格，2×2 —— 不再跨整行占掉一整排放空 */
+        h += '<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:7px;">';
+        var attrsList = [
+            { k: '力量', v: str },
+            { k: '敏捷', v: agi },
+            { k: '体质', v: sta },
+            { k: '智力', v: intl }
+        ];
+        attrsList.forEach(function (a) {
+            h += '<div class="xz-box" style="padding:6px 2px; min-height:48px;">';
+            /* ★ v1.051：四维小标题后面那颗「?」撤掉（作者 2026-11-03）。
+               弹窗入口挪到**数值本身**（点数字看属性效果），界面上不再有问号，功能不丢。 */
+            h += '<div class="xz-box-k" style="justify-content:center; gap:2px; font-size:10px; margin-bottom:4px;"><span>' + a.k + '</span></div>';
+            h += '<div class="xz-box-v" data-xz-act="attr-effect" data-attr-name="' + a.k + '" style="color:var(--xz-text); text-align:center; font-size:13.5px; word-break:break-all; cursor:pointer;">' + a.v + '</div>';
+            h += '</div>';
+        });
+        h += '</div>';
         h += '</div>';
 
         // 格3: 气血 / 灵力 / 经验（气海经验框内合并展示，v73）
@@ -4299,23 +4327,6 @@ function xzTypeOf(name, fbT, fbA) {
 
         // 格4 已并入格3（见上），这里不再单独出一格
 
-// 格5~8: 四维合并为一行四格
-        h += '<div style="grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px;">';
-        var attrsList = [
-            { k: '力量', v: str },
-            { k: '敏捷', v: agi },
-            { k: '体质', v: sta },
-            { k: '智力', v: intl }
-        ];
-        attrsList.forEach(function (a) {
-            h += '<div class="xz-box" style="padding:6px 2px; min-height:48px;">';
-            /* ★ v1.051：四维小标题后面那颗「?」撤掉（作者 2026-11-03）。
-               弹窗入口挪到**数值本身**（点数字看属性效果），界面上不再有问号，功能不丢。 */
-            h += '<div class="xz-box-k" style="justify-content:center; gap:2px; font-size:10px; margin-bottom:4px;"><span>' + a.k + '</span></div>';
-            h += '<div class="xz-box-v" data-xz-act="attr-effect" data-attr-name="' + a.k + '" style="color:var(--xz-text); text-align:center; font-size:13.5px; word-break:break-all; cursor:pointer;">' + a.v + '</div>';
-            h += '</div>';
-        });
-        h += '</div>';
 
         /* v70：状态栏不再给玩家任何「总数」类指标 ——
            胜负一律由《脚本战斗系统》逐回合判定，强弱靠境界与气血读，卡面不占版面。 */
