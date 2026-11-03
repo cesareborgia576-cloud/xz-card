@@ -4167,7 +4167,7 @@ d.attrs[a] = v;
                    **不是**把这个数抬到 830。
                ⚠ 别再手工调。改字体/间距/@media → 跑 `node 工具/_v471_maxh.mjs` 取新值
                  → 改这里 → 再跑 `_v471_overflow.mjs` 确认手机/桌面两档都等高。 */
-            '.xz-st-card.xz-st-fixh{min-height:800px;}',
+            '.xz-st-card.xz-st-fixh{min-height:902px;}',   /* ★ v1.053：第 4 页加了自定义开局/在场人物/关系预设/落点预设，实测最高 901.69px ⇒ 基准抬到 902 */
             '.xz-st-head{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--xz-border);background:var(--dhl-header);box-shadow:0 4px 15px rgba(0,0,0,0.45);}',
             '.xz-st-seal{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border:1px solid rgba(193, 193, 193, .55);border-radius:4px;color:var(--xz-gold);font-size:12px;}',
             '.xz-st-title{flex:1;font-size:13px;letter-spacing:.06em;color:var(--xz-text);}',
