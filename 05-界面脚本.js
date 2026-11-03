@@ -8567,9 +8567,6 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         var view = xzMapRender(state.mapRegion || '', state.mapPick || '', state.mapAreaPick || '');
         var reg = view.reg;
         var zoomed = !!view.zoomed;
-        var litCount = XZ_MAP_STATES.length - XZ_MAP_STATES.filter(function (r) {
-            return r.fog && here.state !== r.n;
-        }).length;
 
         /* ★ v307：只显示「点中的那一个」。
            原来这里把九州九域 + 乱魔海整段全列出来，一屏全是卡片 ——
