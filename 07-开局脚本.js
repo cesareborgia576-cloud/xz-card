@@ -2225,14 +2225,10 @@ function xzSkeletonOfSkill(skill) {
             items: { 玄技: [], 玄诀: [], 武器: [] },
             /* ★ v60：血脉禁止无，最低凡血 */
             bloodRank: '凡血', bloodName: '山野遗血', bloodPurity: 10,
-            /* ★ v1.053：人物关系预设 —— 默认**全勾**（她们本就是这一局的家人）。
-               玩家取消勾选 = 这一局不写这段亲缘（关系条目会被关掉）。 */
-            cast: [],
-            kin: (function () {
-                var o = {};
-                (typeof KIN_PRESET !== 'undefined' && KIN_PRESET ? KIN_PRESET : []).forEach(function (p) { o[p.id] = true; });
-                return o;
-            })(),
+            /* ★ v1.053c：人物关系预设 —— 默认「六姐与娘」（这卡默认就是这家人）。
+               选「无关系」= 这一局不写这段亲缘，《亲缘·六姐与娘》会在确认开局时被关掉。 */
+            castPick: '',
+            kin: 'six',
             /* ★ v74：血脉四样之一「效果」—— 自由文本的永久被动。开局掷血脉时从预设池抽一条；
                玩家想自己写也行，留空也允许（留空就是这条血没有招牌被动）。 */
             bloodEffect: '',
@@ -5919,7 +5915,7 @@ d.attrs[a] = v;
             h += '<div class="xz-st-row"><label>' + esc(kind + '名') + '</label>' +
                 '<input type="text" data-xz-tpl="名" maxlength="8" value="' + esc(it.名) + '" placeholder="必填：自己起一个名字" required>' +
                 '<button type="button" class="xz-st-dice" data-xz-act="roll-name-tpl" style="flex:0 0 auto;">🎲</button></div>';
-            h += '<div class="xz-st-row"><label>品质</label><select data-xz-tpl="品质">' + opts(qualityOptionsFor(kind), it.品质) + '</select>' + dice('品质') + '</div>';
+            h += '<div class="xz-st-row"><label>品质</label><select data-xz-tpl="品质">' + opts(qualityOptionsFor(kind), it.品质) + '</select></div>';
         }
 
         if (kind === '玄技' || kind === '玄诀') {
@@ -6784,37 +6780,62 @@ d.attrs[a] = v;
        ⚠ 自定义落点块（`customBlock`）自带「自填开场白」那套输入，
          只在选了 custom 时才有内容 —— 它跟着落点框走，不单独立框。 */
     /* ★ v1.053：在场人物 —— 选项从世界书**拉**（原创人物条目），另有「其他」自填 */
-    function castBlockHtml(d) {
+    /* ★ v1.053c：在场人物 —— 下拉**拉取**世界书人物条目作选项，选完点「加入」。
+       「其他」才自填（作者 2026-11-03：空输入框不是"拉取选项"）。
+       ⚠ 选项来源双保险：运行时扫 04 的 `xzWBLocalEntries`，扫不到就用内置名单兜底 ——
+         空下拉等于这块不能用，比名单过期更糟。 */
+    var XZ_CAST_FALLBACK = [
+        "白长雪", "阿依莎", "云疏月", "司幽怜", "陆昭华", "沈清颜", "言清漪",
+        "梵清仪", "姜绾绾", "沈千金", "苏小玲", "药仙儿", "叶凌天", "洛无尘", "陆玄机"
+    ];
+    function castNameList() {
         var names = [];
         try {
             var fn = XZ_SHARED("xzWBLocalEntries");
-            var list = fn ? (fn() || []) : [];
-            list.forEach(function (e) {
-                var t = String((e && (e.title || e.comment)) || "");
-                if (t.indexOf("人物-") !== 0) return;
-                if (t === "人物-总览") return;
-                names.push(t.replace(/^人物-/, ""));
-            });
-        } catch (eC) {}
-        names = names.filter(function (v, i, a) { return a.indexOf(v) === i; });
+            if (typeof fn === "function") {
+                var flat = fn() || [];
+                for (var i = 0; i < flat.length; i++) {
+                    var e = flat[i];
+                    var t = String((e && (e.title || e.comment)) || "");
+                    if (t.indexOf("人物-") !== 0) continue;
+                    if (t === "人物-总览" || t.indexOf("人物总览") === 0) continue;
+                    names.push(t.replace(/^人物-/, ""));
+                }
+            }
+        } catch (eC) { }
+        if (!names.length) names = XZ_CAST_FALLBACK.slice();
+        return names.filter(function (v, i, a) { return !!v && a.indexOf(v) === i; });
+    }
+    function castBlockHtml(d) {
+        var names = castNameList();
         var picked = (d.cast && d.cast.length) ? d.cast.slice() : [];
+        var cur = String(state.castPick || "");
         var h = "";
-        h += "<div class=\"xz-st-grid\">";
-        h += "<select multiple size=\"4\" data-xz-field=\"cast\" style=\"grid-column:1/-1;\">";
+        h += '<div class="xz-st-row"><label>选人</label>';
+        h += '<select data-xz-field="castPick" style="flex:1 1 auto;min-width:0;">';
+        h += '<option value="">— 点这里选（共 ' + names.length + ' 位）—</option>';
         names.forEach(function (nm) {
-            h += "<option value=\"" + esc(nm) + "\"" + (picked.indexOf(nm) >= 0 ? " selected" : "") + ">" + esc(nm) + "</option>";
+            h += '<option value="' + esc(nm) + '"' + (cur === nm ? " selected" : "") + ">" + esc(nm) + "</option>";
         });
-        h += "</select></div>";
-        h += "<div class=\"xz-st-actions\" style=\"margin-top:6px;\">";
-        h += "<button type=\"button\" class=\"xz-st-main xz-st-ghost\" data-xz-act=\"cast-other\">其他（自己填）</button>";
+        h += '<option value="__other__"' + (cur === "__other__" ? " selected" : "") + ">其他（自己填）</option>";
+        h += "</select>";
+        h += '<button type="button" class="xz-st-main xz-st-ghost" data-xz-act="cast-add" style="flex:0 0 auto;">加入</button>';
         h += "</div>";
-        if (state.castOther) {
-            h += "<div class=\"xz-st-row\" style=\"margin-top:6px;\"><label>其他</label>";
-            h += "<input type=\"text\" data-xz-field=\"castOtherText\" maxlength=\"16\" value=\"" + esc(state.castOther) + "\" placeholder=\"名字\">";
-            h += "<button type=\"button\" class=\"xz-st-dice\" data-xz-act=\"cast-other-add\">加入</button></div>";
-        }
         if (picked.length) {
-            h += "<div class=\"xz-st-tiny\" style=\"margin-top:6px;\">已选：" + esc(picked.join("、")) + "</div>";
+            h += '<div class="xz-st-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:7px;">';
+            picked.forEach(function (nm) {
+                h += '<button type="button" class="xz-tianji-goto-btn" data-xz-act="cast-del" data-name="' + esc(nm) + '"' +
+                    ' style="padding:2px 9px;font-size:11px;border-color:rgba(212,175,55,0.55);"' +
+                    ' title="点一下从在场人物里移除">' + esc(nm) + ' <span style="opacity:.55;">×</span></button>';
+            });
+            h += "</div>";
+        } else {
+            h += '<div class="xz-st-tiny" style="margin-top:6px;">还没选人。不选就只有你自己在场。</div>';
+        }
+        if (state.castOther !== null && state.castOther !== undefined) {
+            h += '<div class="xz-st-row" style="margin-top:6px;"><label>其他</label>';
+            h += '<input type="text" data-xz-field="castOtherText" maxlength="16" value="' + esc(state.castOther) + '" placeholder="名字">';
+            h += '<button type="button" class="xz-st-dice" data-xz-act="cast-other-add">加入</button></div>';
         }
         return h;
     }
@@ -6827,15 +6848,21 @@ d.attrs[a] = v;
         h += sectOpen("在场人物", (d.cast && d.cast.length) ? (d.cast.length + " 人") : "未选");
         h += castBlockHtml(d);
         h += sectClose();
-        var _kinOn = (KIN_PRESET || []).filter(function (p) { return !!(d.kin && d.kin[p.id]); });
-        h += sectOpen('人物关系预设', _kinOn.length ? ('已选 ' + _kinOn.length + ' 人') : '未选');
-        h += '<div class="xz-st-grid">' + (KIN_PRESET || []).map(function (p) {
-            var _on = !!(d.kin && d.kin[p.id]);
-            return '<label class="xz-st-opt xz-st-kin' + (_on ? ' on' : '') + '">' +
-                '<input type="checkbox" data-xz-field="kin" data-xz-kin="' + esc(p.id) + '"' + (_on ? ' checked' : '') + '>' +
-                '<span class="xz-st-opt-name">' + esc(p.label) + '</span>' +
-                '<span class="xz-st-opt-meta">参与本局亲缘</span></label>';
-        }).join('') + '</div>';
+        /* ★ v1.053c：关系预设只留两个按钮（作者 2026-11-03）。
+           「六姐与娘」= 开启《亲缘·六姐与娘》世界书条目；「无关系」= 关掉它。
+           不再逐人勾选 —— 那七个勾选框既占地方又让人以为可以只认一半。 */
+        var _kinSix = (d.kin === "six");
+        h += sectOpen('人物关系预设', _kinSix ? '六姐与娘' : '无关系');
+        h += '<div class="xz-st-row" style="gap:8px;">' +
+            '<button type="button" class="xz-st-main xz-st-ghost" data-xz-act="kin-none"' +
+            (_kinSix ? "" : ' style="border-color:rgba(212,175,55,0.75);color:var(--xz-gold-bright);"') +
+            '>无关系</button>' +
+            '<button type="button" class="xz-st-main xz-st-ghost" data-xz-act="kin-six"' +
+            (_kinSix ? ' style="border-color:rgba(212,175,55,0.75);color:var(--xz-gold-bright);"' : "") +
+            '>六姐与娘（六位姐姐 + 亲娘）</button></div>';
+        h += '<div class="xz-st-tiny" style="margin-top:6px;">' +
+            (_kinSix ? "本局按家人相处：六位姐姐与亲娘待你如亲手足。" : "本局不写亲缘：她们各是各的，和你没有家门关系。") +
+            "</div>";
         h += sectClose();
 
         /* ★ v1.053：人物条目管理器入口**接回**第 4 页。
@@ -7606,14 +7633,11 @@ host.__xzGuard = true;
             if (field === 'place') { d.place = t.value; render(true); return; }
             /* ★ v1.053：人物关系预设的勾选框（只改草稿） */
             /* ★ v1.053：在场人物多选 */
-            if (field === 'cast') {
-                var _cast = [];
-                try {
-                    var _sel = t.options ? Array.prototype.slice.call(t.options) : [];
-                    _sel.forEach(function (o) { if (o.selected && o.value) _cast.push(String(o.value)); });
-                } catch (eCs) {}
-                d.cast = _cast;
-                render(true);
+            /* ★ v1.053c：在场人物的下拉选择 —— 只记住「当前选中的是谁」，不重绘。
+               重绘会把下拉关掉，玩家就得每次重新滚一遍列表。真正加进名单走「加入」按钮。 */
+            if (field === 'castPick') {
+                state.castPick = String(t.value || '');
+                if (state.castPick === '__other__') { state.castOther = ''; render(true); }
                 return;
             }
             /* ★ v1.053：选 DLC 落点预设 ⇒ 填大位置/小位置 */
@@ -7632,14 +7656,7 @@ host.__xzGuard = true;
                 return;
             }
             if (field === 'castOtherText') { state.castOther = String(t.value || '').slice(0, 16); return; }
-            if (field === 'kin') {
-                var kinId = String(t.getAttribute('data-xz-kin') || '');
-                if (!kinId) { state.note = '⚠ 这个亲缘勾选框缺少人物 id（data-xz-kin），已忽略。'; render(true); return; }
-                if (!d.kin || typeof d.kin !== 'object' || Array.isArray(d.kin)) d.kin = {};
-                d.kin[kinId] = !!(t.checked);
-                render(true);
-                return;
-            }
+            /* ★ v1.053c：逐人亲缘勾选框已撤，改成两个按钮（kin-none / kin-six） */
             /* ★ v352：DLC 勾选框。
                ⚠ 这里**只改草稿**，不碰世界书 —— 真正开条目是在 submit() 里做的。
                  原因：勾了又取消、勾了又重置，都不该在玩家还没确认开局时就动世界书；
@@ -8268,8 +8285,37 @@ host.__xzGuard = true;
                 render(true); return;
             }
             /* ★ v1.053：在场人物 ·「其他」自填 */
+            /* ★ v1.053c：在场人物 · 下拉里选中了「其他」⇒ 展开自填框 */
             if (act === 'cast-other') {
-                state.castOther = state.castOther || '';
+                state.castOther = '';
+                state.castPick = '__other__';
+                render(true);
+                return;
+            }
+            /* ★ v1.053c：在场人物 · 「加入」——把下拉里选中的人加进名单 */
+            if (act === 'cast-add') {
+                var _pv = String(state.castPick || '');
+                if (!_pv) { state.note = '⚠ 先在下拉里选一个人。'; render(true); return; }
+                if (_pv === '__other__') { state.castOther = state.castOther || ''; render(true); return; }
+                if (!d.cast || !Array.isArray(d.cast)) d.cast = [];
+                if (d.cast.indexOf(_pv) < 0) d.cast.push(_pv);
+                state.castPick = '';
+                state.note = '';
+                render(true);
+                return;
+            }
+            /* ★ v1.053c：在场人物 · 点标签把人移除 */
+            if (act === 'cast-del') {
+                var _dn = String(t.getAttribute('data-name') || '');
+                if (_dn && Array.isArray(d.cast)) {
+                    d.cast = d.cast.filter(function (x) { return x !== _dn; });
+                }
+                render(true);
+                return;
+            }
+            /* ★ v1.053c：人物关系预设 —— 两个按钮二选一 */
+            if (act === 'kin-none' || act === 'kin-six') {
+                d.kin = (act === 'kin-six') ? 'six' : '';
                 render(true);
                 return;
             }
@@ -8278,7 +8324,7 @@ host.__xzGuard = true;
                 if (!_nm) { state.note = '⚠ 「其他」还没填名字。'; render(true); return; }
                 if (!d.cast || !Array.isArray(d.cast)) d.cast = [];
                 if (d.cast.indexOf(_nm) < 0) d.cast.push(_nm);
-                state.castOther = '';
+                state.castOther = null;
                 render(true);
                 return;
             }
@@ -8293,6 +8339,8 @@ host.__xzGuard = true;
                 state.page = 0;
                 state.note = '面板已重置。';
                 state.errText = '';
+                state.castOther = null;
+                state.castPick = '';
                 state.lastSig = '';
                 render(true);
                 return;
@@ -8653,7 +8701,7 @@ host.__xzGuard = true;
             var kinNote = "";
             try {
                 var kinFn = XZ_SHARED("xzWBSetEntry");
-                var kinWant = (KIN_PRESET || []).some(function (p) { return !!(d.kin && d.kin[p.id]); });
+                var kinWant = (d.kin === 'six');   /* ★ v1.053c：两个按钮，'six'=开 / 空=关 */
                 if (typeof kinFn !== "function") {
                     if (kinWant) {
                         kinNote = "⚠ 人物关系没能开启：取不到世界书开关（xzWBSetEntry）。请手动在酒馆的世界书里打开「亲缘·六姐与娘」。";
