@@ -12945,40 +12945,62 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
     function xzWBSetEntry(want, title) {
         var on = !!want;
         var T = String(title == null ? '' : title);
-        var th = TH(), name = bookName();
+        var th = TH();
         if (!T) return Promise.resolve({ ok: false, n: 0, on: on, msg: '没给条目标题' });
-        if (!th || !name || typeof th.updateWorldbookWith !== 'function') {
-            return Promise.resolve({ ok: false, n: 0, on: on, msg: '读不到酒馆助手或世界书名' });
+        if (!th || typeof th.updateWorldbookWith !== 'function') {
+            return Promise.resolve({ ok: false, n: 0, on: on, msg: '读不到酒馆助手或世界书写接口' });
         }
-        var hit = 0;
-        return Promise.resolve(th.updateWorldbookWith(name, function (list) {
-            return (list || []).map(function (e) {
-                if (entryTitle(e) !== T) return e;
-                hit++;
-                var c = {};
-                Object.keys(e).forEach(function (k) { c[k] = e[k]; });
-                c.enabled = on;
-                if (typeof c.disable === 'boolean') c.disable = !on;   /* 兜底：拿到原始形状时 */
-                return c;
-            });
-        })).then(function () {
-            var reread = (typeof th.getWorldbook === 'function')
-                ? Promise.resolve(th.getWorldbook(name)) : Promise.resolve(null);
-            return reread.then(function (list) {
-                if (!Array.isArray(list)) {
-                    return { ok: hit > 0, n: hit, on: on, msg: hit ? '' : ('书里没有「' + T + '」这条') };
+        /* 候选书：当前角色的主书/附加书在前，其余书在后。
+           ⚠ 必须扫全部：`bookName()` 在取不到当前书时会退回 `getWorldbookNames()[0]`，
+             那可能是另一本书 —— 写进去成功、卡里的条目却没动，表现就是「选了没反应」。 */
+        var names = [];
+        function addName(n) { if (n && names.indexOf(n) < 0) names.push(n); }
+        try {
+            var cur = th.getCharWorldbookNames && th.getCharWorldbookNames('current');
+            if (cur) { addName(cur.primary); (cur.additional || []).forEach(addName); }
+        } catch (eB0) {}
+        try { (th.getWorldbookNames ? (th.getWorldbookNames() || []) : []).forEach(addName); } catch (eB1) {}
+        if (!names.length) return Promise.resolve({ ok: false, n: 0, on: on, msg: '一本世界书都没找到' });
+
+        function tryAt(i) {
+            if (i >= names.length) return Promise.resolve({ ok: false, n: 0, on: on, msg: '书里没有「' + T + '」这条' });
+            var nm = names[i];
+            var read = (typeof th.getWorldbook === 'function')
+                ? Promise.resolve(th.getWorldbook(nm)) : Promise.resolve(null);
+            return read.then(function (list) {
+                if (Array.isArray(list) && !list.some(function (e) { return entryTitle(e) === T; })) {
+                    return tryAt(i + 1);
                 }
-                var got = 0;
-                list.forEach(function (e) {
-                    if (entryTitle(e) === T && entryIsOn(e) === on) got++;
+                var hit = 0;
+                return Promise.resolve(th.updateWorldbookWith(nm, function (arr) {
+                    return (arr || []).map(function (e) {
+                        if (entryTitle(e) !== T) return e;
+                        hit++;
+                        var c = {};
+                        Object.keys(e).forEach(function (k) { c[k] = e[k]; });
+                        c.enabled = on;
+                        if (typeof c.disable === 'boolean') c.disable = !on;
+                        return c;
+                    });
+                })).then(function () {
+                    var rr = (typeof th.getWorldbook === 'function')
+                        ? Promise.resolve(th.getWorldbook(nm)) : Promise.resolve(null);
+                    return rr.then(function (li) {
+                        if (!Array.isArray(li)) {
+                            return { ok: hit > 0, n: hit, on: on, book: nm, msg: hit ? '' : ('书里没有「' + T + '」这条') };
+                        }
+                        var got = 0;
+                        li.forEach(function (e) { if (entryTitle(e) === T && entryIsOn(e) === on) got++; });
+                        return { ok: got > 0, n: got || hit, on: on, book: nm, msg: got > 0 ? '' : '写入没生效（回读仍是旧状态）' };
+                    }, function () {
+                        return { ok: hit > 0, n: hit, on: on, book: nm, msg: '' };
+                    });
+                }, function (e2) {
+                    return { ok: false, n: 0, on: on, book: nm, msg: '写入失败：' + ((e2 && e2.message) || e2) };
                 });
-                return { ok: got > 0, n: got || hit, on: on, msg: got > 0 ? '' : '写入没生效（回读仍是旧状态）' };
-            }, function () {
-                return { ok: hit > 0, n: hit, on: on, msg: hit ? '' : ('书里没有「' + T + '」这条') };
-            });
-        }, function (e1) {
-            return { ok: false, n: 0, on: on, msg: '写入失败：' + ((e1 && e1.message) || e1) };
-        });
+            }, function () { return tryAt(i + 1); });
+        }
+        return tryAt(0);
     }
     try {
         if (typeof globalThis !== 'undefined' && globalThis.__XZ05__) {
