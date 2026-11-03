@@ -161,7 +161,7 @@
             : ('本卡 ' + st.build + '。世界书还是 ' + st.ver + '，没跟上 —— 世界书不能热更新，'
                + '请去酒馆「导入卡内世界书」覆盖一次。');
         return '<span class="xz-st-ver" style="flex:none;white-space:nowrap;font-size:10px;color:'
-            + (same ? '#4ade80' : '#bfbfbf') + ';" title="' + esc(tip) + '">'
+            + (same ? '#4ade80' : '#fbbf24') + ';" title="' + esc(tip) + '">'
             + esc(txt) + '</span>';
     }
 
@@ -3725,8 +3725,8 @@ d.attrs[a] = v;
         if (!st || !st.title) return '';
         var body = '<div style="font-size:12.5px;color:var(--xz-text-2);line-height:1.75;white-space:pre-wrap;">' + esc(st.body || '') + '</div>';
         if (st.extra) {
-            body += '<div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(193, 193, 193, .25);">' +
-                '<div style="font-size:11.5px;font-weight:var(--xz-fw-med);color:#afafaf;margin-bottom:6px;">' + esc(st.extraTitle || '') + '</div>' +
+            body += '<div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(230,189,118,.25);">' +
+                '<div style="font-size:11.5px;font-weight:var(--xz-fw-med);color:#c8b06a;margin-bottom:6px;">' + esc(st.extraTitle || '') + '</div>' +
                 '<div style="font-size:11.5px;color:var(--xz-text-2);line-height:1.8;white-space:pre-wrap;">' + esc(st.extra) + '</div></div>';
         }
         return overlayShell(st.title, 'close-howto', body);
@@ -4050,7 +4050,7 @@ d.attrs[a] = v;
                  变量没定义 ⇒ 解析失败 ⇒ 字重回落到继承的 400 ⇒
                  `_v468_opill` 当场报「DOT 字重 ≥700 → 实际 400」。
                  这也是"声明必须挂在界面在就一定的祖先上"的又一例。 */
-            ':root{--xz-fw:400;--xz-fw-med:500;--xz-fw-bold:600;--xz-font:"Noto Sans SC","Noto Sans","Noto Sans CJK SC","Source Han Sans SC","PingFang SC","Microsoft YaHei UI","Microsoft YaHei","Hiragino Sans GB","WenQuanYi Micro Hei",sans-serif;--xz-void:#070707;--xz-bg:#0d0d0d;--xz-card:#171717;--xz-card-hover:#1f1f1f;--xz-border:rgba(255,255,255,0.10);--xz-border-strong:rgba(255,255,255,0.20);--xz-gold:#cecece;--xz-gold-bright:#f1f1f1;--xz-gold-glow:rgba(189, 189, 189, 0.28);--xz-jade:#a7a7a7;--xz-cyan:#b7b7b7;--xz-crimson:#727272;--xz-text:#f5f5f5;--xz-text-2:#c7c7c7;--xz-muted:#929292;--dhl-stage:radial-gradient(circle at 91% 18%, rgba(188, 188, 188, 0.16), transparent 18%), radial-gradient(circle at 8% 76%, rgba(172, 172, 172, 0.10), transparent 22%), linear-gradient(180deg, #131313 0%, #0b0b0b 100%);--dhl-reading:radial-gradient(circle at 93% 14%, rgba(189, 189, 189, 0.14), transparent 14%), radial-gradient(circle at 88% 42%, rgba(174, 174, 174, 0.08), transparent 12%), linear-gradient(180deg, rgba(21, 21, 21, 0.94), rgba(12, 12, 12, 0.97));--dhl-header:linear-gradient(90deg, rgba(15, 15, 15, 0.985), rgba(30, 30, 30, 0.965) 50%, rgba(30, 30, 30, 0.985));--dhl-button-active:linear-gradient(180deg, rgba(88, 88, 88, 0.45), rgba(24, 24, 24, 0.3));'
+            ':root{--xz-fw:400;--xz-fw-med:500;--xz-fw-bold:600;--xz-font:"Noto Sans SC","Noto Sans","Noto Sans CJK SC","Source Han Sans SC","PingFang SC","Microsoft YaHei UI","Microsoft YaHei","Hiragino Sans GB","WenQuanYi Micro Hei",sans-serif;--xz-void:#030d14;--xz-bg:#071720;--xz-card:linear-gradient(145deg, rgba(16, 37, 45, 0.96) 0%, rgba(10, 26, 33, 0.94) 100%);--xz-card-hover:linear-gradient(145deg, rgba(22, 50, 60, 0.98) 0%, rgba(14, 34, 42, 0.96) 100%);--xz-border:rgba(213,180,121,0.28);--xz-border-strong:rgba(242,194,111,0.72);--xz-gold:#e6bd76;--xz-gold-bright:#f2c26f;--xz-gold-glow:rgba(227,185,111,0.28);--xz-jade:#68c5b2;--xz-cyan:#7fd2c1;--xz-crimson:#aa5960;--xz-text:#f3eee5;--xz-text-2:#b7b8b3;--xz-muted:#8a9496;--dhl-stage:radial-gradient(circle at 91% 18%, rgba(255, 177, 73, 0.16), transparent 18%), radial-gradient(circle at 8% 76%, rgba(244, 157, 58, 0.10), transparent 22%), linear-gradient(180deg, #071720 0%, #030d14 100%);--dhl-reading:radial-gradient(circle at 93% 14%, rgba(255, 178, 72, 0.14), transparent 14%), radial-gradient(circle at 88% 42%, rgba(255, 157, 52, 0.08), transparent 12%), linear-gradient(180deg, rgba(7, 25, 34, 0.94), rgba(3, 14, 21, 0.97));--dhl-header:linear-gradient(90deg, rgba(4, 18, 27, 0.985), rgba(16, 35, 43, 0.965) 50%, rgba(37, 27, 25, 0.985));--dhl-button-active:linear-gradient(180deg, rgba(126, 78, 42, 0.45), rgba(14, 27, 32, 0.3));'
             /* ★★★ v470：`:root` 上补一份 `--xz-num-font` ★★★
                本文件第 4196 行（「当前版本号」那个读数）用了
                `font-family:var(--xz-num-font,var(--xz-font))` —— 带兜底，但：
@@ -4169,7 +4169,7 @@ d.attrs[a] = v;
                  → 改这里 → 再跑 `_v471_overflow.mjs` 确认手机/桌面两档都等高。 */
             '.xz-st-card.xz-st-fixh{min-height:897px;}',   /* ★ v1.053：第 4 页加了自定义开局/在场人物/关系预设/落点预设，实测最高 901.69px ⇒ 基准抬到 902 */
             '.xz-st-head{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--xz-border);background:var(--dhl-header);box-shadow:0 4px 15px rgba(0,0,0,0.45);}',
-            '.xz-st-seal{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border:1px solid rgba(193, 193, 193, .55);border-radius:4px;color:var(--xz-gold);font-size:12px;}',
+            '.xz-st-seal{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border:1px solid rgba(230,189,118,.55);border-radius:4px;color:var(--xz-gold);font-size:12px;}',
             '.xz-st-title{flex:1;font-size:13px;letter-spacing:.06em;color:var(--xz-text);}',
             /* ★★★ v468：顶栏标题「开局创角」→「开局设置」，并套一个小金框 ★★★
                用户原话：「开局脚本扁框最顶部左边的这个些，改成开局设置，然后小框美化」。
@@ -4180,13 +4180,13 @@ d.attrs[a] = v;
                ⚠ 样式克制：它旁边就是卡片本身的金色顶边，两个亮框会打架，
                  所以边框只给 .42 透明度、底色只给 .14→.04 的淡渐变。 */
             '.xz-st-titlebox{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;'
-                + 'border:1px solid rgba(193, 193, 193, .42);border-radius:5px;'
-                + 'background:linear-gradient(180deg,rgba(193, 193, 193, .14),rgba(193, 193, 193, .04));'
-                + 'box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 8px rgba(193, 193, 193, .1);}',
+                + 'border:1px solid rgba(230,189,118,.42);border-radius:5px;'
+                + 'background:linear-gradient(180deg,rgba(230,189,118,.14),rgba(230,189,118,.04));'
+                + 'box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 8px rgba(230,189,118,.1);}',
             '.xz-st-titlebox::before,.xz-st-titlebox::after{content:"";flex:none;width:2px;height:9px;'
-                + 'border-radius:1px;background:rgba(193, 193, 193, .55);}',
+                + 'border-radius:1px;background:rgba(230,189,118,.55);}',
             '.xz-st-titlebox>span{font-size:12.5px;font-weight:var(--xz-fw-med);letter-spacing:.1em;'
-                + 'color:var(--xz-gold-bright);text-shadow:0 0 8px rgba(199, 199, 199, .3);}',
+                + 'color:var(--xz-gold-bright);text-shadow:0 0 8px rgba(242,194,111,.3);}',
             '.xz-st-ver{font-size:10px;color:var(--xz-muted);}',
             /* ★★★ v466（第二轮，用户：「要尽量扁，紧凑」）★★★
                实测基线（`node 工具/_v466_h.mjs`，760px 宽）：
@@ -4227,7 +4227,7 @@ d.attrs[a] = v;
                真正的分区框 `.xz-st-sect`，见下方 v466 那一段）。
                规则先留着，是因为 `doneHtml()` 等等旧路径可能还会拼进来；
                ⚠ 清掉之前必须先 grep `xz-st-sec` 确认 0 处引用，别凭印象删。 */
-            '.xz-st-sec{margin:10px 0 6px;padding-left:7px;border-left:2px solid rgba(193, 193, 193, .55);color:var(--xz-gold);font-size:12px;letter-spacing:.04em;font-weight:var(--xz-fw-med);}',
+            '.xz-st-sec{margin:10px 0 6px;padding-left:7px;border-left:2px solid rgba(230,189,118,.55);color:var(--xz-gold);font-size:12px;letter-spacing:.04em;font-weight:var(--xz-fw-med);}',
             '.xz-st-sec:first-child{margin-top:2px;}',
             '.xz-st-sec-sub{margin:8px 0 4px;font-size:11.5px;color:var(--xz-text-2);font-weight:var(--xz-fw-med);}',
             '.xz-st-row{display:flex;align-items:center;gap:6px;margin:6px 0;}',
@@ -4238,7 +4238,7 @@ d.attrs[a] = v;
                ⚠ 别回到 6：那是 v466 之前的原始值，配上新行距会显得松垮；
                  5 是这一档（行高 1.72）下的实测值。 */
             '.xz-st-body input[type=text],.xz-st-body input[type=number],.xz-st-body select,.xz-st-body textarea{flex:1;min-width:0;background:rgba(2,12,18,0.85);border:1px solid var(--xz-border);border-radius:6px;color:var(--xz-text);font-size:12px;padding:5px 9px;line-height:1.35;font-family:inherit;outline:none;box-shadow:inset 0 1px 3px rgba(0,0,0,0.5);transition:border-color 0.2s;}',
-            '.xz-st-body input:focus,.xz-st-body select:focus,.xz-st-body textarea:focus{border-color:rgba(193, 193, 193, .75);box-shadow:0 0 0 2px rgba(193, 193, 193, .12);}',
+            '.xz-st-body input:focus,.xz-st-body select:focus,.xz-st-body textarea:focus{border-color:rgba(230,189,118,.75);box-shadow:0 0 0 2px rgba(230,189,118,.12);}',
             '.xz-st-body input[type=number]{flex:0 0 58px;text-align:center;}',
             '.xz-st-body textarea{min-height:42px;resize:vertical;}',
             /* ★ v469：hint 的上下间距还回去（3/1 → 6/3），它原来是紧贴上一行的 */
@@ -4285,18 +4285,18 @@ d.attrs[a] = v;
             '.xz-st-tiny{margin-top:1px;font-size:10px;line-height:1.25;color:var(--xz-muted);opacity:.85;}',
             '.xz-st-hint b{color:var(--xz-gold);font-weight:var(--xz-fw-med);}',
             '.xz-st-warn{color:var(--xz-gold);}',
-            '.xz-st-dice{flex:0 0 auto;border:1px solid rgba(193, 193, 193, .45);background:rgba(193, 193, 193, .1);color:var(--xz-gold-bright);border-radius:6px;font-size:11px;line-height:1;padding:5px 7px;cursor:pointer;font-family:inherit;}',
-            '.xz-st-dice:hover{background:rgba(193, 193, 193, .28);}',
+            '.xz-st-dice{flex:0 0 auto;border:1px solid rgba(230,189,118,.45);background:rgba(230,189,118,.1);color:var(--xz-gold-bright);border-radius:6px;font-size:11px;line-height:1;padding:5px 7px;cursor:pointer;font-family:inherit;}',
+            '.xz-st-dice:hover{background:rgba(230,189,118,.28);}',
             '.xz-st-tabs{display:flex;gap:5px;margin:4px 0 3px;}',
-            '.xz-st-tab{flex:1;font-size:11.5px;padding:3px 0;border-radius:7px;border:1px solid rgba(193, 193, 193, .25);background:rgba(255,255,255,.02);color:var(--xz-text-2);cursor:pointer;font-family:inherit;}',
+            '.xz-st-tab{flex:1;font-size:11.5px;padding:3px 0;border-radius:7px;border:1px solid rgba(230,189,118,.25);background:rgba(255,255,255,.02);color:var(--xz-text-2);cursor:pointer;font-family:inherit;}',
             '.xz-st-tab.on{border-color:var(--xz-border-strong);background:var(--dhl-button-active);color:var(--xz-gold-bright);font-weight:var(--xz-fw-med);box-shadow:0 0 10px var(--xz-gold-glow), inset 0 1px 0 rgba(255,255,255,0.15);}',
             /* 已配专区 */
             '.xz-st-equipped-box{background:var(--dhl-reading);border:1px solid var(--xz-border);border-radius:8px;padding:7px 9px;margin:4px 0 6px;box-shadow:0 4px 16px rgba(0,4,8,0.55);}',
-            '.xz-st-equipped-head{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:var(--xz-fw-med);color:var(--xz-gold);padding-bottom:3px;border-bottom:1px solid rgba(193, 193, 193, 0.15);margin-bottom:4px;}',
+            '.xz-st-equipped-head{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:var(--xz-fw-med);color:var(--xz-gold);padding-bottom:3px;border-bottom:1px solid rgba(230,189,118,0.15);margin-bottom:4px;}',
             '.xz-st-equipped-count{font-size:10.5px;font-weight:400;color:var(--xz-text-2);}',
             '.xz-st-slot-item{margin-bottom:3px;border-radius:6px;transition:all 0.15s;}',
             '.xz-st-slot-item:last-child{margin-bottom:0;}',
-            '.xz-st-slot-item.filled{background:rgba(255,255,255,0.025);border:1px solid rgba(193, 193, 193, 0.25);padding:4px 7px;}',
+            '.xz-st-slot-item.filled{background:rgba(255,255,255,0.025);border:1px solid rgba(230,189,118,0.25);padding:4px 7px;}',
             '.xz-st-slot-item.empty{display:flex;align-items:center;gap:6px;padding:3px 7px;border:1px dashed rgba(255,255,255,0.12);background:transparent;}',
             '.xz-st-slot-top{display:flex;align-items:center;gap:6px;}',
             '.xz-st-slot-badge{font-size:10px;background:var(--xz-gold);color:#0b0f16;font-weight:var(--xz-fw-med);padding:1px 5px;border-radius:3px;}',
@@ -4304,23 +4304,23 @@ d.attrs[a] = v;
             '.xz-st-slot-badge.artifact{background:#7fd2c1;color:#0b0f16;}',
             '.xz-st-slot-badge.empty{background:rgba(255,255,255,0.08);color:#7e7769;}',
             '.xz-st-slot-title{font-size:12.5px;font-weight:var(--xz-fw-med);color:var(--xz-text);}',
-            '.xz-st-slot-quality{font-size:10px;padding:1px 4px;border-radius:3px;border:1px solid rgba(193, 193, 193, 0.35);color:var(--xz-gold-bright);}',
+            '.xz-st-slot-quality{font-size:10px;padding:1px 4px;border-radius:3px;border:1px solid rgba(230,189,118,0.35);color:var(--xz-gold-bright);}',
             '.xz-st-slot-actions{margin-left:auto;display:flex;gap:4px;}',
             '.xz-st-slot-details{font-size:11px;color:var(--xz-text-2);margin-top:1px;}',
             '.xz-st-slot-desc-text{font-size:11px;color:var(--xz-text-2);margin-top:2px;}',
             '.xz-st-slot-empty-tip{font-size:11px;color:#6b6656;}',
-            '.xz-st-tag-term{color:#7fd2c1;background:rgba(183, 183, 183, 0.12);padding:0 3px;border-radius:2px;border:1px solid rgba(183, 183, 183, 0.28);margin-right:2px;}',
+            '.xz-st-tag-term{color:#7fd2c1;background:rgba(213,180,121,0.12);padding:0 3px;border-radius:2px;border:1px solid rgba(213,180,121,0.28);margin-right:2px;}',
             /* 锻造模板 */
-            '.xz-st-tpl-box{border:1px solid rgba(193, 193, 193, .4);border-radius:8px;padding:6px 8px;margin:4px 0;background:rgba(255,255,255,.015);}',
-            '.xz-st-tpl-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;padding-bottom:3px;border-bottom:1px solid rgba(193, 193, 193, 0.12);}',
+            '.xz-st-tpl-box{border:1px solid rgba(230,189,118,.4);border-radius:8px;padding:6px 8px;margin:4px 0;background:rgba(255,255,255,.015);}',
+            '.xz-st-tpl-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;padding-bottom:3px;border-bottom:1px solid rgba(230,189,118,0.12);}',
             '.xz-st-tpl-status{font-size:11.5px;color:var(--xz-text);font-weight:var(--xz-fw-med);}',
-            '.xz-st-full-banner{font-size:11px;color:var(--xz-gold);background:rgba(169, 169, 169, 0.1);border:1px dashed rgba(169, 169, 169, 0.3);padding:4px 7px;border-radius:6px;margin:3px 0 4px;}',
+            '.xz-st-full-banner{font-size:11px;color:var(--xz-gold);background:rgba(217,164,65,0.1);border:1px dashed rgba(217,164,65,0.3);padding:4px 7px;border-radius:6px;margin:3px 0 4px;}',
             '.xz-st-mini{font-size:10.5px;padding:2px 8px;border-radius:5px;border:1px solid var(--xz-border-strong);background:transparent;color:var(--xz-gold-bright);cursor:pointer;font-family:inherit;}',
-            '.xz-st-mini:hover{border-color:var(--xz-gold,var(--xz-gold));background:rgba(193, 193, 193, .12);color:var(--xz-gold-bright);}',
+            '.xz-st-mini:hover{border-color:var(--xz-gold,var(--xz-gold));background:rgba(230,189,118,.12);color:var(--xz-gold-bright);}',
             '.xz-st-mini.del:hover{border-color:#c0392b;color:#f0a6a0;}',
             '.xz-st-chips{display:flex;flex-wrap:wrap;gap:3px;margin:2px 0 1px;}',
-            '.xz-st-chip{font-size:10.5px;padding:1px 6px;border-radius:999px;border:1px solid rgba(193, 193, 193, .25);background:transparent;color:var(--xz-text-2);cursor:pointer;font-family:inherit;}',
-            '.xz-st-chip.on{border-color:var(--xz-gold);background:rgba(193, 193, 193, .16);color:#f0e2b0;font-weight:var(--xz-fw-med);}',
+            '.xz-st-chip{font-size:10.5px;padding:1px 6px;border-radius:999px;border:1px solid rgba(230,189,118,.25);background:transparent;color:var(--xz-text-2);cursor:pointer;font-family:inherit;}',
+            '.xz-st-chip.on{border-color:var(--xz-gold);background:rgba(230,189,118,.16);color:#f0e2b0;font-weight:var(--xz-fw-med);}',
             '.xz-st-chip.locked{border-color:rgba(56,189,248,.5);background:rgba(56,189,248,.12);color:#9fd8f7;cursor:default;}',
             '.xz-st-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:4px;}',
             /* ★★★ v382：DLC 签条 —— 一行三段（勾选框+包名 / 展开 / 已选），**不折行**。
@@ -4330,10 +4330,10 @@ d.attrs[a] = v;
             '.xz-st-dlc-box{margin:4px 0 8px;}',
             '.xz-st-dlc-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}',
             '.xz-st-dlc-toggle{flex:0 0 auto;}',
-            '.xz-st-dlc-toggle.on{border-color:rgba(193, 193, 193, .55);color:#dbdbdb;}',
+            '.xz-st-dlc-toggle.on{border-color:rgba(230,189,118,.55);color:#ffd88a;}',
             '.xz-st-dlc-sum{font-size:11px;color:var(--xz-text-2);}',
             '.xz-st-dlc-sum.on{color:var(--xz-gold);font-weight:var(--xz-fw-med);}',
-            '.xz-st-dlc-body{margin-top:5px;padding-top:3px;border-top:1px solid rgba(193, 193, 193, .14);}',
+            '.xz-st-dlc-body{margin-top:5px;padding-top:3px;border-top:1px solid rgba(230,189,118,.14);}',
             '.xz-st-dlc-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:5px 0;padding:4px 0;}',
             '.xz-st-dlc-pick{display:inline-flex;align-items:center;gap:6px;flex:0 0 auto;'
                 + 'color:var(--xz-text);font-size:12px;cursor:pointer;user-select:none;}',
@@ -4347,11 +4347,11 @@ d.attrs[a] = v;
                ⚠ `max-width` 要留：手机 390px 下「大主宰 少年篇」这种长名字
                  会把复选框挤到下一行，行就散了。 */
             '.xz-st-dlc-sel{flex:0 0 auto;max-width:46vw;font-family:var(--xz-font);font-size:11px;'
-                + 'color:var(--xz-text);background:#1b2130;border:1px solid rgba(193, 193, 193, .30);'
+                + 'color:var(--xz-text);background:#1b2130;border:1px solid rgba(230,189,118,.30);'
                 + 'border-radius:5px;padding:3px 6px;cursor:pointer;-webkit-appearance:none;appearance:none;}',
-            '.xz-st-dlc-sel:focus{outline:none;border-color:rgba(193, 193, 193, .62);}',
+            '.xz-st-dlc-sel:focus{outline:none;border-color:rgba(230,189,118,.62);}',
             '.xz-st-dlc-info{flex:1 1 100%;margin:2px 0 0;padding:6px 8px;border-radius:6px;'
-                + 'background:rgba(0,0,0,.26);border:1px dashed rgba(193, 193, 193, .22);'
+                + 'background:rgba(0,0,0,.26);border:1px dashed rgba(230,189,118,.22);'
                 + 'font-size:11px;line-height:1.6;color:var(--xz-text-2);}',
             /* ★★★ v466：地点卡片从 `display:block` 改成**纵向 flex** ★★★
                真因（截图抓到的「乱」）：`.xz-st-opt` 是 `display:block`，而它的两个孩子
@@ -4365,44 +4365,44 @@ d.attrs[a] = v;
                  子元素是否行内，也不会被别处覆盖的单条 margin 规则打乱。 */
             '.xz-st-kin{}',
             '.xz-st-opt{display:flex;flex-direction:column;gap:1px;'
-                + 'border:1px solid rgba(193, 193, 193, .2);border-radius:7px;'
+                + 'border:1px solid rgba(230,189,118,.2);border-radius:7px;'
                 + 'background:rgba(255,255,255,.02);padding:4px 7px;cursor:pointer;}',
-            '.xz-st-opt:hover{border-color:rgba(193, 193, 193, .5);}',
-            '.xz-st-opt.on{border-color:var(--xz-gold);background:rgba(193, 193, 193, .12);}',
+            '.xz-st-opt:hover{border-color:rgba(230,189,118,.5);}',
+            '.xz-st-opt.on{border-color:var(--xz-gold);background:rgba(230,189,118,.12);}',
             '.xz-st-opt-name{font-size:12px;color:var(--xz-text);line-height:1.35;'
                 + 'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
             '.xz-st-opt-meta{font-size:10px;color:var(--xz-muted);line-height:1.25;}',
             '.xz-st-opt input{display:none;}',
-            '.xz-st-brief{margin:4px 0 0;padding:5px 8px;border:1px dashed rgba(193, 193, 193, .28);border-radius:7px;background:rgba(0,0,0,.25);font-size:11px;color:var(--xz-text-2);}',
+            '.xz-st-brief{margin:4px 0 0;padding:5px 8px;border:1px dashed rgba(230,189,118,.28);border-radius:7px;background:rgba(0,0,0,.25);font-size:11px;color:var(--xz-text-2);}',
             '.xz-st-brief em{color:var(--xz-gold);font-style:normal;}',
             '.xz-st-actions{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap;}',
-            '.xz-st-body button.xz-st-main{font-family:inherit;font-size:12px;padding:6px 16px;border-radius:7px;cursor:pointer;border:1px solid rgba(193, 193, 193, .5);background:rgba(193, 193, 193, .14);color:var(--xz-gold-bright);}',
-            '.xz-st-body button.xz-st-main:hover:not(:disabled){background:rgba(193, 193, 193, .26);}',
+            '.xz-st-body button.xz-st-main{font-family:inherit;font-size:12px;padding:6px 16px;border-radius:7px;cursor:pointer;border:1px solid rgba(230,189,118,.5);background:rgba(230,189,118,.14);color:var(--xz-gold-bright);}',
+            '.xz-st-body button.xz-st-main:hover:not(:disabled){background:rgba(230,189,118,.26);}',
             '.xz-st-body button.xz-st-main:disabled{opacity:.4;cursor:not-allowed;}',
             '.xz-st-body button.xz-st-ghost{border-color:var(--xz-border-strong);background:transparent;color:var(--xz-gold-bright);}',
             /* ★ v10：不带作用域的按钮兜底 —— 以前按钮样式全写在 '.xz-st-body button.…' 下，
      浮层正文没有 xz-st-body，于是浮层里的按钮全变成浏览器默认白框。 */
-            '.xz-st-main,.xz-st-ovl-box button.xz-st-main,button.xz-st-main{font-family:inherit;font-size:12px;padding:6px 16px;border-radius:7px;cursor:pointer;border:1px solid rgba(193, 193, 193, .5);background:rgba(193, 193, 193, .16);color:var(--xz-gold-bright);font-weight:var(--xz-fw-med);transition:all .15s;}',
-            '.xz-st-main:hover:not(:disabled),.xz-st-ovl-box button.xz-st-main:hover:not(:disabled),button.xz-st-main:hover:not(:disabled){background:rgba(193, 193, 193, .28);border-color:var(--xz-gold);}',
+            '.xz-st-main,.xz-st-ovl-box button.xz-st-main,button.xz-st-main{font-family:inherit;font-size:12px;padding:6px 16px;border-radius:7px;cursor:pointer;border:1px solid rgba(230,189,118,.5);background:rgba(230,189,118,.16);color:var(--xz-gold-bright);font-weight:var(--xz-fw-med);transition:all .15s;}',
+            '.xz-st-main:hover:not(:disabled),.xz-st-ovl-box button.xz-st-main:hover:not(:disabled),button.xz-st-main:hover:not(:disabled){background:rgba(230,189,118,.28);border-color:var(--xz-gold);}',
             '.xz-st-main:disabled,button.xz-st-main:disabled{opacity:.4;cursor:not-allowed;}',
-            '.xz-st-main.xz-st-ghost,.xz-st-ghost{border-color:rgba(193, 193, 193, .45);background:transparent;color:var(--xz-gold-bright);}',
-            '.xz-st-main.xz-st-ghost:hover:not(:disabled),.xz-st-ghost:hover:not(:disabled){background:rgba(193, 193, 193, .14);}',
-            '.xz-st-dice,.xz-st-ovl-box button.xz-st-dice,button.xz-st-dice{font-family:inherit;font-size:11.5px;padding:4px 11px;border-radius:999px;cursor:pointer;border:1px solid rgba(193, 193, 193, .4);background:rgba(255,255,255,.03);color:var(--xz-gold-bright);}',
-            '.xz-st-dice:hover:not(:disabled){border-color:var(--xz-gold);background:rgba(193, 193, 193, .16);color:#f0e2b0;}',
-            '.xz-st-mini,.xz-st-ovl-box button.xz-st-mini,button.xz-st-mini{font-family:inherit;font-size:10.5px;padding:2px 8px;border-radius:5px;cursor:pointer;border:1px solid rgba(193, 193, 193, .45);background:transparent;color:var(--xz-gold-bright);}',
-            '.xz-st-mini:hover:not(:disabled),button.xz-st-mini:hover:not(:disabled){border-color:var(--xz-gold);background:rgba(193, 193, 193, .14);color:var(--xz-gold-bright);}',
+            '.xz-st-main.xz-st-ghost,.xz-st-ghost{border-color:rgba(230,189,118,.45);background:transparent;color:var(--xz-gold-bright);}',
+            '.xz-st-main.xz-st-ghost:hover:not(:disabled),.xz-st-ghost:hover:not(:disabled){background:rgba(230,189,118,.14);}',
+            '.xz-st-dice,.xz-st-ovl-box button.xz-st-dice,button.xz-st-dice{font-family:inherit;font-size:11.5px;padding:4px 11px;border-radius:999px;cursor:pointer;border:1px solid rgba(230,189,118,.4);background:rgba(255,255,255,.03);color:var(--xz-gold-bright);}',
+            '.xz-st-dice:hover:not(:disabled){border-color:var(--xz-gold);background:rgba(230,189,118,.16);color:#f0e2b0;}',
+            '.xz-st-mini,.xz-st-ovl-box button.xz-st-mini,button.xz-st-mini{font-family:inherit;font-size:10.5px;padding:2px 8px;border-radius:5px;cursor:pointer;border:1px solid rgba(230,189,118,.45);background:transparent;color:var(--xz-gold-bright);}',
+            '.xz-st-mini:hover:not(:disabled),button.xz-st-mini:hover:not(:disabled){border-color:var(--xz-gold);background:rgba(230,189,118,.14);color:var(--xz-gold-bright);}',
             '.xz-st-mini.del:hover:not(:disabled),button.xz-st-mini.del:hover:not(:disabled){border-color:#c0392b;color:#f0a6a0;background:rgba(192,57,43,.12);}',
-            '.xz-st-ovl-box input[type=text],.xz-st-ovl-box input[type=number],.xz-st-ovl-box select,.xz-st-ovl-box textarea{font-family:inherit;background:#06101e;border:1px solid rgba(193, 193, 193, .3);border-radius:6px;padding:6px 9px;color:var(--xz-text);font-size:12.5px;}',
+            '.xz-st-ovl-box input[type=text],.xz-st-ovl-box input[type=number],.xz-st-ovl-box select,.xz-st-ovl-box textarea{font-family:inherit;background:#06101e;border:1px solid rgba(230,189,118,.3);border-radius:6px;padding:6px 9px;color:var(--xz-text);font-size:12.5px;}',
             '.xz-st-ovl-box input:focus,.xz-st-ovl-box select:focus,.xz-st-ovl-box textarea:focus{border-color:var(--xz-gold);outline:none;}',
             '.xz-st-note{margin-top:8px;font-size:11px;color:#7fb69b;}',
             '.xz-st-note.warn{color:var(--xz-gold);}',
             '.xz-st-err{margin-top:8px;font-size:11px;color:#f0a6a0;background:rgba(120,30,26,.35);border:1px solid rgba(192,57,43,.5);border-radius:7px;padding:8px;white-space:pre-wrap;word-break:break-word;}',
             '.xz-st-err button{margin-top:6px;border-color:rgba(240,166,160,.5);background:rgba(192,57,43,.2);color:#f7d7d4;}',
-            '.xz-st-term-tip-box{margin-top:8px;padding:8px 10px;background:rgba(9,13,20,0.95);border:1px solid rgba(193, 193, 193, 0.45);border-left:3px solid var(--xz-gold);border-radius:4px;box-shadow:0 4px 16px rgba(0,0,0,0.6);}',
+            '.xz-st-term-tip-box{margin-top:8px;padding:8px 10px;background:rgba(9,13,20,0.95);border:1px solid rgba(230,189,118,0.45);border-left:3px solid var(--xz-gold);border-radius:4px;box-shadow:0 4px 16px rgba(0,0,0,0.6);}',
             '.xz-st-term-tip-head{display:flex;align-items:center;gap:8px;margin-bottom:4px;}',
             '.xz-st-term-tip-name{color:var(--xz-gold-bright);font-size:12.5px;font-weight:var(--xz-fw-med);}',
-            '.xz-st-term-tip-star{color:#bfbfbf;font-size:11px;}',
-            '.xz-st-term-tip-cat{color:#7fd2c1;font-size:10px;background:rgba(183, 183, 183, 0.15);border:1px solid rgba(183, 183, 183, 0.35);padding:1px 5px;border-radius:2px;}',
+            '.xz-st-term-tip-star{color:#fbbf24;font-size:11px;}',
+            '.xz-st-term-tip-cat{color:#7fd2c1;font-size:10px;background:rgba(213,180,121,0.15);border:1px solid rgba(213,180,121,0.35);padding:1px 5px;border-radius:2px;}',
             '.xz-st-term-tip-close{margin-left:auto;cursor:pointer;color:var(--xz-muted);font-size:12px;padding:0 4px;}',
             '.xz-st-term-tip-close:hover{color:var(--xz-text);}',
             '.xz-st-term-tip-body{color:#c8c1b2;font-size:11.5px;line-height:1.55;}',
@@ -4429,11 +4429,11 @@ d.attrs[a] = v;
             /* 页签条：四颗等宽，当前页高亮 + 下面一条金色进度线 */
             '.xz-st-wiz{display:flex;gap:4px;margin:0 0 6px;}',
             '.xz-st-wiz-dot{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;'
-                + 'background:transparent;border:none;border-top:2px solid rgba(193, 193, 193, .22);'
+                + 'background:transparent;border:none;border-top:2px solid rgba(230,189,118,.22);'
                 + 'padding:5px 2px 3px;cursor:pointer;font-family:inherit;transition:all .15s;}',
-            '.xz-st-wiz-dot:hover{border-top-color:rgba(193, 193, 193, .5);}',
+            '.xz-st-wiz-dot:hover{border-top-color:rgba(230,189,118,.5);}',
             '.xz-st-wiz-dot.on{border-top-color:var(--xz-gold-bright);}',
-            '.xz-st-wiz-dot.done{border-top-color:rgba(193, 193, 193, .55);}',
+            '.xz-st-wiz-dot.done{border-top-color:rgba(230,189,118,.55);}',
             '.xz-st-wiz-n{font-size:10px;color:var(--xz-muted);letter-spacing:.08em;line-height:1;}',
             '.xz-st-wiz-dot.on .xz-st-wiz-n{color:var(--xz-gold-bright);}',
             '.xz-st-wiz-t{font-size:11.5px;color:var(--xz-text-2);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}',
@@ -4447,10 +4447,10 @@ d.attrs[a] = v;
             '.xz-st-hero{text-align:center;padding:8px 6px 6px;}',
             '.xz-st-hero-t{font-size:30px;font-weight:var(--xz-fw-bold);letter-spacing:.42em;text-indent:.42em;line-height:1.25;'
                 + 'color:#f6dc9c;'
-                + 'text-shadow:0 0 18px rgba(193, 193, 193, .45),0 0 42px rgba(193, 193, 193, .22),0 2px 0 rgba(0,0,0,.6);}',
+                + 'text-shadow:0 0 18px rgba(230,189,118,.45),0 0 42px rgba(230,189,118,.22),0 2px 0 rgba(0,0,0,.6);}',
             '.xz-st-hero-sub{margin-top:4px;font-size:12px;color:var(--xz-text-2);letter-spacing:.20em;text-indent:.20em;}',
             '.xz-st-hero-rule{width:74px;height:1px;margin:6px auto 0;'
-                + 'background:linear-gradient(90deg,transparent,rgba(193, 193, 193, .85),transparent);}',
+                + 'background:linear-gradient(90deg,transparent,rgba(230,189,118,.85),transparent);}',
             /* ★★★ v467：第 1 页的「人物条目」入口条（从状态栏「人物」页复刻）★★★
                原版在 05 里叫 `.xz-cem-entry`，但 **class 不跨 IIFE** ——
                07 是另一份 style 块，照抄 HTML 只会得到没有边框、按钮没样式的裸条。
@@ -4471,22 +4471,22 @@ d.attrs[a] = v;
                  桌面端要看得见「查看全书原创与 DLC 人物条目…」这句。 */
             '.xz-st-cem{display:flex;align-items:center;gap:6px;flex-wrap:wrap;'
                 + 'padding:3px 7px;margin:6px 0 0;border-radius:8px;'
-                + 'background:#151a24;border:1px solid rgba(171, 171, 171, .34);}',
+                + 'background:#151a24;border:1px solid rgba(201,168,106,.34);}',
             '.xz-st-cem-t{flex:none;font-size:11px;color:var(--xz-text-2);}',
             '.xz-st-cem-d{flex:1 1 120px;min-width:0;font-size:10px;color:var(--xz-muted);line-height:1.4;}',
             '.xz-st-cem-b{flex:none;padding:2px 9px;font-size:11px;cursor:pointer;border-radius:6px;'
-                + 'background:rgba(193, 193, 193, .10);color:#cdcdcd;border:1px solid rgba(171, 171, 171, .6);'
+                + 'background:rgba(230,189,118,.10);color:#e8cb92;border:1px solid rgba(201,168,106,.6);'
                 + 'font-family:inherit;-webkit-tap-highlight-color:transparent;touch-action:manipulation;line-height:1.5;}',
             /* 手机：说明让位给按钮（三行说明比两个按钮更占地方） */
             '@media (max-width:430px){.xz-st-cem-d{display:none;}.xz-st-cem-t{margin-right:2px;}}',
-            '.xz-st-cem-b:hover{background:rgba(193, 193, 193, .20);}',
+            '.xz-st-cem-b:hover{background:rgba(230,189,118,.20);}',
             '.xz-st-cem-b.alt{background:rgba(155,180,220,.10);color:#b9cde8;border-color:rgba(155,180,220,.55);}',
             '.xz-st-cem-b.alt:hover{background:rgba(155,180,220,.20);}',
             /* 翻页条：上一步 / 下一步（下一步是主按钮）
                ★ v470：`/ .xz-st-pager-info` 那条「N / 4」的样式随元素一起删了。
                  留着只会让后来的人以为还有个页码要管 —— 无主样式比没有样式更误导。 */
             '.xz-st-pager{display:flex;align-items:center;gap:7px;margin-top:7px;padding-top:6px;'
-                + 'border-top:1px solid rgba(193, 193, 193, .16);}',
+                + 'border-top:1px solid rgba(230,189,118,.16);}',
             '.xz-st-pager button{flex:0 0 auto;}',
             /* ★ v470：页码删了之后，翻页条只剩两颗按钮 —— 「下一步」贴右边才不至于两边空荡。
                `margin-left:auto` 只给主按钮，第 1 页没有「上一步」时它仍然靠右。 */
@@ -4545,13 +4545,13 @@ d.attrs[a] = v;
                ⚠ 别怕"框变高会超出"：四页是 `min-height` 不是 `height`，
                  第 3 页内容最多（598px）也还有余量，且它自己有限高面板。
                ⚠ 标题栏别超过 8px：再多就变成"标题比内容还重"，喧宾夺主。 */
-            '.xz-st-sect{margin:0 0 9px;border:1px solid rgba(193, 193, 193, .22);border-radius:9px;'
+            '.xz-st-sect{margin:0 0 9px;border:1px solid rgba(230,189,118,.22);border-radius:9px;'
                 + 'background:linear-gradient(180deg,rgba(255,255,255,.028),rgba(0,0,0,.14));'
                 + 'box-shadow:inset 0 1px 0 rgba(255,255,255,.045),0 2px 10px rgba(0,4,8,.32);}',
             /* 分区标题栏：左侧金色竖标 + 标题 + 右侧可选计数 */
             '.xz-st-sect-h{display:flex;align-items:center;gap:7px;padding:6px 10px;'
-                + 'border-bottom:1px solid rgba(193, 193, 193, .16);'
-                + 'background:linear-gradient(90deg,rgba(193, 193, 193, .10),rgba(193, 193, 193, .015));'
+                + 'border-bottom:1px solid rgba(230,189,118,.16);'
+                + 'background:linear-gradient(90deg,rgba(230,189,118,.10),rgba(230,189,118,.015));'
                 + 'border-radius:9px 9px 0 0;'
                 /* ★★★ v470：标题栏在两种分支里是**两种标签**，必须把 button 拉回来 ★★★
                    病历（用户 2026-10-30：「这个美化框怎么回事，和其他的你看，
@@ -4577,7 +4577,7 @@ d.attrs[a] = v;
                      仍会画默认控件外观（圆角+内阴影）。 */
                 + 'width:100%;box-sizing:border-box;appearance:none;-webkit-appearance:none;'
                 /* ⚠ 边框要**逐边清**，不能只写 `border:0`：
-                   后面那条 `border-bottom:1px solid rgba(193, 193, 193, .16)` 是标题栏的
+                   后面那条 `border-bottom:1px solid rgba(230,189,118,.16)` 是标题栏的
                    金色分隔线，必须留着。写成 `border:0` 会把这条线一起清掉。
                    而按钮默认的 `outset 2px` 在**上/左/右**三边 —— 只清那三边，
                    底边让下面那条声明接管。实测漏清这三边时，标题栏外面仍套着一圈
@@ -4590,8 +4590,8 @@ d.attrs[a] = v;
                ★ 这两条必须写在 `.xz-st-sect-h` 之后 —— 同权重靠顺序覆盖。 */
             'div.xz-st-sect-h{cursor:default;}',
             '.xz-st-sect-h::before{content:"";flex:none;width:3px;height:15px;border-radius:2px;'
-                + 'background:linear-gradient(180deg,var(--xz-gold-bright),rgba(193, 193, 193, .35));'
-                + 'box-shadow:0 0 7px rgba(199, 199, 199, .45);}',
+                + 'background:linear-gradient(180deg,var(--xz-gold-bright),rgba(230,189,118,.35));'
+                + 'box-shadow:0 0 7px rgba(242,194,111,.45);}',
             /* ★ v466：右侧小字**不贴最右边缘**（`flex:0 1 auto` + `margin-left:8px`），
                而不是 `margin-left:auto` 顶到框的右边缘。
                真因（截图抓到的）：页面右侧挂着几颗 `position:fixed` 的悬浮球
@@ -4662,7 +4662,7 @@ d.attrs[a] = v;
                挤在一起，看起来像另一行表单标签。给一道左侧细竖线当作"这是读数，
                不是控件"。 */
             '.xz-st-preview{margin:1px 0 3px;padding:1px 0 1px 7px;'
-                + 'border-left:2px solid rgba(193, 193, 193, .45);'
+                + 'border-left:2px solid rgba(230,189,118,.45);'
                 + 'font-size:11px;line-height:1.5;color:var(--xz-text-2);}',
             '.xz-st-preview b{color:var(--xz-gold);font-weight:var(--xz-fw-med);}',
             /* 分区框的展开三角。原来没样式 ⇒ 只在有 key 的框上以 ▾/▸ 裸字符出现，
@@ -4720,7 +4720,7 @@ d.attrs[a] = v;
                  或者先砍别处 —— 每一行都要从"被藏表单 168px"这个总数里出。 */
             '.xz-st-pickpanel{display:flex;flex-direction:column;box-sizing:border-box;'
                 + 'max-height:163px;margin:3px 0 2px;'
-                + 'padding:3px 5px;border:1px dashed rgba(193, 193, 193, .34);border-radius:8px;'
+                + 'padding:3px 5px;border:1px dashed rgba(230,189,118,.34);border-radius:8px;'
                 + 'background:rgba(0,0,0,.26);overflow:hidden;}',
             /* ⚠⚠ 面板是 `flex-direction:column`，**每一个"固定行"都必须写 `flex:none`** ⚠⚠
                病历（v468，量出来的）：flex 子项默认 `flex-shrink:1`，而面板有
@@ -4781,7 +4781,7 @@ d.attrs[a] = v;
                  必须配 `> *{flex:none}` 否则网格会被压扁（第七/八节那条老病）。
                  要压只压容器本身（`flex:1 1 auto;min-height:0`），子项一律不压。 */
             '.xz-st-pickscroll{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;overflow-y:auto;'
-                + 'scrollbar-width:thin;scrollbar-color:rgba(193, 193, 193, .4) transparent;}',
+                + 'scrollbar-width:thin;scrollbar-color:rgba(230,189,118,.4) transparent;}',
             '.xz-st-pickscroll>*{flex:none;}',
             /* ★★★ v471：滚到分类之后**先把网格顶上来，别让说明压在它前面** ★★★
                病历（实测 + 截图双重确认）：
@@ -4823,15 +4823,15 @@ d.attrs[a] = v;
             /* ② 折叠说明
                ★ v469：折叠条也还回去（2px → 5px 内边距、10.5 → 11px 字）。
                  它现在和其它字段的间距一致了，不再像贴在框底的一行小注。 */
-            '.xz-st-fold{margin:6px 0 2px;border:1px dashed rgba(193, 193, 193, .26);border-radius:6px;'
+            '.xz-st-fold{margin:6px 0 2px;border:1px dashed rgba(230,189,118,.26);border-radius:6px;'
                 + 'background:rgba(0,0,0,.20);}',
             '.xz-st-fold>summary{list-style:none;cursor:pointer;padding:5px 9px;'
                 + 'font-size:11px;color:var(--xz-muted);display:flex;align-items:center;gap:6px;'
                 + 'user-select:none;border-radius:6px;}',
             '.xz-st-fold>summary::-webkit-details-marker{display:none;}',
-            '.xz-st-fold>summary::before{content:"ⓘ";flex:none;color:rgba(193, 193, 193, .75);font-size:11px;}',
+            '.xz-st-fold>summary::before{content:"ⓘ";flex:none;color:rgba(230,189,118,.75);font-size:11px;}',
             '.xz-st-fold>summary:hover{color:var(--xz-text-2);}',
-            '.xz-st-fold[open]>summary{color:var(--xz-gold);border-bottom:1px solid rgba(193, 193, 193, .14);'
+            '.xz-st-fold[open]>summary{color:var(--xz-gold);border-bottom:1px solid rgba(230,189,118,.14);'
                 + 'border-radius:6px 6px 0 0;}',
             '.xz-st-fold-b{padding:6px 10px 7px;font-size:11px;line-height:1.65;color:var(--xz-text-2);}',
             '.xz-st-fold-b b{color:var(--xz-gold);font-weight:var(--xz-fw-med);}',
@@ -4859,7 +4859,7 @@ d.attrs[a] = v;
                结果 max-height 算 163 实际出 203。同名规则两份 = 迟早分叉。 */
             /* 目标为自己侧时的警示条 */
             '.xz-st-pickwarn{margin:0 0 5px;padding:3px 7px;border-radius:5px;font-size:10.5px;line-height:1.5;flex:none;'
-                + 'color:#bfbfbf;background:rgba(170,89,96,.16);border-left:2px solid rgba(173, 173, 173, .7);}',
+                + 'color:#f0b090;background:rgba(170,89,96,.16);border-left:2px solid rgba(240,150,120,.7);}',
             /* 通用行：左侧固定宽标签 + 右侧内容
                ★★ v468：这一行同时装「成套」胶囊与分类按钮 ★★
                病历（真 Chrome 量出来的）：合并后行高只剩 **5px**，而三个子元素
@@ -4882,8 +4882,8 @@ d.attrs[a] = v;
             /* 描写翻页的小方钮 */
             '.xz-st-st-mini,.xz-st-body button.xz-st-st-mini{font-family:inherit;flex:none;font-size:10px;line-height:1;'
                 + 'width:20px;height:20px;padding:0;border-radius:5px;cursor:pointer;'
-                + 'border:1px solid rgba(193, 193, 193, .3);background:rgba(193, 193, 193, .06);color:var(--xz-gold);}',
-            '.xz-st-st-mini:hover:not(:disabled){background:rgba(193, 193, 193, .2);border-color:var(--xz-gold);}',
+                + 'border:1px solid rgba(230,189,118,.3);background:rgba(230,189,118,.06);color:var(--xz-gold);}',
+            '.xz-st-st-mini:hover:not(:disabled){background:rgba(230,189,118,.2);border-color:var(--xz-gold);}',
             '.xz-st-st-mini:disabled{cursor:not-allowed;}',
             /* ── 一级：分类（**独占一行**，主入口）──
                6 个分类必须完整可见 —— 它们是唯一的效果入口，
@@ -4917,16 +4917,16 @@ d.attrs[a] = v;
             '.xz-st-pickcat,.xz-st-body button.xz-st-pickcat{font-family:inherit;flex:0 0 auto;'
                 + 'min-width:max-content;'
                 + 'font-size:10.5px;line-height:1.4;padding:2px 8px;border-radius:6px;cursor:pointer;'
-                + 'border:1px solid rgba(193, 193, 193, .22);background:rgba(255,255,255,.02);'
+                + 'border:1px solid rgba(230,189,118,.22);background:rgba(255,255,255,.02);'
                 + 'color:var(--xz-text-2);transition:all .14s;white-space:nowrap;}',
-            '.xz-st-pickcat:hover{border-color:rgba(193, 193, 193, .55);color:var(--xz-gold);'
-                + 'background:rgba(193, 193, 193, .1);}',
+            '.xz-st-pickcat:hover{border-color:rgba(230,189,118,.55);color:var(--xz-gold);'
+                + 'background:rgba(230,189,118,.1);}',
             /* 选中态用实心金边 + 亮字，一眼能看出"正在看哪一类" */
-            '.xz-st-pickcat.on{border-color:var(--xz-gold);background:rgba(193, 193, 193, .2);'
-                + 'color:#f7e6b6;font-weight:var(--xz-fw-med);box-shadow:0 0 7px rgba(193, 193, 193, .22);}',
+            '.xz-st-pickcat.on{border-color:var(--xz-gold);background:rgba(230,189,118,.2);'
+                + 'color:#f7e6b6;font-weight:var(--xz-fw-med);box-shadow:0 0 7px rgba(230,189,118,.22);}',
             /* 分类后面那个数量徽标 */
             '.xz-st-pickcat-n{margin-left:4px;font-size:9.5px;font-weight:400;color:var(--xz-muted);}',
-            '.xz-st-pickcat.on .xz-st-pickcat-n{color:#cdcdcd;}',
+            '.xz-st-pickcat.on .xz-st-pickcat-n{color:#e8cb92;}',
             /* ── 二级：效果按钮 ──
                三列 grid，每格「名字 / 数值」上下两段。
                ⚠ 限高靠 max-height + overflow-y，不靠"少渲染几条"：
@@ -4950,14 +4950,14 @@ d.attrs[a] = v;
                auto-fit 会折叠空轨道 ⇒ 内容少时自动摊开，多时按 150px 分列。 */
             '.xz-st-pickgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:3px;'
                 + 'min-height:0;padding:1px;margin:0 0 3px;'
-                + 'scrollbar-width:thin;scrollbar-color:rgba(193, 193, 193, .4) transparent;}',
+                + 'scrollbar-width:thin;scrollbar-color:rgba(230,189,118,.4) transparent;}',
             '.xz-st-pickbtn,.xz-st-body button.xz-st-pickbtn{font-family:inherit;display:flex;flex-direction:column;'
                 + 'align-items:center;justify-content:center;gap:2px;min-width:0;padding:6px 8px;min-height:48px;'
-                + 'border-radius:6px;cursor:pointer;border:1px solid rgba(193, 193, 193, .2);'
+                + 'border-radius:6px;cursor:pointer;border:1px solid rgba(230,189,118,.2);'
                 + 'background:rgba(255,255,255,.02);transition:all .14s;}',
-            '.xz-st-pickbtn:hover{border-color:rgba(193, 193, 193, .6);background:rgba(193, 193, 193, .1);}',
-            '.xz-st-pickbtn.on{border-color:var(--xz-gold);background:rgba(193, 193, 193, .18);'
-                + 'box-shadow:inset 0 0 0 1px rgba(193, 193, 193, .2);}',
+            '.xz-st-pickbtn:hover{border-color:rgba(230,189,118,.6);background:rgba(230,189,118,.1);}',
+            '.xz-st-pickbtn.on{border-color:var(--xz-gold);background:rgba(230,189,118,.18);'
+                + 'box-shadow:inset 0 0 0 1px rgba(230,189,118,.2);}',
             /* 名字：字号小但字重够，否则 54 个机制挤在一起会糊成一片 */
             '.xz-st-pickbtn-k{font-size:10.5px;line-height:1.25;font-weight:var(--xz-fw-med);color:var(--xz-text-2);'
                 + 'max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
@@ -4965,7 +4965,7 @@ d.attrs[a] = v;
             /* 数值：金色 + 等宽数字，让一列数值能对齐着扫读 */
             '.xz-st-pickbtn-v{font-size:9.5px;line-height:1.2;color:var(--xz-gold);font-variant-numeric:tabular-nums;'
                 + 'max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
-            '.xz-st-pickbtn.on .xz-st-pickbtn-v{color:#c7c7c7;}',
+            '.xz-st-pickbtn.on .xz-st-pickbtn-v{color:#f2c26f;}',
             '.xz-st-pickhint{margin:0 0 3px;font-size:10px;line-height:1.3;color:var(--xz-muted);'
                 + 'max-height:26px;overflow:hidden;}',
             /* ── 出口行：只剩「确定」一个按钮，右对齐 ──
@@ -4984,8 +4984,8 @@ d.attrs[a] = v;
             /* ── 已选摘要 ── 收起面板后唯一能看见"选了啥"的地方 */
             '.xz-st-picksum{display:flex;flex-wrap:wrap;gap:3px;}',
             '.xz-st-picksum-i{display:inline-flex;align-items:center;padding:1px 6px;border-radius:8px;'
-                + 'font-size:10.5px;line-height:1.4;color:#cdcdcd;background:rgba(193, 193, 193, .1);'
-                + 'border:1px solid rgba(193, 193, 193, .24);}',
+                + 'font-size:10.5px;line-height:1.4;color:#e8cb92;background:rgba(230,189,118,.1);'
+                + 'border:1px solid rgba(230,189,118,.24);}',
             /* 手机窄屏：三列压成两列，否则每格只剩 40px，机制名全被省略号吃掉 */
             '@media (max-width:430px){'
                 /* ★ v508：这里原来是写死的 repeat(2,...) ⇒ auto-fit 没法折叠空轨道，
@@ -5027,7 +5027,7 @@ d.attrs[a] = v;
                    有价值的是"同层级视觉一致"，DOT 的层级本来就跟别人不同。 */
             '.xz-st-opill.dot{color:#c9f5e4;font-weight:700;'
                 + 'background:rgba(104,197,178,.14);'
-                + 'border-left:2px solid rgba(199, 199, 199, .85);}',
+                + 'border-left:2px solid rgba(242,194,111,.85);}',
             /* ★★★ v468：`.xz-chip-sm` 此前**从未定义过** ★★★
                病历：v467 起玄技那栏就在写 `<span class="xz-chip-sm">主动</span>`、
                v468 又给玄诀/武器各写了一次「被动」，一共 7 处用到 —— 而样式表里
@@ -5165,10 +5165,10 @@ d.attrs[a] = v;
         /* v71：玄技卡标签为「主动 · 功能 · 目标 · 消耗」。 */
         function _slotItem(it, i, kind) {
             var isH = (kind === '玄诀');
-            var tagCol = isH ? '#60a5fa' : '#999999';
-            var tagBd = isH ? 'rgba(59,130,246,0.45)' : 'rgba(153, 153, 153, 0.45)';
+            var tagCol = isH ? '#60a5fa' : '#f87171';
+            var tagBd = isH ? 'rgba(59,130,246,0.45)' : 'rgba(248,113,113,0.45)';
             var tags = '<span class="xz-st-tag-term" style="color:' + tagCol + ';border-color:' + tagBd + ';">' + (isH ? '被动' : '主动') + '</span> ';
-            if (it.流派 && it.流派 !== '通用') tags += '<span class="xz-st-tag-term" style="color:var(--xz-gold-bright);border-color:rgba(193, 193, 193, 0.4);">' + esc(it.流派) + '路</span> ';
+            if (it.流派 && it.流派 !== '通用') tags += '<span class="xz-st-tag-term" style="color:var(--xz-gold-bright);border-color:rgba(230,189,118,0.4);">' + esc(it.流派) + '路</span> ';
             if (it.效果) {
                 /* ★ v75：功能是效果集 —— 标签列效果名，明细列效果串。
                    ★ v234（用户：「武器居然有两个效果可以填，去掉一个」）：
@@ -5411,14 +5411,14 @@ d.attrs[a] = v;
         var _pq = it.品质 || '黄阶';
         var _pmax = EFF_QUAL_MAX[_pq] || 3;
         h += '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">'
-            + '<span class="xz-chip-sm" style="border-color:rgba(171, 171, 171, .5);color:#cdcdcd;">'
+            + '<span class="xz-chip-sm" style="border-color:rgba(201,168,106,.5);color:#e8cb92;">'
             + esc(_pq) + ' · 最多 ' + _pmax + ' 条</span>'
-            + '<span class="xz-chip-sm" style="' + (sel.length > _pmax ? 'border-color:rgba(239,68,68,.6);color:#999999;' : '') + '">'
+            + '<span class="xz-chip-sm" style="' + (sel.length > _pmax ? 'border-color:rgba(239,68,68,.6);color:#f87171;' : '') + '">'
             + '已选 ' + sel.length + ' 条</span>'
             + (sel.length ? '<button type="button" class="xz-st-mini" data-xz-act="pas-clear" style="padding:3px 9px;">✕ 清空</button>' : '')
             + '<button type="button" class="xz-st-dice" data-xz-act="roll-eff-pas" style="padding:3px 10px;">🎲 随机效果</button>'
             + '<button type="button" class="xz-st-mini" data-xz-act="pas-toggle" style="padding:3px 10px;margin-left:auto;'
-            + (state.pasOpen ? 'border-color:rgba(171, 171, 171, .85);color:#cdcdcd;background:rgba(171, 171, 171, .12);' : '') + '">'
+            + (state.pasOpen ? 'border-color:rgba(201,168,106,.85);color:#e8cb92;background:rgba(201,168,106,.12);' : '') + '">'
             + (state.pasOpen ? '▲ 收起选效果' : '▼ 展开选效果') + '</button>'
             + '</div>';
 
@@ -5572,13 +5572,13 @@ d.attrs[a] = v;
 
         /* ── 头部：品质 / 已选条数 / 展开按钮 ── */
         h += '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">'
-            + '<span class="xz-chip-sm" style="border-color:rgba(171, 171, 171, .5);color:#cdcdcd;">'
+            + '<span class="xz-chip-sm" style="border-color:rgba(201,168,106,.5);color:#e8cb92;">'
             + esc(q) + ' · 最多 ' + maxN + ' 条</span>'
-            + '<span class="xz-chip-sm" style="' + (sel.length > maxN ? 'border-color:rgba(239,68,68,.6);color:#999999;' : '') + '">'
+            + '<span class="xz-chip-sm" style="' + (sel.length > maxN ? 'border-color:rgba(239,68,68,.6);color:#f87171;' : '') + '">'
             + '已选 ' + sel.length + '</span>'
             + (sel.length ? '<button type="button" class="xz-st-mini" data-xz-act="pick-clear" style="padding:3px 9px;">✕ 清空</button>' : '')
             + '<button type="button" class="xz-st-mini" data-xz-act="pick-toggle" style="padding:3px 10px;margin-left:auto;'
-            + (state.pickOpen ? 'border-color:rgba(171, 171, 171, .85);color:#cdcdcd;background:rgba(171, 171, 171, .12);' : '') + '">'
+            + (state.pickOpen ? 'border-color:rgba(201,168,106,.85);color:#e8cb92;background:rgba(201,168,106,.12);' : '') + '">'
             + (state.pickOpen ? '▲ 收起选效果' : '▼ 展开选效果') + '</button>'
             + '</div>';
 
@@ -5960,7 +5960,7 @@ d.attrs[a] = v;
                 h += '<div class="xz-st-row"><label>目标</label><select data-xz-tpl="目标">' +
                     opts(TARGETS.map(function (t) { return { v: t, t: (TARGET_LABEL[t] || t) }; }), it.目标) +
                     '</select>' +
-                    '<span class="xz-chip-sm" style="margin-left:6px;color:#999999;border-color:rgba(239,68,68,0.5);">主动</span></div>';
+                    '<span class="xz-chip-sm" style="margin-left:6px;color:#f87171;border-color:rgba(239,68,68,0.5);">主动</span></div>';
             }
             /* ★ v77：玄诀是被动功法，恒不耗灵力 —— 不再给「消耗」输入框。
                （原来玄技玄诀都渲染这个框，玩家填了也会在保存时被强制归零。） */
@@ -5975,7 +5975,7 @@ d.attrs[a] = v;
                    但存进变量时机制名**只留在键上**（`{ 增伤: "8:3｜气势渐长" }`）。
                    textToSet 负责这条剥离，setToText 负责补回来 —— 两个方向都走
                    effLineOf（唯一实现在 04），玩家来回改都不会把机制名写成两遍。 */
-                '<textarea data-xz-tpl="效果" rows="2" placeholder="' + (isHeartTpl ? '增伤:15:0｜气势渐长\n减伤:10:0｜护体渐厚' : '伤害:240｜火焰席卷前方\n灼烧:8:2｜衣角沾上一星不灭的火') + '" style="flex:1;min-width:0;box-sizing:border-box;background:#06101e;border:1px solid rgba(193, 193, 193, .3);border-radius:6px;padding:4px 8px;color:var(--xz-text);font-size:12px;line-height:1.4;resize:vertical;font-family:inherit;">' +
+                '<textarea data-xz-tpl="效果" rows="2" placeholder="' + (isHeartTpl ? '增伤:15:0｜气势渐长\n减伤:10:0｜护体渐厚' : '伤害:240｜火焰席卷前方\n灼烧:8:2｜衣角沾上一星不灭的火') + '" style="flex:1;min-width:0;box-sizing:border-box;background:#06101e;border:1px solid rgba(230,189,118,.3);border-radius:6px;padding:4px 8px;color:var(--xz-text);font-size:12px;line-height:1.4;resize:vertical;font-family:inherit;">' +
                 text(setToText(it.效果)) + '</textarea>' +
                 /* ★ v1.053：效果骰子（按品质 + 目标类型随机） */
                 '<button type="button" class="xz-st-dice" data-xz-act="roll-eff-tpl" style="align-self:flex-start;">🎲</button>' +
@@ -6028,7 +6028,7 @@ d.attrs[a] = v;
             var _ph = '60 字内写下这件兵器的效果（可带一句样子，如「寒气森然，增伤 15%」）';
             h += '<div class="xz-st-row" style="align-items:flex-start"><label>效果</label>' +
                 '<div style="flex:1;min-width:0;display:flex;gap:6px;align-items:flex-start;">' +
-                '<textarea data-xz-tpl="效果" maxlength="80" placeholder="' + esc(_ph) + '" style="flex:1;min-width:0;box-sizing:border-box;background:#06101e;border:1px solid rgba(193, 193, 193, .3);border-radius:6px;padding:7px 9px;color:var(--xz-text);font-size:12.5px;line-height:1.5;resize:vertical;font-family:inherit;">' +
+                '<textarea data-xz-tpl="效果" maxlength="80" placeholder="' + esc(_ph) + '" style="flex:1;min-width:0;box-sizing:border-box;background:#06101e;border:1px solid rgba(230,189,118,.3);border-radius:6px;padding:7px 9px;color:var(--xz-text);font-size:12.5px;line-height:1.5;resize:vertical;font-family:inherit;">' +
                 text(it.效果 || it.描述) + '</textarea>' +
                 '<button type="button" class="xz-st-mini" data-xz-act="roll-desc" title="随机一条效果" style="flex:none;padding:6px 9px;">🎲</button>' +
                 '</div></div>';
@@ -6387,7 +6387,7 @@ d.attrs[a] = v;
     function overlayShell(title, closeAct, bodyHtml) {
         return '<div class="xz-st-ovl-bg" data-xz-act="' + closeAct + '" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.82);z-index:999999;display:flex;align-items:flex-end;justify-content:center;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;">' +
             '<div class="xz-st-ovl-box" style="background:#141922;border:1.5px solid var(--xz-gold);border-bottom:none;border-radius:12px 12px 0 0;max-width:540px;width:100%;max-height:min(82vh,680px);display:flex;flex-direction:column;box-shadow:0 -10px 35px rgba(0,0,0,0.9);color:#e2decb;">' +
-            '<div style="padding:10px 14px;border-bottom:1px solid rgba(193, 193, 193, .3);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-shrink:0;background:#181e28;border-radius:12px 12px 0 0;">' +
+            '<div style="padding:10px 14px;border-bottom:1px solid rgba(230,189,118,.3);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-shrink:0;background:#181e28;border-radius:12px 12px 0 0;">' +
             '<strong style="color:#dcdcdc;font-size:14px;">' + esc(title) + '</strong>' +
             '<button type="button" class="xz-st-mini del" data-xz-act="' + closeAct + '" style="padding:4px 12px;flex:0 0 auto;font-size:11px;">✕ 关闭</button>' +
             '</div>' +
@@ -6559,7 +6559,7 @@ d.attrs[a] = v;
         h += '<div class="xz-st-flow" style="margin:0;">' +
             '<button type="button" class="xz-st-dice" data-xz-act="preset-save" style="flex:0 0 auto;">💾 存为本地预设</button></div>';
         if (_presets.length) {
-            h += '<div style="max-height:132px;overflow:auto;margin:2px 0 0;border:1px solid rgba(193, 193, 193, .18);border-radius:5px;padding:4px;">';
+            h += '<div style="max-height:132px;overflow:auto;margin:2px 0 0;border:1px solid rgba(230,189,118,.18);border-radius:5px;padding:4px;">';
             _presets.forEach(function (p) {
                 h += '<div class="xz-st-row" style="margin:2px 0;gap:6px;">' +
                     '<span style="flex:1;min-width:0;font-size:11px;color:var(--xz-text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(p.name || '') + '</span>' +
@@ -6595,7 +6595,7 @@ d.attrs[a] = v;
         h += sectOpen('道基', _dkSummary, '道基');
         var ageRange = getRealmAgeRange(d.realm);
         h += '<div class="xz-st-flow" style="margin-top:0;">' +
-             '<div class="xz-st-cell"><label>姓名 <b style="color:#939393;">*</b></label>' +
+             '<div class="xz-st-cell"><label>姓名 <b style="color:#df7468;">*</b></label>' +
              '<input type="text" data-xz-field="name" maxlength="8" value="' + esc(d.name) + '" placeholder="本名"></div>' +
              /* ★ v475：性别（用户 2026-10-30 新加变量）。两档下拉，与年龄一样压成**窄格**
                 （`flex:0 0 76px`）：它只有 1 个字，跟着均分会白占宽度，
@@ -6604,7 +6604,7 @@ d.attrs[a] = v;
                   别在界面上写 `male` / `1` 再转一次（两套口径迟早分叉）。 */
              '<div class="xz-st-cell" style="flex:0 0 76px;"><label>性别</label>' +
              '<select data-xz-field="gender">' + opts(['男', '女'], d.gender) + '</select></div>' +
-             '<div class="xz-st-cell" style="flex:0 0 92px;"><label>年龄 <b style="color:#939393;">*</b></label>' +
+             '<div class="xz-st-cell" style="flex:0 0 92px;"><label>年龄 <b style="color:#df7468;">*</b></label>' +
              '<input type="number" data-xz-field="realAge" min="' + ageRange[0] + '" max="' + ageRange[1] + '" value="' + (d.realAge || ageRange[0]) + '" title="' + ageRange[0] + '~' + ageRange[1] + '岁"></div>' +
              '<div class="xz-st-cell"><label>境界</label><select data-xz-field="realm">' + opts(REALMS, d.realm) + '</select></div>' +
              '<div class="xz-st-cell"><label>玄元属性</label><select data-xz-field="elem">' + opts(ELEMS, d.elem) + '</select></div>' +
@@ -6644,7 +6644,7 @@ d.attrs[a] = v;
              '<input type="text" data-xz-field="bloodName" value="' + esc(d.bloodName || '') + '" placeholder="如：九幽地冥蟒 / 太古虚龙"></div>' +
              '<div class="xz-st-cell"><label>品阶</label><select data-xz-field="bloodRank">' + opts(BLOOD_RANKS, d.bloodRank || '凡血') + '</select></div>' +
             '<div class="xz-st-cell" style="flex:0 0 104px;"><label>天骄预计</label>' +
-            '<div style="padding:5px 8px;border:1px solid rgba(172, 172, 172, .45);border-radius:8px;background:rgba(172, 172, 172, .10);color:var(--xz-gold-bright);font-size:12.5px;font-weight:var(--xz-fw-med);text-align:center;">' +
+            '<div style="padding:5px 8px;border:1px solid rgba(212,175,55,.45);border-radius:8px;background:rgba(212,175,55,.10);color:var(--xz-gold-bright);font-size:12.5px;font-weight:var(--xz-fw-med);text-align:center;">' +
             esc((tjNow && tjNow.name) || '非天骄') + '</div></div>' +
              '<div class="xz-st-cell" style="flex:0 0 88px;"><label>纯度 %</label>' +
              '<input type="number" data-xz-field="bloodPurity" min="0" max="100" value="' + (Number(d.bloodPurity) || 0) + '"></div>' +
@@ -6684,7 +6684,7 @@ d.attrs[a] = v;
            ⚠ `updateReadouts()` 里 `host.querySelectorAll('[data-xz-attr]')` 会同时
              抓到**按钮和输入框**（原来就这样，它设的是 `.max`，按钮上设了也无害）。
              这里没有改变选择器语义 —— 每个 cell 仍自带完整三件套，没做共享控件优化。 */
-        var _ab = 'width:24px;height:24px;flex:none;border-radius:5px;border:1px solid rgba(193, 193, 193, .35);background:rgba(193, 193, 193, .10);color:#dbdbdb;font-size:15px;font-weight:var(--xz-fw-med);line-height:1;cursor:pointer;';
+        var _ab = 'width:24px;height:24px;flex:none;border-radius:5px;border:1px solid rgba(230,189,118,.35);background:rgba(230,189,118,.10);color:#ffd88a;font-size:15px;font-weight:var(--xz-fw-med);line-height:1;cursor:pointer;';
         h += '<div class="xz-st-flow">';
         for (var _ai = 0; _ai < ATTRS.length; _ai++) {
             var a = ATTRS[_ai];
