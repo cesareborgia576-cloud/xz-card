@@ -717,7 +717,7 @@
     }
     sys.push('');
     sys.push('════ 路径白名单（只能写这些顶层，别的一律不许碰） ════');
-    sys.push('/战斗状态、/全局/*、/时间/*、/地理/*');
+    sys.push('/全局/*、/时间/*、/地理/*');   /* ★ v1.052：/战斗状态 已删 */
     sys.push('/主角信息/*（含 四维、已学本领.玄技/玄诀、装备武器、血脉、天骄、灵宠）');
     sys.push('/人物列表/{姓名}/*（含 好感度(0~100)、心里话、在场状态、境界、气血/灵力、已学本领、装备武器、势力、天骄、灵宠、血脉）');
     sys.push('/背包/{物品名}/*（物品数量减到 0 必须用 remove 整条删掉，不许 replace 成 0）');
@@ -1729,7 +1729,7 @@
      ⇒ 判据只能是「[InitVar] 里有的顶层，这里必须都有」。（`任务` 就是唯一漏的那个。）
      ⚠ 加字段时照这个：**先看 [InitVar]初始变量.md 的顶层键**，别凭印象拼。
      曾经就是凭印象拼的 —— 拼的时候 `任务` 还没进初始变量，后来加上了没人回头补这里。 */
-  var TOP_OK = ['战斗状态', '战斗模式', '观战名单', '全局', '时间', '地理', '主角信息', '人物列表', '背包', '任务'];
+  var TOP_OK = ['战斗模式', '观战名单', '全局', '时间', '地理', '主角信息', '人物列表', '背包', '任务'];
   function unescSeg(s) { return String(s).replace(/~1/g, '/').replace(/~0/g, '~'); }
 
   function parsePatch(raw) {
@@ -1762,12 +1762,12 @@
       if (TOP_OK.indexOf(top) < 0) { dropped.push(p + '（顶层 ' + top + ' 不在白名单）'); return; }
       if (/^\/(?:主角信息\/地点|地点|玩家位置)/.test(p)) { dropped.push(p + '（地点只能走 /地理）'); return; }
       /* ★ v10：不再读 /主角信息/大道/*。v86 起战斗脚本重开为版本二，
-         此白名单照旧生效（/战斗状态 只允许写 true，不许写 false）。 */
-      if (op.op === 'replace' && p === '/战斗状态' && op.value !== true) {
-        dropped.push('/战斗状态 只允许写 true');
+         ★ v1.052：/战斗状态 已删（标签即真相），这里不再有它的守卫。 */
+      if (false) {
+        /* removed */
         return;
       }
-      if (p === '/战斗状态' && op.value === false) { dropped.push('/战斗状态 不许写 false'); return; }
+      if (false) { dropped.push('removed'); return; }
       /* ★ v429：delta / insert 必须原样保留 —— 旧写法把除 add/remove 之外的一切都归成
          replace，`{op:"delta", value:-15}` 会被写成「气血 = -15」，一刀打死人。
          move 仍归并成 replace（外置补全不做移动，落脚点就是目的地）。 */
