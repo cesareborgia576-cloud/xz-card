@@ -2162,6 +2162,13 @@ function xzSkeletonOfSkill(skill) {
             items: { 玄技: [], 玄诀: [], 武器: [] },
             /* ★ v60：血脉禁止无，最低凡血 */
             bloodRank: '凡血', bloodName: '山野遗血', bloodPurity: 10,
+            /* ★ v1.053：人物关系预设 —— 默认**全勾**（她们本就是这一局的家人）。
+               玩家取消勾选 = 这一局不写这段亲缘（关系条目会被关掉）。 */
+            kin: (function () {
+                var o = {};
+                (typeof KIN_PRESET !== 'undefined' && KIN_PRESET ? KIN_PRESET : []).forEach(function (p) { o[p.id] = true; });
+                return o;
+            })(),
             /* ★ v74：血脉四样之一「效果」—— 自由文本的永久被动。开局掷血脉时从预设池抽一条；
                玩家想自己写也行，留空也允许（留空就是这条血没有招牌被动）。 */
             bloodEffect: '',
@@ -6290,6 +6297,19 @@ d.attrs[a] = v;
        ⚠ 必须是**常量**且与各页 `sectOpen(...)` 传的 key 逐字一致 ——
          加一块新分区时两处都要改，漏了就是"点了没反应"（脏值被 `indexOf < 0` 挡掉，
          静默 return，不打日志）。判据 `_v465_start_probe` 会逐字核对这张表。 */
+    /* ★ v1.053：人物关系预设 —— 勾谁，谁就参与这一局的亲缘关系。
+       清单在磁盘上（这里只列 id 与称呼），加人不改逻辑。
+       ⚠ 这 7 位与《亲缘·六姐与娘》条目里的人物一一对应；改了那边要改这边。 */
+    var KIN_PRESET = [
+        { id: '白长雪', label: '亲娘 · 白长雪' },
+        { id: '阿依莎', label: '大姐 · 阿依莎' },
+        { id: '云疏月', label: '二姐 · 云疏月' },
+        { id: '司幽怜', label: '三姐 · 司幽怜' },
+        { id: '陆昭华', label: '四姐 · 陆昭华' },
+        { id: '沈清颜', label: '五姐 · 沈清颜' },
+        { id: '言清漪', label: '六姐 · 言清漪' }
+    ];
+    var KIN_ENTRY_TITLE = '亲缘·六姐与娘';   /* 世界书条目标题，逐字要对上 */
     var XZ_ST_SECTS = ['预设', '道基', '血脉', '四维', '地点', '梗概'];
     function wizBarHtml() {
         var cur = Number(state.page) || 0;
@@ -6678,6 +6698,21 @@ d.attrs[a] = v;
                     ? '<em>自填开场白</em> 下面那两栏就是你这一局的开头，写完确认即写入酒馆输入框。'
                     : '<em>（这一处还没写简介）</em>'))
             + '</div>';
+
+        /* ★ v1.053：人物关系预设（作者 2026-11-03）。
+           勾选只改草稿，世界书在**确认开局**时才动（同 DLC 口径）。 */
+        var _kinOn = (KIN_PRESET || []).filter(function (p) { return !!(d.kin && d.kin[p.id]); });
+        h += sectOpen('人物关系预设', _kinOn.length ? ('已选 ' + _kinOn.length + ' 人') : '未选');
+        h += '<div class="xz-st-grid">' + (KIN_PRESET || []).map(function (p) {
+            var _on = !!(d.kin && d.kin[p.id]);
+            return '<label class="xz-st-opt' + (_on ? ' on' : '') + '">' +
+                '<input type="checkbox" data-xz-field="kin" data-xz-kin="' + esc(p.id) + '"' + (_on ? ' checked' : '') + '>' +
+                '<span class="xz-st-opt-name">' + esc(p.label) + '</span>' +
+                '<span class="xz-st-opt-meta">参与本局亲缘</span></label>';
+        }).join('') + '</div>';
+        h += '<div class="xz-st-brief" style="margin-top:6px;">勾上谁，谁就参与这一局的亲缘关系；',
+            + '一个都不勾 ⇒《亲缘·六姐与娘》这条世界书条目会被关掉，正文里不写这段关系。</div>';
+        h += sectClose();
 
         h += '<div class="xz-st-actions">' +
             '<button type="button" class="xz-st-main" data-xz-act="submit">' + esc(place.custom ? '确认开局（写入输入框）' : '确认开局') + '</button>' +
@@ -7458,6 +7493,15 @@ host.__xzGuard = true;
             if (field === 'bloodDesc') { d.bloodDesc = String(t.value || '').slice(0, 80); return; }
             if (field === 'elem') { d.elem = t.value; return; }
             if (field === 'place') { d.place = t.value; render(true); return; }
+            /* ★ v1.053：人物关系预设的勾选框（只改草稿） */
+            if (field === 'kin') {
+                var kinId = String(t.getAttribute('data-xz-kin') || '');
+                if (!kinId) { state.note = '⚠ 这个亲缘勾选框缺少人物 id（data-xz-kin），已忽略。'; render(true); return; }
+                if (!d.kin || typeof d.kin !== 'object' || Array.isArray(d.kin)) d.kin = {};
+                d.kin[kinId] = !!(t.checked);
+                render(true);
+                return;
+            }
             /* ★ v352：DLC 勾选框。
                ⚠ 这里**只改草稿**，不碰世界书 —— 真正开条目是在 submit() 里做的。
                  原因：勾了又取消、勾了又重置，都不该在玩家还没确认开局时就动世界书；
@@ -8381,10 +8425,47 @@ host.__xzGuard = true;
                 }
             }
 
+            /* ★ v1.053：人物关系预设 —— 勾了谁就开《亲缘·六姐与娘》，一个都没勾就关掉。
+               ⚠ 与 DLC 同口径：开关在世界书**确认开局这一刻**才动，不在勾选时动。
+               ⚠ 开不成就**出声**：这条条目装着「你与她们的称呼与相处分寸」，
+                 静默失败等于让正文里凭空多出不知所以的亲昵或疏离。 */
+            var kinNote = "";
+            try {
+                var kinFn = XZ_SHARED("xzWBSetEntry");
+                var kinWant = (KIN_PRESET || []).some(function (p) { return !!(d.kin && d.kin[p.id]); });
+                if (typeof kinFn !== "function") {
+                    if (kinWant) {
+                        kinNote = "⚠ 人物关系没能开启：取不到世界书开关（xzWBSetEntry）。请手动在酒馆的世界书里打开「亲缘·六姐与娘」。";
+                    }
+                } else {
+                    var kinP = null;
+                    try { kinP = kinFn(kinWant, KIN_ENTRY_TITLE); } catch (eKin) { kinP = Promise.reject(eKin); }
+                    Promise.resolve(kinP).then(function (r) {
+                        var got = r || {};
+                        var cnt = Number(got.n || 0);
+                        if (kinWant && !(got.ok && cnt > 0)) {
+                            kinNote = "⚠ 人物关系没能开启（世界书里没找到「亲缘·六姐与娘」这条）：请手动在酒馆的世界书里打开它。";
+                        } else if (!kinWant && cnt > 0) {
+                            kinNote = "已关掉《亲缘·六姐与娘》这条世界书条目（本次没勾任何亲缘）。";
+                        }
+                        if (kinNote) {
+                            state.note = state.note ? (state.note + " " + kinNote) : kinNote;
+                            try { render(true); } catch (eKr) {}
+                        }
+                    }, function (eKin2) {
+                        kinNote = "⚠ 人物关系开关抛错：" + ((eKin2 && eKin2.message) || eKin2);
+                        state.note = state.note ? (state.note + " " + kinNote) : kinNote;
+                        try { render(true); } catch (eKr2) {}
+                    });
+                }
+            } catch (eKin3) {
+                kinNote = "⚠ 人物关系开关抛错：" + ((eKin3 && eKin3.message) || eKin3);
+            }
             var notes = ['开局配置已写入变量：' + d.realm + ' · ' + d.elem + '系' +
                 ' · 玄技 ' + d.items.玄技.length + ' 门' +
                 (d.items.玄诀.length ? ' · 玄诀 1' : '') + (d.items.武器.length ? ' · 武器 1' : '') + '。'];
             if (dlcNote) notes.push(dlcNote);
+            if (kinNote) notes.push(kinNote);   /* ★ v1.053：人物关系开关的同步失败 */
 
             /* ★★★ v363：**不再往输入框追加任何初始化指令** ★★★
                用户 2026-10-23：「开局不再初始化，而是根据血量和蓝量公式，然后检测玄诀和血脉
