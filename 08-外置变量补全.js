@@ -3349,7 +3349,14 @@
       label = '✅'; color = '#10b981';
       title = '变量块格式正常（上次补算成功：' + (S.statusText || '') + '）';
     }
-    return { ok: true, label: label, color: color, title: title, status: S.status, missing: !!S.lastMissing, missingList: S.missingList || [] };
+    /* ★ v1.053：多带给界面用的 `issue` 一栏 ——「这一栏现在有没有事要玩家管」。
+       ★★ 为什么不能只靠 `ok`：`ok` 在这里恒为 true（它回答的是"取没取到状态"，
+          不是"状态好不好"）。界面拿 `ok` 去判"要不要标红"，就会出现
+          「变量补全已经亮 ❌ 了、版本页签还是灰的」——作者 2026-11-03 就是这么撞上的。
+       ⇒ 判定只留**这一处**：label 是 ❌／误 ⇒ issue=true。界面只读这个字段，
+         不许在 05 里再按 label 字面判一次（那就是同一件事两处判断，早晚漂）。 */
+    var issue = (label === '❌' || label === '误');
+    return { ok: true, issue: issue, label: label, color: color, title: title, status: S.status, missing: !!S.lastMissing, missingList: S.missingList || [] };
   }
 
   /* 桥给核心/界面脚本用（它们拿这个开面板、取状态） */
