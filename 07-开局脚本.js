@@ -6737,7 +6737,7 @@ d.attrs[a] = v;
         /* 年龄标尺从"行内小字"挪成 title 提示 + 这里一行极小的灰字 ——
            直接删掉会让玩家不知道能填几岁（那是判据，不是装饰）。
            放在框末一行 10px 灰字，比原来每行都挂一条要省空间。 */
-        h += '<div class="xz-st-tiny">年龄可填 ' + ageRange[0] + '~' + ageRange[1] + ' 岁（随境界变）</div>';
+        h += foldTip('年龄可填 ' + ageRange[0] + '~' + ageRange[1] + ' 岁。');
         h += sectClose('道基');
 
         /* 框二：血脉 */
@@ -6938,35 +6938,50 @@ d.attrs[a] = v;
     function castBlockHtml(d) {
         var names = castNameList();
         var picked = (d.cast && d.cast.length) ? d.cast.slice() : [];
-        var cur = String(state.castPick || "");
         var h = "";
-        h += '<div class="xz-st-row"><label>选人</label>';
-        h += '<select data-xz-field="castPick" style="flex:1 1 auto;min-width:0;">';
-        h += '<option value="">— 点这里选（共 ' + names.length + ' 位）—</option>';
+        /* ★ 2026-11-03（作者：「在场人物的选择更没用」）
+           旧版是「下拉选人 → 点加入」两步，下拉还会在重绘时被关掉，玩家体感就是点了没反应。
+           ⇒ 改成一个名字一颗按钮：点一下加入、再点一下移除。状态直接画在按钮上。 */
+        h += '<div class="xz-st-grid" style="display:flex;flex-wrap:wrap;gap:6px;">';
         names.forEach(function (nm) {
-            h += '<option value="' + esc(nm) + '"' + (cur === nm ? " selected" : "") + ">" + esc(nm) + "</option>";
+            var on = picked.indexOf(nm) >= 0;
+            h += '<button type="button" class="xz-st-main xz-st-ghost' + (on ? ' on' : '') + '"' +
+                ' data-xz-act="cast-toggle" data-name="' + esc(nm) + '"' +
+                ' style="flex:0 0 auto;padding:4px 10px;font-size:11.5px;">' + esc(nm) + '</button>';
         });
-        h += '<option value="__other__"' + (cur === "__other__" ? " selected" : "") + ">其他（自己填）</option>";
-        h += "</select>";
-        h += '<button type="button" class="xz-st-main xz-st-ghost" data-xz-act="cast-add" style="flex:0 0 auto;">加入</button>';
-        h += "</div>";
-        if (picked.length) {
-            h += '<div class="xz-st-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:7px;">';
-            picked.forEach(function (nm) {
-                h += '<button type="button" class="xz-tianji-goto-btn" data-xz-act="cast-del" data-name="' + esc(nm) + '"' +
-                    ' style="padding:2px 9px;font-size:11px;border-color:rgba(212,175,55,0.55);"' +
-                    ' title="点一下从在场人物里移除">' + esc(nm) + ' <span style="opacity:.55;">×</span></button>';
-            });
-            h += "</div>";
-        } else {
-            h += '<div class="xz-st-tiny" style="margin-top:6px;">还没选人。不选就只有你自己在场。</div>';
-        }
+        h += '</div>';
+        h += '<div class="xz-st-tiny" style="margin-top:6px;">' +
+            (picked.length ? ('已选 ' + picked.length + ' 人：' + picked.join('、')) : '还没选人。不选就只有你自己在场。') +
+            '</div>';
+        h += '<div class="xz-st-row" style="margin-top:6px;">' +
+            '<button type="button" class="xz-st-dice" data-xz-act="cast-other">其他</button></div>';
         if (state.castOther !== null && state.castOther !== undefined) {
             h += '<div class="xz-st-row" style="margin-top:6px;"><label>其他</label>';
             h += '<input type="text" data-xz-field="castOtherText" maxlength="16" value="' + esc(state.castOther) + '" placeholder="名字">';
             h += '<button type="button" class="xz-st-dice" data-xz-act="cast-other-add">加入</button></div>';
         }
+        h += foldTip('点名字加入或移除。选中的人会写进本局的人物列表，开局即在场的角色。');
         return h;
+    }
+    /* ★ 2026-11-03：世界书条目开关（灰雾总纲 / 亲缘）—— 选了就开，不等确认开局。
+       作者原话「选了之后条目不会开」：开关必须在**点下去那一刻**动世界书，玩家才看得见。
+       ⚠ 取不到函数就出声，不许静默；写失败也说清是「书里没这条」还是「回读没生效」。 */
+    function wbToggleNow(want, title, label) {
+        var fn = XZ05("xzWBSetEntry");
+        if (typeof fn !== 'function') {
+            state.note = '⚠ 取不到世界书开关（xzWBSetEntry），' + label + '不能自动' + (want ? '开启' : '关闭') + '；请手动在世界书里改。';
+            return;
+        }
+        Promise.resolve(fn(!!want, title)).then(function (r) {
+            var got = r || {};
+            state.note = got.ok
+                ? (label + (want ? '已开启' : '已关闭') + '。')
+                : ('⚠ ' + label + (want ? '没能开启' : '没能关闭') + '：' + (got.msg || '世界书里没找到这条'));
+            try { render(true); } catch (e1) {}
+        }, function (e2) {
+            state.note = '⚠ ' + label + '开关抛错：' + ((e2 && e2.message) || e2);
+            try { render(true); } catch (e3) {}
+        });
     }
     function pageWizPlaceHtml(d) {
         var h = "";
@@ -6976,19 +6991,16 @@ d.attrs[a] = v;
         h += sectClose();
         var _mistOn = !!(d.mistMode);
         h += sectOpen("迷雾模式", _mistOn ? "开启" : "关闭");
-        h += '<div class="xz-st-row" style="gap:8px;align-items:center;flex-wrap:wrap;">' +
-             '<label class="xz-st-opt' + (_mistOn ? ' on' : '') + '">' +
-             '<input type="checkbox" data-xz-field="mistMode"' + (_mistOn ? ' checked' : '') + '>' +
-             '开启迷雾模式（加载《灰雾总纲》）</label>' +
+        h += '<div class="xz-st-row" style="gap:8px;">' +
+             '<button type="button" class="xz-st-main xz-st-ghost' + (_mistOn ? ' on' : '') + '" data-xz-act="mist-toggle" style="flex:1 1 auto;">' +
+             (_mistOn ? '迷雾模式：开启' : '迷雾模式：关闭') + '</button>' +
              (_mistOn
                 ? '<button type="button" class="xz-st-mini" data-xz-act="mist-view" style="flex:0 0 auto;">查看</button>'
                 : '') +
              '</div>';
-        h += '<div class="xz-st-tiny" style="margin-top:6px;">' +
-             (_mistOn
-                ? '本局自雾中启程：结伴穿雾、雾行三物、雾里遇敌均按《灰雾总纲》展开。'
-                : '本局不加载《灰雾总纲》：世界里没有灰雾、雾道、雾行者与雾行三物；据点外按《遇怪机制》的妖兽/魔修走。') +
-             '</div>';
+        h += foldTip(_mistOn
+            ? '开启后加载《灰雾总纲》：据点之外被灰雾吞掉，官道成了雾道，商队要结伴穿雾。'
+            : '关闭时不加载《灰雾总纲》：世界里没有灰雾、雾道、雾行者与雾行三物；据点外按《遇怪机制》的妖兽/魔修走。');
         h += sectClose();
         h += sectOpen("在场人物", (d.cast && d.cast.length) ? (d.cast.length + " 人") : "未选");
         h += castBlockHtml(d);
@@ -7000,10 +7012,8 @@ d.attrs[a] = v;
         h += sectOpen('人物关系预设', _kinSix ? '六姐与娘' : '无关系');
         h += '<div class="xz-st-row" style="gap:8px;">' +
             '<button type="button" class="xz-st-main xz-st-ghost' + (_kinSix ? '' : ' on') + '" data-xz-act="kin-none">无关系</button>' +
-            '<button type="button" class="xz-st-main xz-st-ghost' + (_kinSix ? ' on' : '') + '" data-xz-act="kin-six">六姐与娘（六位姐姐 + 亲娘）</button></div>';
-        h += '<div class="xz-st-tiny" style="margin-top:6px;">' +
-            (_kinSix ? "本局按家人相处：六位姐姐与亲娘待你如亲手足。" : "本局不写亲缘：她们各是各的，和你没有家门关系。") +
-            "</div>";
+            '<button type="button" class="xz-st-main xz-st-ghost' + (_kinSix ? ' on' : '') + '" data-xz-act="kin-six">六姐与娘</button></div>';
+        h += foldTip(_kinSix ? "按家人相处：六位姐姐与亲娘待你如亲手足。" : "她们各是各的，和你没有家门关系。");
         h += sectClose();
 
         /* ★ v1.053：人物条目管理器入口**接回**第 4 页。
@@ -8432,7 +8442,17 @@ host.__xzGuard = true;
             /* ★ v1.053c：在场人物 · 下拉里选中了「其他」⇒ 展开自填框 */
             if (act === 'cast-other') {
                 state.castOther = '';
-                state.castPick = '__other__';
+                render(true);
+                return;
+            }
+            /* ★ 2026-11-03：点名字直接加入/移除（取代下拉 + 加入两步） */
+            if (act === 'cast-toggle') {
+                var _tn = String(t.getAttribute('data-name') || '');
+                if (!_tn) return;
+                if (!d.cast || !Array.isArray(d.cast)) d.cast = [];
+                var _ti = d.cast.indexOf(_tn);
+                if (_ti >= 0) d.cast.splice(_ti, 1); else d.cast.push(_tn);
+                state.note = '';
                 render(true);
                 return;
             }
@@ -8458,9 +8478,16 @@ host.__xzGuard = true;
                 return;
             }
             /* ★ v1.053c：人物关系预设 —— 两个按钮二选一 */
+            if (act === 'mist-toggle') {
+                d.mistMode = !d.mistMode;
+                wbToggleNow(!!d.mistMode, MIST_ENTRY_TITLE, '迷雾模式');
+                render(true);
+                return;
+            }
             if (act === 'mist-view') { openMistView(); return; }
             if (act === 'kin-none' || act === 'kin-six') {
                 d.kin = (act === 'kin-six') ? 'six' : '';
+                wbToggleNow(d.kin === 'six', KIN_ENTRY_TITLE, '人物关系预设');
                 render(true);
                 return;
             }
