@@ -10947,7 +10947,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         if (!info) {
             /* 读不出预览的两种真实原因，分开说清楚 —— 混成一句「不可淬炼」玩家不知道去改什么 */
             var why = (item && String(item.origin || 'story') !== 'story')
-                ? '玩家自填的招式（origin:player），脚本不改'
+                ? '玩家自填的招式，脚本不改'
                 : '品质认不出，不敢动';
             h += '<div class="xz-tp-note">' + why + '</div>';
             h += '</div>';
