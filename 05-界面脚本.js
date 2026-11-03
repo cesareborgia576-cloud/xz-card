@@ -9339,7 +9339,14 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             xhr.onload = function () {
                 var j = null;
                 try { j = JSON.parse(xhr.responseText); } catch (e) { j = null; }
-                var st = (j && j.stable) ? String(j.stable) : '';
+                /* ★ v1.056：开发卡读 `dev`、玩家卡读 `stable` ——
+                   `stable` 只会在**真的打了 tag**时前进，开发推永远不碰它。
+                   否则玩家会看到"开发中有新版"并被引去拉一个不存在的 tag。 */
+                var _isDev = '';
+                try { _isDev = String((window && window.__XZ_CHAN__) || ''); } catch (eCh2) { _isDev = ''; }
+                var st = (_isDev === 'dev')
+                    ? ((j && j.dev) ? String(j.dev) : '')
+                    : ((j && j.stable) ? String(j.stable) : '');
                 if (xhr.status !== 200 || !/^v[\d.]+$/.test(st)) done(false);
                 else done(true, st);
             };
