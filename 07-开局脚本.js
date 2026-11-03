@@ -6938,29 +6938,33 @@ d.attrs[a] = v;
     function castBlockHtml(d) {
         var names = castNameList();
         var picked = (d.cast && d.cast.length) ? d.cast.slice() : [];
+        var cur = String(state.castPick || "");
         var h = "";
-        /* ★ 2026-11-03（作者：「在场人物的选择更没用」）
-           旧版是「下拉选人 → 点加入」两步，下拉还会在重绘时被关掉，玩家体感就是点了没反应。
-           ⇒ 改成一个名字一颗按钮：点一下加入、再点一下移除。状态直接画在按钮上。 */
-        h += '<div class="xz-st-grid" style="display:flex;flex-wrap:wrap;gap:6px;">';
+        h += '<div class="xz-st-row"><label>选人</label>';
+        h += '<select data-xz-field="castPick" style="flex:1 1 auto;min-width:0;">';
+        h += '<option value="">— 点这里选（共 ' + names.length + ' 位）—</option>';
         names.forEach(function (nm) {
-            var on = picked.indexOf(nm) >= 0;
-            h += '<button type="button" class="xz-st-main xz-st-ghost' + (on ? ' on' : '') + '"' +
-                ' data-xz-act="cast-toggle" data-name="' + esc(nm) + '"' +
-                ' style="flex:0 0 auto;padding:4px 10px;font-size:11.5px;">' + esc(nm) + '</button>';
+            h += '<option value="' + esc(nm) + '"' + (cur === nm ? " selected" : "") + ">" + esc(nm) + "</option>";
         });
-        h += '</div>';
-        h += '<div class="xz-st-tiny" style="margin-top:6px;">' +
-            (picked.length ? ('已选 ' + picked.length + ' 人：' + picked.join('、')) : '还没选人。不选就只有你自己在场。') +
-            '</div>';
-        h += '<div class="xz-st-row" style="margin-top:6px;">' +
-            '<button type="button" class="xz-st-dice" data-xz-act="cast-other">其他</button></div>';
+        h += '<option value="__other__"' + (cur === "__other__" ? " selected" : "") + ">其他（自己填）</option>";
+        h += "</select>";
+        h += '<button type="button" class="xz-st-main xz-st-ghost" data-xz-act="cast-add" style="flex:0 0 auto;">加入</button>';
+        h += "</div>";
+        if (picked.length) {
+            h += '<div class="xz-st-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:7px;">';
+            picked.forEach(function (nm) {
+                h += '<button type="button" class="xz-tianji-goto-btn" data-xz-act="cast-del" data-name="' + esc(nm) + '"' +
+                    ' style="padding:2px 9px;font-size:11px;border-color:rgba(212,175,55,0.55);"' +
+                    ' title="点一下从在场人物里移除">' + esc(nm) + ' <span style="opacity:.55;">×</span></button>';
+            });
+            h += "</div>";
+        }
         if (state.castOther !== null && state.castOther !== undefined) {
             h += '<div class="xz-st-row" style="margin-top:6px;"><label>其他</label>';
             h += '<input type="text" data-xz-field="castOtherText" maxlength="16" value="' + esc(state.castOther) + '" placeholder="名字">';
             h += '<button type="button" class="xz-st-dice" data-xz-act="cast-other-add">加入</button></div>';
         }
-        h += foldTip('点名字加入或移除。选中的人会写进本局的人物列表，开局即在场的角色。');
+        h += foldTip('在下拉里选一个名字，点「加入」把他放进本局的人物列表；点名字后面的 × 可移除。');
         return h;
     }
     /* ★ 2026-11-03：世界书条目开关（灰雾总纲 / 亲缘）—— 选了就开，不等确认开局。
