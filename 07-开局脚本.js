@@ -2255,8 +2255,6 @@ function xzSkeletonOfSkill(skill) {
                 DLC_PACKS.forEach(function (p) { o[p.id] = false; });
                 return o;
             })(),
-            /* ★ 迷雾模式开关（第4页）：默认关。勾选=以结伴穿雾开场（开启迷雾模式），
-               不勾=常规据点开局。onField 里存成布尔，确认开局时随 draft 一起落盘。 */
             mistMode: false,
         };
     }
@@ -3738,6 +3736,137 @@ d.attrs[a] = v;
         state.howto = null;
         render(true);
     }
+        /* 迷雾模式「查看」弹层：把《灰雾总纲》正文塞进底部小窗（内容来自世界书/设定/灰雾总纲.md）。 */
+    var MIST_ENTRY_TEXT = `本条目汇总全部灰雾设定：灰雾本身、结界与墙外、结伴穿雾、司天监传送、雾行者、商队驿站、雾行三物、雾里遇敌规则。其余条目涉及灰雾时，以本条目为准，不再另述。
+
+## 一、灰雾是什么
+
+- 灰雾不是天气。它从地平线上漫过来，近看是灰，往深处看**没有颜色**。
+- 雾里能见约**三丈**。三丈之外光散不出去，声音也传不远。
+- 雾是**温的**。站在雾里不冷，像贴着一层湿棉；但它会慢慢把身上的玄元抽走。
+- 雾里没有方向。罗盘乱转，路会自己绕回来。进雾必须带**引路灯**或**阵符**，否则走三天还在原地。
+
+## 二、雾里有什么（没有人知道）
+
+- 进去的人十个回来三个。那三个的说辞对不上：一个说听见有人喊他名字，一个说什么都没有，一个什么都不肯说。
+- **偶见**的东西各地叫法不一：没有脸的、多长一条腿的、站着不动的。它们不追人，只在雾里**朝着你转**。
+- 没有人确认过它们成群、有首领、会说人话。**所有"邪魔大军"的说法都是传闻**。
+- ⇒ 真正的威胁不是"敌人多强"，是**不知道**。没人知道雾里到底有什么，也不知道下一次涨雾会漫到哪。
+
+## 三、结界与墙外
+
+### 结界：一墙之隔
+
+- 每座势力（宗门、城、坊市）**各自撑一道结界**，只罩住自己的建筑——罩到墙根，罩到院墙外三步。
+- 结界不是城墙。它看不见，只在边缘泛一层极淡的白：雨落在上面会歪，鸟飞到跟前会拐。
+- 一道结界靠**一到三座阵眼**撑着。阵眼多的能多罩几丈，阵眼少的只够罩住主殿。
+- 阵眼要**人守**：阵眼一空，结界就薄；薄了，雾从墙根漫进来——先是院角的草，再是台阶。
+- 守阵不是打斗，是**熬**：按时添玄晶，盯着边缘那层白有没有变淡。守阵的人一辈子不出这道墙。
+- 阵眼烧**玄晶**。玄晶只在雾里挖得到，所以每座城都在算一笔账：这一季能挖多少，够不够烧。
+
+### 墙外
+
+- 出了结界就是雾。不是"野外"，是**雾**。
+- 两座城之间没有安全的路，只有被走过很多次踩出来的**雾道**。雾道也只保证"少走丢"，不保证"没东西"。
+- 所以"出远门"在这个世界不是旅行，是**托付后事**。
+
+## 四、结伴穿雾（出行行规）
+
+三州之间没有别的路，只有灰雾。要出远门，唯一的方式是**组队走雾**，灰雾边上有一套行规：
+
+- 至少五人，其中一人必须**识路**（走过这条道两次以上）。
+- 只走**雾道**——被踩出来、插着旧灯杆的那几条。离开雾道自己找路，等于赌命。
+- 备足**引路灯**（一盏照三丈，能烧四个时辰）与**阵符**（贴身，让雾"认不出你"）。
+- 谁走散了，**不回头找**。这是行规，不是无情——回头的人基本都回不来。
+- 短途（半日）死亡率约三成；三日以上的长途，没有人统计过。
+
+## 五、司天监的传送（能发，只此一家）
+
+- 人州只有一处能**发出**传送：**司天监**。天枢台心那口星井底下压着一块神石，挪不得、也点不动——要数名修习秘术的星官合力才能启动一次。
+- 开一次耗的玄晶够一个中等世家吃三年 ⇒ 它只走**军情、救急、传令**，不走商旅。
+- 别处只能**收**：宗门、大城、驿站的受阵能接住送来的人与物，也能接一纸传令；想送回去，只能派人穿雾走。
+- ⇒ 所以"出门"这件事没有变：**普通人只有结伴穿雾一条路**。
+
+## 六、雾行者
+
+- 一种行当：**受雇在人进雾时护着人做事**——采药、修灯杆、寻人寻尸、搬家、赶路。
+- 干这行得同时有三样：**识路**（走过这条雾道两次以上）、**有灯**（引路灯不止一盏）、**能打**（遇上了得挡在雇主的正前方）。
+- 行规：**雾行者只管把人带回来，不管人在雾里干了什么**。雇主的事不问、不传、不记。
+- 顺口的话：请一个雾行者，是买他这几步走在你前面。
+
+### 四档
+
+- **铜牌**：刚入行。认得一条道，灯够一支，打得过一两只散东西。只接浅雾的短活，价钱最贱，也最容易死在第一趟远路上。
+- **银牌**：走过三到五条雾道，认得灯杆的旧序，能带三五人的小队。中长途的主力，驿站的招子上大半是这一档。
+- **金牌**：雾道上的名号。十几条道走下来，敢带商队、敢在雾里回头找人。**他说这条道今天不能走，就没有人走**——路线的资格是他身上最贵的东西。
+- **顶级**：不挂牌、不接散客。只有最要命的活才会见到他们：进雾找一个已经失踪七天的人、把一件东西从雾的另一头带回来。这一档的人数得过来，名号本身就是价钱。
+- 升级没有考试，只有一条：**把人带回来**。带不回来的，牌子会替你说话。
+
+## 七、商队与驿站、路程
+
+- 沙洲商队是唯一成建制穿雾的队伍，有护队、有契约、有驿站。
+- 驿站建在据点墙外三步、雾还没吃透的那一小圈，能补给、能歇脚，也是消息集散地——想打听雾里的事，去驿站。
+- 具体耗时见《路程消耗表》。
+
+## 八、雾行三物
+
+### 一、雾行石
+
+- 拇指大小的一块灰白石子，内里有一道极细的、会缓慢转动的纹。**在雾里也始终指着一个方向**：离你最近的那处有人烟的地方。
+- 人族的做法是拿它当命看。雾里没有日月、没有星、没有远近，走三十步就分不清南北——只有这块石头不骗人。
+- 品阶决定两件事：**指得多准**、**能指多远**。
+  - 凡品：只肯指个大方向，遇上强雾会打摆子，误差能岔出半里地去；
+  - 精/珍/宝/天阶：越往上，纹转得越稳、指得越远，极品能直接指向具体哪一处据点。
+- 石不认主，谁拿着都指路；但它**不告诉你路上有什么**——只给方向，不给安全。
+- 价钱：凡品在驿站就能买到，越往上越少见，天阶的雾行石多是从雾里捡回来的死人货。
+
+### 二、鬼蜡
+
+- 一支灰黑色的短蜡，烧起来的火苗是青的，没有热度。
+- **凡品**：点燃后，以蜡为圆心**三米**内，**一分钟**之内不会被雾里的东西攻击。
+- 品阶越高，**半径越大、时间越久**：精/珍/宝/天阶层层往上加，天阶的鬼蜡能罩住半条雾道，烧上一整个时辰。
+- 讲究：**点着就开始算**，不因你走快走慢而变；蜡烧尽即散，没有余韵。半路熄了要么再点一支，要么认命。
+- 它不伤东西，只是让它们"看不见你"。所以罩子里的人也不许出声、不许点火把、不许带血。
+- 价钱：凡品不算贵，但雾道上的驿站常年缺货——进雾的人个个要它。
+
+### 三、红蜡
+
+- 与鬼蜡同一炉烧出来的东西，蜡身是暗红色。火苗是红的，烧起来有股极淡的甜腥气。
+- **点着就把雾里的东西往这里引**：品阶越高，**吸得越远、范围越大**——凡品只招得动近处那一两只，宝阶能把半条道上的东西一起招过来。
+- **红蜡一燃，必来**。不是"可能来"，是**一定会来**（触发概率百分之百）。这是它与一切别的雾行物最要紧的区别。
+- 用途也全在这一点上：把东西引开、把东西引到别人那边、把东西引进埋伏里。点红蜡的人，自己得先想好站哪儿。
+- 规矩：雾道上点红蜡，等同放火。同队的人有权当场翻脸。
+
+### 四、三样东西的分别
+
+- **雾行石**给方向，**鬼蜡**给安全，**红蜡**把危险叫过来。前两样是活命用的，第三样是拿来用的——用得好是刀，用不好是给自己点的一炉香。
+
+## 九、雾里的遇敌规则
+
+- 进雾是另一套规矩：要判的不只是"有没有怪"，还有**有没有跟丢**。
+- **触发概率用骰子定，不靠感觉**：每在灰雾里推进一段（一回合），
+  从《骰子池》取**一个 d20**——
+  - **1~6 ⇒ 遇到东西（30%）**；
+  - 7~20 ⇒ 这一段平安，只有雾、只有自己的脚步。
+  - 同一个 d20 不许重复用：这一次判定消耗掉了，下一次再取下一个。
+  - 没渲染出数字时按《骰子池》兜底自己掷 1~20，**不许改成"随剧情需要"**。
+- 遇上的东西统称**邪魔**。它们不分阶——没有人给它们分过阶。
+- 三条固定特征（写死，不许自由发挥）：
+  - 不追人，只在雾里**朝着你转**；
+  - 被**引路灯**直照会退；
+  - 贴着**阵符**的人在它们眼里"不存在"。
+- 一次一两只，从不成群。"邪魔大军"是传闻，任何角色都不该"看见过"。
+- **红蜡会把这个概率顶到百分之百**：红蜡一燃，这一段必定有东西过来，不必再掷骰；红蜡的品质决定它把多远的东西招来（见本节「雾行三物·红蜡」）。
+- 30% 是**每段独立判定**，不是"这一趟只判一次"：雾里走得越久，撞上的机会越大。
+  但也不许连着判定凑数——一段剧情只判一次，没推进就不判。
+`;
+    function renderMistOverlay() {
+        if (!state.mistView) return '';
+        var bodyHtml = '<div style="font-size:12.5px;color:var(--xz-text-2);line-height:1.7;white-space:pre-wrap;">' + esc(MIST_ENTRY_TEXT) + '</div>';
+        return overlayShell('灰雾总纲', 'close-mist', bodyHtml);
+    }
+    function openMistView() { state.mistView = true; render(true); }
+    function closeMistView() { state.mistView = null; render(true); }
 
     /* 翻页。优先级：
        ① 直接改数据 + 请酒馆重画（applySwipeDirect）—— 一次到位，不走动画，不会一格格跳
@@ -4001,9 +4130,7 @@ d.attrs[a] = v;
         var out = placeLine ? ('落点：' + placeLine) : '';
         if (out && open) out += '\n\n';
         out += open;
-        /* ★ 迷雾模式：勾选后，玩家在输入框看到的第一句话里点明本局自雾中启程，
-           让模型按《灰雾总纲》展开结伴穿雾 / 雾行三物 / 雾里遇敌。 */
-        if (d.mistMode) out += (out ? '\n\n' : '') + '（迷雾模式已开启：本局自雾中启程，结伴穿雾、雾行三物、雾里遇敌按《灰雾总纲》展开。）';
+        if (d.mistMode) out += (out ? '\n\n' : '') + '迷雾模式已开启：本局自雾中启程，结伴穿雾、雾行三物、雾里遇敌按《灰雾总纲》展开。';
         return out;
     }
 
@@ -4389,6 +4516,7 @@ d.attrs[a] = v;
             '.xz-st-main:hover:not(:disabled),.xz-st-ovl-box button.xz-st-main:hover:not(:disabled),button.xz-st-main:hover:not(:disabled){background:rgba(230,189,118,.28);border-color:var(--xz-gold);}',
             '.xz-st-main:disabled,button.xz-st-main:disabled{opacity:.4;cursor:not-allowed;}',
             '.xz-st-main.xz-st-ghost,.xz-st-ghost{border-color:rgba(230,189,118,.45);background:transparent;color:var(--xz-gold-bright);}',
+            '.xz-st-main.xz-st-ghost.on{background:rgba(230,189,118,.26);border-color:var(--xz-gold);color:#fff;}',
             '.xz-st-main.xz-st-ghost:hover:not(:disabled),.xz-st-ghost:hover:not(:disabled){background:rgba(230,189,118,.14);}',
             '.xz-st-dice,.xz-st-ovl-box button.xz-st-dice,button.xz-st-dice{font-family:inherit;font-size:11.5px;padding:4px 11px;border-radius:999px;cursor:pointer;border:1px solid rgba(230,189,118,.4);background:rgba(255,255,255,.03);color:var(--xz-gold-bright);}',
             '.xz-st-dice:hover:not(:disabled){border-color:var(--xz-gold);background:rgba(230,189,118,.16);color:#f0e2b0;}',
@@ -6841,15 +6969,14 @@ d.attrs[a] = v;
         h += sectOpen("自定义开局", "");
         h += customBlock(d);
         h += sectClose();
-        /* ★ 迷雾模式开关（第4页）：勾选=以结伴穿雾开场（开启迷雾模式），
-           不勾=常规据点开局。值走 data-xz-field="mistMode"，onField 存成布尔，
-           确认开局时随 draft 落盘；开场白文本由 customOpeningText 读取。
-           写法照抄 DLC 复选框（label.xz-st-opt + 原生 checkbox + data-xz-field）。 */
         var _mistOn = !!(d.mistMode);
         h += sectOpen("迷雾模式", _mistOn ? "开启" : "关闭");
-        h += '<label class="xz-st-opt' + (_mistOn ? ' on' : '') + '">' +
+        h += '<div class="xz-st-row" style="gap:8px;align-items:center;flex-wrap:wrap;">' +
+             '<label class="xz-st-opt' + (_mistOn ? ' on' : '') + '">' +
              '<input type="checkbox" data-xz-field="mistMode"' + (_mistOn ? ' checked' : '') + '>' +
-             '开启迷雾模式（以结伴穿雾开场）</label>';
+             '开启迷雾模式（以结伴穿雾开场）</label>' +
+             '<button type="button" class="xz-st-mini" data-xz-act="mist-view" style="flex:0 0 auto;">查看</button>' +
+             '</div>';
         h += '<div class="xz-st-tiny" style="margin-top:6px;">' +
              (_mistOn
                 ? '本局自雾中启程：结伴穿雾、雾行三物、雾里遇敌均按《灰雾总纲》展开。'
@@ -6865,12 +6992,8 @@ d.attrs[a] = v;
         var _kinSix = (d.kin === "six");
         h += sectOpen('人物关系预设', _kinSix ? '六姐与娘' : '无关系');
         h += '<div class="xz-st-row" style="gap:8px;">' +
-            '<button type="button" class="xz-st-main xz-st-ghost" data-xz-act="kin-none"' +
-            (_kinSix ? "" : ' style="border-color:rgba(212,175,55,0.75);color:var(--xz-gold-bright);"') +
-            '>无关系</button>' +
-            '<button type="button" class="xz-st-main xz-st-ghost" data-xz-act="kin-six"' +
-            (_kinSix ? ' style="border-color:rgba(212,175,55,0.75);color:var(--xz-gold-bright);"' : "") +
-            '>六姐与娘（六位姐姐 + 亲娘）</button></div>';
+            '<button type="button" class="xz-st-main xz-st-ghost' + (_kinSix ? '' : ' on') + '" data-xz-act="kin-none">无关系</button>' +
+            '<button type="button" class="xz-st-main xz-st-ghost' + (_kinSix ? ' on' : '') + '" data-xz-act="kin-six">六姐与娘（六位姐姐 + 亲娘）</button></div>';
         h += '<div class="xz-st-tiny" style="margin-top:6px;">' +
             (_kinSix ? "本局按家人相处：六位姐姐与亲娘待你如亲手足。" : "本局不写亲缘：她们各是各的，和你没有家门关系。") +
             "</div>";
@@ -6938,6 +7061,7 @@ d.attrs[a] = v;
         h += '</div></div>';
 
         if (state.howto) h += renderHowtoOverlay();
+        if (state.mistView) h += renderMistOverlay();
 
         /* ★★★ v468：第 ⑪ 条 —— 四页高度对齐（用户：「我要固定长度，
            以没点开展开选效果的第三页的长度为主，四页固定长度，内容不够就空着下半部分」）
@@ -7718,7 +7842,7 @@ host.__xzGuard = true;
                  · 新期恰好就是已开那期 → 什么都不用做
                ⚠ 第二种是最容易写错的：`change` 事件一触发就去开条目，
                  等于"点开下拉看了一眼"就把 DLC 开了 —— 违背"默认不勾"的口径。 */
-            if (field === 'mistMode') { d.mistMode = !!(t.checked); return; }
+            if (field === 'mistMode') { d.mistMode = !!(t.checked); render(true); return; }
             if (field === 'dlc-period') {
                 var _pGrp = String(t.getAttribute('data-xz-group') || '');
                 var _want = String(t.value || '');
@@ -7898,6 +8022,7 @@ host.__xzGuard = true;
             }
 
             if (act === 'close-howto') { closeHowto(); return; }
+            if (act === 'close-mist') { closeMistView(); return; }
             /* ★ v359：DLC 说明折叠/展开。纯界面态，不碰 draft、不碰世界书。
                ★ v376：按包各折各的 —— `state.dlcOpen` 是包名集合。
                ★★★ v464：键从「包 id」改成「组名」(group) ★★★
@@ -8326,6 +8451,7 @@ host.__xzGuard = true;
                 return;
             }
             /* ★ v1.053c：人物关系预设 —— 两个按钮二选一 */
+            if (act === 'mist-view') { openMistView(); return; }
             if (act === 'kin-none' || act === 'kin-six') {
                 d.kin = (act === 'kin-six') ? 'six' : '';
                 render(true);
@@ -8354,6 +8480,7 @@ host.__xzGuard = true;
                 state.castOther = null;
                 state.castPick = '';
                 state.lastSig = '';
+                state.mistView = null;
                 render(true);
                 return;
             }
