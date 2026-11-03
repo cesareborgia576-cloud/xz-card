@@ -149,7 +149,7 @@
         ② 状态栏渲染（原 CORE-5） 读：全部 stat_data  写：本身不写变量，个别按钮经桥调 CORE-4/6/8
         ③ 装备台（原 CORE-6）   读：主角信息.已学本领 / 主角信息.装备武器  写：同上（换装只改这两处）  触发：面板按钮
         ④ 世界推演（原 CORE-8）  读：主角信息 / 人物列表 / 全局 / 时间 / 地理
-                                写：全局.近期大事件（按境界现算）  触发：面板按钮 + 每轮自动结算
+                                写：事件传讯（按境界**现算**，不落变量 —— v1.052 起「近期大事件」这个变量已删）  触发：面板按钮 + 每轮自动结算
       跨脚本调用一律走 window 全局（__XIUXIAN_ATB_BRIDGE__ / __XIUXIAN_EQUIP_OPEN__ / __XIUXIAN_WORLD_DEDUCE__），
       与合并前一致。字段与规则清单见项目文档，不随卡导出。 */
 
@@ -5168,6 +5168,12 @@ function xzTypeOf(name, fbT, fbA) {
                         + '<span style="color:var(--xz-muted);font-size:10.5px;font-variant-numeric:tabular-nums;">/ 100</span></div>'
                         + '<div class="xz-progress"><div class="xz-progress-fill" style="width:' + _favNum + '%;background:linear-gradient(90deg,#8a6d3b,' + _favCol + ');"></div></div>');
                 }
+                /* ★ v1.052：新增「关系」显示（娘/大姐/宿敌…）。模型写、脚本只读。 */
+                if (npc.关系) {
+                    s += _nBox('关系',
+                        '<span style="color:var(--xz-gold-bright);font-weight:var(--xz-fw-med);word-break:break-word;">'
+                        + esc(String(npc.关系)) + '</span>');
+                }
                 if (npc.心里话) {
                     s += _nBox('心里话',
                         '<span style="color:#c9a86a;font-style:italic;word-break:break-word;">「' + esc(String(npc.心里话).slice(0, 30)) + '」</span>', true);
@@ -9139,18 +9145,36 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         var cv = '';
         try { cv = (typeof window !== 'undefined' && window.__XZ_CARD_VER__) ? String(window.__XZ_CARD_VER__) : ''; } catch (eCV2) { cv = ''; }
         var isNew = !!(HOTV.latest && cv && HOTV.latest !== cv);
-        var txt, col;
-        if (HOTV.first) { txt = '⋯ 检查更新'; col = 'var(--xz-muted)'; }
-        else if (HOTV.err) { txt = '？ 检查失败'; col = 'var(--xz-muted)'; }
-        else if (isNew) { txt = '📦 新版本 ' + HOTV.latest + ' · 点此刷新'; col = 'var(--xz-gold-bright)'; }
-        else { txt = '✓ 已是最新' + (cv ? ' ' + cv : ''); col = '#7ddc9a'; }
-        var tail = 'flex:0 1 auto;text-align:right;font-size:10.5px;color:' + col
-            + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+        var txt, col, bc, bg;
+        if (HOTV.first) {
+            txt = '⋯ 检查更新'; col = 'var(--xz-muted)';
+            bc = 'rgba(154,160,166,.35)'; bg = 'rgba(154,160,166,.07)';
+        } else if (HOTV.err) {
+            txt = '？ 检查失败，点此重试'; col = '#9aa0a6';
+            bc = 'rgba(154,160,166,.45)'; bg = 'rgba(154,160,166,.09)';
+        } else if (isNew) {
+            txt = '📦 新版本 ' + HOTV.latest + ' · 点此刷新'; col = 'var(--xz-gold-bright)';
+            bc = 'rgba(212,175,55,.6)'; bg = 'rgba(212,175,55,.12)';
+        } else {
+            txt = '✓ 已是最新' + (cv ? ' ' + cv : ''); col = '#7ddc9a';
+            bc = 'rgba(125,220,154,.45)'; bg = 'rgba(125,220,154,.10)';
+        }
+
+        /* ★ v1.052：小框 + 完整显示。
+           原来这行是 flex 文字 + nowrap + ellipsis ⇒ 版本串一长就被削掉半截（作者：很丑）。
+           现在是一枚**胶囊小框**：自带边框、底色、圆角，字号 11px，允许换行、不截断。
+           颜色跟着状态走：绿=最新，金=有新版本，灰=检查失败。 */
+        var clickable = (!HOTV.first && (HOTV.err || isNew));
+        var bd = 'display:inline-block;box-sizing:border-box;max-width:100%;padding:4px 10px;margin-top:7px;'
+            + 'border:1px solid ' + bc + ';border-radius:10px;background:' + bg + ';'
+            + 'font-size:11px;line-height:1.5;letter-spacing:.02em;color:' + col + ';'
+            + 'white-space:normal;word-break:break-word;text-align:center;'
+            + (clickable ? 'cursor:pointer;' : '');
         var attrs = (!HOTV.first && (HOTV.err || isNew))
-            ? ' data-xz-act="hot-refresh" style="cursor:pointer;' + tail + '"'
-            : ' style="' + tail + '"';
-        return '<div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:6px;">'
-            + '<span style="flex:0 0 auto;font-size:10.5px;color:var(--xz-muted);letter-spacing:.04em;">卡版本</span>'
+            ? ' data-xz-act="hot-refresh" style="' + bd + '"'
+            : ' style="' + bd + '"';
+        return '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-top:4px;">'
+            + '<span style="flex:0 0 auto;font-size:10.5px;color:var(--xz-muted);letter-spacing:.04em;padding-top:9px;">卡版本</span>'
             + '<span' + attrs + '>' + esc(txt) + '</span></div>';
     }
     function xzHotCheck() {
@@ -10509,7 +10533,6 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 /* ★ v81：`origin` 必须原样搬运 —— 白名单漏一个字段，下游全部读不到。
                    而 v81 的裁剪判据正是 `origin==='story'`：漏了它恒 undefined，
                    判「不是 story」⇒ **一律不裁剪**，玩家自填招式会被按品质档位砍掉多余效果。 */
-                origin: (it.origin === 'player') ? 'player' : 'story',
                 /* 老字段（v70 机制通道，引擎还读）；`效果项` 已废止，效果只走上面 v75 六字段 */
                 玄技类型: it.玄技类型 || (String(it.类型 || '').trim() === '被动' ? '增益' : '进攻'),
                 攻击类型: it.攻击类型 || it.目标 || '单体',
@@ -10535,7 +10558,6 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 目标: '自身',            // 被动功法恒作用于自身
                 效果: _v75Set,
                 消耗: 0,                 // 被动恒不耗灵力
-                origin: (it.origin === 'player') ? 'player' : 'story',   // ★ v81，同玄技
                 /* 老字段 */
                 流派: it.流派 || '',
                 路线: hLane,
