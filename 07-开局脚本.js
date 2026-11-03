@@ -6274,6 +6274,52 @@ d.attrs[a] = v;
         var p = placeOf(d.place);
         if (!p.custom) return '';
         var h = '';
+        /* ★ v1.053：DLC 专属落点接回自定义开局。
+           它们原来在第 4 页那张「启程之地」列表里，那一页被撤了 ⇒ 一度没有入口。
+           这里以「落点预设」的形式补回来：勾一个就把大位置/小位置填上。
+           判定沿用旧三来源：手勾 / 世界书真开着（异步）/ 同步兜底。 */
+        try {
+            try { refreshDlcLive(); } catch (eDlv) {}
+            var _onNow = dlcOnNow();
+            var _dlcLive2 = (typeof _dlcLive !== 'undefined') ? _dlcLive : null;
+            function _packOn(pid) {
+                if (!pid) return false;
+                if (d.dlc && Object.prototype.hasOwnProperty.call(d.dlc, pid) && d.dlc[pid]) return true;
+                if (_dlcLive2 && _dlcLive2[pid]) return true;
+                return !!(_onNow && _onNow[pid]);
+            }
+            var _dpl = [];
+            (typeof PLACES !== 'undefined' && PLACES ? PLACES : []).forEach(function (p) {
+                if (!p || !p.dlc) return;
+                if (!_packOn(p.dlc)) return;
+                _dpl.push({ id: p.id, label: p.label, big: String(p.big || ''), small: String(p.small || '') });
+            });
+            if (!_dpl.length) {
+                (typeof DLC_PACKS !== 'undefined' && DLC_PACKS ? DLC_PACKS : []).forEach(function (pk) {
+                    if (!pk || !pk.id) return;
+                    if (!_packOn(pk.id)) return;
+                    var _seg = String(pk.place || '').split('·').map(function (x) { return x.trim(); }).filter(Boolean);
+                    var _tail = _seg.length ? _seg[_seg.length - 1] : '';
+                    _dpl.push({
+                        id: 'dlc-' + pk.id,
+                        label: String(pk.label || pk.id).replace(/\s*DLC\s*$/, '') + (pk.period ? (' · ' + pk.period) : '') + (_tail ? (' · ' + _tail) : ''),
+                        big: String(pk.place || ''), small: ''
+                    });
+                });
+            }
+            if (_dpl.length) {
+                h += '<div class="xz-st-row"><label>落点预设</label><div class="xz-st-grid" style="grid-column:1/-1;">';
+                _dpl.forEach(function (p) {
+                    var _on = (d.customBig === p.big);
+                    h += '<label class="xz-st-opt' + (_on ? ' on' : '') + '">' +
+                        '<input type="radio" name="xz-st-dlcplace" data-xz-field="dlcplace" value="' + esc(p.id) + '"' + (_on ? ' checked' : '') + '>' +
+                        '<span class="xz-st-opt-name">' + esc(p.label) + '</span>' +
+                        '<span class="xz-st-opt-meta">DLC 落点</span></label>';
+                });
+                h += '</div></div>';
+            }
+        } catch (eDpl) {}
+
         var tree = placeTree();
 
         if (!tree) {
@@ -6784,7 +6830,7 @@ d.attrs[a] = v;
         h += sectOpen('人物关系预设', _kinOn.length ? ('已选 ' + _kinOn.length + ' 人') : '未选');
         h += '<div class="xz-st-grid">' + (KIN_PRESET || []).map(function (p) {
             var _on = !!(d.kin && d.kin[p.id]);
-            return '<label class="xz-st-opt' + (_on ? ' on' : '') + '">' +
+            return '<label class="xz-st-opt xz-st-kin' + (_on ? ' on' : '') + '">' +
                 '<input type="checkbox" data-xz-field="kin" data-xz-kin="' + esc(p.id) + '"' + (_on ? ' checked' : '') + '>' +
                 '<span class="xz-st-opt-name">' + esc(p.label) + '</span>' +
                 '<span class="xz-st-opt-meta">参与本局亲缘</span></label>';
@@ -7559,6 +7605,21 @@ host.__xzGuard = true;
                     _sel.forEach(function (o) { if (o.selected && o.value) _cast.push(String(o.value)); });
                 } catch (eCs) {}
                 d.cast = _cast;
+                render(true);
+                return;
+            }
+            /* ★ v1.053：选 DLC 落点预设 ⇒ 填大位置/小位置 */
+            if (field === 'dlcplace') {
+                var _dpId = String(t.value || '');
+                var _dp = null;
+                for (var _dpi = 0; _dpi < PLACES.length; _dpi++) { if (PLACES[_dpi] && PLACES[_dpi].id === _dpId) { _dp = PLACES[_dpi]; break; } }
+                if (!_dp) {
+                    (typeof DLC_PACKS !== 'undefined' && DLC_PACKS ? DLC_PACKS : []).forEach(function (pk) {
+                        if (!pk || pk.id !== _dpId) return;
+                        _dp = { big: String(pk.place || ''), small: '' };
+                    });
+                }
+                if (_dp) { d.customBig = String(_dp.big || ''); d.customSmall = String(_dp.small || ''); }
                 render(true);
                 return;
             }
