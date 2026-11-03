@@ -930,7 +930,10 @@
          只删一个，从这一页往后全部错位（点「舆图」进「淬炼」）。 */
     /* ★ v535：'事件总表' 已撤（作者 2026-11-02 选「改法2」：只撤玩家入口，数据与计算保留）。
        页签名表与 PAGE_FNS 必须逐位对齐，下面有契约守卫会当场报错 —— 删一处必须删两处。 */
-    var XZ_TAB_NAMES = ['主角', '装备', '人物', '背包', '任务', '灵宠', '舆图', '淬炼'];
+    /* ★ 2026-11-03（作者：「新增一个分页，叫版本，把这对内容转移到版本页面」）：
+       「版本」页承接原来挂在主角页格 2 的三样元信息 —— 变量补全 / 卡版本 / 世界书版本。
+       ⚠ 追加在末尾（页面里有按下标写死的跳转），且必须与 PAGE_FNS 逐位对齐。 */
+    var XZ_TAB_NAMES = ['主角', '装备', '人物', '背包', '任务', '灵宠', '舆图', '淬炼', '版本'];
     /* ★★★ v472：九个分页标题的单色线稿图标 ★★★
        用户原话（2026-10-30）：「界面脚本里的每一个分页标题，如主角，人物等这些，
          都要绘制一个简约精致的小图标，不需要颜色，比如主角就是一个人，背包就是一个背包，
@@ -987,7 +990,10 @@
            15px 下横线会和小火上沿粘成一块。
            淬炼＝火里炼，火苗比"一个炉子"好认得多。 */
         '淬炼': '<path d="M12 2.6c.7 3 2.3 4.1 3.5 5.8 1.5 2.2 2.1 3.9 2.1 6a5.6 5.6 0 0 1-11.2 0c0-3.2 2.6-5.3 3.9-7.5"/>'
-              + '<path d="M12 19.9a2.7 2.7 0 0 0 2.7-2.7c0-1.7-1.3-2.6-2.7-4-1.4 1.4-2.7 2.3-2.7 4a2.7 2.7 0 0 0 2.7 2.7z"/>'
+              + '<path d="M12 19.9a2.7 2.7 0 0 0 2.7-2.7c0-1.7-1.3-2.6-2.7-4-1.4 1.4-2.7 2.3-2.7 4a2.7 2.7 0 0 0 2.7 2.7z"/>',
+        /* 版本 —— **书签**（下方一个 V 形缺口 + 一道横线）：
+           15px 下别的笔画都会糊，"缺口"是最扛缩的特征，一眼能认出是"夹在书里的那一条"。 */
+        '版本': '<path d="M6.4 3.6h11.2v16.8l-5.6-3.6-5.6 3.6z"/><path d="M9.4 8.6h5.2"/>'
     };
     /* 取图标；名字对不上就返回空串（**不抛错**）—— 以后加/改名不会把整页带崩 */
     function xzTabIcon(name) {
@@ -2996,6 +3002,15 @@ function xzTypeOf(name, fbT, fbA) {
         '.xz-dmg-fold[open]>summary span:last-child::after{content:"";}',
         '.xz-root .xz-tab-btn:hover{color:var(--xz-text);border-color:rgba(212,175,55,0.3);background:rgba(212,175,55,0.06);}',
         '.xz-root .xz-tab-btn[aria-selected="true"]{color:var(--dhl-gold-bright);border-color:var(--dhl-border-strong);background:var(--dhl-button-active);box-shadow:0 0 12px var(--xz-gold-glow), inset 0 1px 0 rgba(255,255,255,0.15);font-weight:var(--xz-fw-med);}',
+        /* ★ 2026-11-03：「版本」页签的告警态 —— 世界书没同步 / 卡有新版本时整颗变红。
+           ⚠ 必须排在 `[aria-selected="true"]` **之后**：两条选择器权重相同（三个类级），
+             靠顺序定胜负。写在前面的话，选中态的金色底会把红色盖掉 ——
+             而"没对上"恰恰是玩家最可能停在那一页的时候。
+           ⚠ 用**纯色**，不用 `linear-gradient`：渐变写在 background-image 上，
+             `background-color` 仍然是 transparent —— 看上去是红的，但任何按颜色做判据的地方
+             （闸 / 截图比对 / 无障碍插件）读到的都是"没有背景"。 */
+        '.xz-root .xz-tab-btn.xz-tab-alert{color:#fff !important;border-color:#ff5252 !important;background:#d21f1f !important;box-shadow:0 0 12px rgba(210,31,31,0.6), inset 0 1px 0 rgba(255,255,255,0.18) !important;font-weight:var(--xz-fw-med);}',
+        '.xz-root .xz-tab-btn.xz-tab-alert:hover{background:#e83232 !important;border-color:#ff6b6b !important;}',
 
         /* 内容容器（全局固定高度 380px，彻底杜绝切页跳变与颠簸，内层丝滑滚动） */
         '.xz-root .xz-view{padding:12px;height:380px;min-height:380px;max-height:380px;overflow-y:auto;overflow-x:hidden;}',
@@ -3923,38 +3938,13 @@ function xzTypeOf(name, fbT, fbA) {
         if (tj && tj !== '非天骄') { try { hn += tianjiaoChip(tj); } catch (eTc) {} }
         hn += '</div>';
 
-        /* ★ v1.053：变量补全与卡版本徽章挪到**第一行下面**（作者 12:04 截图）。
-           原来它们在第二行、和「世界书徽章」挤成一排补丁按钮。 */
-        hm += '<div class="xz-topinfo-line">';
-        try {
-            var _vcs = xzVarCompleteStatus();
-            hm += '<button type="button" class="xz-tianji-goto-btn" data-xz-act="var-complete" ' +
-                'style="padding:2px 9px;font-size:11px;border-color:' + (_vcs.ok ? 'rgba(212,175,55,0.55)' : 'rgba(120,120,120,0.4)') + ';color:' + (_vcs.color || 'var(--xz-muted)') + ';font-weight:var(--xz-fw-med);" ' +
-                'title="' + esc(_vcs.title || '外置变量补全') + '">🩺 变量补全 ' + esc(_vcs.label || '补') + '</button>';
-        } catch (eVcs) {}
-        try { hm += xzHotVerHtml(); } catch (eHot) {}
-        hm += '</div>';
-        hm += '<div class="xz-topinfo-line">';
-        try { hm += xzWbVerHtml(); } catch (eWv) {
-            /* 徽章自己坏了不许连累这一格 —— 但也**不许静默**：
-               印一个能点重读的灰标，让人知道这里本该有个东西。 */
-            hm += '<button type="button" class="xz-tianji-goto-btn" data-xz-act="wb-ver" ' +
-                'style="padding:2px 8px;font-size:11px;border:1px solid rgba(120,120,120,0.35);color:var(--xz-muted);" ' +
-                'title="版本徽章渲染出错：' + esc((eWv && eWv.message) || eWv) + '">📖 世界书 ?</button>';
-        }
-        /* ★ v324：原来这里还有颗「⤢ 宽屏大字」—— 已删。
-           `state.wide` 开关本身留着（`.xz-wide` 那套 CSS 照旧生效），只是不暴露入口。 */
-        /* ★ v310：`📍 地点` 那一格已删 —— 地点**只有一个真相源**：舆图。 */
-        hm += '</div>';
+        /* ★★★ 2026-11-03（作者：「新增一个分页，叫版本，把这对内容转移到版本页面」）★★★
+           变量补全 / 卡版本 / 世界书版本这三样**整块搬去「版本」页**（见 pageVersion）。
+           这里一个字都不许再印：两份实现就是两个真相源，而且这一格的高度全靠它们撑着 ——
+           搬走之后「本命玄元属性」这张半宽格子才真正矮下来。
+           ⚠ 世界书没同步时的出口是**那颗变红的页签**，不是这里。别为了"一眼看到"搬回来。 */
 
-        /* 第二行：两颗元信息按钮。**紧挨着放**，因为它们是同一类东西 ——
-           一个说"变量补上没"，一个说"世界书换上没"，都是玩家看不见就会踩坑的。 */
-        hm += '<div class="xz-topinfo-line">';
-        /* 外置变量补全入口（原悬浮球点不到 → 搬进状态栏 → 现在搬进这一格）。
-           按钮颜色就是嗅探结果：补=待机 / 缺=最新一楼没变量块 / 算=正在补 /
-           全=上次成功 / 误=上次失败。 */
-
-        /* 第三行：日期与时间。
+        /* 日期与时间。
            ★★★ v465（用户 2026-10-29）：「这个日期和事件的字体也改了，好难看，日历emoj去掉」★★★
            两件事一起改，因为它们都在这两格里：
              ① 字体：原来内联写 `font-family:var(--xz-font)` —— 那个变量在 `.xz-root` 上是**有值的**，
@@ -3972,7 +3962,6 @@ function xzTypeOf(name, fbT, fbA) {
              '<span style="' + timeStyle + '">日期 ' + esc(date) + '</span>' +
              '<span style="' + timeStyle + '">时辰 ' + esc(clock) + '</span>' +
              '</span></div>';
-        hm += '</div>';
         var h = '<div class="xz-topinfo">';
         if (part === 'name') h += hn;
         else if (part === 'meta') h += hm;
@@ -5369,6 +5358,70 @@ function xzTypeOf(name, fbT, fbA) {
         h += body;
         h += '</div>';
         return h;
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════════
+       版本页（作者 2026-11-03：「新增一个分页，叫版本，把这对内容转移到版本页面」）
+
+       搬过来的是原先挂在主角页格 2 的三样：🩺 变量补全 / 卡版本 / 📖 世界书版本。
+       为什么单开一页：它们都是元信息，挤在「本命玄元属性」那半宽格子里把格子撑高；
+       而且这三样跟着状态栏每 1.5 秒重绘一次，正是那格高度的主要来源。
+
+       ⚠ 一处定义：`xzVarCompleteStatus` / `xzHotVerHtml` / `xzWbVerHtml` 仍在原处，
+         这里**只调用、不复制实现**。复制一份就是两个真相源，改一处忘一处。
+       ══════════════════════════════════════════════════════════════════════════ */
+    function pageVersion() {
+        var h = '<div class="xz-sub-head">✦ 版本与同步</div>';
+        h += '<div class="xz-rpg-desc" style="font-size:11.5px;line-height:1.75;margin-bottom:10px;">'
+            + '脚本与引擎会自己热更新；世界书不能热更新，只能靠你在酒馆里「导入卡内世界书」整本覆盖。'
+            + '这一页只回答三件事：变量补上没有、卡是不是最新、世界书跟没跟上。</div>';
+
+        h += '<div style="display:flex;flex-direction:column;align-items:stretch;gap:10px;">';
+        /* ① 变量补全：颜色就是嗅探结果（补=待机 / 缺=最新一楼没变量块 / 算 / 全 / 误） */
+        try {
+            var _vcs = xzVarCompleteStatus();
+            h += '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">'
+                + '<span style="flex:0 0 auto;font-size:10.5px;color:var(--xz-muted);letter-spacing:.04em;">变量补全</span>'
+                + '<button type="button" class="xz-tianji-goto-btn" data-xz-act="var-complete" '
+                + 'style="padding:4px 10px;font-size:11.5px;border:1px solid ' + (_vcs.ok ? 'rgba(212,175,55,0.55)' : 'rgba(120,120,120,0.4)') + ';'
+                + 'color:' + (_vcs.color || 'var(--xz-muted)') + ';font-weight:var(--xz-fw-med);" '
+                + 'title="' + esc(_vcs.title || '外置变量补全') + '">🩺 变量补全 ' + esc(_vcs.label || '补') + '</button></div>';
+        } catch (eVcs) {
+            h += '<div class="xz-rpg-desc" style="font-size:11px;">变量补全按钮渲染出错：' + esc((eVcs && eVcs.message) || eVcs) + '</div>';
+        }
+        /* ② 卡版本（含「有新版本 → 点此刷新」） */
+        try { h += xzHotVerHtml(); } catch (eHot) {
+            h += '<div class="xz-rpg-desc" style="font-size:11px;">卡版本渲染出错：' + esc((eHot && eHot.message) || eHot) + '</div>';
+        }
+        /* ③ 世界书版本（＝世界书与卡同不同步） */
+        try { h += xzWbVerHtml(); } catch (eWv) {
+            h += '<button type="button" class="xz-tianji-goto-btn" data-xz-act="wb-ver" '
+                + 'style="padding:4px 10px;font-size:11px;border:1px solid rgba(120,120,120,0.35);color:var(--xz-muted);" '
+                + 'title="版本徽章渲染出错：' + esc((eWv && eWv.message) || eWv) + '">📖 世界书 ?</button>';
+        }
+        h += '</div>';
+
+        /* 世界书没同步时，把「下一步做什么」也写在页面上 —— 只把页签标红不够，得说清怎么修 */
+        var st = state.wbVer;
+        if (st && (!st.ok || !st.same)) {
+            h += '<div class="xz-rpg-desc" style="font-size:11.5px;line-height:1.75;margin-top:12px;color:#fbbf24;">'
+                + '世界书没跟上：去酒馆「导入卡内世界书」（地球图标 / 更多菜单）整本覆盖一次，别只换 PNG。'
+                + '覆盖完点上面的 📖 徽章重读。</div>';
+        }
+        return h;
+    }
+    /* 页签标红：世界书不同步 / 卡有新版本。两种都只表示「这一页有件事等你处理」。
+       ⚠ 还没读到时（state.wbVer === null）**不红** —— 那不是"不同步"，是"还没问"。 */
+    function xzVerAlertOn() {
+        try {
+            var st = state.wbVer;
+            if (st && (!st.ok || !st.same)) return true;
+        } catch (e1) {}
+        try {
+            var cv = (typeof window !== 'undefined' && window.__XZ_CARD_VER__) ? String(window.__XZ_CARD_VER__) : '';
+            if (HOTV.latest && cv && HOTV.latest !== cv) return true;
+        } catch (e2) {}
+        return false;
     }
 
     /* 4. 背包面板 */
@@ -8793,7 +8846,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
            事件页的快捷入口也从它现算下标 —— 两处不会再各写一份而漂移。
            ⚠ 仍然：新页一律**追加在末尾**，绝不插队（页面里有按下标写死的跳转）。 */
         var tabs = XZ_TAB_NAMES;
-        var PAGE_FNS = [['主角', pageMain], ['装备', pageGear], ['人物', pagePeople], ['背包', pageBackpack], ['任务', pageTask], ['灵宠', pagePet], ['舆图', pageMap], ['淬炼', pageTemper]];
+        var PAGE_FNS = [['主角', pageMain], ['装备', pageGear], ['人物', pagePeople], ['背包', pageBackpack], ['任务', pageTask], ['灵宠', pagePet], ['舆图', pageMap], ['淬炼', pageTemper], ['版本', pageVersion]];
         /* 契约守卫：页签表与内容表必须逐位同长、同名 —— 错位就是「点 A 页出 B 内容」 */
         (function () {
             var bad = [];
@@ -8895,8 +8948,14 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
 
         /* 导航栏 */
         h += '<div class="xz-nav">';
+        /* ★ 2026-11-03：「版本」页签在「世界书不同步 / 卡有新版本」时整颗标红。
+           只红这一颗 —— 红一片等于没红（玩家会当成皮肤配色）。 */
+        var _verAlert = xzVerAlertOn();
         for (var t = 0; t < tabs.length; t++) {
-            h += '<button class="xz-tab-btn" type="button" data-xz-act="tab" data-xz-tab="' + t + '" aria-selected="' + (state.tab === t ? 'true' : 'false') + '">'
+            var _isVer = (tabs[t] === '版本');
+            var _cls = 'xz-tab-btn' + (_isVer && _verAlert ? ' xz-tab-alert' : '');
+            h += '<button class="' + _cls + '" type="button" data-xz-act="tab" data-xz-tab="' + t + '" aria-selected="' + (state.tab === t ? 'true' : 'false') + '"'
+               + (_isVer && _verAlert ? ' title="版本没对上：世界书没同步，或卡有新版本 —— 点开看"' : '') + '>'
                + xzTabIcon(tabs[t]) + '<span class="xz-tab-txt">' + esc(tabs[t]) + '</span></button>';
         }
         h += '</div>';
