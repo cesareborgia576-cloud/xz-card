@@ -5403,6 +5403,36 @@ function xzTypeOf(name, fbT, fbA) {
         }
         h += '</div>';
 
+        /* ═══ 诊断块（v1.056）═══
+           作者 2026-11-03：「点击刷新之后还没反应，刷新之后依旧还是旧版本，然后提示刷新依旧还再」
+           —— 光有「有新版本」这句话，没法判断是"没查到"、"查到了旧的"、还是"点不动"。
+           ⇒ 把四个实情直接印出来：卡版本 / 当前从哪个 ref 加载 / 线上报的号 / 上次检查时刻。
+             下次再出问题，一眼能看出卡在哪一段，不用猜。 */
+        var _ref = '', _chan = '', _cv2 = '';
+        try { _cv2 = (window.__XZ_CARD_VER__ ? String(window.__XZ_CARD_VER__) : ''); } catch (eA) {}
+        try { _ref = (window.__XZ_HOT_TAG__ ? String(window.__XZ_HOT_TAG__) : ''); } catch (eB) {}
+        try { _chan = (window.__XZ_CHAN__ ? String(window.__XZ_CHAN__) : ''); } catch (eC) {}
+        var _last = HOTV.at ? (function () {
+            var d = new Date(HOTV.at), p2 = function (n) { return (n < 10 ? '0' : '') + n; };
+            return p2(d.getHours()) + ':' + p2(d.getMinutes()) + ':' + p2(d.getSeconds());
+        })() : '还没查过';
+        var _online = HOTV.err ? '检查失败（网络/被拦）' : (HOTV.first ? '检查中…' : (HOTV.latest || '没取到'));
+        h += '<div style="margin-top:14px;padding:10px;border:1px solid var(--xz-border-strong);border-radius:6px;font-size:11px;line-height:1.9;">'
+            + '<div style="font-size:10.5px;color:var(--xz-muted);letter-spacing:.04em;margin-bottom:4px;">诊断</div>'
+            + '卡版本：<b style="color:var(--xz-gold-bright);">' + esc(_cv2 || '未知') + '</b>'
+            + '　通道：<b>' + esc(_chan === 'dev' ? '开发' : '稳定') + '</b><br>'
+            + '本页脚本来自：<b style="word-break:break-all;">' + esc(_ref ? _ref.slice(0, 12) : '未知') + '</b>'
+            + '（' + (_ref && /^[0-9a-f]{40}$/.test(_ref) ? 'commit' : 'tag') + '）<br>'
+            + '线上版本：<b>' + esc(_online) + '</b>　上次检查：<b>' + esc(_last) + '</b>'
+            + '</div>';
+        h += '<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">'
+            + '<button type="button" class="xz-tianji-goto-btn" data-xz-act="hot-recheck" '
+            + 'style="padding:4px 10px;font-size:11.5px;border:1px solid rgba(212,175,55,.55);color:var(--xz-gold-bright);">立刻重查</button>'
+            + '<button type="button" class="xz-tianji-goto-btn" data-xz-act="hot-reset" '
+            + 'style="padding:4px 10px;font-size:11.5px;border:1px solid rgba(154,160,166,.45);color:var(--xz-muted);" '
+            + 'title="清掉「记住的版本 tag」，再按卡自带的 ref 重载">清掉记住的版本并重载</button>'
+            + '</div>';
+
         /* 有问题时把「下一步做什么」写在页面上 —— 只把页签标红不够，得说清怎么修。
            ★ v1.053：变量块格式异常也归到这里（作者：「变量补全提示了，但版本也没高亮」）。 */
         var _vis = null;
@@ -9251,7 +9281,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         }
         return false;
     }
-    var HOTV = { latest: '', err: false, first: true };
+    var HOTV = { latest: '', err: false, first: true, at: 0 };
     /* ★★★ 2026-11-03：`/main/` → `/refs/heads/main/`（与 loader 同一个坑）★★★
        实测同一分钟：`/main/` 给 v1.053（旧值，带 query 不换），`/refs/heads/main/` 给 v1.055。
        写成 `/main/` 的话，作者推完新版看不到号变化 —— 「实时刷新」这条就永远是假的。 */
@@ -9303,6 +9333,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             var done = function (ok, latest) {
                 var before = [HOTV.latest, HOTV.err, HOTV.first].join('|');
                 HOTV.first = false;
+                HOTV.at = Date.now();   /* ★ v1.056：诊断用，页面上印"上次检查 hh:mm:ss" */
                 if (ok) { HOTV.err = false; HOTV.latest = latest; } else { HOTV.err = true; }
                 if ([HOTV.latest, HOTV.err, HOTV.first].join('|') !== before) {
                     try { render(true); } catch (e) {}
@@ -10143,6 +10174,22 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 }
                 /* ★ v536：血脉格那行版本号的点击 —— 只有「有新版本 / 检查失败」时可点。
                    必须刷新整个页面：只重画状态栏的话，loader 不会重新去拉新脚本。 */
+                /* ★ v1.056：版本页的两个诊断按钮 */
+                if (act === 'hot-recheck') {
+                    try { HOTV.first = true; HOTV.err = false; HOTV.at = 0; } catch (eH0) {}
+                    try { xzHotCheck(); } catch (eH1) {}
+                    render(true);
+                    return;
+                }
+                if (act === 'hot-reset') {
+                    /* 清掉"记住的版本 tag" —— 那是稳定卡点过更新后留下的；
+                       开发卡被它顶掉就会一直去拉一个不存在的 tag。清完按卡自带 ref 重载。 */
+                    try { localStorage.removeItem('xzHotTag'); } catch (eH2) {}
+                    try { localStorage.removeItem('xzHotCardTag'); } catch (eH3) {}
+                    try { (window.top || window).location.reload(); }
+                    catch (eH4) { try { location.reload(); } catch (eH5) {} }
+                    return;
+                }
                 if (act === 'hot-refresh') {
                     try { (window.top || window).location.reload(); }
                     catch (eR) { try { location.reload(); } catch (eR2) {} }
