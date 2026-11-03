@@ -2255,6 +2255,9 @@ function xzSkeletonOfSkill(skill) {
                 DLC_PACKS.forEach(function (p) { o[p.id] = false; });
                 return o;
             })(),
+            /* ★ 迷雾模式开关（第4页）：默认关。勾选=以结伴穿雾开场（开启迷雾模式），
+               不勾=常规据点开局。onField 里存成布尔，确认开局时随 draft 一起落盘。 */
+            mistMode: false,
         };
     }
     function emptyTplState() {
@@ -3997,7 +4000,11 @@ d.attrs[a] = v;
         if (!placeLine && !open) return '';
         var out = placeLine ? ('落点：' + placeLine) : '';
         if (out && open) out += '\n\n';
-        return out + open;
+        out += open;
+        /* ★ 迷雾模式：勾选后，玩家在输入框看到的第一句话里点明本局自雾中启程，
+           让模型按《灰雾总纲》展开结伴穿雾 / 雾行三物 / 雾里遇敌。 */
+        if (d.mistMode) out += (out ? '\n\n' : '') + '（迷雾模式已开启：本局自雾中启程，结伴穿雾、雾行三物、雾里遇敌按《灰雾总纲》展开。）';
+        return out;
     }
 
     /* ★ v72：确认开局后预填进输入框的「属性初始化指令」。
@@ -6834,6 +6841,21 @@ d.attrs[a] = v;
         h += sectOpen("自定义开局", "");
         h += customBlock(d);
         h += sectClose();
+        /* ★ 迷雾模式开关（第4页）：勾选=以结伴穿雾开场（开启迷雾模式），
+           不勾=常规据点开局。值走 data-xz-field="mistMode"，onField 存成布尔，
+           确认开局时随 draft 落盘；开场白文本由 customOpeningText 读取。
+           写法照抄 DLC 复选框（label.xz-st-opt + 原生 checkbox + data-xz-field）。 */
+        var _mistOn = !!(d.mistMode);
+        h += sectOpen("迷雾模式", _mistOn ? "开启" : "关闭");
+        h += '<label class="xz-st-opt' + (_mistOn ? ' on' : '') + '">' +
+             '<input type="checkbox" data-xz-field="mistMode"' + (_mistOn ? ' checked' : '') + '>' +
+             '开启迷雾模式（以结伴穿雾开场）</label>';
+        h += '<div class="xz-st-tiny" style="margin-top:6px;">' +
+             (_mistOn
+                ? '本局自雾中启程：结伴穿雾、雾行三物、雾里遇敌均按《灰雾总纲》展开。'
+                : '本局在据点内常规开局；灰雾仅作世界背景，不主动进入雾中。') +
+             '</div>';
+        h += sectClose();
         h += sectOpen("在场人物", (d.cast && d.cast.length) ? (d.cast.length + " 人") : "未选");
         h += castBlockHtml(d);
         h += sectClose();
@@ -7696,6 +7718,7 @@ host.__xzGuard = true;
                  · 新期恰好就是已开那期 → 什么都不用做
                ⚠ 第二种是最容易写错的：`change` 事件一触发就去开条目，
                  等于"点开下拉看了一眼"就把 DLC 开了 —— 违背"默认不勾"的口径。 */
+            if (field === 'mistMode') { d.mistMode = !!(t.checked); return; }
             if (field === 'dlc-period') {
                 var _pGrp = String(t.getAttribute('data-xz-group') || '');
                 var _want = String(t.value || '');
