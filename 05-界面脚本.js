@@ -8607,7 +8607,6 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             h += '<div class="xz-map-info">';
             if (info.kind === 'state') {
                 h += '<div class="xz-map-info-top"><span class="xz-map-info-name">' + esc(info.s.n) + '</span>' +
-                     '<span class="xz-map-info-meta">' + esc(info.s.own) + '</span>' +
                      '<span class="xz-map-info-n">' + info.s.areas.length + ' 域</span>' +
                      (here.state === info.s.n ? '<span class="xz-map-here-tag">在此</span>' : '') + '</div>';
                 h += '<div class="xz-map-info-note">' + esc(info.s.note) + '</div>';
