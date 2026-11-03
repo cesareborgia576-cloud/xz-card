@@ -2164,6 +2164,7 @@ function xzSkeletonOfSkill(skill) {
             bloodRank: '凡血', bloodName: '山野遗血', bloodPurity: 10,
             /* ★ v1.053：人物关系预设 —— 默认**全勾**（她们本就是这一局的家人）。
                玩家取消勾选 = 这一局不写这段亲缘（关系条目会被关掉）。 */
+            cast: [],
             kin: (function () {
                 var o = {};
                 (typeof KIN_PRESET !== 'undefined' && KIN_PRESET ? KIN_PRESET : []).forEach(function (p) { o[p.id] = true; });
@@ -3273,6 +3274,17 @@ d.attrs[a] = v;
                 装备武器: artifact
             },
             地理: geo,
+            /* ★ v1.053：在场人物（第 4 页选的）落进 人物列表。
+               一个都没选时**不写这个键** —— 写空对象等于把玩家已有的人物列表清空。 */
+            人物列表: (function () {
+                var out = {};
+                var rel = { '白长雪': '娘', '梵清仪': '奶娘', '阿依莎': '大姐', '云疏月': '二姐', '司幽怜': '三姐', '陆昭华': '四姐', '沈清颜': '五姐', '言清漪': '六姐' };
+                (d.cast || []).forEach(function (nm) {
+                    if (!nm) return;
+                    out[nm] = { 姓名: nm, 在场状态: true, 关系: (rel[nm] || '') };
+                });
+                return out;
+            })(),
             /* ⚠ v472：这里原来写着 `秘境: { 名称:'', 总层:0, 当前层:0, 状态:'未开始', 收获:'' }`。
                v361 加它是因为 `deepAssign` 只合并不替换，旧档「探索中」会原样活过来、
                把右下角浮钮点亮。**现在整层玩法下架了，没有浮钮、没有轮询、没有模块读它**，
@@ -3281,6 +3293,8 @@ d.attrs[a] = v;
                ⇒ 老档里残留的 `秘境` 键**不需要清理**：没人读它，多出来也不会有任何表现。
                  （真要清就得动玩家存档，收益为零，别做。） */
         };
+        /* ★ v1.053：一个都没选在场人物 ⇒ 不写 人物列表（别拿空对象清空玩家已有的） */
+        if (changes.人物列表 && !Object.keys(changes.人物列表).length) delete changes.人物列表;
         /* ★ v509：不再写 `全局.近期大事件`（用户要求把这个变量删掉）。
              启程之地自带的 event 文案仍留在 `place.event` 里，需要时现读即可。 */
         return { changes: changes, place: place, equipped: Math.min(n, d.items.玄技.length) };
@@ -6516,6 +6530,9 @@ d.attrs[a] = v;
              '<input type="text" data-xz-field="bloodName" value="' + esc(d.bloodName || '') + '" placeholder="如：九幽地冥蟒 / 太古虚龙"></div>' +
              '<button type="button" class="xz-st-dice" data-xz-act="roll-blood" style="flex:0 0 auto;">随机血脉 🎲</button>' +
              '<div class="xz-st-cell"><label>品阶</label><select data-xz-field="bloodRank">' + opts(BLOOD_RANKS, d.bloodRank || '凡血') + '</select></div>' +
+            '<div class="xz-st-cell" style="flex:0 0 104px;"><label>天骄预计</label>' +
+            '<div style="padding:5px 8px;border:1px solid rgba(212,175,55,.45);border-radius:8px;background:rgba(212,175,55,.10);color:var(--xz-gold-bright);font-size:12.5px;font-weight:var(--xz-fw-med);text-align:center;">' +
+            esc((tjNow && tjNow.name) || '非天骄') + '</div></div>' +
              '<div class="xz-st-cell" style="flex:0 0 88px;"><label>纯度 %</label>' +
              '<input type="number" data-xz-field="bloodPurity" min="0" max="100" value="' + (Number(d.bloodPurity) || 0) + '"></div>' +
              /* ★ 效果 + 说明是两个 80 字短文本，宽屏并排一行、窄屏自动折。
@@ -6652,55 +6669,50 @@ d.attrs[a] = v;
          而且它在框外更容易被看见（这一页的终点必须最显眼）。
        ⚠ 自定义落点块（`customBlock`）自带「自填开场白」那套输入，
          只在选了 custom 时才有内容 —— 它跟着落点框走，不单独立框。 */
-    function pageWizPlaceHtml(d) {
-        var place = placeOf(d.place);
-        var h = '';
-        /* ★★★ v406：DLC 专属的开局地点只在对应的包勾上时才出现。
-           `p.dlc` 是包 id（DLC_PACKS[].id），`d.dlc` 是开关表。
-           ⚠ 用 hasOwnProperty 判，和 DLC 复选框那段同口径 ——
-             直接 `d.dlc[p.dlc]` 在键不存在时会拿到 undefined，虽然这里等价，但口径要统一。 */
-        /* ★ v513：先踢一次真实状态（异步，读完自己 render(true)）。 */
-        try { refreshDlcLive(); } catch (eDL) {}
-        var _onNow = dlcOnNow();
-        var _placesOn = PLACES.filter(function (p) {
-            if (!p.dlc) return true;
-            /* ① 手动勾选（老路径，第 1 页那块删了之后基本恒空） */
-            if (d.dlc && Object.prototype.hasOwnProperty.call(d.dlc, p.dlc) && d.dlc[p.dlc]) return true;
-            /* ② 世界书里该包的条目真的开着（异步结果，见 refreshDlcLive） */
-            if (_dlcLive && _dlcLive[p.dlc]) return true;
-            /* ③ 同步兜底：不等异步，直接看页面里的条目开关（同一个包就算数） */
-            if (_onNow && _onNow[p.dlc]) return true;
-            return false;
+    /* ★ v1.053：在场人物 —— 选项从世界书**拉**（原创人物条目），另有「其他」自填 */
+    function castBlockHtml(d) {
+        var names = [];
+        try {
+            var fn = XZ_SHARED("xzWBLocalEntries");
+            var list = fn ? (fn() || []) : [];
+            list.forEach(function (e) {
+                var t = String((e && (e.title || e.comment)) || "");
+                if (t.indexOf("人物-") !== 0) return;
+                if (t === "人物-总览") return;
+                names.push(t.replace(/^人物-/, ""));
+            });
+        } catch (eC) {}
+        names = names.filter(function (v, i, a) { return a.indexOf(v) === i; });
+        var picked = (d.cast && d.cast.length) ? d.cast.slice() : [];
+        var h = "";
+        h += "<div class=\"xz-st-grid\">";
+        h += "<select multiple size=\"4\" data-xz-field=\"cast\" style=\"grid-column:1/-1;\">";
+        names.forEach(function (nm) {
+            h += "<option value=\"" + esc(nm) + "\"" + (picked.indexOf(nm) >= 0 ? " selected" : "") + ">" + esc(nm) + "</option>";
         });
-        h += sectOpen('启程之地', _placesOn.length + ' 个可选');
-        h += '<div class="xz-st-grid">' + _placesOn.map(function (p) {
-            return '<label class="xz-st-opt' + (p.id === d.place ? ' on' : '') + '">' +
-                '<input type="radio" name="xz-st-place" data-xz-field="place" value="' + esc(p.id) + '"' + (p.id === d.place ? ' checked' : '') + '>' +
-                '<span class="xz-st-opt-name">' + esc(p.label) + '</span>' +
-                '<span class="xz-st-opt-meta">' + esc(p.custom ? '自填开场白' : ('开场白 ' + (p.greeting < 10 ? '0' + p.greeting : String(p.greeting)))) + '</span></label>';
-        }).join('') + '</div>';
+        h += "</select></div>";
+        h += "<div class=\"xz-st-actions\" style=\"margin-top:6px;\">";
+        h += "<button type=\"button\" class=\"xz-st-main xz-st-ghost\" data-xz-act=\"cast-other\">其他（自己填）</button>";
+        h += "</div>";
+        if (state.castOther) {
+            h += "<div class=\"xz-st-row\" style=\"margin-top:6px;\"><label>其他</label>";
+            h += "<input type=\"text\" data-xz-field=\"castOtherText\" maxlength=\"16\" value=\"" + esc(state.castOther) + "\" placeholder=\"名字\">";
+            h += "<button type=\"button\" class=\"xz-st-dice\" data-xz-act=\"cast-other-add\">加入</button></div>";
+        }
+        if (picked.length) {
+            h += "<div class=\"xz-st-tiny\" style=\"margin-top:6px;\">已选：" + esc(picked.join("、")) + "</div>";
+        }
+        return h;
+    }
+    function pageWizPlaceHtml(d) {
+        var h = "";
+        d.place = "custom";
+        h += sectOpen("自定义开局", "");
         h += customBlock(d);
         h += sectClose();
-
-        /* ★★★ v528：`place.brief` 的完整梗概 —— 用户 2026-11-01
-           「每个开场白的简介详情不见了，我要你补回去」★★★
-           v468 曾按用户当时的原话把这块整段删掉（只删了渲染、数据一直在 PLACES 里）。
-           现在补回来，但**只给选中的那一个**：
-             · 卡片上已经有一行 clamp 2 行的简介（"每个都有"）；
-             · 这里给完整的那段（"详情"），不选就不占高度。
-           ⚠ 别把它做成"每个卡片都展开全文"：11 个落点 × 3~4 行 = 整页被文字淹掉，
-             那正是 v468 当初删它的理由。 */
-        h += '<div class="xz-st-brief" style="margin-top:6px;">'
-            + (place && place.brief
-                ? ('<em>开场白 ' + esc(place.greeting == null ? '—' : (place.greeting < 10 ? '0' + place.greeting : String(place.greeting)))
-                   + ' · ' + esc(place.label || '') + '</em> ' + esc(String(place.brief)))
-                : (place && place.custom
-                    ? '<em>自填开场白</em> 下面那两栏就是你这一局的开头，写完确认即写入酒馆输入框。'
-                    : '<em>（这一处还没写简介）</em>'))
-            + '</div>';
-
-        /* ★ v1.053：人物关系预设（作者 2026-11-03）。
-           勾选只改草稿，世界书在**确认开局**时才动（同 DLC 口径）。 */
+        h += sectOpen("在场人物", (d.cast && d.cast.length) ? (d.cast.length + " 人") : "未选");
+        h += castBlockHtml(d);
+        h += sectClose();
         var _kinOn = (KIN_PRESET || []).filter(function (p) { return !!(d.kin && d.kin[p.id]); });
         h += sectOpen('人物关系预设', _kinOn.length ? ('已选 ' + _kinOn.length + ' 人') : '未选');
         h += '<div class="xz-st-grid">' + (KIN_PRESET || []).map(function (p) {
@@ -6710,35 +6722,13 @@ d.attrs[a] = v;
                 '<span class="xz-st-opt-name">' + esc(p.label) + '</span>' +
                 '<span class="xz-st-opt-meta">参与本局亲缘</span></label>';
         }).join('') + '</div>';
-        h += '<div class="xz-st-brief" style="margin-top:6px;">勾上谁，谁就参与这一局的亲缘关系；',
-            + '一个都不勾 ⇒《亲缘·六姐与娘》这条世界书条目会被关掉，正文里不写这段关系。</div>';
+        h += '<div class="xz-st-brief" style="margin-top:6px;">勾上谁，谁就参与这一局的亲缘关系；' +
+            '一个都不勾 ⇒《亲缘·六姐与娘》这条世界书条目会被关掉，正文里不写这段关系。</div>';
         h += sectClose();
 
         h += '<div class="xz-st-actions">' +
-            '<button type="button" class="xz-st-main" data-xz-act="submit">' + esc(place.custom ? '确认开局（写入输入框）' : '确认开局') + '</button>' +
+            '<button type="button" class="xz-st-main" data-xz-act="submit">确认开局</button>' +
             '<button type="button" class="xz-st-main xz-st-ghost" data-xz-act="reset">重置</button></div>';
-
-        /* ★★★ v470：人物条目 / 查看所有立绘 挪到第 4 页（用户 2026-10-30）★★★
-           用户原话：「这一堆按钮，还是做到第四页吧。」
-           原来它在第 1 页（招牌 + DLC 下面）。搬到这里的理由很实：
-             ① 第 1 页现在要放版本号 + 前言 + 注意事项三段文字（同一条需求），
-                再挤一排按钮会把那三段压扁 —— 那三段是**要读**的，按钮是**要按**的，
-                两种东西抢同一屏必然有一方吃亏。
-             ② 第 4 页是「确认开局」前的最后一屏，顺手翻一眼人物条目/相册
-                正好落在"我要开这一局了，看看这局里都有谁"这个动作上。
-           内容与动作名一个字没改（`data-xz-startact="open-cem"` / `"open-gallery"`），
-           只是挪了位置 —— 分派仍在 handleAction 那一段（v470 顺手修了它的跨窗口桥）。 */
-        /* ★★★ v479：这一排按用户 2026-10-31 的两句话收掉 ★★★
-           「文字改成若想游玩DLC可点，然后查看所有立绘删了。」
-           ⇒ ① 说明文字换成「若想游玩 DLC，可点这里」
-              ② 「查看所有立绘」按钮删掉 —— 立绘已经并进管理器的「所有立绘」页签，
-                 这里再留一颗就是第二个入口（v476 在状态栏那边已经删过一次同款）。
-           ⚠ 动作名 `data-xz-startact="open-cem"` 一个字没改，分派仍在 handleAction。 */
-        h += '<div class="xz-st-cem">' +
-            '<span class="xz-st-cem-t">人物条目</span>' +
-            '<span class="xz-st-cem-d">若想游玩 DLC，可点这里</span>' +
-            '<button type="button" class="xz-st-cem-b" data-xz-startact="open-cem">人物条目查看管理器</button>' +
-            '</div>';
         return h;
     }
 
@@ -7494,6 +7484,18 @@ host.__xzGuard = true;
             if (field === 'elem') { d.elem = t.value; return; }
             if (field === 'place') { d.place = t.value; render(true); return; }
             /* ★ v1.053：人物关系预设的勾选框（只改草稿） */
+            /* ★ v1.053：在场人物多选 */
+            if (field === 'cast') {
+                var _cast = [];
+                try {
+                    var _sel = t.options ? Array.prototype.slice.call(t.options) : [];
+                    _sel.forEach(function (o) { if (o.selected && o.value) _cast.push(String(o.value)); });
+                } catch (eCs) {}
+                d.cast = _cast;
+                render(true);
+                return;
+            }
+            if (field === 'castOtherText') { state.castOther = String(t.value || '').slice(0, 16); return; }
             if (field === 'kin') {
                 var kinId = String(t.getAttribute('data-xz-kin') || '');
                 if (!kinId) { state.note = '⚠ 这个亲缘勾选框缺少人物 id（data-xz-kin），已忽略。'; render(true); return; }
@@ -8060,6 +8062,21 @@ host.__xzGuard = true;
                 state.note = '血脉已掷：' + d.bloodName + '（' + d.bloodRank + ' ' + d.bloodPurity + '%）' +
                     ' — 效果：' + d.bloodEffect;
                 render(true); return;
+            }
+            /* ★ v1.053：在场人物 ·「其他」自填 */
+            if (act === 'cast-other') {
+                state.castOther = state.castOther || '';
+                render(true);
+                return;
+            }
+            if (act === 'cast-other-add') {
+                var _nm = String(state.castOther || '').trim().slice(0, 16);
+                if (!_nm) { state.note = '⚠ 「其他」还没填名字。'; render(true); return; }
+                if (!d.cast || !Array.isArray(d.cast)) d.cast = [];
+                if (d.cast.indexOf(_nm) < 0) d.cast.push(_nm);
+                state.castOther = '';
+                render(true);
+                return;
             }
             if (act === 'reset') {
                 state.draft = emptyDraft();
