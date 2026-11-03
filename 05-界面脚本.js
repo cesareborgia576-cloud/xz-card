@@ -5403,7 +5403,14 @@ function xzTypeOf(name, fbT, fbA) {
         }
         h += '</div>';
 
-        /* 世界书没同步时，把「下一步做什么」也写在页面上 —— 只把页签标红不够，得说清怎么修 */
+        /* 有问题时把「下一步做什么」写在页面上 —— 只把页签标红不够，得说清怎么修。
+           ★ v1.053：变量块格式异常也归到这里（作者：「变量补全提示了，但版本也没高亮」）。 */
+        var _vis = null;
+        try { _vis = xzVarCompleteStatus(); } catch (eVis) { _vis = null; }
+        if (_vis && _vis.issue) {
+            h += '<div class="xz-rpg-desc" style="font-size:11.5px;line-height:1.75;margin-top:12px;color:#ef4444;">'
+                + esc(_vis.title || '变量块格式异常') + '。点上面的「变量补全」打开面板，它会列出缺哪几项。</div>';
+        }
         var st = state.wbVer;
         if (st && (!st.ok || !st.same)) {
             h += '<div class="xz-rpg-desc" style="font-size:11.5px;line-height:1.75;margin-top:12px;color:#fbbf24;">'
@@ -5412,13 +5419,18 @@ function xzTypeOf(name, fbT, fbA) {
         }
         return h;
     }
-    /* 页签标红：世界书不同步 / 卡有新版本。两种都只表示「这一页有件事等你处理」。
+    /* 页签标红：世界书不同步 / 卡有新版本 / **变量块格式异常**。
+       三种都只表示「这一页有件事等你处理」。
+       ⚠ 变量那一条读 08 给的 `issue`，**不按 label 字面再判一次**：判定只有 08 一处。
        ⚠ 还没读到时（state.wbVer === null）**不红** —— 那不是"不同步"，是"还没问"。 */
     function xzVerAlertOn() {
         try {
             var st = state.wbVer;
             if (st && (!st.ok || !st.same)) return true;
         } catch (e1) {}
+        try {
+            if (xzVarCompleteStatus().issue) return true;
+        } catch (e3) {}
         try {
             var cv = (typeof window !== 'undefined' && window.__XZ_CARD_VER__) ? String(window.__XZ_CARD_VER__) : '';
             if (HOTV.latest && cv && HOTV.latest !== cv) return true;
