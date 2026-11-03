@@ -1307,9 +1307,9 @@ function xzSkeletonOfSkill(skill) {
        按玄元属性分池，掷出来的句子与这一招的元素气质对得上。 */
     var DESC_POOL = {
         '火': ['掌缘先烫起来，拂过之处空气都在抖', '赤色一线贴地卷过去，草茎先焦后断', '热浪先到、招后到，对手衣角已经卷了边', '指节上一星暗红，点出去便炸开一团'],
-        '冰': ['指尖凝出薄薄一层白霜，划过之处结一线冰棱', '寒气顺着地面爬行，落脚之处咯吱作响', '一呼一吸间白雾成柱，罩住丈许方圆', '冰晶在半空炸成细屑，落在皮肤上像针'],
+        '冰': ['指尖凝出薄薄一层白霜，划过之处结一线冰棱', '寒气顺着地面爬行，落脚之处咯吱作响', '一呼一吸间白霜成柱，罩住丈许方圆', '冰晶在半空炸成细屑，落在皮肤上像针'],
         '雷': ['起手时指缝里先漏出一点紫光', '一道白光贴着地面蹿过去，耳中才响起闷雷', '掌风带电流，掠过时发梢尽竖', '雷纹顺着兵器游走，触及即麻'],
-        '木': ['指尖弹出一粒青芽，落地便抽藤', '藤随臂走，第二下总比第一下更长', '毒雾贴地漫开，草叶沾了就卷边', '脚下草木应声而动，像有人在暗处应和'],
+        '木': ['指尖弹出一粒青芽，落地便抽藤', '藤随臂走，第二下总比第一下更长', '毒烟贴地漫开，草叶沾了就卷边', '脚下草木应声而动，像有人在暗处应和'],
         '土': ['脚下一沉，地面鼓起来半尺', '掌心压出的气浪带着砂石', '一声闷响，青石板上裂开一道细缝', '身法沉实，像生了根似的挪不动'],
         '风': ['身形一晃，风里只剩一道残影', '气刃切过去，树叶先落，人后知', '袖口鼓胀，一步跨出丈许', '风声一紧，沙粒打在脸上生疼'],
         '水': ['掌先推出一滩水色，黏上对手前襟', '一浪接一浪，后招顺着前招的去向追上去', '水线泼洒成幕，罩下来的凉意人人有份', '踏水无痕，退在潮里，进也在潮里'],
@@ -1473,7 +1473,7 @@ function xzSkeletonOfSkill(skill) {
             main: '霜霄仙阙', stage: null, event: null,
             /* ★ v391：同 `jinxi`（原值 `'九霄天阙'` 不是舆图行政区名），依据相同。 */
             big: '人州·雪域·霜霄仙阙', small: '霜霄道场·静室',
-            brief: '西行古道上被一记打晕带回霜霄仙阙。再睁眼身在静室，前任圣女梵清仪——当年把你从绝地边抱回来的那个人——说：你身上那道破关玄脉是万年天关的钥匙，她就是冲这个来的。',
+            brief: '西行古道上被一记打晕带回霜霄仙阙。再睁眼身在静室，前任圣女梵清仪——当年把你从山外抱回来的那个人——说：你身上那道破关玄脉是万年天关的钥匙，她就是冲这个来的。',
             people: ['梵清仪（尊玄初期·霜霄仙阙前任圣女/尊长·素心尊者，三无面瘫，熟美端庄）'],
             leadAction: '（我摸了摸后颈还在发凉的淤伤，看着那位垂着眼不看我的人："……所以，我是你从路上捡回来的一件东西？"）'
         },
@@ -3737,7 +3737,9 @@ d.attrs[a] = v;
         render(true);
     }
         /* 迷雾模式「查看」弹层：把《灰雾总纲》正文塞进底部小窗（内容来自世界书/设定/灰雾总纲.md）。 */
-    var MIST_ENTRY_TEXT = `本条目汇总全部灰雾设定：灰雾本身、结界与墙外、结伴穿雾、司天监传送、雾行者、商队驿站、雾行三物、雾里遇敌规则。其余条目涉及灰雾时，以本条目为准，不再另述。
+    var MIST_ENTRY_TEXT = `本条目是本局「迷雾模式」下的世界状态：据点之外的荒野已被灰雾吞掉，官道成了雾道，商队要结伴穿雾。
+
+下面汇总全部灰雾设定：灰雾本身、结界与墙外、结伴穿雾、司天监传送、雾行者、商队驿站、雾行三物、雾里遇敌规则。本条目已启用时，其余条目涉及灰雾的，以本条目为准。
 
 ## 一、灰雾是什么
 
@@ -6560,6 +6562,7 @@ d.attrs[a] = v;
          静默 return，不打日志）。判据 `_v465_start_probe` 会逐字核对这张表。 */
     /* ★ v1.053c：逐人勾选的 KIN_PRESET 已撤 —— 关系预设改成两个按钮，名单只在《亲缘·六姐与娘》条目里。 */
     var KIN_ENTRY_TITLE = '亲缘·六姐与娘';   /* 世界书条目标题，逐字要对上 */
+    var MIST_ENTRY_TITLE = '灰雾总纲';       /* 迷雾模式总开关：关掉时整条不加载 */
     var XZ_ST_SECTS = ['预设', '道基', '血脉', '四维', '地点', '梗概'];
     function wizBarHtml() {
         var cur = Number(state.page) || 0;
@@ -6976,13 +6979,15 @@ d.attrs[a] = v;
         h += '<div class="xz-st-row" style="gap:8px;align-items:center;flex-wrap:wrap;">' +
              '<label class="xz-st-opt' + (_mistOn ? ' on' : '') + '">' +
              '<input type="checkbox" data-xz-field="mistMode"' + (_mistOn ? ' checked' : '') + '>' +
-             '开启迷雾模式（以结伴穿雾开场）</label>' +
-             '<button type="button" class="xz-st-mini" data-xz-act="mist-view" style="flex:0 0 auto;">查看</button>' +
+             '开启迷雾模式（加载《灰雾总纲》）</label>' +
+             (_mistOn
+                ? '<button type="button" class="xz-st-mini" data-xz-act="mist-view" style="flex:0 0 auto;">查看</button>'
+                : '') +
              '</div>';
         h += '<div class="xz-st-tiny" style="margin-top:6px;">' +
              (_mistOn
                 ? '本局自雾中启程：结伴穿雾、雾行三物、雾里遇敌均按《灰雾总纲》展开。'
-                : '本局在据点内常规开局；灰雾仅作世界背景，不主动进入雾中。') +
+                : '本局不加载《灰雾总纲》：世界里没有灰雾、雾道、雾行者与雾行三物；据点外按《遇怪机制》的妖兽/魔修走。') +
              '</div>';
         h += sectClose();
         h += sectOpen("在场人物", (d.cast && d.cast.length) ? (d.cast.length + " 人") : "未选");
@@ -8871,11 +8876,49 @@ host.__xzGuard = true;
             } catch (eKin3) {
                 kinNote = "⚠ 人物关系开关抛错：" + ((eKin3 && eKin3.message) || eKin3);
             }
+
+            /* ★ 2026-11-03（作者：「玩家不想玩灰雾模式的时候关上的时候就绝对不会有灰雾的内容」）
+               迷雾模式 = 世界书《灰雾总纲》的总开关。
+               关掉时**整条 disable**，模型根本读不到灰雾；别的条目也不许提灰雾/绝地/雾道。
+               与亲缘同口径：只在确认开局这一刻动世界书；开不成就出声。 */
+            var mistNote = "";
+            try {
+                var mistFn = XZ_SHARED("xzWBSetEntry");
+                var mistWant = !!d.mistMode;
+                if (typeof mistFn !== "function") {
+                    if (mistWant) {
+                        mistNote = "⚠ 迷雾模式没能开启：取不到世界书开关（xzWBSetEntry）。请手动在世界书里打开「灰雾总纲」。";
+                    }
+                } else {
+                    var mistP = null;
+                    try { mistP = mistFn(mistWant, MIST_ENTRY_TITLE); } catch (eMist) { mistP = Promise.reject(eMist); }
+                    Promise.resolve(mistP).then(function (r) {
+                        var got = r || {};
+                        var cnt = Number(got.n || 0);
+                        if (mistWant && !(got.ok && cnt > 0)) {
+                            mistNote = "⚠ 迷雾模式没能开启（世界书里没找到「灰雾总纲」）：请手动打开它。";
+                        } else if (!mistWant && cnt > 0) {
+                            mistNote = "已关掉《灰雾总纲》——本局不会出现任何灰雾内容。";
+                        }
+                        if (mistNote) {
+                            state.note = state.note ? (state.note + " " + mistNote) : mistNote;
+                            try { render(true); } catch (eMr) {}
+                        }
+                    }, function (eMist2) {
+                        mistNote = "⚠ 灰雾总纲开关抛错：" + ((eMist2 && eMist2.message) || eMist2);
+                        state.note = state.note ? (state.note + " " + mistNote) : mistNote;
+                        try { render(true); } catch (eMr2) {}
+                    });
+                }
+            } catch (eMist3) {
+                mistNote = "⚠ 灰雾总纲开关抛错：" + ((eMist3 && eMist3.message) || eMist3);
+            }
             var notes = ['开局配置已写入变量：' + d.realm + ' · ' + d.elem + '系' +
                 ' · 玄技 ' + d.items.玄技.length + ' 门' +
                 (d.items.玄诀.length ? ' · 玄诀 1' : '') + (d.items.武器.length ? ' · 武器 1' : '') + '。'];
             if (dlcNote) notes.push(dlcNote);
             if (kinNote) notes.push(kinNote);   /* ★ v1.053：人物关系开关的同步失败 */
+            if (mistNote) notes.push(mistNote); /* ★ 迷雾模式总开关的同步结果 */
 
             /* ★★★ v363：**不再往输入框追加任何初始化指令** ★★★
                用户 2026-10-23：「开局不再初始化，而是根据血量和蓝量公式，然后检测玄诀和血脉
