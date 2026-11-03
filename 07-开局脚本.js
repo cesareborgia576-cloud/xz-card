@@ -8846,7 +8846,7 @@ host.__xzGuard = true;
                  静默失败等于让正文里凭空多出不知所以的亲昵或疏离。 */
             var kinNote = "";
             try {
-                var kinFn = XZ_SHARED("xzWBSetEntry");
+                var kinFn = XZ05("xzWBSetEntry");
                 var kinWant = (d.kin === 'six');   /* ★ v1.053c：两个按钮，'six'=开 / 空=关 */
                 if (typeof kinFn !== "function") {
                     if (kinWant) {
@@ -8883,7 +8883,7 @@ host.__xzGuard = true;
                与亲缘同口径：只在确认开局这一刻动世界书；开不成就出声。 */
             var mistNote = "";
             try {
-                var mistFn = XZ_SHARED("xzWBSetEntry");
+                var mistFn = XZ05("xzWBSetEntry");
                 var mistWant = !!d.mistMode;
                 if (typeof mistFn !== "function") {
                     if (mistWant) {
