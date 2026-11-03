@@ -6840,6 +6840,15 @@ d.attrs[a] = v;
             '一个都不勾 ⇒《亲缘·六姐与娘》这条世界书条目会被关掉，正文里不写这段关系。</div>';
         h += sectClose();
 
+        /* ★ v1.053：人物条目管理器入口**接回**第 4 页。
+           第 4 页重写时它被一起删掉了 ⇒ DLC 勾选与人物条目管理在游戏里就再也点不到
+           （_v470 的三条判据当场变红）。 */
+        h += '<div class="xz-st-cem">' +
+            '<span class="xz-st-cem-t">人物条目</span>' +
+            '<span class="xz-st-cem-d">若想游玩 DLC，可点这里</span>' +
+            '<button type="button" class="xz-st-cem-b" data-xz-startact="open-cem">人物条目查看管理器</button>' +
+            '</div>';
+
         h += '<div class="xz-st-actions">' +
             '<button type="button" class="xz-st-main" data-xz-act="submit">确认开局</button>' +
             '<button type="button" class="xz-st-main xz-st-ghost" data-xz-act="reset">重置</button></div>';
