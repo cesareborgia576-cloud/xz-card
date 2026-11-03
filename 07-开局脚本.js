@@ -4363,6 +4363,7 @@ d.attrs[a] = v;
                ⇒ 用纵向 flex：名叫一行、meta 一行，所有卡对齐成同一个栅格。
                ⚠ 必须 `gap` 而不是靠 `margin-top`：flex 下两者都行，但 gap 不依赖
                  子元素是否行内，也不会被别处覆盖的单条 margin 规则打乱。 */
+            '.xz-st-kin{}',
             '.xz-st-opt{display:flex;flex-direction:column;gap:1px;'
                 + 'border:1px solid rgba(193, 193, 193, .2);border-radius:7px;'
                 + 'background:rgba(255,255,255,.02);padding:4px 7px;cursor:pointer;}',
