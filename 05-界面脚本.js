@@ -770,13 +770,13 @@
                 '坏': '「版本号测试」的正文被改成了别的东西（' + String(st.ver || '').slice(0, 20) + '），不是版本号。\n改回 vxxx（与脚本同号）再导入。'
             }[why];
             return '<button type="button" class="xz-tianji-goto-btn" data-xz-act="wb-ver" ' +
-                'style="' + base + 'border:1px solid rgba(167, 167, 167, 0.55);color:#bfbfbf;background:rgba(167, 167, 167, 0.08);" ' +
+                'style="' + base + 'border:1px solid rgba(245,158,11,0.55);color:#fbbf24;background:rgba(245,158,11,0.08);" ' +
                 'title="' + esc(whyTip) + '\n（点一下重读）">📖 世界书 ' + esc(why) + '</button>';
         }
         var same = !!st.same;
-        var col = same ? '#4ade80' : '#bfbfbf';
-        var bd = same ? 'rgba(74,222,128,0.5)' : 'rgba(167, 167, 167, 0.55)';
-        var bg = same ? 'rgba(74,222,128,0.08)' : 'rgba(167, 167, 167, 0.08)';
+        var col = same ? '#4ade80' : '#fbbf24';
+        var bd = same ? 'rgba(74,222,128,0.5)' : 'rgba(245,158,11,0.55)';
+        var bg = same ? 'rgba(74,222,128,0.08)' : 'rgba(245,158,11,0.08)';
         /* ══════════════════════════════════════════════════════════════════
            ★★★ v1.04：文案改成「已是最新版本 / 非最新版本」★★★
            用户 2026-11-01：「状态栏里的世界书版本号要改成，显示已是最新版本 v....，
@@ -2384,7 +2384,7 @@ function xzTypeOf(name, fbT, fbA) {
             var n = doc.createElement('div');
             n.className = 'xz-toast';
             n.textContent = msg;
-            n.style.cssText = 'position:fixed;left:50%;top:14%;transform:translateX(-50%);z-index:2147483600;background:rgba(15,23,42,.95);color:#f1ede4;padding:8px 16px;border-radius:8px;font-size:13px;line-height:1.5;max-width:86vw;text-align:center;border:1px solid rgba(172, 172, 172, .5);box-shadow:0 10px 30px rgba(0,0,0,.6);pointer-events:none;';
+            n.style.cssText = 'position:fixed;left:50%;top:14%;transform:translateX(-50%);z-index:2147483600;background:rgba(15,23,42,.95);color:#f1ede4;padding:8px 16px;border-radius:8px;font-size:13px;line-height:1.5;max-width:86vw;text-align:center;border:1px solid rgba(212,175,55,.5);box-shadow:0 10px 30px rgba(0,0,0,.6);pointer-events:none;';
             doc.body.appendChild(n);
             setTimeout(function () { try { n.remove(); } catch (e2) {} }, 2400);
         } catch (e3) {}
@@ -2393,7 +2393,7 @@ function xzTypeOf(name, fbT, fbA) {
     /* ============================ 样式（纯正深色修仙风格） ============================ */
     var CSS = [
         '.xz-root{',
-        '--xz-void:#070707;--xz-bg:#0d0d0d;--xz-card:#171717;--xz-card-hover:#1f1f1f;',
+        '--xz-void:#090b10;--xz-bg:#0e1219;--xz-card:#151a24;--xz-card-hover:#1c2331;',
         '--xz-border:rgba(255,255,255,0.10);--xz-border-strong:rgba(255,255,255,0.20);',
         '--xz-gold:#cecece;--xz-gold-bright:#f1f1f1;--xz-gold-glow:rgba(255,255,255,0.12);',
         '--xz-jade:#c9ced7;--xz-cyan:#7fd2c1;--xz-purple:#a855f7;--xz-crimson:#e11d48;',
@@ -2423,22 +2423,22 @@ function xzTypeOf(name, fbT, fbA) {
            ── 配色依据（不是随便挑的）──
              底 `#f7f4ec` 宣纸暖白、卡 `#fffdf8` 纸白、字 `#2f2819` 墨褐 —— 与夜墨的"暖黑+金"同源，
              只是明度翻转，切来切去不会像两个不同的界面。
-             金从 `#c1c1c1` 压到 `#8a5f14`：**同一色相、降明度**，因为浅底上原来的亮金会糊成白。
+             金从 `#e6bd76` 压到 `#8a5f14`：**同一色相、降明度**，因为浅底上原来的亮金会糊成白。
              ⚠ 这是浅色主题唯一的硬要求：所有"亮色文字"必须换成暗色同相，
-               否则在白底上就是看不清（实测第一版 `#cdcdcd` 那批全糊）。
+               否则在白底上就是看不清（实测第一版 `#e8cb92` 那批全糊）。
            ⚠ `:root` 那份不能少：挂 body 的浮层（资讯球 / 立绘 / toast）不在 `.xz-root` 里。 */
         '.xz-root[data-xz-theme="day"],:root[data-xz-theme="day"]{'
         + '--xz-void:#efe9dc;--xz-bg:#f7f4ec;--xz-card:#fffdf8;--xz-card-hover:#fffaf0;'
         + '--xz-border:rgba(138,95,20,0.24);--xz-border-strong:rgba(138,95,20,0.56);'
-        + '--xz-gold:#8a5f14;--xz-gold-bright:#737373;--xz-gold-glow:rgba(115, 115, 115, 0.16);'
+        + '--xz-gold:#8a5f14;--xz-gold-bright:#a06f12;--xz-gold-glow:rgba(160,111,18,0.16);'
         + '--xz-jade:#1a6d5c;--xz-cyan:#14695c;--xz-purple:#6d3480;--xz-crimson:#9b1c33;'
         + '--xz-text:#2c2416;--xz-text-2:#463c2c;--xz-muted:#6a6152;'
         + '--dhl-stage:linear-gradient(180deg,#f9f6ee 0%,#f2ecdd 100%);'
         + '--dhl-reading:linear-gradient(180deg,#fffdf8,#f8f3e7);'
         + '--dhl-card:#fffdf8;--dhl-card-hover:#fffaf0;'
         + '--dhl-header:linear-gradient(90deg,#f4efe2,#fbf8f0 50%,#f6eee1);'
-        + '--dhl-button-active:linear-gradient(180deg,rgba(115, 115, 115, 0.15),rgba(255,255,255,0.55));'
-        + '--dhl-gold:#8a5f14;--dhl-gold-bright:#737373;'
+        + '--dhl-button-active:linear-gradient(180deg,rgba(160,111,18,0.15),rgba(255,255,255,0.55));'
+        + '--dhl-gold:#8a5f14;--dhl-gold-bright:#a06f12;'
         + '--dhl-border:rgba(138,95,20,0.24);--dhl-border-strong:rgba(138,95,20,0.56);'
         /* ★★★ v479：日光下的投影从 `0 6px 18px / .13` 压到 `0 2px 6px / .07` ★★★
            用户 2026-10-31：「这个日光模式的状态栏太诡异了，有个阴影，像卡片附在上面一样」。
@@ -2446,7 +2446,7 @@ function xzTypeOf(name, fbT, fbA) {
            夜墨底看不出来（黑压黑），日光底就是"贴了一张卡"。
            同时把 `inset 0 1px 0 rgba(255,255,255,.06)` 那条顶部高光在日光下关掉
            （浅底上的白色内高光 = 一条突兀的亮线，就是"反光"那股味道）。 */
-        + '--dhl-shadow:0 2px 6px rgba(96,74,28,0.07);--dhl-glow:0 0 10px rgba(115, 115, 115, 0.08);}',
+        + '--dhl-shadow:0 2px 6px rgba(96,74,28,0.07);--dhl-glow:0 0 10px rgba(160,111,18,0.08);}',
         /* ★★★ v479 二次：阴影**全清**，不是压淡 ★★★
            用户 2026-10-31 复查："不灰了，但是，还是有底层的阴影啊，像悬浮了一样"。
            上一版只是把投影从 .13 压到 .07 —— 在浅色宣纸上那仍然是**一圈可见的灰边**，
@@ -2523,7 +2523,7 @@ function xzTypeOf(name, fbT, fbA) {
            ⚠ 这条一旦漏了，四个页签**同时**变灰：它们共用这一个容器。 */
         '.xz-root[data-xz-theme="day"] .xz-tianji-box,'
         + ':root[data-xz-theme="day"] .xz-tianji-box'
-        + '{background:radial-gradient(ellipse at top,rgba(115, 115, 115, 0.055),rgba(255,253,248,0.99));'
+        + '{background:radial-gradient(ellipse at top,rgba(160,111,18,0.055),rgba(255,253,248,0.99));'
         + 'border-color:rgba(138,95,20,0.22);}',
         /* ★★★ v479：日光下这些「嵌在卡片里的深色块」必须换浅底 ★★★
            病历（用户 2026-10-31 发六张截图：「字都看不清，灰色的，反光，这他妈啥」）：
@@ -2771,7 +2771,7 @@ function xzTypeOf(name, fbT, fbA) {
                 这次的做法是**把行内那批也换成变量引用**，不是靠 important 硬压。
                 （v472 踩过：先写 `*{...!important}` 想覆盖，结果行内那 40 处一个没动。） */
         /* 令牌同时挂到 :root：百科/状态弹窗挂在 body 上，不在 .xz-root 里，没有这份就会掉色发白 */
-                ':root{--xz-fw:400;--xz-fw-med:500;--xz-fw-bold:600;--xz-void:#070707;--xz-bg:#0d0d0d;--xz-card:#171717;--xz-card-hover:#1f1f1f;--xz-border:rgba(255,255,255,0.10);--xz-border-strong:rgba(255,255,255,0.20);--xz-gold:#cecece;--xz-gold-bright:#f1f1f1;--xz-gold-glow:rgba(189, 189, 189, 0.28);--xz-jade:#a7a7a7;--xz-cyan:#b7b7b7;--xz-purple:#a3a3a3;--xz-crimson:#727272;--xz-text:#f5f5f5;--xz-text-2:#c7c7c7;--xz-muted:#929292;--xz-font:"Noto Sans SC","Noto Sans","Noto Sans CJK SC","Source Han Sans SC","PingFang SC","Microsoft YaHei UI","Microsoft YaHei","Hiragino Sans GB","WenQuanYi Micro Hei",sans-serif;--dhl-stage:radial-gradient(circle at 91% 18%, rgba(188, 188, 188, 0.16), transparent 18%), radial-gradient(circle at 8% 76%, rgba(172, 172, 172, 0.10), transparent 22%), linear-gradient(180deg, #131313 0%, #0b0b0b 100%);--dhl-reading:radial-gradient(circle at 93% 14%, rgba(189, 189, 189, 0.14), transparent 14%), radial-gradient(circle at 88% 42%, rgba(174, 174, 174, 0.08), transparent 12%), linear-gradient(180deg, rgba(21, 21, 21, 0.94), rgba(12, 12, 12, 0.97));--dhl-card:linear-gradient(145deg, rgba(32, 32, 32, 0.96) 0%, rgba(22, 22, 22, 0.94) 100%);--dhl-card-hover:linear-gradient(145deg, rgba(43, 43, 43, 0.98) 0%, rgba(29, 29, 29, 0.96) 100%);--dhl-header:linear-gradient(90deg, rgba(15, 15, 15, 0.985), rgba(30, 30, 30, 0.965) 50%, rgba(30, 30, 30, 0.985));--dhl-button-active:linear-gradient(180deg, rgba(88, 88, 88, 0.45), rgba(24, 24, 24, 0.3));--dhl-gold:#c1c1c1;--dhl-gold-bright:#c7c7c7;--dhl-border:rgba(183, 183, 183, 0.28);--dhl-border-strong:rgba(199, 199, 199, 0.72);--dhl-shadow:0 10px 30px rgba(3, 3, 3, 0.75);--dhl-glow:0 0 16px rgba(189, 189, 189, 0.22);}',
+                ':root{--xz-fw:400;--xz-fw-med:500;--xz-fw-bold:600;--xz-void:#030d14;--xz-bg:#071720;--xz-card:linear-gradient(145deg, rgba(16, 37, 45, 0.96) 0%, rgba(10, 26, 33, 0.94) 100%);--xz-card-hover:linear-gradient(145deg, rgba(22, 50, 60, 0.98) 0%, rgba(14, 34, 42, 0.96) 100%);--xz-border:rgba(213, 180, 121, 0.28);--xz-border-strong:rgba(242, 194, 111, 0.72);--xz-gold:#e6bd76;--xz-gold-bright:#f2c26f;--xz-gold-glow:rgba(227, 185, 111, 0.28);--xz-jade:#68c5b2;--xz-cyan:#7fd2c1;--xz-purple:#d8899d;--xz-crimson:#aa5960;--xz-text:#f3eee5;--xz-text-2:#b7b8b3;--xz-muted:#8a9496;--xz-font:"Noto Sans SC","Noto Sans","Noto Sans CJK SC","Source Han Sans SC","PingFang SC","Microsoft YaHei UI","Microsoft YaHei","Hiragino Sans GB","WenQuanYi Micro Hei",sans-serif;--dhl-stage:radial-gradient(circle at 91% 18%, rgba(255, 177, 73, 0.16), transparent 18%), radial-gradient(circle at 8% 76%, rgba(244, 157, 58, 0.10), transparent 22%), linear-gradient(180deg, #071720 0%, #030d14 100%);--dhl-reading:radial-gradient(circle at 93% 14%, rgba(255, 178, 72, 0.14), transparent 14%), radial-gradient(circle at 88% 42%, rgba(255, 157, 52, 0.08), transparent 12%), linear-gradient(180deg, rgba(7, 25, 34, 0.94), rgba(3, 14, 21, 0.97));--dhl-card:linear-gradient(145deg, rgba(16, 37, 45, 0.96) 0%, rgba(10, 26, 33, 0.94) 100%);--dhl-card-hover:linear-gradient(145deg, rgba(22, 50, 60, 0.98) 0%, rgba(14, 34, 42, 0.96) 100%);--dhl-header:linear-gradient(90deg, rgba(4, 18, 27, 0.985), rgba(16, 35, 43, 0.965) 50%, rgba(37, 27, 25, 0.985));--dhl-button-active:linear-gradient(180deg, rgba(126, 78, 42, 0.45), rgba(14, 27, 32, 0.3));--dhl-gold:#e6bd76;--dhl-gold-bright:#f2c26f;--dhl-border:rgba(213, 180, 121, 0.28);--dhl-border-strong:rgba(242, 194, 111, 0.72);--dhl-shadow:0 10px 30px rgba(0, 4, 8, 0.75);--dhl-glow:0 0 16px rgba(227, 185, 111, 0.22);}',
         /* 手机：可点元素走 manipulation，别让双击缩放把这一下点击吞掉 */
         '.xz-root button,.xz-root [data-xz-act],.xz-root [data-xz-goto],.xz-root .xz-chip-term,.xz-root .xz-rpg-card{touch-action:manipulation;',
         /* ★★★ v470：`<button>` **不继承 font-family** —— 必须显式给 ★★★
@@ -2825,7 +2825,7 @@ function xzTypeOf(name, fbT, fbA) {
         /* 第三行（日期/时间）不参与撑高：它在最下面，允许横向滚（手机上 420px 装不下两颗） */
         '.xz-root .xz-topinfo-time{margin-top:1px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;}',
         '.xz-root .xz-topinfo-time::-webkit-scrollbar{height:3px;}',
-        '.xz-root .xz-topinfo-time::-webkit-scrollbar-thumb{background:rgba(171, 171, 171, .3);border-radius:2px;}',
+        '.xz-root .xz-topinfo-time::-webkit-scrollbar-thumb{background:rgba(201,168,106,.3);border-radius:2px;}',
 
         /* ============ 立绘放大浮层（挂在宿主 body 上、不在 .xz-root 里，
            所以这里的样式必须自封印：选择器同时命中 #xz-inline-overlay / #xz-portrait-box，
@@ -2833,7 +2833,7 @@ function xzTypeOf(name, fbT, fbA) {
         '#xz-inline-overlay,#xz-portrait-box *{box-sizing:border-box;}',
         '#xz-inline-overlay{display:flex;align-items:center;justify-content:center;}',
         '#xz-portrait-box{display:flex;flex-direction:column;min-height:0;width:auto;max-width:100%;background:var(--xz-card);border:1.5px solid var(--xz-border-strong);border-radius:10px;color:var(--xz-text);font-family:var(--xz-font);font-size:13px;line-height:1.5;overflow:hidden;box-shadow:0 16px 44px rgba(0,0,0,0.85);}',
-        '#xz-portrait-box .xz-ovl-head{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid rgba(172, 172, 172, 0.28);background:rgba(9,11,16,0.92);}',
+        '#xz-portrait-box .xz-ovl-head{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid rgba(212,175,55,0.28);background:rgba(9,11,16,0.92);}',
         '#xz-portrait-box .xz-ovl-title{flex:1 1 auto;min-width:0;font-size:13.5px;font-weight:var(--xz-fw-med);color:#e8e8e8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
         '#xz-portrait-box .xz-ovl-realm{font-size:11px;color:#a9a390;font-weight:400;}',
         '#xz-portrait-box .xz-ovl-count{flex:none;font-size:11px;color:#9a9a9a;white-space:nowrap;}',
@@ -2842,7 +2842,7 @@ function xzTypeOf(name, fbT, fbA) {
         '#xz-portrait-box .xz-ovl-body{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;padding:8px;background:var(--xz-void);overflow:hidden;}',
         '#xz-portrait-box .xz-ovl-img{display:block;width:100%;height:100%;object-fit:contain;}',
         '#xz-portrait-box .xz-ovl-none{text-align:center;color:#a9a390;padding:20px 12px;font-size:12px;line-height:1.7;}',
-        '#xz-portrait-box .xz-ovl-foot{flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 10px calc(8px + env(safe-area-inset-bottom, 0px)) 10px;border-top:1px solid rgba(172, 172, 172, 0.28);background:rgba(9,11,16,0.92);}',
+        '#xz-portrait-box .xz-ovl-foot{flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 10px calc(8px + env(safe-area-inset-bottom, 0px)) 10px;border-top:1px solid rgba(212,175,55,0.28);background:rgba(9,11,16,0.92);}',
         '#xz-portrait-box .xz-ovl-hint{font-size:10.5px;color:#7e7769;text-align:center;}',
         '#xz-portrait-box .xz-ovl-btn{min-height:40px;padding:8px 16px;font-family:inherit;font-size:12.5px;font-weight:var(--xz-fw-med);color:var(--xz-text);background:#2b2b2b;border:1px solid var(--xz-line-strong);border-radius:8px;cursor:pointer;touch-action:manipulation;}',
         '#xz-portrait-box .xz-ovl-btn:hover{background:#3a3a3a;color:var(--xz-gold-bright);}',
@@ -2851,14 +2851,14 @@ function xzTypeOf(name, fbT, fbA) {
         /* 百科页（常驻展开，不用点开） */
         '.xz-root .xz-wiki-group-title{font-size:12px;font-weight:var(--xz-fw-med);color:var(--xz-gold);margin:12px 0 6px;padding-left:7px;border-left:3px solid var(--xz-gold);}',
         '.xz-root .xz-wiki-static{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;}',
-        '.xz-root .xz-wiki-static .xz-wiki-item{background:rgba(0,0,0,0.45);border:1px solid rgba(172, 172, 172, 0.18);border-left:3px solid var(--xz-gold);border-radius:0 4px 4px 0;padding:7px 9px;}',
+        '.xz-root .xz-wiki-static .xz-wiki-item{background:rgba(0,0,0,0.45);border:1px solid rgba(212,175,55,0.18);border-left:3px solid var(--xz-gold);border-radius:0 4px 4px 0;padding:7px 9px;}',
         '.xz-root .xz-wiki-static .xz-wiki-item-top{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:4px;}',
         '.xz-root .xz-wiki-static .xz-wiki-item-name{font-size:12.5px;font-weight:var(--xz-fw-med);color:var(--xz-gold-bright);}',
-        '.xz-root .xz-wiki-static .xz-wiki-item-star{font-size:10.5px;color:#bfbfbf;}',
+        '.xz-root .xz-wiki-static .xz-wiki-item-star{font-size:10.5px;color:#fbbf24;}',
         '.xz-root .xz-wiki-static .xz-wiki-item-cat{font-size:10px;color:var(--xz-cyan);background:rgba(56,189,248,0.1);padding:1px 4px;border-radius:2px;white-space:nowrap;}',
         '.xz-root .xz-wiki-static .xz-wiki-item-desc{font-size:11px;color:var(--xz-text-2);line-height:1.55;}',
         /* 推演页 */
-        '.xz-root .xz-sim-out{white-space:pre-wrap;max-height:220px;overflow:auto;background:rgba(6,8,12,0.75);border:1px solid rgba(172, 172, 172, 0.2);border-radius:6px;padding:7px 9px;font-size:11.5px;line-height:1.65;}',
+        '.xz-root .xz-sim-out{white-space:pre-wrap;max-height:220px;overflow:auto;background:rgba(6,8,12,0.75);border:1px solid rgba(212,175,55,0.2);border-radius:6px;padding:7px 9px;font-size:11.5px;line-height:1.65;}',
 
         /* 外层主卡片 */
         '.xz-root .xz-main-box{background:var(--dhl-stage);border:1px solid var(--dhl-border);border-top:2px solid var(--dhl-gold-bright);border-radius:12px;box-shadow:var(--dhl-shadow), inset 0 1px 0 rgba(255,255,255,0.06);overflow:hidden;}',
@@ -2895,7 +2895,7 @@ function xzTypeOf(name, fbT, fbA) {
 
         /* 顶部状态简标栏（固定展开，不可折叠） */
         '.xz-root .xz-top-strip{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 14px;background:var(--dhl-header);border-bottom:1px solid var(--dhl-border);font-size:12px;box-shadow:0 4px 15px rgba(0,0,0,0.45);}',
-        '.xz-root .xz-seal{width:20px;height:20px;border:1px solid var(--xz-gold);color:var(--xz-gold);background:rgba(172, 172, 172, 0.1);border-radius:3px;font-size:11px;font-weight:var(--xz-fw-med);display:flex;align-items:center;justify-content:center;}',
+        '.xz-root .xz-seal{width:20px;height:20px;border:1px solid var(--xz-gold);color:var(--xz-gold);background:rgba(212,175,55,0.1);border-radius:3px;font-size:11px;font-weight:var(--xz-fw-med);display:flex;align-items:center;justify-content:center;}',
         '.xz-root .xz-top-name{font-size:13.5px;font-weight:var(--xz-fw-med);color:var(--xz-text);letter-spacing:0.5px;}',
         /* ★ v475：主角性别小标（名字后面那枚「男/女」）。
            用**胶囊**而不是纯文字：夹在「名字 (16岁) [引玄初期]」中间，
@@ -2905,8 +2905,8 @@ function xzTypeOf(name, fbT, fbA) {
              日光模式只换颜色不换尺寸（v472 铁律），写死高度两边就会差 1~2px。 */
         '.xz-root .xz-top-gender{display:inline-block;font-size:10.5px;line-height:1.3;'
             + 'padding:0 5px;border-radius:4px;vertical-align:1px;'
-            + 'color:var(--xz-gold-dim);border:1px solid rgba(172, 172, 172, 0.3);'
-            + 'background:rgba(172, 172, 172, 0.07);font-weight:var(--xz-fw);letter-spacing:0;}',
+            + 'color:var(--xz-gold-dim);border:1px solid rgba(212,175,55,0.3);'
+            + 'background:rgba(212,175,55,0.07);font-weight:var(--xz-fw);letter-spacing:0;}',
         '.xz-root .xz-badge{font-size:10.5px;padding:1px 6px;border-radius:3px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:var(--xz-text-2);}',
         /* ★ v77：删掉 .xz-badge-hurt 规则 —— 伤势状态字段已废除，顶栏那颗红色徽章不再渲染，
            此样式已无任何元素引用（留着会让人以为还有这个功能）。 */
@@ -2992,15 +2992,15 @@ function xzTypeOf(name, fbT, fbA) {
         '.xz-root .xz-tab-btn:hover .xz-tab-ico,.xz-root .xz-tab-btn[aria-selected="true"] .xz-tab-ico{opacity:1;}',
         '.xz-root .xz-tab-txt{white-space:nowrap;}',
         '.xz-dmg-fold>summary::-webkit-details-marker{display:none;}',
-        '.xz-dmg-fold[open]>summary span:last-child{color:#acacac;}',
+        '.xz-dmg-fold[open]>summary span:last-child{color:#d4af37;}',
         '.xz-dmg-fold[open]>summary span:last-child::after{content:"";}',
-        '.xz-root .xz-tab-btn:hover{color:var(--xz-text);border-color:rgba(172, 172, 172, 0.3);background:rgba(172, 172, 172, 0.06);}',
+        '.xz-root .xz-tab-btn:hover{color:var(--xz-text);border-color:rgba(212,175,55,0.3);background:rgba(212,175,55,0.06);}',
         '.xz-root .xz-tab-btn[aria-selected="true"]{color:var(--dhl-gold-bright);border-color:var(--dhl-border-strong);background:var(--dhl-button-active);box-shadow:0 0 12px var(--xz-gold-glow), inset 0 1px 0 rgba(255,255,255,0.15);font-weight:var(--xz-fw-med);}',
 
         /* 内容容器（全局固定高度 380px，彻底杜绝切页跳变与颠簸，内层丝滑滚动） */
         '.xz-root .xz-view{padding:12px;height:380px;min-height:380px;max-height:380px;overflow-y:auto;overflow-x:hidden;}',
         '.xz-root .xz-view::-webkit-scrollbar{width:4px;}',
-        '.xz-root .xz-view::-webkit-scrollbar-thumb{background:rgba(172, 172, 172, 0.3);border-radius:2px;}',
+        '.xz-root .xz-view::-webkit-scrollbar-thumb{background:rgba(212,175,55,0.3);border-radius:2px;}',
 
         /* 1. 主角面板：双列卡片方格 Grid (一行两格) */
         '.xz-root .xz-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}',
@@ -3023,7 +3023,7 @@ function xzTypeOf(name, fbT, fbA) {
            反而掩盖"内容真的装不下"这件事。真装不下时让它自然变高，闸会报出来。 */
         '.xz-root .xz-box-eq{height:auto;overflow:visible;justify-content:flex-start;}',
         '.xz-root .xz-box-eq::-webkit-scrollbar{width:4px;}',
-        '.xz-root .xz-box-eq::-webkit-scrollbar-thumb{background:rgba(171, 171, 171, .35);border-radius:2px;}',
+        '.xz-root .xz-box-eq::-webkit-scrollbar-thumb{background:rgba(201,168,106,.35);border-radius:2px;}',
         '.xz-root .xz-box:hover{border-color:var(--xz-gold);}',
         '.xz-root .xz-box-k{font-size:11px;font-weight:var(--xz-fw);color:var(--xz-text);letter-spacing:0.04em;margin-bottom:3px;display:flex;justify-content:space-between;align-items:center;}',
         '.xz-root .xz-box-v{font-size:13.5px;font-weight:var(--xz-fw-med);color:var(--xz-text);letter-spacing:0.02em;}',
@@ -3051,11 +3051,11 @@ function xzTypeOf(name, fbT, fbA) {
         /* ★ v510：武器名的小框（用户：「武器名倒是美化小框啊」）。
            只给装备卡那一处加 `.xz-name-box`，不套到所有 xz-rpg-title 上 ——
            人物名、技能名也用这个类，一起加框会满屏都是框。 */
-        '.xz-root .xz-name-box{padding:2px 10px;border:1px solid rgba(172, 172, 172, .38);border-radius:5px;'
-            + 'background:linear-gradient(180deg,rgba(172, 172, 172, .10),rgba(172, 172, 172, .03));'
+        '.xz-root .xz-name-box{padding:2px 10px;border:1px solid rgba(212,175,55,.38);border-radius:5px;'
+            + 'background:linear-gradient(180deg,rgba(212,175,55,.10),rgba(212,175,55,.03));'
             + 'color:var(--xz-gold-bright);}',
         ':root[data-xz-theme="day"] .xz-name-box{border-color:rgba(138,95,20,.42);'
-            + 'background:linear-gradient(180deg,rgba(115, 115, 115, .10),rgba(115, 115, 115, .03));color:#7a5310;}',
+            + 'background:linear-gradient(180deg,rgba(160,111,18,.10),rgba(160,111,18,.03));color:#7a5310;}',
         '.xz-root .xz-rpg-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px;}',
         /* ★★★ v492：`.xz-chip-sm` 去掉 `.xz-root` 前缀，同 `.xz-tianji-goto-btn` 的理由 ★★★
            管理器 / DLC 栏（`xz-dlc-bar`）有时挂在 document.body 上（管理器面板）
@@ -3064,7 +3064,7 @@ function xzTypeOf(name, fbT, fbA) {
            没写行内的那些（DLC 栏 `it.frac` 旁的 `n/m`、技能页的消耗标签）就会裸奔。
            ⚠ 作用域前缀只管布局，不管皮肤 —— 这条纪律见 `.xz-tianji-goto-btn` 上方注释。 */
         '.xz-chip-sm{font-size:9.5px;padding:1px 5px;border-radius:2px;background:rgba(255,255,255,0.05);color:var(--xz-text-2);border:1px solid rgba(255,255,255,0.08);}',
-        '.xz-root .xz-chip-term{font-size:9.5px;padding:1px 6px;border-radius:2px;background:rgba(172, 172, 172, 0.12);color:var(--xz-gold);border:1px solid rgba(172, 172, 172, 0.3);cursor:pointer;font-weight:var(--xz-fw);}',
+        '.xz-root .xz-chip-term{font-size:9.5px;padding:1px 6px;border-radius:2px;background:rgba(212,175,55,0.12);color:var(--xz-gold);border:1px solid rgba(212,175,55,0.3);cursor:pointer;font-weight:var(--xz-fw);}',
         '.xz-root .xz-chip-term:hover{background:var(--xz-gold);color:#0a0c10;}',
         '.xz-root .xz-rpg-desc{font-size:10.5px;color:var(--xz-muted);background:rgba(0,0,0,0.35);padding:4px 6px;border-radius:3px;margin-top:3px;}',
         '.xz-root .xz-sub-head{font-size:11.5px;font-weight:var(--xz-fw-med);color:var(--xz-gold);margin:10px 0 6px;display:flex;align-items:center;gap:6px;}',
@@ -3083,15 +3083,15 @@ function xzTypeOf(name, fbT, fbA) {
            ⇒ 隐藏原生 marker，只留我们那个；文字随状态变（见 pagePeople 的渲染处）。 */
         '.xz-root .xz-npc-dtg{list-style:none;cursor:pointer;user-select:none;outline:none;'
           + 'display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--xz-gold-bright);'
-          + 'padding:2px 10px;border-radius:10px;background:rgba(172, 172, 172, .10);'
-          + 'border:1px solid rgba(172, 172, 172, .30);}',
+          + 'padding:2px 10px;border-radius:10px;background:rgba(212,175,55,.10);'
+          + 'border:1px solid rgba(212,175,55,.30);}',
         '.xz-root .xz-npc-dtg::-webkit-details-marker{display:none;}',
         '.xz-root .xz-npc-dtg::marker{content:"";}',
         '.xz-root .xz-npc-dtg:hover{color:#f0d9a4;}',
         '.xz-root .xz-npc-tri{flex:none;width:12px;text-align:center;font-size:10px;line-height:1;}',
         '.xz-root .xz-sk-fold[open]>.xz-sk-fold-ar{}',
         '.xz-root .xz-sk-fold[open] summary .xz-sk-fold-ar{transform:rotate(180deg);}',
-        '.xz-root .xz-sub-head::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(172, 172, 172, 0.3),transparent);}',
+        '.xz-root .xz-sub-head::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(212,175,55,0.3),transparent);}',
 
         /* 3. 人物列表全信息大卡 */
         /* ★★★ v517：人物卡加 `content-visibility:auto` —— CSS 级虚拟化 ★★★
@@ -3107,14 +3107,14 @@ function xzTypeOf(name, fbT, fbA) {
            ⚠ 它**不影响** `offsetParent` / `getBoundingClientRect` 的语义
              （元素仍有布局盒，只是跳过内容渲染），所以判据不会因此读到 0。
            ⚠ Safari 16 以下不支持 —— 不支持时这条属性被忽略，退化成原来的行为，不会坏。 */
-        '.xz-root .xz-npc-card{background:var(--xz-card);border:1px solid rgba(172, 172, 172, 0.18);border-radius:5px;padding:10px;margin-bottom:8px;display:flex;flex-direction:column;gap:6px;content-visibility:auto;contain-intrinsic-size:auto 84px;}',
+        '.xz-root .xz-npc-card{background:var(--xz-card);border:1px solid rgba(212,175,55,0.18);border-radius:5px;padding:10px;margin-bottom:8px;display:flex;flex-direction:column;gap:6px;content-visibility:auto;contain-intrinsic-size:auto 84px;}',
         '.xz-root .xz-npc-header{display:flex;justify-content:space-between;align-items:center;}',
         '.xz-root .xz-npc-name{font-size:13.5px;font-weight:var(--xz-fw-med);color:var(--xz-gold);}',
         /* ★ v479：人物卡四个字段的小框。**四者共用一套几何**，只有字号与色相不同 ——
            几何一致才不会出现"名字框比势力框高半像素"这种参差（那种参差在浅色底上特别明显）。 */
         '.xz-root .xz-npc-name,.xz-root .xz-npc-realm,.xz-root .xz-npc-elem,.xz-root .xz-npc-sect{'
         + 'display:inline-flex;align-items:center;line-height:1.5;padding:1px 7px;border-radius:4px;'
-        + 'border:1px solid rgba(172, 172, 172, 0.34);background:rgba(172, 172, 172, 0.06);'
+        + 'border:1px solid rgba(212,175,55,0.34);background:rgba(212,175,55,0.06);'
         + 'text-shadow:none!important;}',
         '.xz-root .xz-npc-realm{font-size:11px;color:var(--xz-gold);}',
         '.xz-root .xz-npc-elem{font-size:11px;font-weight:var(--xz-fw-med);}',
@@ -3128,7 +3128,7 @@ function xzTypeOf(name, fbT, fbA) {
         + ':root[data-xz-theme="day"] .xz-npc-elem,'
         + '.xz-root[data-xz-theme="day"] .xz-npc-sect,'
         + ':root[data-xz-theme="day"] .xz-npc-sect'
-        + '{border-color:rgba(138,95,20,0.30);background:rgba(115, 115, 115, 0.05);}',
+        + '{border-color:rgba(138,95,20,0.30);background:rgba(160,111,18,0.05);}',
         '.xz-root .xz-npc-mind{display:none;}',
         '.xz-root .xz-npc-section{background:rgba(0,0,0,0.3);border-radius:4px;padding:6px 8px;margin-top:4px;}',
         ' .xz-root .xz-npc-sec-title{font-size:10.5px;font-weight:var(--xz-fw);color:var(--xz-text-2);margin-bottom:4px;}',
@@ -3136,11 +3136,11 @@ function xzTypeOf(name, fbT, fbA) {
         '.xz-root .xz-npc-grid4 div{background:rgba(255,255,255,0.03);padding:3px;border-radius:2px;border:1px solid rgba(255,255,255,0.05);}',
 
         /* 4. 天机独立大画幅大事件与地图预留 */
-        '.xz-root .xz-tianji-box{background:radial-gradient(ellipse at top,rgba(172, 172, 172, 0.08),var(--dhl-reading));border:1px solid var(--xz-border);border-radius:6px;padding:14px 12px;}',
+        '.xz-root .xz-tianji-box{background:radial-gradient(ellipse at top,rgba(212,175,55,0.08),var(--dhl-reading));border:1px solid var(--xz-border);border-radius:6px;padding:14px 12px;}',
         '.xz-root .xz-tianji-title{font-size:14px;font-weight:var(--xz-fw-med);color:var(--xz-gold);display:flex;align-items:center;gap:8px;margin-bottom:12px;}',
         '.xz-root .xz-tianji-list{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}',
-        '.xz-root .xz-tianji-card{background:var(--dhl-reading);border:1px solid rgba(172, 172, 172, 0.22);border-left:3px solid var(--xz-gold);border-radius:0 4px 4px 0;padding:9px 12px;}',
-        '.xz-root .xz-tianji-card.is-sheng{border-left-color:#bfbfbf;}',
+        '.xz-root .xz-tianji-card{background:var(--dhl-reading);border:1px solid rgba(212,175,55,0.22);border-left:3px solid var(--xz-gold);border-radius:0 4px 4px 0;padding:9px 12px;}',
+        '.xz-root .xz-tianji-card.is-sheng{border-left-color:#fbbf24;}',
         '.xz-root .xz-tianji-card.is-jie{border-left-color:#ef4444;}',
         '.xz-root .xz-tianji-card.is-pai{border-left-color:#7fd2c1;}',
         '.xz-root .xz-tianji-card.is-lei{border-left-color:#f43f5e;}',
@@ -3154,12 +3154,12 @@ function xzTypeOf(name, fbT, fbA) {
            分组头做成"话题条"，和下面的帖子卡片拉开层级（左竖线 + 更亮的底），
            否则一串卡片平铺下来，玩家看不出哪几条在说同一件事。 */
         '.xz-root .xz-hot-group{margin-bottom:14px;}',
-        '.xz-root .xz-hot-evt{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:var(--xz-fw-med);color:var(--xz-gold-bright);background:rgba(172, 172, 172, 0.10);border-left:3px solid var(--xz-gold);border-radius:0 4px 4px 0;padding:5px 9px;margin-bottom:7px;}',
+        '.xz-root .xz-hot-evt{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:var(--xz-fw-med);color:var(--xz-gold-bright);background:rgba(212,175,55,0.10);border-left:3px solid var(--xz-gold);border-radius:0 4px 4px 0;padding:5px 9px;margin-bottom:7px;}',
         /* ★ v439：「目前事件」页的拉取条。刻意压得比事件卡矮一档 ——
            它是操作区不是内容区，不能把事件列表挤下去。 */
-        '.xz-root .xz-fetch-bar{background:rgba(172, 172, 172, 0.06);border:1px solid rgba(172, 172, 172, 0.28);border-radius:6px;padding:8px 9px;margin-bottom:12px;}',
+        '.xz-root .xz-fetch-bar{background:rgba(212,175,55,0.06);border:1px solid rgba(212,175,55,0.28);border-radius:6px;padding:8px 9px;margin-bottom:12px;}',
         '.xz-root .xz-fetch-btns{display:flex;gap:7px;flex-wrap:wrap;}',
-        '.xz-root .xz-fetch-btn{flex:1 1 0;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:7px 8px;font-size:12px;border-color:rgba(172, 172, 172, 0.6);color:var(--xz-gold-bright);background:rgba(172, 172, 172, 0.10);white-space:nowrap;}',
+        '.xz-root .xz-fetch-btn{flex:1 1 0;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:7px 8px;font-size:12px;border-color:rgba(212,175,55,0.6);color:var(--xz-gold-bright);background:rgba(212,175,55,0.10);white-space:nowrap;}',
         '.xz-root .xz-fetch-btn-2{border-color:rgba(125,211,193,0.45);color:#7fd2c1;background:rgba(125,211,193,0.07);}',
         '.xz-root .xz-fetch-btn[disabled]{opacity:.55;cursor:default;}',
         '.xz-root .xz-fetch-tip{margin-top:6px;font-size:10.5px;color:var(--xz-muted);line-height:1.55;word-break:break-all;}',
@@ -3167,11 +3167,11 @@ function xzTypeOf(name, fbT, fbA) {
         '.xz-root .xz-tianji-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px;flex-wrap:wrap;}',
         '.xz-root .xz-tianji-card-title{font-size:13px;font-weight:var(--xz-fw-med);color:var(--xz-gold-bright);display:flex;align-items:center;gap:6px;}',
         '.xz-root .xz-tianji-badge{font-size:10px;font-weight:var(--xz-fw-med);padding:1px 6px;border-radius:3px;border:1px solid currentColor;}',
-        '.xz-root .xz-tianji-badge.is-sheng{color:#bfbfbf;border-color:rgba(191, 191, 191, 0.4);background:rgba(191, 191, 191, 0.12);}',
-        '.xz-root .xz-tianji-badge.is-jie{color:#999999;border-color:rgba(153, 153, 153, 0.4);background:rgba(153, 153, 153, 0.12);}',
-        '.xz-root .xz-tianji-badge.is-pai{color:#7fd2c1;border-color:rgba(183, 183, 183, 0.4);background:rgba(183, 183, 183, 0.15);}',
+        '.xz-root .xz-tianji-badge.is-sheng{color:#fbbf24;border-color:rgba(251,191,36,0.4);background:rgba(251,191,36,0.12);}',
+        '.xz-root .xz-tianji-badge.is-jie{color:#f87171;border-color:rgba(248,113,113,0.4);background:rgba(248,113,113,0.12);}',
+        '.xz-root .xz-tianji-badge.is-pai{color:#7fd2c1;border-color:rgba(213,180,121,0.4);background:rgba(213,180,121,0.15);}',
         '.xz-root .xz-tianji-badge.is-lei{color:#f43f5e;border-color:rgba(244,63,94,0.4);background:rgba(244,63,94,0.12);}',
-        '.xz-root .xz-tianji-badge.is-bao{color:var(--xz-gold);border-color:rgba(172, 172, 172, 0.4);background:rgba(172, 172, 172, 0.12);}',
+        '.xz-root .xz-tianji-badge.is-bao{color:var(--xz-gold);border-color:rgba(212,175,55,0.4);background:rgba(212,175,55,0.12);}',
         '.xz-root .xz-tianji-place{font-size:11px;color:var(--xz-muted);}',
         '.xz-root .xz-tianji-desc{font-size:12px;line-height:1.65;color:var(--xz-text-2);}',
         '.xz-root .xz-tianji-act-bar{display:flex;justify-content:space-between;align-items:center;margin-top:6px;padding-top:5px;border-top:1px dashed rgba(255,255,255,0.06);font-size:11px;}',
@@ -3184,19 +3184,19 @@ function xzTypeOf(name, fbT, fbA) {
            ⚠ 这是本项目第 3 次同款事故（引擎 `.xz-jjb-mb`、05 `.cem-tab` 同族）：
              皮肤规则绑死在某个祖先作用域下，按钮一被搬出那个作用域就裸奔。
              ⇒ 按钮类一律**不带祖先前缀**，作用域只管布局、不管皮肤。 */
-        '.xz-tianji-goto-btn{background:rgba(172, 172, 172, 0.12);border:1px solid rgba(172, 172, 172, 0.3);color:var(--xz-gold);border-radius:3px;padding:2px 7px;cursor:pointer;font-size:10.5px;}',
-        '.xz-tianji-goto-btn:hover{background:rgba(172, 172, 172, 0.25);color:var(--xz-gold-bright);}',
-        '.xz-root .xz-wiki-btn{width:100%;display:flex;align-items:center;justify-content:space-between;padding:9px 12px;margin-bottom:12px;background:linear-gradient(135deg,rgba(183, 183, 183, 0.15),rgba(172, 172, 172, 0.12));border:1px solid rgba(56,189,248,0.35);border-radius:6px;color:var(--xz-text);cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:var(--xz-fw-med);}',
-        '.xz-root .xz-wiki-btn:hover{background:linear-gradient(135deg,rgba(56,189,248,0.22),rgba(172, 172, 172, 0.22));border-color:var(--xz-gold);color:var(--xz-gold-bright);}',
+        '.xz-tianji-goto-btn{background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.3);color:var(--xz-gold);border-radius:3px;padding:2px 7px;cursor:pointer;font-size:10.5px;}',
+        '.xz-tianji-goto-btn:hover{background:rgba(212,175,55,0.25);color:var(--xz-gold-bright);}',
+        '.xz-root .xz-wiki-btn{width:100%;display:flex;align-items:center;justify-content:space-between;padding:9px 12px;margin-bottom:12px;background:linear-gradient(135deg,rgba(213,180,121,0.15),rgba(212,175,55,0.12));border:1px solid rgba(56,189,248,0.35);border-radius:6px;color:var(--xz-text);cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:var(--xz-fw-med);}',
+        '.xz-root .xz-wiki-btn:hover{background:linear-gradient(135deg,rgba(56,189,248,0.22),rgba(212,175,55,0.22));border-color:var(--xz-gold);color:var(--xz-gold-bright);}',
         '.xz-root .xz-wiki-btn small{font-size:11px;color:var(--xz-cyan);font-weight:normal;}',
 
         /* v298 九州舆图：图片底图 + 分区叠加（旧的三列文字网格已下架） */
         '.xz-root .xz-map-wrap{display:flex;flex-direction:column;gap:8px;}',
-        '.xz-root .xz-map-hint{font-size:11.5px;line-height:1.6;color:var(--xz-muted);background:rgba(0,0,0,0.32);border:1px solid rgba(172, 172, 172, 0.18);border-radius:5px;padding:7px 10px;}',
+        '.xz-root .xz-map-hint{font-size:11.5px;line-height:1.6;color:var(--xz-muted);background:rgba(0,0,0,0.32);border:1px solid rgba(212,175,55,0.18);border-radius:5px;padding:7px 10px;}',
         '.xz-root .xz-map-hint b{color:var(--xz-gold);}',
         /* 画布：宽度 = min(100%, 高度×1.793)，**高宽比恒等 viewBox**。
            比例一破，SVG 的 meet 就会留黑边，覆在上面的 HTML 标签（百分比定位）跟着整体错位。 */
-        '.xz-root .xz-map-canvas{position:relative;width:min(100%,calc(max(200px,44vh) * 1.793));aspect-ratio:1920 / 1071;margin:2px auto 0;border-radius:7px;overflow:hidden;border:1px solid rgba(185, 185, 185, 0.3);box-shadow:0 8px 26px rgba(0,0,0,0.30),inset 0 0 34px rgba(0,0,0,0.14);background:var(--xz-void);}',
+        '.xz-root .xz-map-canvas{position:relative;width:min(100%,calc(max(200px,44vh) * 1.793));aspect-ratio:1920 / 1071;margin:2px auto 0;border-radius:7px;overflow:hidden;border:1px solid rgba(217,183,109,0.3);box-shadow:0 8px 26px rgba(0,0,0,0.30),inset 0 0 34px rgba(0,0,0,0.14);background:var(--xz-void);}',
         '.xz-root .xz-map-canvas svg{display:block;width:100%;height:100%;touch-action:manipulation;}',
         '.xz-root .xz-map-region{cursor:pointer;}',
         '.xz-root .xz-map-region.is-fog{cursor:not-allowed;}',
@@ -3226,7 +3226,7 @@ function xzTypeOf(name, fbT, fbA) {
         '.xz-root .xz-map-city i{color:var(--xz-muted);font-style:normal;margin-left:4px;}',
         '.xz-root .xz-map-here-tag{font-size:9.5px;padding:0 5px;border-radius:3px;background:var(--xz-gold);color:#0b0f17;font-weight:var(--xz-fw-med);}',
         /* v307：单张资料卡（只显示点中的那一个地方） */
-        '.xz-root .xz-map-info{margin-top:8px;background:var(--xz-card);border:1px solid rgba(185, 185, 185, 0.22);border-radius:6px;padding:9px 11px;}',
+        '.xz-root .xz-map-info{margin-top:8px;background:var(--xz-card);border:1px solid rgba(217,183,109,0.22);border-radius:6px;padding:9px 11px;}',
         '.xz-root .xz-map-info.is-empty{font-size:10.5px;color:var(--xz-muted);text-align:center;padding:12px 10px;}',
         '.xz-root .xz-map-info-top{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}',
         '.xz-root .xz-map-info-name{font-size:13px;font-weight:var(--xz-fw-med);color:var(--xz-gold-bright);}',
@@ -3234,12 +3234,12 @@ function xzTypeOf(name, fbT, fbA) {
         '.xz-root .xz-map-info-n{font-size:9.5px;color:var(--xz-muted);margin-left:auto;}',
         '.xz-root .xz-map-info-note{font-size:10.5px;line-height:1.6;color:var(--xz-text-2);margin-top:4px;}',
         '.xz-root .xz-map-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}',
-        '.xz-root .xz-map-chip{font-size:10px;border:1px solid rgba(185, 185, 185, .28);border-radius:3px;padding:1px 6px;background:rgba(185, 185, 185, .07);}',
+        '.xz-root .xz-map-chip{font-size:10px;border:1px solid rgba(217,183,109,.28);border-radius:3px;padding:1px 6px;background:rgba(217,183,109,.07);}',
         '.xz-root .xz-map-chip b{color:var(--xz-text);font-weight:var(--xz-fw-med);}',
         '.xz-root .xz-map-chip i{color:var(--xz-muted);font-style:normal;margin-left:4px;}',
         /* ★ v310：可点的地点 / 人物条（原来这些只是静态展示，百科删掉后必须能点） */
         '.xz-root .xz-map-chip.is-link{cursor:pointer;transition:border-color .15s,background .15s;}',
-        '.xz-root .xz-map-chip.is-link:hover{border-color:rgba(243,217,153,.72);background:rgba(185, 185, 185, .16);}',
+        '.xz-root .xz-map-chip.is-link:hover{border-color:rgba(243,217,153,.72);background:rgba(217,183,109,.16);}',
         '.xz-root .xz-map-chip.is-link::after{content:"›";color:var(--xz-gold);margin-left:4px;}',
         '.xz-root .xz-map-chip.is-who{font-size:10.5px;padding:2px 8px;}',
         '.xz-root .xz-map-info-sub{font-size:10px;color:var(--xz-gold);letter-spacing:1px;margin-top:8px;}',
@@ -3247,25 +3247,25 @@ function xzTypeOf(name, fbT, fbA) {
         '.xz-root .xz-map-info.is-who{margin-top:6px;border-color:rgba(243,217,153,.45);}',
         '.xz-root .xz-map-info-actions{display:flex;gap:6px;margin-top:8px;}',
         '.xz-root .xz-map-info-btn{font-family:var(--xz-font);font-size:10.5px;color:#0b0f17;background:var(--xz-gold);border:none;border-radius:4px;padding:4px 10px;cursor:pointer;}',
-        '.xz-root .xz-map-info-btn.is-ghost{background:transparent;color:var(--xz-gold-bright);border:1px solid rgba(185, 185, 185, .5);}',
+        '.xz-root .xz-map-info-btn.is-ghost{background:transparent;color:var(--xz-gold-bright);border:1px solid rgba(217,183,109,.5);}',
 
         /* ============ 地点／宗门设施（v464 从状态栏窄栏搬进舆图） ============
            排版口径：**整页宽**，所以用 auto-fill + minmax 自适应列数 ——
            手机上 1 列、桌面 2~3 列，都铺满、都不留白。
            ⚠ 不要退回 `grid-template-columns:1fr`：那在 700px 宽度下会变成一根高瘦面条。 */
-        '.xz-root .xz-map-sect{background:var(--xz-card);border:1px solid rgba(185, 185, 185, 0.22);border-radius:6px;padding:8px 10px;margin-top:8px;}',
+        '.xz-root .xz-map-sect{background:var(--xz-card);border:1px solid rgba(217,183,109,0.22);border-radius:6px;padding:8px 10px;margin-top:8px;}',
         '.xz-root .xz-map-sect-head{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;margin-bottom:3px;}',
         '.xz-root .xz-map-sect-name{font-size:12px;font-weight:var(--xz-fw-med);color:var(--xz-gold-bright);white-space:nowrap;}',
-        '.xz-root .xz-map-sect-tag{font-size:9.5px;color:#afafaf;min-width:0;overflow:hidden;text-overflow:ellipsis;}',
+        '.xz-root .xz-map-sect-tag{font-size:9.5px;color:#c8b06a;min-width:0;overflow:hidden;text-overflow:ellipsis;}',
         '.xz-root .xz-map-sect-sub{font-size:9.5px;color:var(--xz-muted);margin-bottom:2px;}',
         '.xz-root .xz-map-sect-note{font-size:10px;color:var(--xz-muted);line-height:1.45;margin-bottom:5px;}',
         '.xz-root .xz-map-sect-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:4px;}',
-        '.xz-root .xz-map-sect-cell{background:rgba(0,0,0,.42);border:1px solid rgba(172, 172, 172, .18);border-radius:4px;padding:4px 6px;min-width:0;}',
+        '.xz-root .xz-map-sect-cell{background:rgba(0,0,0,.42);border:1px solid rgba(212,175,55,.18);border-radius:4px;padding:4px 6px;min-width:0;}',
         '.xz-root .xz-map-sect-cell-name{font-size:10.5px;font-weight:var(--xz-fw-med);color:var(--xz-text);margin-bottom:1px;}',
         '.xz-root .xz-map-sect-cell-desc{font-size:9.5px;color:var(--xz-muted);line-height:1.4;word-break:break-word;}',
 
         /* v292 任务页：军功账面 + 四阶悬赏进度 */
-        '.xz-root .xz-task-row{background:var(--xz-card);border:1px solid rgba(185, 185, 185, 0.2);border-radius:6px;padding:9px 11px;margin-bottom:8px;}',
+        '.xz-root .xz-task-row{background:var(--xz-card);border:1px solid rgba(217,183,109,0.2);border-radius:6px;padding:9px 11px;margin-bottom:8px;}',
         '.xz-root .xz-task-top{display:flex;align-items:center;gap:7px;margin-bottom:6px;}',
         '.xz-root .xz-task-rank{font-size:10px;padding:1px 6px;border:1px solid;border-radius:3px;white-space:nowrap;flex:none;}',
         '.xz-root .xz-task-src{font-size:10px;padding:1px 6px;border:1px solid;border-radius:3px;white-space:nowrap;flex:none;opacity:0.85;}',
@@ -3276,21 +3276,21 @@ function xzTypeOf(name, fbT, fbA) {
         '.xz-root .xz-task-done span{font-size:10.5px;color:var(--xz-muted);background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:3px;padding:2px 7px;}',
 
         /* 觅长生风格 · 修仙大比与赛程可视化时间轴 */
-        '.xz-root .xz-sched-box{margin-bottom:14px;background:rgba(0,0,0,0.38);border:1px solid rgba(172, 172, 172, 0.25);border-radius:6px;padding:12px;}',
-        '.xz-root .xz-sched-title{font-size:13.5px;font-weight:var(--xz-fw-med);color:var(--xz-gold);display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;border-bottom:1px dashed rgba(172, 172, 172, 0.2);padding-bottom:6px;}',
+        '.xz-root .xz-sched-box{margin-bottom:14px;background:rgba(0,0,0,0.38);border:1px solid rgba(212,175,55,0.25);border-radius:6px;padding:12px;}',
+        '.xz-root .xz-sched-title{font-size:13.5px;font-weight:var(--xz-fw-med);color:var(--xz-gold);display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;border-bottom:1px dashed rgba(212,175,55,0.2);padding-bottom:6px;}',
         '.xz-root .xz-sched-list{display:flex;flex-direction:column;gap:8px;}',
         '.xz-root .xz-sched-item{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border-radius:6px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);transition:all 0.2s;}',
-        '.xz-root .xz-sched-item.is-current{background:rgba(172, 172, 172, 0.1);border-color:var(--xz-gold);box-shadow:0 0 12px rgba(172, 172, 172, 0.18);}',
+        '.xz-root .xz-sched-item.is-current{background:rgba(212,175,55,0.1);border-color:var(--xz-gold);box-shadow:0 0 12px rgba(212,175,55,0.18);}',
         '.xz-root .xz-sched-item.is-passed{opacity:0.65;background:rgba(0,0,0,0.2);}',
         '.xz-root .xz-sched-item.is-locked{opacity:0.75;}',
         '.xz-root .xz-sched-badge{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:var(--xz-fw-med);background:rgba(255,255,255,0.08);color:var(--xz-muted);flex:none;border:1px solid rgba(255,255,255,0.12);margin-top:2px;}',
         '.xz-root .xz-sched-item.is-current .xz-sched-badge{background:var(--xz-gold);color:#0b0f17;border-color:var(--xz-gold-bright);box-shadow:0 0 8px var(--xz-gold);}',
-        '.xz-root .xz-sched-item.is-passed .xz-sched-badge{background:rgba(172, 172, 172, 0.2);color:var(--xz-gold);border-color:rgba(172, 172, 172, 0.4);}',
+        '.xz-root .xz-sched-item.is-passed .xz-sched-badge{background:rgba(212,175,55,0.2);color:var(--xz-gold);border-color:rgba(212,175,55,0.4);}',
         '.xz-root .xz-sched-body{flex:1;min-width:0;}',
         '.xz-root .xz-sched-top{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:3px;flex-wrap:wrap;}',
         '.xz-root .xz-sched-name{font-size:12.5px;font-weight:var(--xz-fw-med);color:var(--xz-text);}',
         '.xz-root .xz-sched-item.is-current .xz-sched-name{color:var(--xz-gold-bright);}',
-        '.xz-root .xz-sched-tag{font-size:10px;padding:1px 5px;border-radius:3px;background:rgba(172, 172, 172, 0.15);color:var(--xz-gold);border:1px solid rgba(172, 172, 172, 0.3);}',
+        '.xz-root .xz-sched-tag{font-size:10px;padding:1px 5px;border-radius:3px;background:rgba(212,175,55,0.15);color:var(--xz-gold);border:1px solid rgba(212,175,55,0.3);}',
         '.xz-root .xz-sched-meta{font-size:11px;color:var(--xz-muted);margin-bottom:3px;display:flex;gap:8px;flex-wrap:wrap;}',
         '.xz-root .xz-sched-desc{font-size:11.5px;color:var(--xz-text-2);line-height:1.5;}',
         '.xz-root .xz-sched-act{display:flex;justify-content:flex-end;margin-top:5px;}',
@@ -3309,41 +3309,41 @@ function xzTypeOf(name, fbT, fbA) {
         /* 状态百科全书大图鉴模态窗（手机端防遮挡、底部抽屉式友好布局） */
         '#xz-wiki-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.82);backdrop-filter:blur(6px);z-index:2147483645;display:flex;align-items:center;justify-content:center;padding:75px 14px 24px 14px;box-sizing:border-box;}',
         '#xz-wiki-modal .xz-wiki-card{width:100%;max-width:540px;height:80vh;max-height:560px;display:flex;flex-direction:column;background:var(--xz-card);border:1.5px solid var(--xz-gold);border-radius:10px;padding:14px;box-shadow:0 16px 48px rgba(0,0,0,0.92);color:var(--xz-text);font-family:var(--xz-font);overflow:hidden;}',
-        '#xz-wiki-modal .xz-wiki-head{display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;border-bottom:1px solid rgba(172, 172, 172, 0.25);flex:none;}',
+        '#xz-wiki-modal .xz-wiki-head{display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;border-bottom:1px solid rgba(212,175,55,0.25);flex:none;}',
         '#xz-wiki-modal .xz-wiki-title{font-size:14px;font-weight:var(--xz-fw-med);color:var(--xz-gold);display:flex;align-items:center;gap:6px;}',
         '#xz-wiki-modal .xz-wiki-close{cursor:pointer;color:var(--xz-muted);font-size:24px;line-height:1;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:4px;user-select:none;touch-action:manipulation;}',
         '#xz-wiki-modal .xz-wiki-close:hover{color:var(--xz-gold-bright);background:rgba(239,68,68,0.25);}',
         '#xz-wiki-modal .xz-wiki-tabs{display:flex;gap:5px;padding:8px 0;overflow-x:auto;flex:none;}',
         '#xz-wiki-modal .xz-wiki-tab{padding:4px 10px;border-radius:4px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.03);color:var(--xz-muted);font-size:11.5px;cursor:pointer;white-space:nowrap;touch-action:manipulation;}',
-        '#xz-wiki-modal .xz-wiki-tab.active{background:rgba(172, 172, 172, 0.2);border-color:var(--xz-gold);color:var(--xz-gold-bright);font-weight:var(--xz-fw-med);}',
+        '#xz-wiki-modal .xz-wiki-tab.active{background:rgba(212,175,55,0.2);border-color:var(--xz-gold);color:var(--xz-gold-bright);font-weight:var(--xz-fw-med);}',
         '#xz-wiki-modal .xz-wiki-list{overflow-y:auto;flex:1;min-height:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;padding-right:3px;}',
-        '#xz-wiki-modal .xz-wiki-item{background:rgba(0,0,0,0.45);border:1px solid rgba(172, 172, 172, 0.18);border-left:3px solid var(--xz-gold);border-radius:0 4px 4px 0;padding:7px 9px;display:flex;flex-direction:column;justify-content:space-between;}',
+        '#xz-wiki-modal .xz-wiki-item{background:rgba(0,0,0,0.45);border:1px solid rgba(212,175,55,0.18);border-left:3px solid var(--xz-gold);border-radius:0 4px 4px 0;padding:7px 9px;display:flex;flex-direction:column;justify-content:space-between;}',
         '#xz-wiki-modal .xz-wiki-item-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}',
         '#xz-wiki-modal .xz-wiki-item-name{font-size:12.5px;font-weight:var(--xz-fw-med);color:var(--xz-gold-bright);}',
-        '#xz-wiki-modal .xz-wiki-item-star{font-size:10.5px;color:#bfbfbf;}',
+        '#xz-wiki-modal .xz-wiki-item-star{font-size:10.5px;color:#fbbf24;}',
         '#xz-wiki-modal .xz-wiki-item-cat{font-size:10px;color:var(--xz-cyan);background:rgba(56,189,248,0.1);padding:1px 4px;border-radius:2px;}',
         '#xz-wiki-modal .xz-wiki-item-desc{font-size:11px;color:var(--xz-text-2);line-height:1.55;}',
-        '#xz-wiki-modal .xz-wiki-foot{margin-top:8px;padding-top:8px;border-top:1px solid rgba(172, 172, 172, 0.2);flex:none;text-align:center;}',
+        '#xz-wiki-modal .xz-wiki-foot{margin-top:8px;padding-top:8px;border-top:1px solid rgba(212,175,55,0.2);flex:none;text-align:center;}',
         /* 状态弹窗与百科弹窗都挂在 body 上、不在 .xz-root 里，所以按钮样式必须同时按弹窗 id 命中，否则会退回浏览器默认白框 */
-        '.xz-root .xz-modal-btn-close,#' + MODAL_ID + ' .xz-modal-btn-close,#xz-wiki-modal .xz-modal-btn-close{width:100%;padding:8px 0;background:rgba(172, 172, 172, 0.15);border:1px solid var(--xz-gold);color:var(--xz-gold-bright);border-radius:6px;font-family:inherit;font-size:12.5px;font-weight:var(--xz-fw-med);cursor:pointer;touch-action:manipulation;}',
-        '.xz-root .xz-modal-btn-close:hover,#' + MODAL_ID + ' .xz-modal-btn-close:hover,#xz-wiki-modal .xz-modal-btn-close:hover{background:rgba(172, 172, 172, 0.3);color:var(--xz-gold-bright);}',
-        '.xz-root .xz-modal-btn-wiki,#' + MODAL_ID + ' .xz-modal-btn-wiki,#xz-wiki-modal .xz-modal-btn-wiki{width:100%;margin-top:6px;padding:6px 0;background:rgba(183, 183, 183, 0.15);border:1px solid rgba(56,189,248,0.35);color:var(--xz-cyan);border-radius:6px;font-family:inherit;font-size:11.5px;cursor:pointer;touch-action:manipulation;}',
+        '.xz-root .xz-modal-btn-close,#' + MODAL_ID + ' .xz-modal-btn-close,#xz-wiki-modal .xz-modal-btn-close{width:100%;padding:8px 0;background:rgba(212,175,55,0.15);border:1px solid var(--xz-gold);color:var(--xz-gold-bright);border-radius:6px;font-family:inherit;font-size:12.5px;font-weight:var(--xz-fw-med);cursor:pointer;touch-action:manipulation;}',
+        '.xz-root .xz-modal-btn-close:hover,#' + MODAL_ID + ' .xz-modal-btn-close:hover,#xz-wiki-modal .xz-modal-btn-close:hover{background:rgba(212,175,55,0.3);color:var(--xz-gold-bright);}',
+        '.xz-root .xz-modal-btn-wiki,#' + MODAL_ID + ' .xz-modal-btn-wiki,#xz-wiki-modal .xz-modal-btn-wiki{width:100%;margin-top:6px;padding:6px 0;background:rgba(213,180,121,0.15);border:1px solid rgba(56,189,248,0.35);color:var(--xz-cyan);border-radius:6px;font-family:inherit;font-size:11.5px;cursor:pointer;touch-action:manipulation;}',
         '.xz-root .xz-modal-btn-wiki:hover,#' + MODAL_ID + ' .xz-modal-btn-wiki:hover,#xz-wiki-modal .xz-modal-btn-wiki:hover{background:rgba(56,189,248,0.25);color:var(--xz-gold-bright);}',
-        '.xz-root .xz-map-box{background:rgba(0,0,0,0.5);border:1px dashed rgba(172, 172, 172, 0.3);border-radius:6px;padding:20px 14px;text-align:center;}',
+        '.xz-root .xz-map-box{background:rgba(0,0,0,0.5);border:1px dashed rgba(212,175,55,0.3);border-radius:6px;padding:20px 14px;text-align:center;}',
         '.xz-root .xz-map-icon{font-size:26px;margin-bottom:4px;opacity:0.8;}',
         '.xz-root .xz-map-tip{font-size:11px;color:var(--xz-muted);letter-spacing:1px;}',
 
         /* 5. 状态模态悬浮弹窗（手机端深度适配、防顶格挡住、底部大按钮） */
         '#' + MODAL_ID + '{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(5px);z-index:2147483640;display:flex;align-items:center;justify-content:center;padding:75px 14px 24px 14px;box-sizing:border-box;}',
         '#' + MODAL_ID + ' .xz-modal-card{width:100%;max-width:380px;max-height:min(76vh,500px);display:flex;flex-direction:column;background:var(--xz-card);border:1.5px solid var(--xz-gold);border-radius:8px;padding:12px 14px;box-shadow:0 14px 40px rgba(0,0,0,0.9);color:var(--xz-text);font-family:var(--xz-font);overflow:hidden;}',
-        '#' + MODAL_ID + ' .xz-modal-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;border-bottom:1px solid rgba(172, 172, 172, 0.25);padding-bottom:6px;flex:none;}',
+        '#' + MODAL_ID + ' .xz-modal-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;border-bottom:1px solid rgba(212,175,55,0.25);padding-bottom:6px;flex:none;}',
         '#' + MODAL_ID + ' .xz-modal-title{font-size:14px;font-weight:var(--xz-fw-med);color:var(--xz-gold);}',
         '#' + MODAL_ID + ' .xz-modal-close{cursor:pointer;color:var(--xz-muted);font-size:24px;line-height:1;width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:4px;user-select:none;touch-action:manipulation;}',
         '#' + MODAL_ID + ' .xz-modal-close:hover{color:var(--xz-gold-bright);background:rgba(239,68,68,0.25);}',
         '#' + MODAL_ID + ' .xz-modal-body{overflow-y:auto;flex:1;min-height:0;padding-right:2px;}',
         '#' + MODAL_ID + ' .xz-modal-row{font-size:12px;margin-bottom:5px;line-height:1.6;}',
         '#' + MODAL_ID + ' .xz-modal-desc{background:rgba(0,0,0,0.45);border-radius:4px;padding:8px 10px;font-size:12px;color:var(--xz-text-2);line-height:1.65;margin-top:6px;border-left:2px solid var(--xz-gold);}',
-        '#' + MODAL_ID + ' .xz-modal-foot{margin-top:10px;padding-top:8px;border-top:1px solid rgba(172, 172, 172, 0.2);flex:none;}',
+        '#' + MODAL_ID + ' .xz-modal-foot{margin-top:10px;padding-top:8px;border-top:1px solid rgba(212,175,55,0.2);flex:none;}',
 
         '@media (max-width:600px){',
         // 手机端：底部抽屉式（align-items:flex-end）＋ 动态视口高度（dvh）。
@@ -3406,14 +3406,14 @@ function xzTypeOf(name, fbT, fbA) {
         ':root,.xz-root{'
         + '--xz-font:"Noto Sans SC","Noto Sans","Noto Sans CJK SC","Source Han Sans SC","PingFang SC","Microsoft YaHei UI","Microsoft YaHei","Hiragino Sans GB","WenQuanYi Micro Hei",sans-serif;'
         + '--xz-text:#f6f1e6;--xz-text-2:#c9c2b2;--xz-muted:#8e8778;'
-        + '--xz-gold:#b9b9b9;--xz-gold-bright:#f3d999;'
+        + '--xz-gold:#d9b76d;--xz-gold-bright:#f3d999;'
         + 'font-feature-settings:"tnum" 1,"kern" 1;-webkit-font-smoothing:antialiased;}',
         /* 整体字距略松：中文密排时，0.012em 就能让行气通透 */
         '.xz-root,.xz-root *{letter-spacing:.012em;}',
         /* 题头：名字 / 卡片标题 / 效果项名 —— 鎏金 + 加粗 + 描边阴影，像烫金书题 */
         '.xz-root .xz-rpg-title,.xz-root .xz-npc-name,.xz-root .xz-wiki-item-name,.xz-root .xz-top-name b{'
         + 'color:var(--xz-gold-bright)!important;font-weight:var(--xz-fw-bold)!important;letter-spacing:.05em!important;'
-        + 'text-shadow:0 1px 3px rgba(0,0,0,.78),0 0 14px rgba(184, 184, 184, .20);}',
+        + 'text-shadow:0 1px 3px rgba(0,0,0,.78),0 0 14px rgba(226,180,96,.20);}',
         /* 分栏名（子标题）：金 + 拉开字距，做出刻本分栏的味道 */
         '.xz-root .xz-sub-head,.xz-root .xz-wiki-group-title,.xz-root .xz-tianji-title{'
         + 'color:var(--xz-gold)!important;font-weight:var(--xz-fw-bold)!important;letter-spacing:.14em!important;'
@@ -3848,7 +3848,7 @@ function xzTypeOf(name, fbT, fbA) {
         '神血': '#c0392b',   /* 最深红：天选之子 */
         '帝血': '#e74c3c',   /* 次红：大天骄 */
         '圣血': '#d35400',   /* 橙 */
-        '王血': '#a6a6a6',   /* 金橙 */
+        '王血': '#f39c12',   /* 金橙 */
         '灵血': '#8e44ad',   /* 紫 */
         '凡血': '#8a949e'    /* 灰：最低档，不是"未定" */
     };
@@ -3928,7 +3928,7 @@ function xzTypeOf(name, fbT, fbA) {
         try {
             var _vcs = xzVarCompleteStatus();
             h += '<button type="button" class="xz-tianji-goto-btn" data-xz-act="var-complete" ' +
-                'style="padding:2px 9px;font-size:11px;border-color:' + (_vcs.ok ? 'rgba(172, 172, 172, 0.55)' : 'rgba(120,120,120,0.4)') + ';color:' + (_vcs.color || 'var(--xz-muted)') + ';font-weight:var(--xz-fw-med);" ' +
+                'style="padding:2px 9px;font-size:11px;border-color:' + (_vcs.ok ? 'rgba(212,175,55,0.55)' : 'rgba(120,120,120,0.4)') + ';color:' + (_vcs.color || 'var(--xz-muted)') + ';font-weight:var(--xz-fw-med);" ' +
                 'title="' + esc(_vcs.title || '外置变量补全') + '">🩺 变量补全 ' + esc(_vcs.label || '补') + '</button>';
         } catch (eVcs) {}
         try { h += xzHotVerHtml(); } catch (eHot) {}
@@ -4142,7 +4142,7 @@ function xzTypeOf(name, fbT, fbA) {
         /* ★ v1.053：血脉那行的『』删掉，改成一枚小框（作者 12:04：「这两个符号删了，好丑」）。 */
         h += '<div class="xz-box-v" style="font-weight:var(--xz-fw-med);color:' + blColor + ';">'
             + '<span style="display:inline-block;padding:2px 10px;border-radius:9px;background:rgba(255,255,255,.04);'
-            + 'border:1px solid rgba(171, 171, 171, .30);">' + esc(blStr) + '</span>' +
+            + 'border:1px solid rgba(201,168,106,.30);">' + esc(blStr) + '</span>' +
              (blPct ? ' <small style="color:var(--xz-muted);font-size:11px;font-weight:400;">' + esc(blPct) + '</small>' : '') +
              '</div>';
         /* ★ v72：血脉的「效果」直接摆在格子里（它是这条血的招牌，玩家要看得见）。
@@ -4177,7 +4177,7 @@ function xzTypeOf(name, fbT, fbA) {
              后面浮在半空，右边那格矮的时候还会看起来像掉出框外。
            ⚠ 别把这一行挪回 `xz-box-eq` 那种定高滚动区里 —— 见上面那段注释。 */
         h += '<div style="display:flex;align-items:center;justify-content:space-between;'
-            + 'gap:6px;margin-top:auto;padding-top:7px;border-top:1px dashed rgba(171, 171, 171, .22);">'
+            + 'gap:6px;margin-top:auto;padding-top:7px;border-top:1px dashed rgba(201,168,106,.22);">'
             + '<span style="flex:0 0 auto;font-size:11.5px;color:var(--xz-gold);letter-spacing:.04em;">可用属性点</span>'
             + '<span style="flex:0 0 auto;font-size:13px;font-weight:var(--xz-fw-med);color:var(--xz-gold-bright);'
             + 'font-variant-numeric:tabular-nums;white-space:nowrap;">' + pts + ' 点</span>'
@@ -4281,7 +4281,7 @@ function xzTypeOf(name, fbT, fbA) {
                 + '<span style="flex:0 0 auto;font-variant-numeric:tabular-nums;">' + right + '</span></div>'
                 + '</div>';
         };
-        h += _barLabel('气血', _hp + ' / ' + _hpM, _pctOf(_hp, _hpM), 'linear-gradient(90deg,#b21f45,#adadad)');
+        h += _barLabel('气血', _hp + ' / ' + _hpM, _pctOf(_hp, _hpM), 'linear-gradient(90deg,#b21f45,#ff8a8a)');
         h += _barLabel('灵力', _mp + ' / ' + _mpM, _pctOf(_mp, _mpM), 'linear-gradient(90deg,#2a63bb,#60a5fa)');
         h += _barLabel('经验', exp + ' / 2000', expPct, 'linear-gradient(90deg,var(--xz-gold),var(--xz-gold-bright))');
         /* ⚠⚠ v476 这里**不许**先关 div（`h += '</div>'`）：
@@ -4406,8 +4406,8 @@ function xzTypeOf(name, fbT, fbA) {
         var h = '';
         if (junk.length) {
           h += '<div style="margin:4px 0 8px;padding:6px 9px;border-radius:6px;'
-            + 'border:1px solid rgba(176, 176, 176, .45);background:rgba(176, 176, 176, .10);'
-            + 'color:#d0d0d0;font-size:11px;line-height:1.7;">'
+            + 'border:1px solid rgba(234,179,8,.45);background:rgba(234,179,8,.10);'
+            + 'color:#fcd34d;font-size:11px;line-height:1.7;">'
             + '⚠ 有 ' + junk.length + ' 条不是玄技（兵器/脏数据），不会进入战斗：'
             + esc(junk.join('、'))
             + '<br>它们只写了「名称」，没有「玄技名」，战斗认不出来。'
@@ -4481,7 +4481,7 @@ function xzTypeOf(name, fbT, fbA) {
                 h += '<span class="xz-chip-sm" style="color:var(--xz-gold);font-weight:var(--xz-fw-med);">兵器</span>';
             } else {
                 var isH = (kindOf === '玄诀');
-                var c1 = isH ? '#60a5fa' : '#999999';
+                var c1 = isH ? '#60a5fa' : '#f87171';
                 var c2 = isH ? 'rgba(59,130,246,0.18)' : 'rgba(239,68,68,0.18)';
                 var c3 = isH ? 'rgba(59,130,246,0.45)' : 'rgba(239,68,68,0.45)';
                 h += '<span class="xz-chip-sm" style="color:' + c1 + ';background:' + c2 + ';border-color:' + c3 + ';font-weight:var(--xz-fw-med);">' + (isH ? '被动' : '主动') + '</span>';
@@ -4556,12 +4556,12 @@ function xzTypeOf(name, fbT, fbA) {
 
         function gearCard(kind, nm, q, elem, desc, note) {
             /* ★ 整张卡可点 = 打开装备台（`data-xz-act="equip"`）；点招式名走内层 show-skill 看效果。 */
-            var s = '<div class="xz-rpg-card" data-xz-act="equip" role="button" style="cursor:pointer;border-color:rgba(172, 172, 172, 0.6);" title="点击打开装备台">';
+            var s = '<div class="xz-rpg-card" data-xz-act="equip" role="button" style="cursor:pointer;border-color:rgba(212,175,55,0.6);" title="点击打开装备台">';
             s += '<div class="xz-rpg-head">' +
                  '<span class="xz-rpg-title xz-name-box">' +
                  esc(nm) + '</span>' +
                  '<span class="xz-chip-sm">' + esc(q) + '</span>';
-            s += '<button type="button" class="xz-tianji-goto-btn" data-xz-act="equip" style="margin-left:auto;padding:1px 7px;font-size:9.5px;border-color:rgba(172, 172, 172, 0.4);color:var(--xz-gold);">换装</button>';
+            s += '<button type="button" class="xz-tianji-goto-btn" data-xz-act="equip" style="margin-left:auto;padding:1px 7px;font-size:9.5px;border-color:rgba(212,175,55,0.4);color:var(--xz-gold);">换装</button>';
             s += '</div>';
             /* ★ v510：原来这里有个 `kind` 标签，装备卡上就是「武器」两个字 ——
                用户 2026-10-31：「武器两个字删了啊，谁不他妈知道是武器」。
@@ -4614,7 +4614,7 @@ function xzTypeOf(name, fbT, fbA) {
         h += '<details class="xz-details xz-sk-fold" style="margin-top:14px;">' +
              '<summary style="display:inline-flex;align-items:center;gap:4px;width:auto;' +
              'padding:3px 9px;font-size:12px;font-weight:var(--xz-fw-med);color:var(--xz-gold-bright);' +
-             'background:rgba(172, 172, 172, 0.10);border:1px solid rgba(172, 172, 172, 0.35);' +
+             'background:rgba(212,175,55,0.10);border:1px solid rgba(212,175,55,0.35);' +
              'border-radius:6px;cursor:pointer;user-select:none;">' +
              '<span>已学本领</span><span class="xz-sk-fold-ar">▼</span>' +
              '</summary>' +
@@ -4653,7 +4653,7 @@ function xzTypeOf(name, fbT, fbA) {
         var COL = {
             on: ['#7dd3a0', 'rgba(125,211,160,.55)'],
             off: ['var(--xz-muted)', 'rgba(150,163,178,.55)'],
-            warn: ['#bcbcbc', 'rgba(188, 188, 188, .55)'],
+            warn: ['#f0b45a', 'rgba(240,180,90,.55)'],
             muted: ['var(--xz-muted)', 'rgba(150,163,178,.35)']
         };
 
@@ -5124,7 +5124,7 @@ function xzTypeOf(name, fbT, fbA) {
                 s += _nBox('',   /* v405：标题「在场」与内容里的「在场/不在场」chip 重复，去掉大标题 */
                     '<span class="xz-chip-sm" style="color:' + (_onp ? '#7dd3a0' : 'var(--xz-muted)') + ';border-color:' + (_onp ? '#7dd3a0' : 'rgba(150,163,178,.55)') + ';">' + (_onp ? '在场' : '离场') + '</span>'
                     + (_race ? ' <span class="xz-chip-sm" style="color:var(--xz-text-2);border-color:rgba(208,220,226,.22);">' + esc(_race) + '</span>' : '')
-                    + (_sexOk ? ' <span class="xz-chip-sm" style="color:#ababab;border-color:rgba(171, 171, 171, .34);">' + esc(_sex) + '</span>' : ''));
+                    + (_sexOk ? ' <span class="xz-chip-sm" style="color:#c9a86a;border-color:rgba(201,168,106,.34);">' + esc(_sex) + '</span>' : ''));
 
                 var _nHp = Number(npc.气血 || 0), _nHpM = Number(npc.气血上限 || 0);
                 var _nMp = Number(npc.灵力 || 0), _nMpM = Number(npc.灵力上限 || 0);
@@ -5135,8 +5135,8 @@ function xzTypeOf(name, fbT, fbA) {
                     var _mpP = _nMpM > 0 ? Math.max(0, Math.min(100, Math.round(_nMp / _nMpM * 100))) : 0;
                     s += _nBox('气血 / 灵力',
                         '<div style="font-size:11px;color:var(--xz-text-2);">'
-                        + '<div style="display:flex;justify-content:space-between;"><span style="color:#adadad;">气血</span><b style="color:var(--xz-text);">' + _nHp + ' / ' + _nHpM + '</b></div>'
-                        + '<div class="xz-progress"><div class="xz-progress-fill" style="width:' + _hpP + '%;background:linear-gradient(90deg,#c2264a,#adadad);"></div></div>'
+                        + '<div style="display:flex;justify-content:space-between;"><span style="color:#ff8a8a;">气血</span><b style="color:var(--xz-text);">' + _nHp + ' / ' + _nHpM + '</b></div>'
+                        + '<div class="xz-progress"><div class="xz-progress-fill" style="width:' + _hpP + '%;background:linear-gradient(90deg,#c2264a,#ff8a8a);"></div></div>'
                         + '<div style="display:flex;justify-content:space-between;margin-top:3px;"><span style="color:#60a5fa;">灵力</span><b style="color:var(--xz-text);">' + _nMp + ' / ' + _nMpM + '</b></div>'
                         + '<div class="xz-progress"><div class="xz-progress-fill" style="width:' + _mpP + '%;background:linear-gradient(90deg,#2f6fd0,#60a5fa);"></div></div>'
                         + '</div>', true);
@@ -5156,7 +5156,7 @@ function xzTypeOf(name, fbT, fbA) {
                     var _bc = xzBloodTierColor(_blT);
                     var _blHtml = '<b style="color:' + _bc + ';">『' + esc(_blN) + '』' + esc(_blT) + '</b>'
                         + (typeof _blP === 'number' ? '<span style="color:var(--xz-muted);"> ' + _blP + '%</span>' : '');
-                    if (_bl.效果) _blHtml += '<div style="font-size:10.5px;color:#ababab;line-height:1.5;word-break:break-word;margin-top:3px;">' + esc(xzEffDisplay(_bl.效果)) + '</div>';
+                    if (_bl.效果) _blHtml += '<div style="font-size:10.5px;color:#c9a86a;line-height:1.5;word-break:break-word;margin-top:3px;">' + esc(xzEffDisplay(_bl.效果)) + '</div>';
                     /* ★ v296：`说明` 字段删除 —— 设定性的句子已经并进 `效果` 里 `｜` 之后那半句。 */
                     s += _nBox('血脉', _blHtml, true);
                 }
@@ -5172,7 +5172,7 @@ function xzTypeOf(name, fbT, fbA) {
                 var _favNum = Number(npc.好感度);
                 if (Number.isFinite(_favNum)) {
                     _favNum = Math.max(0, Math.min(100, Math.round(_favNum)));
-                    var _favCol = _favNum >= 80 ? '#adadad' : (_favNum >= 60 ? '#bebebe' : (_favNum >= 40 ? 'var(--xz-gold)' : 'var(--xz-muted)'));
+                    var _favCol = _favNum >= 80 ? '#ff8a8a' : (_favNum >= 60 ? '#f0b46a' : (_favNum >= 40 ? 'var(--xz-gold)' : 'var(--xz-muted)'));
                     s += _nBox('好感度',
                         '<div style="display:flex;align-items:baseline;gap:5px;">'
                         + '<b style="color:' + _favCol + ';font-variant-numeric:tabular-nums;font-size:13px;">' + _favNum + '</b>'
@@ -5187,7 +5187,7 @@ function xzTypeOf(name, fbT, fbA) {
                 }
                 if (npc.心里话) {
                     s += _nBox('心里话',
-                        '<span style="color:#ababab;font-style:italic;word-break:break-word;">「' + esc(String(npc.心里话).slice(0, 30)) + '」</span>', true);
+                        '<span style="color:#c9a86a;font-style:italic;word-break:break-word;">「' + esc(String(npc.心里话).slice(0, 30)) + '」</span>', true);
                 }
 
                 /* ★ v222：NPC「先天气运」整块删除（字段已删） */
@@ -5468,7 +5468,7 @@ function xzTypeOf(name, fbT, fbA) {
                 if (_qtyB > 0) h += '<span class="xz-chip-sm">×' + _qtyB + '</span>';
             } else {
                 var isH = (kindOf === '玄诀');
-                var c1 = isH ? '#60a5fa' : '#999999';
+                var c1 = isH ? '#60a5fa' : '#f87171';
                 var c2 = isH ? 'rgba(59,130,246,0.18)' : 'rgba(239,68,68,0.18)';
                 var c3 = isH ? 'rgba(59,130,246,0.45)' : 'rgba(239,68,68,0.45)';
                 h += '<span class="xz-chip-sm" style="color:' + c1 + ';background:' + c2 + ';border-color:' + c3 + ';font-weight:var(--xz-fw-med);">' + (isH ? '被动' : '主动') + '</span>';
@@ -5511,9 +5511,9 @@ function xzTypeOf(name, fbT, fbA) {
                     _wEquipped = (!!_curWName) && _curWName !== '无' && _curWName === name;
                 } catch (eWQ) {}
                 if (_wEquipped) {
-                    h += '<span class="xz-chip-sm" style="color:#d0d0d0;border-color:rgba(172, 172, 172, .55);">已装备</span>';
+                    h += '<span class="xz-chip-sm" style="color:#fcd34d;border-color:rgba(212,175,55,.55);">已装备</span>';
                 } else {
-                    h += '<button type="button" class="xz-tianji-goto-btn" data-xz-act="equip-bag" data-item-name="' + esc(name) + '" style="padding:1px 7px;font-size:9.5px;border-color:rgba(172, 172, 172, .55);color:#d0d0d0;">装备</button>';
+                    h += '<button type="button" class="xz-tianji-goto-btn" data-xz-act="equip-bag" data-item-name="' + esc(name) + '" style="padding:1px 7px;font-size:9.5px;border-color:rgba(212,175,55,.55);color:#fcd34d;">装备</button>';
                 }
             }
             /* ★ v221：材料/道具不是「学来的本领」，没有「遗忘」这回事 —— 走「丢弃」。 */
@@ -5541,7 +5541,7 @@ function xzTypeOf(name, fbT, fbA) {
 /* v71：DAO_LIST / DAO_CN 随大道整套删除。 */
 
     // 天骄与兵器流浔（与斗法器同一套规则）
-    var TIANJIAO_COLOR = { '普通天骄': '#8fa2c0', '大天骄': '#ababab', '天选之子': '#d7d7d7' };
+    var TIANJIAO_COLOR = { '普通天骄': '#8fa2c0', '大天骄': '#c0a97a', '天选之子': '#f0d98a' };
     /* ★ v335：这里原有 `STYLE_NEED_UI` / `STYLE_ALIAS_UI` 两张表，**全库零引用**，已删。
        它们是 04 里 `STYLE_NEED` / `STYLE_ALIAS` 的**死副本**，而且已经漂了：
          05 写 '术修': '纯法', '通用': '纯法'
@@ -5666,8 +5666,8 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         var c = TIANJIAO_COLOR[name] || 'var(--xz-gold)';
         return '<span class="xz-chip-sm" style="color:' + c + ';border-color:' + c + ';" title="由血脉品阶定档">' + esc(name) + '</span>';
     }
-    var Q_COLOR = { '凡品': '#9c9686', '良品': '#7fa593', '上品': '#8fa2c0', '极品': '#ababab', '仙品': '#c4c4c4', '黄阶': '#9c9686', '玄阶': '#7fa593', '地阶': '#8fa2c0', '天阶': '#ababab', '神阶': '#c4c4c4', '凡阶': '#8a8578' };
-    var ELEM_COLOR = { '金': '#bfbfbf', '木': '#4ade80', '水': '#7fd2c1', '火': '#999999', '土': '#a16207', '风': '#2dd4bf', '雷': '#c084fc', '冰': '#e2e8f0' };
+    var Q_COLOR = { '凡品': '#9c9686', '良品': '#7fa593', '上品': '#8fa2c0', '极品': '#c0a97a', '仙品': '#d8c48f', '黄阶': '#9c9686', '玄阶': '#7fa593', '地阶': '#8fa2c0', '天阶': '#c0a97a', '神阶': '#d8c48f', '凡阶': '#8a8578' };
+    var ELEM_COLOR = { '金': '#fbbf24', '木': '#4ade80', '水': '#7fd2c1', '火': '#f87171', '土': '#a16207', '风': '#2dd4bf', '雷': '#c084fc', '冰': '#e2e8f0' };
 
     /* ═══ v292：任务页 ═══
        **全局系统，不绑宗门**（用户：「任务千万不要围绕宗门任务去做，而是一个全局的系统，适应所有场所」）。
@@ -5675,8 +5675,8 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
        ⚠ 本页**只读变量、不写**（与舆图同口径）：接任务、交差都由模型按正文写进
          /任务/进行中，脚本不代玩家改状态 —— 否则正文说"还没动手"、面板却 100%，两套口径必打架。 */
     /* 六档对齐品质体系：凡阶最琐碎（跑腿传话），神阶一沾就动一州气运 */
-    var TASK_RANK_COLOR = { '凡阶': '#8a8578', '黄阶': '#a4a4a4', '玄阶': '#7fd4e8', '地阶': '#a78bfa', '天阶': '#f3d999', '神阶': '#e6dcc4' };
-    var TASK_SRC_COLOR = { '宗门': '#a4a4a4', '世家': '#a78bfa', '官府': '#7fd4e8', '市井': '#8fae7a', '私托': '#d98ca8', '自定': '#8b9199' };
+    var TASK_RANK_COLOR = { '凡阶': '#8a8578', '黄阶': '#c9a05a', '玄阶': '#7fd4e8', '地阶': '#a78bfa', '天阶': '#f3d999', '神阶': '#e6dcc4' };
+    var TASK_SRC_COLOR = { '宗门': '#c9a05a', '世家': '#a78bfa', '官府': '#7fd4e8', '市井': '#8fae7a', '私托': '#d98ca8', '自定': '#8b9199' };
     function pageTask() {
         var t = at('任务') || {};
         var doing = (t.进行中 && typeof t.进行中 === 'object') ? t.进行中 : {};
@@ -5764,7 +5764,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             var sat = Number(p.饱食度);
             if (!isFinite(sat)) sat = 100;
             var satTier = sat >= 75 ? { t: '饱足', r: 1 } : (sat >= 50 ? { t: '尚可', r: 0.75 } : (sat >= 25 ? { t: '饥饿', r: 0.5 } : { t: '极饿', r: 0.25 }));
-            var satColor = sat >= 75 ? 'var(--xz-gold)' : (sat >= 50 ? 'var(--xz-gold)' : '#999999');
+            var satColor = sat >= 75 ? 'var(--xz-gold)' : (sat >= 50 ? 'var(--xz-gold)' : '#f87171');
             /* ⚠ v94：原来这里写的是 `grow`，而 `grow` 在 05 里根本没有声明
                （本文件只有 5438 那个 `growAll`）⇒ 跨作用域悬空引用，一渲染就抛、
                被外层 catch 吞掉 ⇒ **有灵宠时灵宠页整页渲染成红框**。
@@ -5777,7 +5777,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             h += '<div class="xz-rpg-card" data-q="' + esc(q) + '" style="margin-bottom:8px;border-left:3px solid ' + qc + ';">';
             h += '<div class="xz-rpg-head"><span class="xz-rpg-title">' + esc(show(p.名称, p.__key)) + '</span>';
             h += '<span class="xz-chip-sm" style="color:' + qc + ';border-color:' + qc + ';">' + esc(q) + '</span>';
-            if (on) h += '<span class="xz-chip-sm" style="color:var(--xz-gold);border-color:rgba(172, 172, 172, 0.5);">出战</span>';
+            if (on) h += '<span class="xz-chip-sm" style="color:var(--xz-gold);border-color:rgba(212,175,55,0.5);">出战</span>';
             h += '</div>';
             h += '<div class="xz-rpg-tags">';
             h += '<span class="xz-chip-sm">' + esc(show(p.种族, '未知')) + '</span>';
@@ -5794,7 +5794,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             h += '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:7px;">';
             h += '<button type="button" class="xz-tianji-goto-btn" data-xz-act="pet-toggle" data-xz-pet="' + esc(p.__key) + '">' + (on ? '收战' : '出战') + '</button>';
             h += '<button type="button" class="xz-tianji-goto-btn" data-xz-act="pet-feed" data-xz-pet="' + esc(p.__key) + '">喂养（选物品）</button>';
-            if (p.__canTransform) h += '<button type="button" class="xz-tianji-goto-btn" data-xz-act="pet-transform" data-xz-pet="' + esc(p.__key) + '" style="border-color:rgba(172, 172, 172, 0.75);color:var(--xz-gold-bright);">化形（转为人身）</button>';
+            if (p.__canTransform) h += '<button type="button" class="xz-tianji-goto-btn" data-xz-act="pet-transform" data-xz-pet="' + esc(p.__key) + '" style="border-color:rgba(212,175,55,0.75);color:var(--xz-gold-bright);">化形（转为人身）</button>';
             h += '<button type="button" class="xz-tianji-goto-btn" data-xz-act="release-pet" data-xz-pet="' + esc(p.__key) + '" style="border-color:rgba(239,68,68,0.5);color:#fca5a5;">放生</button>';
             h += '</div></div>';
         }
@@ -5971,7 +5971,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 + 'font-family:inherit;font-size:11.5px;font-weight:var(--xz-fw-med);letter-spacing:.2px;'
                 + 'padding:5px 10px;border-radius:13px;line-height:1.35;'
                 + (on
-                    ? 'background:linear-gradient(180deg,rgba(175, 175, 175, .95),rgba(129, 129, 129, .95));color:#191307;border:1px solid var(--xz-gold-bright);box-shadow:0 0 0 1px rgba(172, 172, 172, .22);'
+                    ? 'background:linear-gradient(180deg,rgba(214,178,58,.95),rgba(166,130,30,.95));color:#191307;border:1px solid var(--xz-gold-bright);box-shadow:0 0 0 1px rgba(212,175,55,.22);'
                     : 'background:rgba(255,255,255,.05);color:var(--xz-text-2);border:1px solid rgba(255,255,255,.12);')
                 + '">' + esc(label)
                 + '<span style="margin-left:5px;font-weight:var(--xz-fw-med);opacity:.72;">' + cnt + '</span></button>';
@@ -7845,7 +7845,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
          改了这张表要同步改总纲，`工具/_v298_map_guard.mjs` 会对账。
        种子点 sx/sy 是「州都」在图上的落点，也是 Voronoi 的分区依据 —— 动它等于重划疆界。 */
     var XZ_MAP_STATES = [
-        { n: '人州', own: '人族 · 三域', tone: '#bcbcbc', fog: false, sx: 461, sy:  425,
+        { n: '人州', own: '人族 · 三域', tone: '#e0b96a', fog: false, sx: 461, sy:  425,
           note: '人族最后的三块地。中域人最多、雪域阵眼最密、沙洲最富也最乱。三域之间不接壤，中间全是雾。',
           areas: [
               { n: '中域', ax: 0.5, ay: 0.5, kind: '人族核心', note: '人最多，阵眼最老。太一门守主阵眼，司天监校星位，千机坊市收所有人的过路钱。',
@@ -9163,7 +9163,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             bc = 'rgba(154,160,166,.45)'; bg = 'rgba(154,160,166,.09)';
         } else if (isNew) {
             txt = '📦 新版本 ' + HOTV.latest + ' · 点此刷新'; col = 'var(--xz-gold-bright)';
-            bc = 'rgba(172, 172, 172, .6)'; bg = 'rgba(172, 172, 172, .12)';
+            bc = 'rgba(212,175,55,.6)'; bg = 'rgba(212,175,55,.12)';
         } else {
             txt = '✓ 已是最新' + (cv ? ' ' + cv : ''); col = '#7ddc9a';
             bc = 'rgba(125,220,154,.45)'; bg = 'rgba(125,220,154,.10)';
@@ -10720,26 +10720,26 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         s.id = STYLE_ID;
         s.textContent = [
             '#' + HOST_ID + '{position:static;margin:0;font-family:inherit;}',
-            '.xz-eq-bar{position:fixed;right:14px;bottom:14px;z-index:2147482999;display:flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid rgba(167, 167, 167, 0.55);border-radius:999px;background:rgba(12,16,28,0.94);color:#bfbfbf;font-size:12px;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,0.6);}',
-            '.xz-eq-bar:hover{background:rgba(167, 167, 167, 0.2);}',
+            '.xz-eq-bar{position:fixed;right:14px;bottom:14px;z-index:2147482999;display:flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid rgba(245,158,11,0.55);border-radius:999px;background:rgba(12,16,28,0.94);color:#fbbf24;font-size:12px;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,0.6);}',
+            '.xz-eq-bar:hover{background:rgba(245,158,11,0.2);}',
             '.xz-eq-bar b{font-weight:var(--xz-fw-med);}',
             '.xz-eq-bar small{color:var(--xz-text-2);font-weight:400;}',
             // 面板做成悬浮层：fixed + 高 z-index，避免被状态栏/楼层淹掉
-            '.xz-eq-panel{position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:2147483000;width:min(92vw,520px);max-height:74vh;display:flex;flex-direction:column;overflow:hidden;padding:12px;border:1px solid rgba(167, 167, 167, 0.6);border-radius:12px;background:rgba(9,13,24,0.985);color:#e2e8f0;box-shadow:0 18px 55px rgba(0,0,0,0.85);}',
+            '.xz-eq-panel{position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:2147483000;width:min(92vw,520px);max-height:74vh;display:flex;flex-direction:column;overflow:hidden;padding:12px;border:1px solid rgba(245,158,11,0.6);border-radius:12px;background:rgba(9,13,24,0.985);color:#e2e8f0;box-shadow:0 18px 55px rgba(0,0,0,0.85);}',
             '.xz-eq-body{overflow:auto;flex:1;min-height:0;}',
             '.xz-eq-close{position:absolute;top:6px;right:8px;font-size:12px;line-height:1;padding:4px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.3);background:rgba(12,16,28,0.9);color:#e2e8f0;cursor:pointer;z-index:2;}',
-            '.xz-eq-close:hover{background:rgba(239,68,68,0.3);border-color:#999999;color:#fca5a5;}',
+            '.xz-eq-close:hover{background:rgba(239,68,68,0.3);border-color:#f87171;color:#fca5a5;}',
             '.xz-eq-tabs{display:flex;gap:6px;border-bottom:1px solid rgba(255,255,255,0.12);padding-bottom:6px;margin-bottom:8px;}',
             '.xz-eq-tab{padding:3px 12px;border-radius:6px;border:1px solid rgba(255,255,255,0.14);background:transparent;color:#cbd5e1;font-size:12px;cursor:pointer;}',
-            '.xz-eq-tab.on{background:rgba(167, 167, 167, 0.2);border-color:#bfbfbf;color:#bfbfbf;}',
+            '.xz-eq-tab.on{background:rgba(245,158,11,0.2);border-color:#fbbf24;color:#fbbf24;}',
             '.xz-eq-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 6px;border-radius:6px;}',
             '.xz-eq-row:nth-child(odd){background:rgba(255,255,255,0.03);}',
             '.xz-eq-name{font-size:12px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
             '.xz-eq-tag{font-size:10px;color:var(--xz-text-2);margin-left:6px;}',
             '.xz-eq-none{color:#64748b;font-style:italic;}',
-            '.xz-eq-btn{font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid rgba(167, 167, 167, 0.5);background:rgba(167, 167, 167, 0.12);color:#bfbfbf;cursor:pointer;white-space:nowrap;}',
-            '.xz-eq-btn:hover{background:rgba(167, 167, 167, 0.28);}',
-            '.xz-eq-btn.off{border-color:rgba(239,68,68,0.5);background:rgba(239,68,68,0.12);color:#999999;}',
+            '.xz-eq-btn{font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid rgba(245,158,11,0.5);background:rgba(245,158,11,0.12);color:#fbbf24;cursor:pointer;white-space:nowrap;}',
+            '.xz-eq-btn:hover{background:rgba(245,158,11,0.28);}',
+            '.xz-eq-btn.off{border-color:rgba(239,68,68,0.5);background:rgba(239,68,68,0.12);color:#f87171;}',
             '.xz-eq-btn:disabled{opacity:0.4;cursor:not-allowed;}',
             '.xz-eq-sec{font-size:11px;color:var(--xz-text-2);margin:8px 0 2px;}',
             '.xz-eq-err{white-space:pre-wrap;font-size:11px;color:#fca5a5;background:rgba(127,29,29,0.4);padding:8px;border-radius:6px;}',
@@ -10750,14 +10750,14 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             '.xz-tp-rows{margin:4px 0 2px;}',
             '.xz-tp-row{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:11px;}',
             '.xz-tp-mech{color:#cbd5e1;}',
-            '.xz-tp-val{color:#bfbfbf;font-variant-numeric:tabular-nums;}',
+            '.xz-tp-val{color:#fbbf24;font-variant-numeric:tabular-nums;}',
             '.xz-tp-val small{color:var(--xz-text-2);font-weight:400;}',
             '.xz-tp-note{font-size:11px;color:var(--xz-text-2);line-height:1.5;margin:3px 0;}',
             /* ★ v535：淬炼页「说明」折叠按钮。做小、靠右——它是次要操作，
                不能跟「升级/洗练」抢注意力。 */
             '.xz-tp-help{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:2px 0 0;}',
             '.xz-tp-helpbtn{flex:none;font:inherit;font-size:10.5px;line-height:1.5;padding:3px 11px;'
-              + 'border-radius:10px;cursor:pointer;background:rgba(172, 172, 172, .10);color:var(--xz-gold-bright);'
+              + 'border-radius:10px;cursor:pointer;background:rgba(212,175,55,.10);color:var(--xz-gold-bright);'
               + 'border:1px solid var(--xz-line);}',
             '.xz-tp-helpbtn:hover{color:var(--xz-gold);border-color:var(--xz-gold);}',
             '.xz-tp-cost{font-size:11px;color:var(--xz-text-2);margin:5px 0 4px;}',
@@ -10952,7 +10952,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
     function temperBar(cur, cap) {
         var pct = (cap > 0) ? Math.max(0, Math.min(100, Math.round(cur / cap * 100))) : 0;
         var full = (cap > 0 && cur >= cap);
-        var col = full ? '#999999' : '#bfbfbf';
+        var col = full ? '#f87171' : '#fbbf24';
         return '<div style="height:5px;border-radius:3px;background:rgba(255,255,255,0.10);margin:3px 0 0;overflow:hidden;">' +
                '<div style="height:100%;width:' + pct + '%;background:' + col + ';"></div></div>';
     }
@@ -10984,7 +10984,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 h += '<div class="xz-tp-row">' +
                      '<span class="xz-tp-mech">' + esc(r.mech) + '</span>' +
                      '<span class="xz-tp-val">' + r.cur + ' <small>/ ' + (r.cap > 0 ? r.cap : '?') + '</small>' +
-                     (r.atCap ? ' <b style="color:#999999;">已满</b>' : (left > 0 ? ' <small>（还能 +' + left + '）</small>' : '')) +
+                     (r.atCap ? ' <b style="color:#f87171;">已满</b>' : (left > 0 ? ' <small>（还能 +' + left + '）</small>' : '')) +
                      '</span></div>' + temperBar(r.cur, r.cap);
             });
             h += '</div>';
@@ -11467,7 +11467,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         try {
             var d = getDoc(), n = d.createElement('div');
             n.textContent = m;
-            n.style.cssText = 'position:fixed;left:50%;top:16%;transform:translateX(-50%);z-index:2147483000;background:rgba(15,23,42,.94);color:#e8e3d3;padding:7px 14px;border-radius:8px;font-size:13px;border:1px solid rgba(172, 172, 172, .45)';
+            n.style.cssText = 'position:fixed;left:50%;top:16%;transform:translateX(-50%);z-index:2147483000;background:rgba(15,23,42,.94);color:#e8e3d3;padding:7px 14px;border-radius:8px;font-size:13px;border:1px solid rgba(212,175,55,.45)';
             d.body.appendChild(n);
             setTimeout(function () { try { n.remove(); } catch (e2) {} }, 2400);
         } catch (e3) {}
@@ -12010,26 +12010,26 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         s.id = STYLE_ID;
         s.textContent = [
             '#' + ORB_ID + '{position:fixed;right:14px;bottom:180px;z-index:2147483200;width:46px;height:46px;border-radius:50%;',
-            'background:linear-gradient(160deg,rgba(22,28,38,.97),rgba(14,18,25,.97));border:1.5px solid rgba(172, 172, 172, .6);',
-            'color:#acacac;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;',
+            'background:linear-gradient(160deg,rgba(22,28,38,.97),rgba(14,18,25,.97));border:1.5px solid rgba(212,175,55,.6);',
+            'color:#d4af37;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;',
             'box-shadow:0 8px 24px rgba(0,0,0,.65);user-select:none;font-family:inherit;touch-action:none;-webkit-tap-highlight-color:transparent;}',
-            '#' + ORB_ID + ':hover{background:rgba(172, 172, 172, .2);}',
+            '#' + ORB_ID + ':hover{background:rgba(212,175,55,.2);}',
             '#' + ORB_ID + ' .xz-wd-dot{position:absolute;right:3px;top:3px;width:10px;height:10px;border-radius:50%;background:#64748b;}',
             '#' + PANEL_ID + '{position:fixed;right:66px;bottom:140px;z-index:2147483201;width:360px;max-width:92vw;max-height:74vh;overflow:auto;',
-            'background:rgba(14,18,25,.98);border:1.5px solid rgba(172, 172, 172, .45);border-radius:12px;color:#e8e3d3;padding:12px;',
+            'background:rgba(14,18,25,.98);border:1.5px solid rgba(212,175,55,.45);border-radius:12px;color:#e8e3d3;padding:12px;',
             'font-size:12px;line-height:1.6;box-shadow:0 14px 44px rgba(0,0,0,.7);font-family:inherit;}',
-            '#' + PANEL_ID + ' h4{margin:0 0 6px;font-size:13px;color:#acacac;letter-spacing:.05em;}',
+            '#' + PANEL_ID + ' h4{margin:0 0 6px;font-size:13px;color:#d4af37;letter-spacing:.05em;}',
             '#' + PANEL_ID + ' .xz-wd-row{display:flex;gap:6px;align-items:center;margin:5px 0;flex-wrap:wrap;}',
-            '#' + PANEL_ID + ' .xz-wd-card{margin:8px 0;padding:8px 10px;border:1px solid rgba(172, 172, 172, .22);border-radius:10px;background:rgba(26,29,36,.6);}',
-            '#' + PANEL_ID + ' .xz-wd-out{white-space:pre-wrap;max-height:200px;overflow:auto;background:rgba(6,8,12,.8);border:1px solid rgba(172, 172, 172, .2);border-radius:6px;padding:7px;margin-top:5px;font-size:11.5px;}',
+            '#' + PANEL_ID + ' .xz-wd-card{margin:8px 0;padding:8px 10px;border:1px solid rgba(212,175,55,.22);border-radius:10px;background:rgba(26,29,36,.6);}',
+            '#' + PANEL_ID + ' .xz-wd-out{white-space:pre-wrap;max-height:200px;overflow:auto;background:rgba(6,8,12,.8);border:1px solid rgba(212,175,55,.2);border-radius:6px;padding:7px;margin-top:5px;font-size:11.5px;}',
             '#' + PANEL_ID + ' .xz-wd-muted{color:#8b8674;}',
-            '#' + PANEL_ID + ' input[type=text],#' + PANEL_ID + ' input[type=number],#' + PANEL_ID + ' textarea{background:rgba(6,8,12,.8);border:1px solid rgba(172, 172, 172, .28);border-radius:5px;color:#e8e3d3;padding:3px 6px;font-size:12px;font-family:inherit;}',
-            '#' + PANEL_ID + ' button{background:rgba(255,255,255,.06);border:1px solid rgba(172, 172, 172, .35);color:#e8e3d3;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;font-family:inherit;touch-action:manipulation;}',
-            '#' + PANEL_ID + ' button:hover{background:rgba(172, 172, 172, .2);color:var(--xz-gold-bright);}',
-            '#' + PANEL_ID + ' button.primary{background:rgba(172, 172, 172, .24);border-color:#acacac;color:#e2e2e2;}',
-            '#' + PANEL_ID + ' .xz-wd-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;margin:2px 4px 2px 0;border:1px solid rgba(172, 172, 172, .3);border-radius:999px;background:rgba(6,8,12,.5);cursor:pointer;}',
-            '#' + PANEL_ID + ' details{margin:5px 0;border:1px solid rgba(172, 172, 172, .2);border-radius:6px;padding:5px 7px;background:rgba(6,8,12,.4);}',
-            '#' + PANEL_ID + ' summary{cursor:pointer;font-size:12px;color:#acacac;outline:none;}',
+            '#' + PANEL_ID + ' input[type=text],#' + PANEL_ID + ' input[type=number],#' + PANEL_ID + ' textarea{background:rgba(6,8,12,.8);border:1px solid rgba(212,175,55,.28);border-radius:5px;color:#e8e3d3;padding:3px 6px;font-size:12px;font-family:inherit;}',
+            '#' + PANEL_ID + ' button{background:rgba(255,255,255,.06);border:1px solid rgba(212,175,55,.35);color:#e8e3d3;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;font-family:inherit;touch-action:manipulation;}',
+            '#' + PANEL_ID + ' button:hover{background:rgba(212,175,55,.2);color:var(--xz-gold-bright);}',
+            '#' + PANEL_ID + ' button.primary{background:rgba(212,175,55,.24);border-color:#d4af37;color:#fde68a;}',
+            '#' + PANEL_ID + ' .xz-wd-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;margin:2px 4px 2px 0;border:1px solid rgba(212,175,55,.3);border-radius:999px;background:rgba(6,8,12,.5);cursor:pointer;}',
+            '#' + PANEL_ID + ' details{margin:5px 0;border:1px solid rgba(212,175,55,.2);border-radius:6px;padding:5px 7px;background:rgba(6,8,12,.4);}',
+            '#' + PANEL_ID + ' summary{cursor:pointer;font-size:12px;color:#d4af37;outline:none;}',
             '#' + PANEL_ID + ' .xz-wd-err{white-space:pre-wrap;font-size:11px;color:#fca5a5;background:rgba(127,29,29,.35);padding:7px;border-radius:6px;}',
             '@media (max-width: 600px){',
             '  #' + ORB_ID + '{right:12px !important;bottom:180px !important;width:44px !important;height:44px !important;font-size:18px !important;}',
@@ -12105,13 +12105,13 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         var _evSt = (typeof window.XZ_EVENT_STATE_OF === 'function') ? window.XZ_EVENT_STATE_OF : null;
         var _liveEv = _evSt ? _eb.filter(function (e) { return _evSt(e, _rk).k === 'live'; }) : [];
         if (!_evSt) {
-            h += '<div class="xz-wd-row"><span class="xz-wd-muted" style="color:#999999">事件判定口没就位（window.XZ_EVENT_STATE_OF）—— 这是脚本结构错，不是"没有事件"。</span></div>';
+            h += '<div class="xz-wd-row"><span class="xz-wd-muted" style="color:#f87171">事件判定口没就位（window.XZ_EVENT_STATE_OF）—— 这是脚本结构错，不是"没有事件"。</span></div>';
         }
         if (!_liveEv.length) {
             h += '<div class="xz-wd-row"><span class="xz-wd-muted">此刻没有事件落在当前境界上（或《事件总表》未载入）。</span></div>';
         }
         _liveEv.forEach(function (e) {
-            h += '<div class="xz-wd-row" style="align-items:flex-start"><span style="min-width:96px;color:#acacac">' + esc(e.name || e.key) + '</span>';
+            h += '<div class="xz-wd-row" style="align-items:flex-start"><span style="min-width:96px;color:#d4af37">' + esc(e.name || e.key) + '</span>';
             h += '<span class="xz-wd-muted">' + esc(e.cat) + '·' + esc(e.scale || '') + '｜' + esc(e.minRealm) + '~' + esc(e.maxRealm) + '｜' + esc(e.place || '') + '</span></div>';
         });
         h += '</div>';
@@ -12141,7 +12141,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         }
 
         h += '<div style="margin-top:12px;text-align:center;">';
-        h += '<button data-act="close" style="width:100%;padding:8px 0;background:rgba(172, 172, 172, 0.18);border:1px solid #acacac;color:#e2e2e2;font-weight:bold;border-radius:6px;cursor:pointer;">✕ 关 闭 推 演 面 板</button>';
+        h += '<button data-act="close" style="width:100%;padding:8px 0;background:rgba(212,175,55,0.18);border:1px solid #d4af37;color:#fde68a;font-weight:bold;border-radius:6px;cursor:pointer;">✕ 关 闭 推 演 面 板</button>';
         h += '</div>';
 
         p.innerHTML = h;
@@ -12355,7 +12355,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             '#' + BALL_ID + '{position:fixed;left:0;top:0;right:auto;bottom:auto;z-index:2147483645;',
             'width:56px;height:56px;box-sizing:border-box;padding:0;border-radius:50%;',
             'display:grid;place-items:center;cursor:pointer;',
-            'background:linear-gradient(160deg,#16202a,#0a0f14);border:1px solid rgba(171, 171, 171, .45);',
+            'background:linear-gradient(160deg,#16202a,#0a0f14);border:1px solid rgba(201,168,106,.45);',
             'box-shadow:0 8px 24px -8px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.06);',
             /* ★★★ v470：字体族统一到 `var(--xz-font)` ★★★
                原来写的是 `font:700 19px/1 "Noto Serif SC","Songti SC",serif` —— **衬线族**。
@@ -12366,9 +12366,9 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                  这就是字体审计里「「人」1 个雅黑字形」的真因。
                ⚠ 拆成 font 简写为独立属性：`font:700 19px/1 ...` 会把 font-family 一起写死，
                  后面再补一条 font-family 容易漏；分开写一处只改一处。 */
-            'font-weight:var(--xz-fw-med);font-size:19px;line-height:1;font-family:var(--xz-font);color:#cdcdcd;user-select:none;',
+            'font-weight:var(--xz-fw-med);font-size:19px;line-height:1;font-family:var(--xz-font);color:#e8cb92;user-select:none;',
             'touch-action:none;-webkit-tap-highlight-color:transparent;}',
-            '#' + BALL_ID + ':hover{border-color:rgba(171, 171, 171, .8);}',
+            '#' + BALL_ID + ':hover{border-color:rgba(201,168,106,.8);}',
             /* ★ v446：面板定位同样交给内联（`xzCemPlacePanel`）。
                原来是 `right:14px;bottom:222px` + `max-height:min(74vh,620px)` ——
                手机上 844 高，222 的底边把 620 高的面板顶到 y≈2，标题栏（含 ✕）直接出屏，
@@ -12396,7 +12396,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             'display:inline-flex;align-items:center;justify-content:center;',
             'min-width:32px;min-height:32px;padding:0 6px;font-size:15px;line-height:1;',
             'border-radius:6px;flex:none;}',
-            '#' + PANEL_ID + ' .cem-x:hover{color:#cdcdcd;background:rgba(255,255,255,.06);}',
+            '#' + PANEL_ID + ' .cem-x:hover{color:#e8cb92;background:rgba(255,255,255,.06);}',
             /* ★★★ v492：面板开着时收起所有悬浮球 ★★★
                引擎的「战」球 z-index 是 2147483647（整数上限），管理器只有 2147483646
                ⇒ 它必然压在面板之上（用户 2026-10-31 截图2：球正压在立绘行上）。
@@ -12423,14 +12423,14 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             + 'white-space:nowrap;cursor:pointer;padding:4px 11px;border-radius:6px;'
             + 'color:#9c968c;background:transparent;border:1px solid rgba(255,255,255,.12);'
             + '-webkit-tap-highlight-color:transparent;touch-action:manipulation;}',
-            '#' + PANEL_ID + ' .cem-tab.on{color:#cdcdcd;border-color:rgba(171, 171, 171, .55);'
-            + 'background:rgba(171, 171, 171, .10);font-weight:var(--xz-fw-med);}',
+            '#' + PANEL_ID + ' .cem-tab.on{color:#e8cb92;border-color:rgba(201,168,106,.55);'
+            + 'background:rgba(201,168,106,.10);font-weight:var(--xz-fw-med);}',
             '#' + PANEL_ID + ' .cem-sec{margin:10px 0 6px;display:flex;align-items:center;gap:8px;}',
-            '#' + PANEL_ID + ' .cem-sec b{font-size:12px;letter-spacing:.08em;color:#cdcdcd;font-weight:var(--xz-fw-med);}',
+            '#' + PANEL_ID + ' .cem-sec b{font-size:12px;letter-spacing:.08em;color:#e8cb92;font-weight:var(--xz-fw-med);}',
             '#' + PANEL_ID + ' .cem-sec i{font-style:normal;font-size:10.5px;color:#615c55;}',
             '#' + PANEL_ID + ' .cem-sec .cem-all{margin-left:auto;font:inherit;font-size:10.5px;cursor:pointer;',
             'color:#9c968c;background:transparent;border:1px solid rgba(255,255,255,.12);border-radius:5px;padding:3px 8px;}',
-            '#' + PANEL_ID + ' .cem-sec .cem-all:hover{color:#cdcdcd;border-color:rgba(171, 171, 171, .45);}',
+            '#' + PANEL_ID + ' .cem-sec .cem-all:hover{color:#e8cb92;border-color:rgba(201,168,106,.45);}',
             /* ★ v494：可折叠分组（默认收起 + 三角）。分隔线让「一组一坨」看得清边界。 */
             '#' + PANEL_ID + ' .cem-sec-tg{cursor:pointer;user-select:none;padding:6px 0 5px;',
             'border-bottom:1px dashed rgba(255,255,255,.07);}',
@@ -12462,7 +12462,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
             '#' + PANEL_ID + ' .cem-tag{display:inline-block;font-size:9.5px;padding:1px 5px;border-radius:3px;',
             'margin-left:4px;color:#7fe0b0;border:1px solid rgba(127,224,176,.3);vertical-align:1px;}',
-            '#' + PANEL_ID + ' .cem-tag.off{color:#a8a8a8;border-color:rgba(168, 168, 168, .3);}',
+            '#' + PANEL_ID + ' .cem-tag.off{color:#f08a84;border-color:rgba(240,138,132,.3);}',
             '#' + PANEL_ID + ' .cem-sw{flex:none;align-self:center;width:34px;height:19px;border-radius:99px;',
             'background:rgba(255,255,255,.1);position:relative;transition:.16s;}',
             '#' + PANEL_ID + ' .cem-sw::after{content:"";position:absolute;left:2px;top:2px;width:15px;height:15px;',
@@ -12470,7 +12470,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             '#' + PANEL_ID + ' .cem-sw.on{background:rgba(127,224,176,.28);}',
             '#' + PANEL_ID + ' .cem-sw.on::after{left:17px;background:#7fe0b0;}',
             '#' + PANEL_ID + ' .cem-full{display:none;margin:6px 0 2px;padding:8px;border-radius:6px;',
-            'background:rgba(0,0,0,.35);border-left:2px solid rgba(171, 171, 171, .3);',
+            'background:rgba(0,0,0,.35);border-left:2px solid rgba(201,168,106,.3);',
             'font-size:11.5px;line-height:1.75;color:#b7b1a4;white-space:pre-wrap;word-break:break-word;',
             'max-height:240px;overflow-y:auto;}',
             '#' + PANEL_ID + ' .cem-full.on{display:block;}',
@@ -12503,7 +12503,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             '#' + PANEL_ID + ' .gal-stage img{max-width:100%;max-height:100%;display:block;object-fit:contain;}',
             '#' + PANEL_ID + ' .gal-nav{position:absolute;top:50%;transform:translateY(-50%);',
             'width:30px;height:30px;display:grid;place-items:center;border-radius:50%;cursor:pointer;',
-            'background:rgba(10,14,20,.58);border:1px solid rgba(171, 171, 171, .38);',
+            'background:rgba(10,14,20,.58);border:1px solid rgba(201,168,106,.38);',
             'color:#f0e2b0;font-size:16px;line-height:1;user-select:none;z-index:2;}',
             '#' + PANEL_ID + ' .gal-prev{left:6px;}',
             '#' + PANEL_ID + ' .gal-next{right:6px;}',
@@ -12517,11 +12517,11 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             /* 底部那排小图：横向滚动，固定格子尺寸（不写就变成一列大图把面板撑爆） */
             '#' + PANEL_ID + ' .gal-list{display:flex;gap:6px;overflow-x:auto;overflow-y:hidden;padding:2px 2px 8px;}',
             '#' + PANEL_ID + ' .gal-cell{position:relative;flex:0 0 66px;height:66px;border-radius:6px;',
-            'overflow:hidden;border:1px solid rgba(171, 171, 171, .25);cursor:pointer;background:#0b0f14;}',
+            'overflow:hidden;border:1px solid rgba(201,168,106,.25);cursor:pointer;background:#0b0f14;}',
             '#' + PANEL_ID + ' .gal-cell img{width:100%;height:100%;object-fit:cover;',
             'object-position:center 18%;display:block;}',
-            '#' + PANEL_ID + ' .gal-cell.on{border-color:rgba(171, 171, 171, .9);',
-            'box-shadow:0 0 0 1px rgba(171, 171, 171, .45);}',
+            '#' + PANEL_ID + ' .gal-cell.on{border-color:rgba(201,168,106,.9);',
+            'box-shadow:0 0 0 1px rgba(201,168,106,.45);}',
             '#' + PANEL_ID + ' .gal-cell span{position:absolute;left:0;right:0;bottom:0;padding:1px 4px;',
             'font-size:9px;color:#f4f1e8;background:rgba(0,0,0,.58);white-space:nowrap;',
             'overflow:hidden;text-overflow:ellipsis;}',
@@ -12565,7 +12565,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             '#' + PANEL_ID + ' .gal-me{display:flex;align-items:center;gap:6px;margin:0 0 8px;flex-wrap:wrap;}',
             '#' + PANEL_ID + ' .gal-me button{font:inherit;font-size:11px;cursor:pointer;padding:5px 10px;border-radius:6px;',
             'border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:#c9c2b4;}',
-            '#' + PANEL_ID + ' .gal-me button:hover{border-color:rgba(171, 171, 171, .55);color:#cdcdcd;}',
+            '#' + PANEL_ID + ' .gal-me button:hover{border-color:rgba(201,168,106,.55);color:#e8cb92;}',
             '#' + PANEL_ID + ' .gal-me .gal-me-rm{color:#f0a6a0;border-color:rgba(240,166,160,.32);}',
             '#' + PANEL_ID + ' .gal-me .gal-me-on{font-style:normal;font-size:10px;color:#7fe0b0;}',
             ':root[data-xz-theme="day"] #' + PANEL_ID + ' .gal-me button{background:#fffdf8;border-color:rgba(138,95,20,.28);color:#463c2c;}',
@@ -13964,7 +13964,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         st.textContent = [
             '#' + GAL_ID + '{position:fixed;left:0;top:0;right:auto;bottom:auto;z-index:2147483647;',
             'display:flex;flex-direction:column;background:linear-gradient(180deg,#0c1117,#070a0e);',
-            'border:1px solid rgba(171, 171, 171, .42);border-radius:12px;overflow:hidden;',
+            'border:1px solid rgba(201,168,106,.42);border-radius:12px;overflow:hidden;',
             'box-shadow:0 24px 70px -18px rgba(0,0,0,.95);',
             'font:13px/1.5 var(--xz-font);color:#e9e5dc;}',
             '#' + GAL_ID + ' .gal-hd{display:flex;align-items:center;gap:8px;padding:9px 12px;',
@@ -13973,7 +13973,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             '#' + GAL_ID + ' .gal-x{margin-left:auto;margin-right:-6px;cursor:pointer;color:#8a8578;',
             'display:inline-flex;align-items:center;justify-content:center;min-width:32px;min-height:32px;',
             'padding:0 6px;font-size:15px;line-height:1;border-radius:6px;flex:none;}',
-            '#' + GAL_ID + ' .gal-x:hover{color:#cdcdcd;background:rgba(255,255,255,.06);}',
+            '#' + GAL_ID + ' .gal-x:hover{color:#e8cb92;background:rgba(255,255,255,.06);}',
             /* 上部：大图 + 左右切换
                ★★★ v452 修（用户 2026-10-29）：「立绘展示不完，只展示了上半部分」
                病历（真 Chrome 实测，`node 工具/_v452_gal_probe.mjs`）：
@@ -13994,9 +13994,9 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             'justify-content:center;background:#04070a;overflow:hidden;}',            '#' + GAL_ID + ' .gal-stage img{max-width:100%;max-height:100%;display:block;object-fit:contain;}',
             '#' + GAL_ID + ' .gal-nav{position:absolute;top:50%;transform:translateY(-50%);',
             'width:40px;height:56px;display:flex;align-items:center;justify-content:center;',
-            'cursor:pointer;color:#cdcdcd;font-size:20px;background:rgba(4,7,10,.55);',
+            'cursor:pointer;color:#e8cb92;font-size:20px;background:rgba(4,7,10,.55);',
             'border-radius:8px;user-select:none;-webkit-tap-highlight-color:transparent;}',
-            '#' + GAL_ID + ' .gal-nav:hover{background:rgba(171, 171, 171, .22);}',
+            '#' + GAL_ID + ' .gal-nav:hover{background:rgba(201,168,106,.22);}',
             '#' + GAL_ID + ' .gal-prev{left:6px;}',
             '#' + GAL_ID + ' .gal-next{right:6px;}',
             '#' + GAL_ID + ' .gal-nav.off{display:none;}',
@@ -14038,14 +14038,14 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             '#' + GAL_ID + ' .gal-cell{cursor:pointer;border-radius:6px;overflow:hidden;',
             'border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);',
             'position:relative;height:100%;min-height:0;}',
-            '#' + GAL_ID + ' .gal-cell.on{border-color:rgba(171, 171, 171, .85);',
-            'box-shadow:0 0 0 1px rgba(171, 171, 171, .5) inset;}',
+            '#' + GAL_ID + ' .gal-cell.on{border-color:rgba(201,168,106,.85);',
+            'box-shadow:0 0 0 1px rgba(201,168,106,.5) inset;}',
             '#' + GAL_ID + ' .gal-cell img{width:100%;height:100%;object-fit:cover;object-position:center 18%;display:block;}',
             '#' + GAL_ID + ' .gal-cell span{position:absolute;left:0;right:0;bottom:0;padding:2px 3px;',
             'font-size:9.5px;text-align:center;color:#e9e5dc;background:rgba(4,7,10,.72);',
             'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
             '#' + GAL_ID + ' .gal-cell em{position:absolute;right:2px;top:2px;font-style:normal;',
-            'font:400 9px/1 var(--xz-num-font,var(--xz-font));color:#0a0f14;background:rgba(205, 205, 205, .92);',
+            'font:400 9px/1 var(--xz-num-font,var(--xz-font));color:#0a0f14;background:rgba(232,203,146,.92);',
             'border-radius:3px;padding:1px 3px;}',
             '#' + GAL_ID + ' .gal-empty{padding:20px 10px;color:#615c55;font-size:11.5px;line-height:1.8;text-align:center;}',
             /* 底部关闭条（v452）
@@ -14059,8 +14059,8 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             '#' + GAL_ID + ' .gal-foot span{cursor:pointer;padding:6px 16px;border-radius:6px;',
             'border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);',
             'user-select:none;-webkit-tap-highlight-color:transparent;white-space:nowrap;}',
-            '#' + GAL_ID + ' .gal-foot span:hover{color:#cdcdcd;border-color:rgba(171, 171, 171, .6);',
-            'background:rgba(171, 171, 171, .14);}',
+            '#' + GAL_ID + ' .gal-foot span:hover{color:#e8cb92;border-color:rgba(201,168,106,.6);',
+            'background:rgba(201,168,106,.14);}',
         ].join('');
         (d.head || d.documentElement).appendChild(st);
     }
@@ -14438,7 +14438,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 'font-family:inherit;user-select:none;}',
                 '.xz-pic-btn:hover{background:rgba(255,255,255,.16);}',
                 '.xz-pic-btn:active{transform:translateY(1px);}',
-                '.xz-pic-btn.on{background:rgba(193, 193, 193, .85);color:#1a1a1a;border-color:transparent;}',
+                '.xz-pic-btn.on{background:rgba(230,189,118,.85);color:#1a1a1a;border-color:transparent;}',
                 '.xz-pic-cap{font-size:11px;opacity:.62;letter-spacing:.2px;font-family:inherit;}',
                 '.xz-pic-dots{display:flex;gap:4px;align-items:center;}',
                 '.xz-pic-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.22);',
@@ -15260,7 +15260,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
     '.thillu-hot:hover{opacity:.95 !important;background:rgba(0,0,0,.18);}',
     /* 固定状态角标：钉住了才出现，避免玩家不知道为什么不动了 */
     '.thillu-pin{position:absolute;top:6px;right:6px;font-size:10px;line-height:1;',
-    'padding:4px 7px;border-radius:999px;background:rgba(167, 167, 167, .9);color:#1a1a1a;',
+    'padding:4px 7px;border-radius:999px;background:rgba(245,158,11,.9);color:#1a1a1a;',
     'font-family:inherit;user-select:none;letter-spacing:.3px;}',
     '.thillu-bar{margin-top:6px;display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;}',
     '.thillu-btn{font-size:11px;line-height:1;padding:5px 10px;border-radius:999px;cursor:pointer;',
@@ -15268,7 +15268,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
     'font-family:inherit;user-select:none;}',
     '.thillu-btn:hover{background:rgba(255,255,255,.16);}',
     '.thillu-btn:active{transform:translateY(1px);}',
-    '.thillu-btn.on{background:rgba(167, 167, 167, .85);color:#1a1a1a;border-color:transparent;}',
+    '.thillu-btn.on{background:rgba(245,158,11,.85);color:#1a1a1a;border-color:transparent;}',
     '.thillu-cap{font-size:11px;opacity:.65;letter-spacing:.2px;}',
     /* 进度小点：一组几张就几个点，看得出还剩几张 */
     '.thillu-dots{display:flex;gap:4px;align-items:center;}',
