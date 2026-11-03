@@ -12937,6 +12937,54 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             globalThis.__XZ05__.xzCemEntryIsOn = entryIsOn;
         }
     } catch (eExp) {}
+    /* ★ 2026-11-03：**按标题开关单条世界书**（《灰雾总纲》/《亲缘·六姐与娘》共用）。
+       引擎只有 xzWBSetDlc（按 dlc- 前缀批量），没有按标题的出口；
+       05 这里已经有 TH()/bookName()/entryTitle()/entryIsOn() 一整套，就在这儿实现。
+       ⚠ 不许静默假成功：写完 getWorldbook 回读，按**真状态**回 ok；
+         回读不到才退回写入意图（宿主没有 getWorldbook 时不能把正确操作判成失败）。 */
+    function xzWBSetEntry(want, title) {
+        var on = !!want;
+        var T = String(title == null ? '' : title);
+        var th = TH(), name = bookName();
+        if (!T) return Promise.resolve({ ok: false, n: 0, on: on, msg: '没给条目标题' });
+        if (!th || !name || typeof th.updateWorldbookWith !== 'function') {
+            return Promise.resolve({ ok: false, n: 0, on: on, msg: '读不到酒馆助手或世界书名' });
+        }
+        var hit = 0;
+        return Promise.resolve(th.updateWorldbookWith(name, function (list) {
+            return (list || []).map(function (e) {
+                if (entryTitle(e) !== T) return e;
+                hit++;
+                var c = {};
+                Object.keys(e).forEach(function (k) { c[k] = e[k]; });
+                c.enabled = on;
+                if (typeof c.disable === 'boolean') c.disable = !on;   /* 兜底：拿到原始形状时 */
+                return c;
+            });
+        })).then(function () {
+            var reread = (typeof th.getWorldbook === 'function')
+                ? Promise.resolve(th.getWorldbook(name)) : Promise.resolve(null);
+            return reread.then(function (list) {
+                if (!Array.isArray(list)) {
+                    return { ok: hit > 0, n: hit, on: on, msg: hit ? '' : ('书里没有「' + T + '」这条') };
+                }
+                var got = 0;
+                list.forEach(function (e) {
+                    if (entryTitle(e) === T && entryIsOn(e) === on) got++;
+                });
+                return { ok: got > 0, n: got || hit, on: on, msg: got > 0 ? '' : '写入没生效（回读仍是旧状态）' };
+            }, function () {
+                return { ok: hit > 0, n: hit, on: on, msg: hit ? '' : ('书里没有「' + T + '」这条') };
+            });
+        }, function (e1) {
+            return { ok: false, n: 0, on: on, msg: '写入失败：' + ((e1 && e1.message) || e1) };
+        });
+    }
+    try {
+        if (typeof globalThis !== 'undefined' && globalThis.__XZ05__) {
+            globalThis.__XZ05__.xzWBSetEntry = xzWBSetEntry;
+        }
+    } catch (eWSet) {}
     function loadEntries() {
         var th = TH(), name = bookName();
         if (!th) { S.entries = []; S.err = '读不到酒馆助手（TavernHelper）—— 无法访问世界书。'; return Promise.resolve(); }
