@@ -1981,7 +1981,7 @@ function xzSkeletonOfSkill(skill) {
              「凡是两份实现干一件事，都要有一道闸按同一个输入比输出」就是这个意思）。
             现在 `_v349_effect_format.mjs` 会逐字比两边的键集合，漏一个当场红 —— 别再靠人记得。
            ⚠ 顺序照引擎表的顺序写，方便肉眼对；但判据是**集合相等**，不看顺序。 */
-        '反震', '拉条', '净化', '净化', '驱散', '乱序', '换命', '叠层增伤',
+        '反震', '拉条', '净化', '驱散', '乱序', '换命',
         /* ★★★ v468：改名与新增（用户点名）★★★
            · `焚身` → `牺牲`（「焚身你妈逼改名啊，改成牺牲」）
            · `叠爆` → `叠满换伤`（「叠爆你倒是改成叠满换伤啊」）
@@ -6974,7 +6974,10 @@ d.attrs[a] = v;
         if (picked.length) {
             h += '<div class="xz-st-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:7px;">';
             picked.forEach(function (nm) {
-                h += '<button type="button" class="xz-tianji-goto-btn" data-xz-act="cast-del" data-name="' + esc(nm) + '"' +
+                /* ★ 2026-11-04：这里原来用的是 **05 的** `.xz-tianji-goto-btn` ——
+                   07 的样式表里没有这个类 ⇒ `_v468_css_cls` 判「裸类（浏览器静默）」。
+                   跨脚本借类名必须连着样式一起借，否则就是白底黑字的裸按钮。⇒ 改用 07 自己就有的 `.xz-st-dice`。 */
+                h += '<button type="button" class="xz-st-dice" data-xz-act="cast-del" data-name="' + esc(nm) + '"' +
                     ' style="padding:2px 9px;font-size:11px;border-color:rgba(212,175,55,0.55);"' +
                     ' title="点一下从在场人物里移除">' + esc(nm) + ' <span style="opacity:.55;">×</span></button>';
             });
