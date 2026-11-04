@@ -4546,6 +4546,12 @@ d.attrs[a] = v;
             '.xz-st-dice,.xz-st-ovl-box button.xz-st-dice,button.xz-st-dice{font-family:inherit;font-size:11.5px;padding:4px 11px;border-radius:999px;cursor:pointer;border:1px solid rgba(230,189,118,.4);background:rgba(255,255,255,.03);color:var(--xz-gold-bright);}',
             '.xz-st-dice:hover:not(:disabled){border-color:var(--xz-gold);background:rgba(230,189,118,.16);color:#f0e2b0;}',
             '.xz-st-mini,.xz-st-ovl-box button.xz-st-mini,button.xz-st-mini{font-family:inherit;font-size:10.5px;padding:2px 8px;border-radius:5px;cursor:pointer;border:1px solid rgba(230,189,118,.45);background:transparent;color:var(--xz-gold-bright);}',
+            /* ★ 2026-11-04：带「说明」的迷你按钮统一挂圆圈感叹号（与 xz-st-fold 同一形状）。
+               图标用 CSS 画，不用 ⚠/ⓘ 字形 —— 11px 下这几个字形各系统差半像素就看不出是圆。 */
+            '.xz-st-mini-tip::before{content:"!";flex:none;display:inline-flex;align-items:center;justify-content:center;'
+                + 'width:11px;height:11px;margin-right:4px;border-radius:50%;vertical-align:-1px;box-sizing:border-box;'
+                + 'border:1px solid rgba(230,189,118,.62);color:rgba(230,189,118,.95);'
+                + 'font-size:8.5px;font-weight:var(--xz-fw-bold);line-height:1;}',
             '.xz-st-mini:hover:not(:disabled),button.xz-st-mini:hover:not(:disabled){border-color:var(--xz-gold);background:rgba(230,189,118,.14);color:var(--xz-gold-bright);}',
             '.xz-st-mini.del:hover:not(:disabled),button.xz-st-mini.del:hover:not(:disabled){border-color:#c0392b;color:#f0a6a0;background:rgba(192,57,43,.12);}',
             '.xz-st-ovl-box input[type=text],.xz-st-ovl-box input[type=number],.xz-st-ovl-box select,.xz-st-ovl-box textarea{font-family:inherit;background:#06101e;border:1px solid rgba(230,189,118,.3);border-radius:6px;padding:6px 9px;color:var(--xz-text);font-size:12.5px;}',
@@ -4674,7 +4680,7 @@ d.attrs[a] = v;
                ⇒ 三件事：
                  ① `.xz-st-sect`：真正的框（圆角 + 细边 + 内凹底 + 金色左标 +
                     标题栏浅底），每块之间 9px 间距。眼睛看到的是"块与块"。
-                 ② `.xz-st-fold`：解释文案默认 `<details>` 收起，标题就叫「ⓘ 说明」。
+                 ② `.xz-st-fold`：解释文案默认 `<details>` 收起，标题恒为「⚠ 说明」。
                     用户原话「解释的字体太多了」—— 他们不是要删，是要**默认不看**。
                     ⚠ 用的是原生 `<details>`，不写 JS：
                       手感（三角标/键盘/移动端）全是浏览器给的，
@@ -4985,7 +4991,18 @@ d.attrs[a] = v;
                 + 'font-size:11px;color:var(--xz-muted);display:flex;align-items:center;gap:6px;'
                 + 'user-select:none;border-radius:6px;}',
             '.xz-st-fold>summary::-webkit-details-marker{display:none;}',
-            '.xz-st-fold>summary::before{content:"ⓘ";flex:none;color:rgba(230,189,118,.75);font-size:11px;}',
+            /* ★ 2026-11-04：解释入口统一成「圆圈感叹号 + 说明」。
+               图标用 CSS 画（`!` + 圆边框），**不用 ⚠/ⓘ 这类字形** ——
+               各系统字体里这几个字形的宽度、基线、颜色全不一样，而这里只有
+               11px 一点地方，差半像素就看不出是圆。 */
+            '.xz-st-fold>summary::before{content:"!";flex:none;display:inline-flex;align-items:center;'
+                + 'justify-content:center;width:12px;height:12px;border-radius:50%;'
+                + 'border:1px solid rgba(230,189,118,.62);color:rgba(230,189,118,.95);'
+                + 'font-size:9px;font-weight:var(--xz-fw-bold);line-height:1;}',
+            /* 开合指示：只转 ▾，**不改文案**（文案恒为「说明」）。 */
+            '.xz-st-fold>summary::after{content:"▾";flex:none;margin-left:auto;font-size:9px;line-height:1;'
+                + 'transition:transform .16s;}',
+            '.xz-st-fold[open]>summary::after{transform:rotate(180deg);}',
             '.xz-st-fold>summary:hover{color:var(--xz-text-2);}',
             '.xz-st-fold[open]>summary{color:var(--xz-gold);border-bottom:1px solid rgba(230,189,118,.14);'
                 + 'border-radius:6px 6px 0 0;}',
@@ -5290,9 +5307,13 @@ d.attrs[a] = v;
 
     /* 折叠说明：`html` 允许带标签（里面要用 <b> 标数字/关键词），
        ⚠ 因此**调用方必须自己保证内容来源可信**（这里的文案全是代码里写死的常量，
-         没有一处掺玩家输入）。若以后要放玩家输入，先用 esc 再传进来。 */
+         没有一处掺玩家输入）。若以后要放玩家输入，先用 esc 再传进来。
+       ★ 2026-11-04（作者原话）：「所有注释和解释只能改为感叹号图标加"说明"这两个汉字」。
+         ⇒ 标题**一律**是「⚠ 说明」。`label` 只留作 aria-label，不再上屏 ——
+         原来各处的「年龄可填 X~Y 岁」这种标题本身就是解释，去掉不影响理解
+         （内容仍在展开区里，一个字不少）。 */
     function foldTip(html, label) {
-        return '<details class="xz-st-fold"><summary>' + esc(label || '说明') + '</summary>' +
+        return '<details class="xz-st-fold"><summary aria-label="' + esc(label || '说明') + '">说明</summary>' +
             '<div class="xz-st-fold-b">' + html + '</div></details>';
     }
 
@@ -7208,8 +7229,8 @@ d.attrs[a] = v;
                     : ('<label class="xz-st-dlc-pick">' +
                        '<input type="checkbox" data-xz-field="dlc" data-xz-pack="' + esc(sel.id) + '"' +
                        (anyOn ? ' checked' : '') + '>' + esc(grp.label) + '</label>')) +
-                '<button type="button" class="xz-st-mini" data-xz-act="dlc-info" data-xz-pack="' + esc(grp.group) + '">' +
-                (open ? '收起 ▴' : '展开 ▾') + '</button>' +
+                '<button type="button" class="xz-st-mini xz-st-mini-tip" data-xz-act="dlc-info" data-xz-pack="' + esc(grp.group) + '">' +
+                '说明 ' + (open ? '▴' : '▾') + '</button>' +
                 (anyOn ? '<span class="xz-st-dlc-on">已选' + (multi ? ('·' + (sel.period || '')) : '') + '</span>' : '') +
                 (open ? (
                     '<div class="xz-st-dlc-info">' +
