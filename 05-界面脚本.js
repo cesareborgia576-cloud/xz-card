@@ -3093,6 +3093,45 @@ function xzTypeOf(name, fbT, fbA) {
         '.xz-root .xz-chip-term:hover{background:var(--xz-gold);color:#0a0c10;}',
         '.xz-root .xz-rpg-desc{font-size:10.5px;color:var(--xz-muted);background:rgba(0,0,0,0.35);padding:4px 6px;border-radius:3px;margin-top:3px;}',
         '.xz-root .xz-sub-head{font-size:11.5px;font-weight:var(--xz-fw-med);color:var(--xz-gold);margin:10px 0 6px;display:flex;align-items:center;gap:6px;}',
+        /* ★★★ 2026-11-04：「剧情」页表单统一样式 ★★★
+           作者原话：「剧情分页的很多美化都掉完了」。
+           病根：上一版把 07（开局脚本）的类名（`xz-st-row` / `xz-st-main` / `xz-st-ghost`）
+           抄进 05，而 05 的样式表**根本没有这几个类** ⇒ 控件全退化成浏览器默认外观
+           （灰框、系统字体、按钮没底色、行高不一致）。
+           ⚠ 跨脚本抄类名必须连着样式一起搬，或者只用本文件已有的 —— 这条记进规矩。
+           ⇒ 这一组是 05 自己的，前缀 `xz-plot-` 不与别处撞车，只服务剧情页。 */
+        '.xz-root .xz-plot-form{display:flex;flex-direction:column;gap:8px;margin-top:10px;}',
+        '.xz-root .xz-plot-row{display:flex;align-items:center;gap:8px;min-width:0;}',
+        '.xz-root .xz-plot-lab{flex:0 0 56px;font-size:11px;color:var(--xz-muted);text-align:right;line-height:1.5;}',
+        '.xz-root .xz-plot-ctl{flex:1 1 auto;min-width:0;display:flex;gap:6px;align-items:center;flex-wrap:nowrap;}',
+        '.xz-root .xz-plot-input,.xz-root .xz-plot-select{height:26px;padding:0 8px;font-size:11.5px;font-family:inherit;color:var(--xz-text);background:var(--xz-bg);border:1px solid var(--xz-border);border-radius:5px;outline:none;min-width:0;box-sizing:border-box;}',
+        '.xz-root .xz-plot-input{flex:1 1 80px;}',
+        '.xz-root .xz-plot-select{flex:0 0 88px;cursor:pointer;}',
+        '.xz-root .xz-plot-select.w62{flex:0 0 62px;}',
+        '.xz-root .xz-plot-input:focus,.xz-root .xz-plot-select:focus{border-color:var(--xz-gold-dim);box-shadow:0 0 0 2px var(--xz-gold-glow);}',
+        '.xz-root .xz-plot-ta{width:100%;box-sizing:border-box;padding:6px 8px;font-size:11.5px;line-height:1.7;font-family:inherit;color:var(--xz-text);background:var(--xz-bg);border:1px solid var(--xz-border);border-radius:5px;resize:vertical;outline:none;min-height:72px;}',
+        '.xz-root .xz-plot-ta:focus{border-color:var(--xz-gold-dim);box-shadow:0 0 0 2px var(--xz-gold-glow);}',
+        '.xz-root .xz-plot-btn{height:26px;padding:0 12px;font-size:11.5px;font-family:inherit;color:var(--xz-text);background:var(--xz-card);border:1px solid var(--xz-border);border-radius:5px;cursor:pointer;white-space:nowrap;}',
+        '.xz-root .xz-plot-btn:hover{background:var(--xz-card-hover);border-color:var(--xz-border-strong);}',
+        '.xz-root .xz-plot-btn.on{color:var(--xz-gold-bright);border-color:var(--xz-gold-dim);background:rgba(212,175,55,0.12);}',
+        '.xz-root .xz-plot-btn-main{flex:1 1 auto;height:30px;color:#0a0c10;background:var(--xz-gold);border-color:var(--xz-gold);font-weight:var(--xz-fw-med);}',
+        '.xz-root .xz-plot-btn-main:hover{background:var(--xz-gold-bright);border-color:var(--xz-gold-bright);}',
+        '.xz-root .xz-plot-btn-del{color:#f87171;border-color:rgba(248,113,113,0.32);}',
+        '.xz-root .xz-plot-btn-del:hover{background:rgba(248,113,113,0.14);border-color:rgba(248,113,113,0.6);}',
+        '.xz-root .xz-plot-card{margin-top:8px;padding:10px 11px;border:1px solid var(--xz-border);border-radius:6px;background:var(--xz-card);}',
+        '.xz-root .xz-plot-card-top{display:flex;justify-content:space-between;gap:8px;align-items:baseline;}',
+        '.xz-root .xz-plot-card-name{font-size:12px;font-weight:var(--xz-fw-med);color:var(--xz-text);}',
+        '.xz-root .xz-plot-card-st{flex:0 0 auto;font-size:10.5px;white-space:nowrap;}',
+        '.xz-root .xz-plot-card-meta{font-size:10.5px;color:var(--xz-muted);line-height:1.75;margin-top:4px;word-break:break-word;}',
+        '.xz-root .xz-plot-card-desc{font-size:11.5px;line-height:1.75;margin-top:5px;color:var(--xz-text);}',
+        '.xz-root .xz-plot-card-acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}',
+        '.xz-root .xz-plot-card-acts .xz-plot-btn{height:23px;padding:0 9px;font-size:11px;}',
+        '.xz-root .xz-plot-chk{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--xz-muted);cursor:pointer;margin-top:2px;}',
+        '.xz-root .xz-plot-note{margin-top:8px;font-size:11px;line-height:1.7;color:#fbbf24;}',
+        '.xz-root .xz-plot-chip{display:inline-flex;align-items:center;height:22px;padding:0 8px;font-size:11px;color:var(--xz-text);background:var(--xz-bg);border:1px solid var(--xz-border);border-radius:11px;cursor:pointer;}',
+        '.xz-root .xz-plot-chip:hover{border-color:var(--xz-border-strong);}',
+        '.xz-root .xz-plot-chip.on{color:var(--xz-gold-bright);border-color:var(--xz-gold-dim);background:rgba(212,175,55,0.14);}',
+        '.xz-root .xz-plot-other{display:flex;gap:6px;align-items:center;margin-top:6px;}',
         /* ★ v493：「已学本领」折叠框（用户：四个字 + ▼，框要窄、不要高）
            ① 原生 details 的三角必须藏掉 —— 不然会和我们自己那个 ▼ 并排出现两个；
            ② 展开时 ▼ 转 180°（css 一条 transition，不用 JS 改文案/换字）；
@@ -5493,7 +5532,21 @@ function xzTypeOf(name, fbT, fbA) {
         } catch (e) { return null; }
     }
     function plotEmptyForm() {
-        return { name: '', trigKind: '境界', trigVal: '', mood: '', cast: [], place: '', scale: '域级', span: '短期', desc: '', polish: true };
+        return { name: '', trigKind: '境界', trigVal: '', mood: '', cast: [], castOther: '', place: '', scale: '域级', span: '短期', desc: '', polish: true };
+    }
+    /* ★ 2026-11-04：回填时把「值不在预设里」的字段标成自填态。
+       不标的话，修改一条氛围写的是「将雨未雨」的旧事件时，下拉会显示 `—`、
+       输入框不出现 ⇒ 保存后这个字段就被清空了（静默丢数据）。 */
+    function plotMarkOther(pf) {
+        var MAP = {
+            name: PLOT_NAME_TIPS, mood: PLOT_MOODS, place: plotPlaces(),
+            trigVal: (pf.trigKind === '日期' ? PLOT_DATES : plotRealms())
+        };
+        Object.keys(MAP).forEach(function (k) {
+            var v = String(pf[k] || '');
+            if (v && MAP[k].indexOf(v) < 0) pf['_o_' + k] = 1;
+        });
+        return pf;
     }
     function plotParse(txt) {
         var m = /var\s+EV\s*=\s*(\[[\s\S]*?\]);/.exec(String(txt || ''));
@@ -5590,6 +5643,41 @@ function xzTypeOf(name, fbT, fbA) {
             + '<div style="font-size:11px;line-height:1.75;color:var(--xz-muted);padding:6px 2px 0;">' + inner + '</div>'
             + '</details>';
     }
+    /* ══════════════════════════════════════════════════════════════════════
+       ★ 2026-11-04：剧情页每个字段都改成「下拉拉取 + 其他自填」
+       作者原话：「我要改成每一个都有拉取选项，也都可以选择其他然后自填」。
+       ── 交互口径（三态，别简化成两态）────────────────────────────────
+         ① 没选（空值）          → 下拉显示 `—`，没有输入框
+         ② 选了常用项            → 下拉显示该项，没有输入框
+         ③ 选了「其他…」         → 出现输入框，自己写
+       ⚠ 「当前是自填态」不能靠「值不在选项里」推出来 —— 新建时值本来就是空，
+         一推就默认进自填态，用户看到一堆空框。所以用 `_o_<字段>` 显式标记。
+       ══════════════════════════════════════════════════════════════════════ */
+    var PLOT_NAME_TIPS = ['城中断水', '粮道被劫', '当街刺杀', '拍卖会', '宗门试炼', '秘境开启',
+        '妖兽潮', '劫道', '同门内斗', '婚约风波', '全城缉捕', '疫病蔓延'];
+    var PLOT_MOODS = ['压抑', '肃杀', '温情', '诡异', '荒凉', '紧张', '欢腾', '悲凉'];
+    var PLOT_DATES = ['明日', '三日后', '一月后', '三月后', '半年后', '一年后', '三年后'];
+
+    /* ★ REALMS 在另一个 IIFE（也就是页面头那个）里声明，主 IIFE 看不到它 ——
+       直接写 `REALMS` 会 ReferenceError，而它发生在 render 里 ⇒ 整页白屏、
+       外面还看不到 pageerror（被 try 吞了）。它已经挂在 `window.XZ_REALMS`，走那条。 */
+    function plotRealms() {
+        try { return (typeof window !== 'undefined' && window.XZ_REALMS) ? window.XZ_REALMS : []; } catch (e) { return []; }
+    }
+
+    function plotPlaces() {
+        var out = [];
+        try {
+            var g = (getVariables() || {}).地理 || {};
+            if (g.大位置 && g.小位置) out.push(String(g.大位置) + '·' + String(g.小位置));
+            if (g.大位置) out.push(String(g.大位置));
+        } catch (e0) {}
+        ['人州·中域', '人州·雪域', '人州·沙洲', '妖州', '魔州', '千机坊市'].forEach(function (x) {
+            if (out.indexOf(x) < 0) out.push(x);
+        });
+        return out.slice(0, 8);
+    }
+
     function pagePlot() {
         if (!state.plotForm) state.plotForm = plotEmptyForm();
         if (state.plotList === null && !state.plotBusy) { try { plotLoad(false); } catch (e0) {} }
@@ -5597,81 +5685,92 @@ function xzTypeOf(name, fbT, fbA) {
         var editing = (state.plotEdit >= 0);
         var h = '<div class="xz-sub-head">✦ 剧情生成' + (editing ? '（正在修改第 ' + (state.plotEdit + 1) + ' 条）' : '') + '</div>';
 
-        /* 说明：一律折叠（新铁律 2026-11-04 —— 解释性文字只许藏在说明按钮里） */
-        h += plotFold('这一页怎么用', '填好事件、点「确定生成」，内容会写进世界书条目《剧情生成》，'
-            + '模型每轮都能读到。已生成的条目可以「修改」「改状态」「删除」——改完立刻写回条目。'
+        /* 说明：一律折叠（铁律 2026-11-04 —— 解释性文字只许藏在说明按钮里，默认收起） */
+        h += plotFold('这一页怎么用', '每个空都能从下拉里挑一个常用的；挑不到就选「其他…」自己写。'
+            + '填好点「确定生成」，内容会写进世界书条目《剧情生成》，模型每轮都能读到。'
+            + '已生成的条目可以「修改」「改状态」「删除」——改完立刻写回条目。'
             + '勾了「AI 扩写润色」会顺带把一段扩写指令填进输入框，你按发送即可。');
 
-        /* ── 表单 ── */
-        h += '<div style="margin-top:10px;display:flex;flex-direction:column;gap:7px;">';
-        h += '<div class="xz-st-row"><label style="flex:0 0 54px;font-size:11px;">事件名称</label>'
-            + '<input type="text" data-plot-field="name" value="' + esc(f.name) + '" maxlength="24" placeholder="例如：月牙泉城断水" style="flex:1 1 auto;min-width:0;"></div>';
+        /* ── 通用控件：下拉 + 其他自填 ── */
+        function plotCtl(key, opts, ph, narrow) {
+            var cur = String(f[key] == null ? '' : f[key]);
+            var other = !!f['_o_' + key];
+            var hh = '<select class="xz-plot-select' + (narrow ? ' w62' : '') + '" data-plot-pick="' + key + '">';
+            hh += '<option value=""' + ((!other && !cur) ? ' selected' : '') + '>—</option>';
+            opts.forEach(function (o) {
+                hh += '<option value="' + esc(o) + '"' + ((!other && o === cur) ? ' selected' : '') + '>' + esc(o) + '</option>';
+            });
+            hh += '<option value="__other__"' + (other ? ' selected' : '') + '>其他…</option></select>';
+            if (other) {
+                hh += '<input class="xz-plot-input" type="text" data-plot-field="' + key + '" value="' + esc(cur) + '" maxlength="26" placeholder="' + esc(ph) + '">';
+            }
+            return hh;
+        }
+        function plotRow(lab, key, opts, ph, narrow) {
+            return '<div class="xz-plot-row"><span class="xz-plot-lab">' + esc(lab) + '</span>'
+                + '<div class="xz-plot-ctl">' + plotCtl(key, opts, ph, narrow) + '</div></div>';
+        }
 
-        h += '<div class="xz-st-row" style="gap:6px;align-items:center;">'
-            + '<label style="flex:0 0 54px;font-size:11px;">触发</label>'
-            + '<select data-plot-field="trigKind" style="flex:0 0 68px;">'
+        h += '<div class="xz-plot-form">';
+        h += plotRow('事件名称', 'name', PLOT_NAME_TIPS, '例：月牙泉城断水');
+        /* 触发：类型（境界/日期）+ 值（跟着类型换候选） */
+        h += '<div class="xz-plot-row"><span class="xz-plot-lab">触发</span><div class="xz-plot-ctl">'
+            + '<select class="xz-plot-select w62" data-plot-pick="trigKind">'
             + '<option value="境界"' + (f.trigKind === '境界' ? ' selected' : '') + '>境界</option>'
             + '<option value="日期"' + (f.trigKind === '日期' ? ' selected' : '') + '>日期</option>'
             + '</select>'
-            + '<input type="text" data-plot-field="trigVal" value="' + esc(f.trigVal) + '" maxlength="20" placeholder="' + (f.trigKind === '境界' ? '例：玄枢初期' : '例：1年3月') + '" style="flex:1 1 auto;min-width:0;"></div>';
+            + plotCtl('trigVal', (f.trigKind === '日期' ? PLOT_DATES : plotRealms()),
+                (f.trigKind === '日期' ? '例：1年3月' : '例：玄枢初期'))
+            + '</div></div>';
+        h += plotRow('氛围基调', 'mood', PLOT_MOODS, '例：将雨未雨');
+        h += plotRow('相关地点', 'place', plotPlaces(), '例：人州·沙洲·月牙泉城');
+        h += plotRow('影响力', 'scale', PLOT_SCALE, '', true);
+        h += plotRow('涵盖时长', 'span', PLOT_SPAN, '', true);
 
-        h += '<div class="xz-st-row"><label style="flex:0 0 54px;font-size:11px;">氛围基调</label>'
-            + '<input type="text" data-plot-field="mood" value="' + esc(f.mood) + '" maxlength="24" placeholder="例：压抑、将雨未雨" style="flex:1 1 auto;min-width:0;"></div>';
-
-        h += '<div class="xz-st-row"><label style="flex:0 0 54px;font-size:11px;">相关地点</label>'
-            + '<input type="text" data-plot-field="place" value="' + esc(f.place) + '" maxlength="24" placeholder="例：人州·沙洲·月牙泉城" style="flex:1 1 auto;min-width:0;"></div>';
-
-        h += '<div class="xz-st-row" style="gap:6px;align-items:center;">'
-            + '<label style="flex:0 0 54px;font-size:11px;">影响力</label>'
-            + '<select data-plot-field="scale" style="flex:1 1 auto;">'
-            + PLOT_SCALE.map(function (x) { return '<option value="' + x + '"' + (f.scale === x ? ' selected' : '') + '>' + x + '</option>'; }).join('')
-            + '</select></div>';
-
-        h += '<div class="xz-st-row" style="gap:6px;align-items:center;">'
-            + '<label style="flex:0 0 54px;font-size:11px;">涵盖时长</label>'
-            + '<select data-plot-field="span" style="flex:1 1 auto;">'
-            + PLOT_SPAN.map(function (x) { return '<option value="' + x + '"' + (f.span === x ? ' selected' : '') + '>' + x + '</option>'; }).join('')
-            + '</select></div>';
-
-        /* 相关人物：从「人物列表」现取名字做成可点标签 */
+        /* 相关人物：人物列表里有的点一下选中，没有的在下面「其他」里手写加入 */
         var names = [];
         try {
             var pl = (getVariables() || {}).人物列表 || {};
-            names = Object.keys(pl).slice(0, 14);
+            names = Object.keys(pl).slice(0, 16);
         } catch (eN) {}
-        h += '<div style="display:flex;gap:6px;align-items:flex-start;">'
-            + '<span style="flex:0 0 54px;font-size:11px;color:var(--xz-muted);padding-top:4px;">相关人物</span>'
-            + '<div style="flex:1 1 auto;display:flex;flex-wrap:wrap;gap:5px;">';
-        if (!names.length) {
-            h += '<span style="font-size:11px;color:var(--xz-muted);">人物列表还是空的</span>';
+        h += '<div class="xz-plot-row" style="align-items:flex-start;">'
+            + '<span class="xz-plot-lab" style="padding-top:5px;">相关人物</span>'
+            + '<div class="xz-plot-ctl" style="flex-wrap:wrap;">';
+        if (!names.length && !f.cast.length) {
+            h += '<span style="font-size:11px;color:var(--xz-muted);">人物列表还是空的，可在下面手写一个</span>';
         } else {
             names.forEach(function (nm) {
                 var on = f.cast.indexOf(nm) >= 0;
-                h += '<button type="button" class="xz-st-main xz-st-ghost' + (on ? ' on' : '') + '" data-xz-act="plot-cast" data-name="' + esc(nm) + '"'
-                    + ' style="flex:0 0 auto;padding:2px 8px;font-size:11px;">' + esc(nm) + '</button>';
+                h += '<button type="button" class="xz-plot-chip' + (on ? ' on' : '') + '" data-xz-act="plot-cast" data-name="' + esc(nm) + '">' + esc(nm) + '</button>';
+            });
+            /* 手写加入的人也要显示出来（不然选完看不见，以为没加进去） */
+            f.cast.forEach(function (nm) {
+                if (names.indexOf(nm) >= 0) return;
+                h += '<button type="button" class="xz-plot-chip on" data-xz-act="plot-cast" data-name="' + esc(nm) + '">' + esc(nm) + ' ×</button>';
             });
         }
         h += '</div></div>';
+        h += '<div class="xz-plot-row"><span class="xz-plot-lab">其他</span><div class="xz-plot-ctl">'
+            + '<input class="xz-plot-input" type="text" data-plot-field="castOther" value="' + esc(f.castOther || '') + '" maxlength="12" placeholder="手写一个名字，再点「加入」">'
+            + '<button type="button" class="xz-plot-btn" data-xz-act="plot-cast-add">加入</button>'
+            + '</div></div>';
 
-        h += '<div style="display:flex;gap:6px;align-items:flex-start;">'
-            + '<span style="flex:0 0 54px;font-size:11px;color:var(--xz-muted);padding-top:4px;">大致剧情</span>'
-            + '<textarea data-plot-field="desc" rows="4" maxlength="400" placeholder="这件事大概怎么起、赌注是什么、可能怎么收" '
-            + 'style="flex:1 1 auto;min-width:0;resize:vertical;">' + esc(f.desc) + '</textarea></div>';
+        h += '<div class="xz-plot-row" style="align-items:flex-start;">'
+            + '<span class="xz-plot-lab" style="padding-top:5px;">大致剧情</span>'
+            + '<div class="xz-plot-ctl"><textarea class="xz-plot-ta" data-plot-field="desc" rows="4" maxlength="400" '
+            + 'placeholder="这件事大概怎么起、赌注是什么、可能怎么收">' + esc(f.desc) + '</textarea></div></div>';
 
-        h += '<label style="display:flex;gap:6px;align-items:center;font-size:11px;color:var(--xz-muted);">'
-            + '<input type="checkbox" data-plot-field="polish"' + (f.polish ? ' checked' : '') + '>'
+        h += '<label class="xz-plot-chk"><input type="checkbox" data-plot-field="polish"' + (f.polish ? ' checked' : '') + '>'
             + '让 AI 扩写润色（生成后把扩写指令填进输入框）</label>';
 
-        h += '<div style="display:flex;gap:8px;margin-top:2px;">'
-            + '<button type="button" class="xz-st-main" data-xz-act="plot-submit" style="flex:1 1 auto;">'
+        h += '<div style="display:flex;gap:8px;margin-top:4px;">'
+            + '<button type="button" class="xz-plot-btn xz-plot-btn-main" data-xz-act="plot-submit">'
             + (editing ? '保存修改' : '确定生成') + '</button>'
-            + (editing ? '<button type="button" class="xz-st-dice" data-xz-act="plot-cancel" style="flex:0 0 auto;">取消</button>' : '')
+            + (editing ? '<button type="button" class="xz-plot-btn" data-xz-act="plot-cancel">取消</button>' : '')
             + '</div>';
         h += '</div>';
 
-        if (state.plotNote) {
-            h += '<div style="margin-top:8px;font-size:11px;line-height:1.7;color:#fbbf24;">' + esc(state.plotNote) + '</div>';
-        }
+        if (state.plotNote) h += '<div class="xz-plot-note">' + esc(state.plotNote) + '</div>';
 
         /* ── 已生成 ── */
         var list = state.plotList || [];
@@ -5683,20 +5782,20 @@ function xzTypeOf(name, fbT, fbA) {
         }
         list.forEach(function (e, i) {
             var stCol = e.state === '进行中' ? '#7ddc9a' : (e.state === '已结束' ? 'var(--xz-muted)' : 'var(--xz-gold-bright)');
-            h += '<div style="margin-top:8px;padding:9px;border:1px solid var(--xz-border-strong);border-radius:6px;">'
-                + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline;">'
-                + '<b style="font-size:12px;">' + esc(e.name) + '</b>'
-                + '<span style="flex:0 0 auto;font-size:10.5px;color:' + stCol + ';">● ' + esc(e.state) + '</span></div>'
-                + '<div style="font-size:10.5px;color:var(--xz-muted);line-height:1.75;margin-top:3px;">'
+            h += '<div class="xz-plot-card">'
+                + '<div class="xz-plot-card-top">'
+                + '<span class="xz-plot-card-name">' + esc(e.name) + '</span>'
+                + '<span class="xz-plot-card-st" style="color:' + stCol + ';">● ' + esc(e.state) + '</span></div>'
+                + '<div class="xz-plot-card-meta">'
                 + esc(e.trigger) + '｜' + esc(e.scale) + '｜' + esc(e.span)
                 + (e.place ? ('｜' + esc(e.place)) : '')
                 + (e.cast && e.cast.length ? ('｜' + esc(e.cast.join('、'))) : '')
                 + '</div>'
-                + '<div style="font-size:11px;line-height:1.7;margin-top:4px;">' + esc(e.desc) + '</div>'
-                + '<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">'
-                + '<button type="button" class="xz-tianji-goto-btn" data-xz-act="plot-edit" data-i="' + i + '" style="padding:2px 8px;font-size:11px;">修改</button>'
-                + '<button type="button" class="xz-tianji-goto-btn" data-xz-act="plot-state" data-i="' + i + '" style="padding:2px 8px;font-size:11px;">改状态</button>'
-                + '<button type="button" class="xz-tianji-goto-btn" data-xz-act="plot-del" data-i="' + i + '" style="padding:2px 8px;font-size:11px;color:#f87171;">删除</button>'
+                + '<div class="xz-plot-card-desc">' + esc(e.desc) + '</div>'
+                + '<div class="xz-plot-card-acts">'
+                + '<button type="button" class="xz-plot-btn" data-xz-act="plot-edit" data-i="' + i + '">修改</button>'
+                + '<button type="button" class="xz-plot-btn" data-xz-act="plot-state" data-i="' + i + '">改状态</button>'
+                + '<button type="button" class="xz-plot-btn xz-plot-btn-del" data-xz-act="plot-del" data-i="' + i + '">删除</button>'
                 + '</div></div>';
         });
         return h;
@@ -9948,6 +10047,28 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 };
                 doc.addEventListener('input', _plotTake, true);
                 doc.addEventListener('change', _plotTake, true);
+
+                /* ★ 2026-11-04：剧情页的「下拉拉取」。选「其他…」时给字段打上自填标记 ⇒
+                   重绘后旁边多一个输入框；选普通项则清掉标记 ⇒ 输入框收回。
+                   为什么要重绘：输入框的出现/隐藏是结构变化，不是样式变化，
+                   而且下拉本身不担心重绘丢焦点（选完就结束了）。 */
+                var _plotPick = function (e) {
+                    var t = e && e.target;
+                    if (!t || !t.getAttribute) return;
+                    var k = t.getAttribute('data-plot-pick');
+                    if (!k) return;
+                    if (!state.plotForm) state.plotForm = plotEmptyForm();
+                    var v = String(t.value || '');
+                    if (v === '__other__') {
+                        state.plotForm['_o_' + k] = 1;
+                        state.plotForm[k] = '';
+                    } else {
+                        delete state.plotForm['_o_' + k];
+                        state.plotForm[k] = v;
+                    }
+                    try { render(true); } catch (ePk) {}
+                };
+                doc.addEventListener('change', _plotPick, true);
             }
         } catch (ePI) {}
 
@@ -10443,6 +10564,18 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 /* ★ v536：血脉格那行版本号的点击 —— 只有「有新版本 / 检查失败」时可点。
                    必须刷新整个页面：只重画状态栏的话，loader 不会重新去拉新脚本。 */
                 /* ★ 2026-11-04：剧情生成 */
+                /* ★ 2026-11-04：「其他」里手写的人名加进名单（人物列表里没有的） */
+                if (act === 'plot-cast-add') {
+                    var _cn = String((state.plotForm && state.plotForm.castOther) || '').trim();
+                    if (!_cn) { state.plotNote = '⚠ 「其他」里先写个名字。'; render(true); return; }
+                    if (!state.plotForm) state.plotForm = plotEmptyForm();
+                    if (!state.plotForm.cast) state.plotForm.cast = [];
+                    if (state.plotForm.cast.indexOf(_cn) < 0) state.plotForm.cast.push(_cn);
+                    state.plotForm.castOther = '';
+                    state.plotNote = '';
+                    render(true);
+                    return;
+                }
                 if (act === 'plot-cast') {
                     var _pn = String(el.getAttribute('data-name') || '');
                     if (!_pn) return;
@@ -10503,6 +10636,9 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                         desc: _it.desc || '',
                         polish: false      /* 改一条老事件时不再默认勾扩写，避免手滑又填一次输入框 */
                     };
+                    /* ★ 回填完必须标一次自填态：旧事件的氛围/地点大多不在预设里，
+                       不标就会在下拉里变成 `—`、输入框不出现 ⇒ 保存时被清空。 */
+                    try { plotMarkOther(state.plotForm); } catch (ePM) {}
                     state.plotEdit = _ei;
                     state.plotNote = '';
                     render(true);
