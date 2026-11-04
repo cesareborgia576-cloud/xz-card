@@ -1022,6 +1022,7 @@
            `plotForm` = 正在填的表单；`plotEdit` = 正在改第几条（-1 = 新建）。
            ⚠ 三个都要进签名（渲染路径读它们），否则点完不重绘 —— _v398_memsig 会抓。 */
         plotList: null, plotForm: null, plotEdit: -1, plotBusy: false, plotNote: '',
+        plotPend: null, plotLoadState: '未读',
         /* ★ v357：斗罗 DLC 按钮的三个态。**都不是缓存** ——
            `dlcSt` 只存"最近一次从世界书读回来的结果"，`dlcRead` 会在切页/点按钮时覆盖它；
            `dlcReading` / `dlcBusy` 只是防重入，防止玩家连点把状态读串。 */
@@ -3132,6 +3133,24 @@ function xzTypeOf(name, fbT, fbA) {
         '.xz-root .xz-plot-chip:hover{border-color:var(--xz-border-strong);}',
         '.xz-root .xz-plot-chip.on{color:var(--xz-gold-bright);border-color:var(--xz-gold-dim);background:rgba(212,175,55,0.14);}',
         '.xz-root .xz-plot-other{display:flex;gap:6px;align-items:center;margin-top:6px;}',
+        /* ★ 2026-11-04：解释入口统一成「圆圈感叹号 + 说明」四个字。
+           图标**用 CSS 画**，不用 emoji（⚪️/❗️ 各系统字形、颜色、基线全不一样，
+           本项目已为 emoji 图标买过单，见「不许用 emoji」那条铁律）。
+           `list-style:none` + 隐藏 marker：原生三角会和图标并排出现两个。
+           开合**不改文案**（文案恒为「说明」），只把 ▾ 转 180° —— 一份状态。 */
+        '.xz-root .xz-plot-fold>summary{list-style:none;display:inline-flex;align-items:center;gap:5px;'
+          + 'font-size:11px;color:var(--xz-muted);cursor:pointer;user-select:none;outline:none;}',
+        '.xz-root .xz-plot-fold>summary::-webkit-details-marker{display:none;}',
+        '.xz-root .xz-plot-fold>summary::marker{content:"";}',
+        '.xz-root .xz-plot-fold>summary::before{content:"!";flex:none;display:inline-flex;align-items:center;'
+          + 'justify-content:center;width:12px;height:12px;border-radius:50%;'
+          + 'border:1px solid rgba(230,189,118,.62);color:rgba(230,189,118,.95);'
+          + 'font-size:9px;font-weight:var(--xz-fw-bold);line-height:1;}',
+        '.xz-root .xz-plot-fold>summary::after{content:"▾";flex:none;font-size:9px;line-height:1;'
+          + 'transition:transform .16s;}',
+        '.xz-root .xz-plot-fold[open]>summary::after{transform:rotate(180deg);}',
+        '.xz-root .xz-plot-fold>summary:hover{color:var(--xz-text-2);}',
+        '.xz-root .xz-plot-fold[open]>summary{color:var(--xz-gold);}',
         /* ★ v493：「已学本领」折叠框（用户：四个字 + ▼，框要窄、不要高）
            ① 原生 details 的三角必须藏掉 —— 不然会和我们自己那个 ▼ 并排出现两个；
            ② 展开时 ▼ 转 180°（css 一条 transition，不用 JS 改文案/换字）；
@@ -5532,7 +5551,13 @@ function xzTypeOf(name, fbT, fbA) {
         } catch (e) { return null; }
     }
     function plotEmptyForm() {
-        return { name: '', trigKind: '境界', trigVal: '', mood: '', cast: [], castOther: '', place: '', scale: '域级', span: '短期', desc: '', polish: true };
+        return {
+            name: '', trigKind: '境界', trigA: '', trigB: '无', trigVal: '',
+            mood: '', cast: [], castOther: '',
+            geo1: '无', geo2: '无', geo3: '无', place: '',
+            scale: '域级', span: '短期', desc: '',
+            polish: false, pendText: ''
+        };
     }
     /* ★ 2026-11-04：回填时把「值不在预设里」的字段标成自填态。
        不标的话，修改一条氛围写的是「将雨未雨」的旧事件时，下拉会显示 `—`、
@@ -5553,19 +5578,33 @@ function xzTypeOf(name, fbT, fbA) {
         if (!m) return [];
         try { var a = JSON.parse(m[1]); return Array.isArray(a) ? a : []; } catch (e) { return []; }
     }
+    /* ══════════════════════════════════════════════════════════════════════
+       ★★★ 2026-11-04：条目里**不许出现状态词** ★★★
+       作者原话：「条目里面禁止写什么他妈的已完成未开始进行中什么的。这个只能在分页里显示。」
+       ⇒ ① `var EV` 里剔掉 `state`；② 渲染出来的每一行也去掉 `（未开始）` 那个尾巴。
+       状态只活在分页的 `state.plotList` 里，由玩家点「改状态」手动标 ——
+       模型读条目时根本看不到它，也就不可能"自己编一个已完成出来"。
+       ⚠ 读回来时条目里没有 state，`pagePlot` 用 `e.state || '未开始'` 兜底，
+         所以老数据（条目里还带 state 的）照样显示，只是下次写入时被清掉。
+       ══════════════════════════════════════════════════════════════════════ */
     function plotCompose(list) {
         var L = [];
         L.push('<剧情生成>');
         L.push('<%');
-        L.push('/* 数据块：由「状态栏 → 剧情」页写入，界面读写同一份。手改也能生效，下次生成会覆盖。');
-        L.push('   结构：[{ name, state, trigger, scale, span, mood, cast:[], place, desc, at }] */');
-        L.push('var EV = ' + JSON.stringify(list, null, 2) + ';');
+        L.push('/* 数据块：由「状态栏 → 剧情」页写入。手改也能生效，下次生成会覆盖。');
+        L.push('   结构：[{ name, trigger, scale, span, mood, cast:[], place, desc, at }] */');
+        var _clean = (list || []).map(function (e) {
+            var o = {};
+            Object.keys(e || {}).forEach(function (k) { if (k !== 'state' && k !== 'on') o[k] = e[k]; });
+            return o;
+        });
+        L.push('var EV = ' + JSON.stringify(_clean, null, 2) + ';');
         L.push('%>');
         L.push('<% if (!EV.length) { %>【剧情生成】本局还没有生成过剧情事件。');
         L.push('<% } else { %>');
         L.push('【剧情生成 · 共 <%= EV.length %> 条】');
         L.push('<% EV.forEach(function (e) { %>');
-        L.push('◆ <%= e.name %>（<%= e.state %>）');
+        L.push('◆ <%= e.name %>');
         L.push('　触发：<%= e.trigger %>');
         L.push('　影响力：<%= e.scale %>｜时长：<%= e.span %>');
         L.push('　氛围：<%= e.mood || "未写" %>');
@@ -5581,16 +5620,29 @@ function xzTypeOf(name, fbT, fbA) {
         if (state.plotBusy) return;
         if (state.plotList && !force) return;
         var fn = plotApi('xzWBEntry');
-        if (typeof fn !== 'function') { state.plotNote = '⚠ 世界书接口没就绪（读不到《剧情生成》）'; return; }
+        if (typeof fn !== 'function') { state.plotNote = '⚠ 世界书接口没就绪（读不到《剧情生成》）'; state.plotLoadState = state.plotNote; return; }
         state.plotBusy = true;
+        state.plotLoadState = '读取中…';
         Promise.resolve(fn(PLOT_ENTRY)).then(function (r) {
             state.plotBusy = false;
-            if (r && r.ok) { state.plotList = plotParse(r.content); state.plotNote = ''; }
-            else { state.plotList = state.plotList || []; state.plotNote = '⚠ 读《剧情生成》失败：' + ((r && r.msg) || '未知原因'); }
+            if (r && r.ok) {
+                state.plotList = plotParse(r.content);
+                state.plotNote = '';
+                /* ★ 作者「事件好像一直在读取成功？你看看，也可能没有读取成功」
+                   ⇒ 把**真实结果**印在页上：读到几条、还是失败、失败原因是什么。
+                   以前成功时 `plotNote = ''`，页面什么都不说，看起来就像“一直在读”。 */
+                state.plotLoadState = '已读 ' + state.plotList.length + ' 条';
+            } else {
+                state.plotList = state.plotList || [];
+                var _m = '⚠ 读《剧情生成》失败：' + ((r && r.msg) || '未知原因');
+                state.plotNote = _m;
+                state.plotLoadState = _m;
+            }
             try { render(true); } catch (e) {}
         }, function (e) {
             state.plotBusy = false;
             state.plotNote = '⚠ 读世界书抛错：' + ((e && e.message) || e);
+            state.plotLoadState = state.plotNote;
             try { render(true); } catch (e2) {}
         });
     }
@@ -5603,6 +5655,7 @@ function xzTypeOf(name, fbT, fbA) {
             if (r && r.ok) {
                 state.plotList = list.slice();
                 state.plotNote = '';
+                state.plotLoadState = '已读 ' + list.length + ' 条';
                 if (typeof after === 'function') { try { after(); } catch (eA) {} }
             } else {
                 state.plotNote = '⚠ 写入《剧情生成》失败：' + ((r && r.msg) || '未知原因');
@@ -5614,32 +5667,104 @@ function xzTypeOf(name, fbT, fbA) {
             try { render(true); } catch (e2) {}
         });
     }
-    function plotFillComposer(rec) {
-        var txt = '【剧情生成】' + rec.name + '\n'
-            + '触发：' + rec.trigger + '｜影响力：' + rec.scale + '｜时长：' + rec.span + '\n'
-            + (rec.mood ? ('氛围：' + rec.mood + '\n') : '')
-            + (rec.cast && rec.cast.length ? ('相关人物：' + rec.cast.join('、') + '\n') : '')
-            + (rec.place ? ('相关地点：' + rec.place + '\n') : '')
-            + '梗概：' + rec.desc + '\n\n'
-            + '请把上面这件事扩写润色成可以接进正文的开场：写清此刻的场景、在场的人怎么开口、赌注是什么；'
-            + '不要替 {{user}} 说话、动作或做决定，也不要提前写出结果。';
-        try {
-            var doc = getDoc();
-            var ta = doc.querySelector('#send_textarea');
-            if (ta) {
-                ta.value = txt;
-                ta.dispatchEvent(new Event('input', { bubbles: true }));
-                toast('已填入输入框：' + rec.name + '（可直接发送，让 AI 扩写）');
-                return true;
-            }
-            try { navigator.clipboard.writeText(txt); } catch (e0) {}
-            toast('没找到输入框，扩写指令已复制到剪贴板');
-        } catch (e) { log('剧情扩写填框失败', e); }
-        return false;
+    /* ══════════════════════════════════════════════════════════════════════
+       ★★★ 2026-11-04：AI 润色 = **真的调模型**，不是把指令塞进酒馆输入框 ★★★
+       作者原话：「调动ai润色不是指发到酒馆输入框，而是tmd直接调动ai润色…
+                 调动，知道什么是调动吗」
+       ⇒ 走 07/08 同一套 `TavernHelper.generateRaw`（酒馆主模型）；拿不到再退回
+         酒馆后端 `/api/backends/chat-completions/generate`。
+       ⇒ 结果**先摆在分页里**，玩家「采用」才写进条目；「撤回」就丢掉回到表单。
+         不点也没关系 —— 它就一直挂着，不会偷偷把事件加进去。
+       ══════════════════════════════════════════════════════════════════════ */
+    function plotFindTH() {
+        var cands = [];
+        try { cands.push(window); } catch (e0) {}
+        try { if (window.top && window.top !== window) cands.push(window.top); } catch (e1) {}
+        try { if (window.parent && window.parent !== window) cands.push(window.parent); } catch (e2) {}
+        for (var i = 0; i < cands.length; i++) {
+            try {
+                var th = cands[i] && cands[i].TavernHelper;
+                if (th && typeof th.generateRaw === 'function') return th;
+            } catch (e3) {}
+        }
+        return null;
     }
+    function plotPolishPrompt(rec) {
+    function plotPolishPrompt(rec) {
+        /* 用数组 join 拼，别在源码里写一长串 `\n` —— 上一版把换行符写到字符串外面，
+           `node --check` 直接报 SyntaxError，整页白屏。 */
+        var L = [];
+        L.push('下面是玩家给一条剧情事件填的要素。请把「梗概」扩写润色成一段可以直接接进正文的开场描写。');
+        L.push('写清此刻的场景、在场的人怎么开口、赌注是什么；不要替 {{user}} 说话、动作或做决定，');
+        L.push('不要提前写出结果，不要加标题、不要加解释、不要写任何状态词。只输出扩写后的正文。');
+        L.push('');
+        L.push('事件名称：' + rec.name);
+        L.push('触发：' + rec.trigger);
+        L.push('影响力：' + rec.scale + '｜时长：' + rec.span);
+        if (rec.mood) L.push('氛围：' + rec.mood);
+        if (rec.cast && rec.cast.length) L.push('相关人物：' + rec.cast.join('、'));
+        if (rec.place) L.push('相关地点：' + rec.place);
+        L.push('梗概：' + rec.desc);
+        return L.join(String.fromCharCode(10));
+    }
+    }
+    function plotPolishOne(fn) {
+        var txt = String(fn('') || '');
+        /* 模型爱裹 ``` 代码块，剥掉；顺手去掉首尾空行 */
+        return txt.replace(/^\s*```[a-z]*\s*/i, '').replace(/```\s*$/, '').trim();
+    }
+    /* 调模型：四种入参形状逐个试（不同版本的酒馆助手认的不一样），全失败再走后端。 */
+    function plotCallAI(rec, done) {
+        var P = plotPolishPrompt(rec);
+        var TH = plotFindTH();
+        var finish = function (txt, err) { try { done(txt || '', err || ''); } catch (eF) {} };
+        if (TH) {
+            var shapes = [
+                function () { return TH.generateRaw({ ordered_prompts: [{ role: 'user', content: P }] }); },
+                function () { return TH.generateRaw({ user_input: P }); },
+                function () { return TH.generateRaw({ ordered_prompts: [P] }); },
+                function () { return TH.generateRaw(P); }
+            ];
+            var idx = 0;
+            var next = function () {
+                if (idx >= shapes.length) return plotBackend();
+                var f = shapes[idx++];
+                Promise.resolve().then(f).then(function (out) {
+                    var txt = plotPolishOne(function () { return String((out && (out.content || out.text)) || out || ''); });
+                    if (txt) { finish(txt, ''); return; }
+                    return next();
+                }, function () { return next(); });
+            };
+            return next();
+        }
+        return plotBackend();
+        function plotBackend() {
+            try {
+                return fetch('/api/backends/chat-completions/generate', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: [{ role: 'user', content: P }], max_tokens: 700, temperature: 0.8 })
+                }).then(function (res) {
+                    return res.text().then(function (raw) {
+                        if (!res.ok) throw new Error('HTTP ' + res.status + '：' + raw.slice(0, 100));
+                        var j = null; try { j = JSON.parse(raw); } catch (eJ) {}
+                        var txt = plotPolishOne(function () {
+                            if (!j) return raw;
+                            return (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content)
+                                || j.content || j.text || raw;
+                        });
+                        finish(txt, txt ? '' : '模型没有返回内容');
+                    });
+                }, function (e) { finish('', '酒馆后端调用失败：' + ((e && e.message) || e)); });
+            } catch (eB) { finish('', '拿不到酒馆主模型，也没有后端接口：' + ((eB && eB.message) || eB)); }
+        }
+    }
+    /* ★ 2026-11-04（作者原话）：「所有注释和解释只能改为感叹号图标加"说明"这两个汉字」。
+       ⇒ 折叠标题**一律**是「说明」两个字，图标由 CSS `::before` 画（圆圈 + 感叹号）。
+       参数 `title` 只用来做 aria-label，不上屏。
+       ⚠ 别再把标题改回「这一页怎么用」这类话：这是界面上的解释入口，只有一种长相。 */
     function plotFold(title, inner) {
         return '<details class="xz-plot-fold" style="margin-top:8px;">'
-            + '<summary style="cursor:pointer;font-size:11px;color:var(--xz-muted);list-style:none;">ⓘ ' + esc(title) + '</summary>'
+            + '<summary aria-label="' + esc(title) + '">说明</summary>'
             + '<div style="font-size:11px;line-height:1.75;color:var(--xz-muted);padding:6px 2px 0;">' + inner + '</div>'
             + '</details>';
     }
@@ -5678,6 +5803,50 @@ function xzTypeOf(name, fbT, fbA) {
         return out.slice(0, 8);
     }
 
+    /* ══════════════════════════════════════════════════════════════════════
+       ★ 2026-11-04 本轮口径（作者逐条点名，别再自己发挥）★★★
+         · 相关地点 = 开局脚本第四页「自定义开局」那个**三段下拉**（州 / 域 / 城），
+           三段**都能拉到「无」**。
+         · 触发 = **区间**：什么境界到什么境界 / 什么日期到什么日期。
+           日期**手填，只能填阿拉伯数字**（非数字当场滤掉）。
+         · AI 润色 = **直接调模型**，结果摆在分页里，玩家「采用」才写进条目，
+           「撤回」就丢掉；不点也不许偷偷加事件。
+         · 「进行中 / 未开始 / 已结束」**只是给玩家看的标签**，仅此而已，
+           没有任何作用，条目里一个字都不许有 —— AI 根本不知道有没有进行中。
+       ══════════════════════════════════════════════════════════════════════ */
+    var PLOT_GEO = {
+        '人州': { '中域': ['司天监', '三剑宗', '玄京', '苍岚宗'], '雪域': ['玄京', '霜霄仙阙', '天云雪山'], '沙洲': ['月牙泉城', '千机坊市'] },
+        '妖州': { '幽篁': ['万妖窟'], '荒原': ['黑水渡'] },
+        '魔州': { '熔岩': ['烬城'], '焦雷': ['雷渊'], '烬灰': ['旧王庭'] }
+    };
+    var PLOT_GEO_NONE = '无';
+    function plotGeoOpts(level, parent1, parent2) {
+        var arr = [PLOT_GEO_NONE];
+        if (level === 1) Object.keys(PLOT_GEO).forEach(function (k) { arr.push(k); });
+        else if (level === 2 && parent1 && PLOT_GEO[parent1]) Object.keys(PLOT_GEO[parent1]).forEach(function (k) { arr.push(k); });
+        else if (level === 3 && parent1 && parent2 && PLOT_GEO[parent1] && PLOT_GEO[parent1][parent2]) {
+            PLOT_GEO[parent1][parent2].forEach(function (k) { arr.push(k); });
+            /* 当前存档里的小地点也放进来，别让玩家选不到自己所在的地方 */
+            try {
+                var g = (getVariables() || {}).地理 || {};
+                var seg = String(g.大位置 || '').split('·');
+                var tail = seg.length ? String(seg[seg.length - 1]).trim() : '';
+                if (tail && arr.indexOf(tail) < 0) arr.push(tail);
+            } catch (eG) {}
+        }
+        return arr;
+    }
+    function plotPlaceStr(f) {
+        return [f.geo1, f.geo2, f.geo3].filter(function (x) { return x && x !== PLOT_GEO_NONE; }).join('·');
+    }
+    function plotTriggerStr(f) {
+        var a = String(f.trigA || '').trim(), b = String(f.trigB || '').trim();
+        var head = (f.trigKind === '日期' ? '日期：' : '境界：');
+        if (!a && !b) return head + '未定';
+        if (a && b && a !== b) return head + a + ' ~ ' + b;
+        return head + (a || b);
+    }
+
     function pagePlot() {
         if (!state.plotForm) state.plotForm = plotEmptyForm();
         if (state.plotList === null && !state.plotBusy) { try { plotLoad(false); } catch (e0) {} }
@@ -5685,11 +5854,36 @@ function xzTypeOf(name, fbT, fbA) {
         var editing = (state.plotEdit >= 0);
         var h = '<div class="xz-sub-head">✦ 剧情生成' + (editing ? '（正在修改第 ' + (state.plotEdit + 1) + ' 条）' : '') + '</div>';
 
-        /* 说明：一律折叠（铁律 2026-11-04 —— 解释性文字只许藏在说明按钮里，默认收起） */
-        h += plotFold('这一页怎么用', '每个空都能从下拉里挑一个常用的；挑不到就选「其他…」自己写。'
-            + '填好点「确定生成」，内容会写进世界书条目《剧情生成》，模型每轮都能读到。'
-            + '已生成的条目可以「修改」「改状态」「删除」——改完立刻写回条目。'
-            + '勾了「AI 扩写润色」会顺带把一段扩写指令填进输入框，你按发送即可。');
+        /* 说明：一律折叠（铁律：解释性文字只许藏在说明按钮里，默认收起） */
+        h += plotFold('说明', '每个空都能从下拉里挑，挑不到就选「其他…」自己写。'
+            + '触发填**区间**（从 X 到 X）；日期只收阿拉伯数字。勾了「AI 润色」会先调模型把梗概扩写好，'
+            + '结果摆出来给你看，点「采用」才写进世界书条目《剧情生成》，不点就一直挂着，不会偷偷加进去。'
+            + '卡片上的「未开始／进行中／已结束」只是给你自己看的标签，模型读不到，也不会影响任何结算。');
+
+        /* ── 读取状态（读数，不是解释，可以直出）── */
+        var _ls = state.plotLoadState || '未读';
+        var _lsCol = (_ls.indexOf('失败') >= 0 || _ls.indexOf('读不到') >= 0) ? '#fbbf24'
+            : (_ls.indexOf('已读') >= 0 ? 'var(--xz-jade)' : 'var(--xz-muted)');
+        h += '<div style="font-size:10.5px;color:' + _lsCol + ';margin-top:8px;">📖 条目：' + esc(_ls) + '</div>';
+
+        /* ── AI 润色结果（待确认）── */
+        var pend = state.plotPend;
+        if (pend) {
+            h += '<div class="xz-plot-card" style="margin-top:10px;border-color:var(--xz-gold-dim);">';
+            h += '<div class="xz-plot-card-top"><span class="xz-plot-card-name" style="color:var(--xz-gold-bright);">✦ AI 润色结果（待确认）</span>'
+                + '<span class="xz-plot-card-st" style="color:var(--xz-muted);">还没写进条目</span></div>';
+            if (pend.busy) {
+                h += '<div class="xz-plot-card-desc" style="color:var(--xz-muted);">正在调模型润色…</div>';
+            } else if (pend.err) {
+                h += '<div class="xz-plot-card-desc" style="color:#fbbf24;">⚠ ' + esc(pend.err) + '</div>';
+            } else {
+                h += '<textarea class="xz-plot-ta" data-plot-field="pendText" rows="6" style="margin-top:8px;">' + esc(pend.text) + '</textarea>';
+            }
+            h += '<div class="xz-plot-card-acts">'
+                + (pend.busy ? '' : (pend.err ? '' : '<button type="button" class="xz-plot-btn xz-plot-btn-main" data-xz-act="plot-adopt">采用并生成</button>'))
+                + '<button type="button" class="xz-plot-btn" data-xz-act="plot-revert">撤回</button>'
+                + '</div></div>';
+        }
 
         /* ── 通用控件：下拉 + 其他自填 ── */
         function plotCtl(key, opts, ph, narrow) {
@@ -5713,21 +5907,53 @@ function xzTypeOf(name, fbT, fbA) {
 
         h += '<div class="xz-plot-form">';
         h += plotRow('事件名称', 'name', PLOT_NAME_TIPS, '例：月牙泉城断水');
-        /* 触发：类型（境界/日期）+ 值（跟着类型换候选） */
+
+        /* ── 触发：区间 ── */
+        var isDate = (f.trigKind === '日期');
+        var trigOpts = isDate ? PLOT_DATES : plotRealms();
         h += '<div class="xz-plot-row"><span class="xz-plot-lab">触发</span><div class="xz-plot-ctl">'
             + '<select class="xz-plot-select w62" data-plot-pick="trigKind">'
-            + '<option value="境界"' + (f.trigKind === '境界' ? ' selected' : '') + '>境界</option>'
-            + '<option value="日期"' + (f.trigKind === '日期' ? ' selected' : '') + '>日期</option>'
-            + '</select>'
-            + plotCtl('trigVal', (f.trigKind === '日期' ? PLOT_DATES : plotRealms()),
-                (f.trigKind === '日期' ? '例：1年3月' : '例：玄枢初期'))
-            + '</div></div>';
+            + '<option value="境界"' + (!isDate ? ' selected' : '') + '>境界</option>'
+            + '<option value="日期"' + (isDate ? ' selected' : '') + '>日期</option>'
+            + '</select></div></div>';
+        if (isDate) {
+            /* 日期：手填，只收阿拉伯数字 */
+            h += '<div class="xz-plot-row"><span class="xz-plot-lab">起 ~ 止</span><div class="xz-plot-ctl">'
+                + '<input class="xz-plot-input" type="text" inputmode="numeric" data-plot-field="trigA" value="' + esc(f.trigA) + '" maxlength="12" placeholder="起始，只填数字">'
+                + '<span style="flex:0 0 auto;font-size:11px;color:var(--xz-muted);">~</span>'
+                + '<input class="xz-plot-input" type="text" inputmode="numeric" data-plot-field="trigB" value="' + esc(f.trigB) + '" maxlength="12" placeholder="结束，只填数字">'
+                + '</div></div>';
+        } else {
+            /* 境界：两头的下拉，止端可以拉「无」= 不限 */
+            h += '<div class="xz-plot-row"><span class="xz-plot-lab">起 ~ 止</span><div class="xz-plot-ctl">'
+                + '<select class="xz-plot-select" style="flex:1 1 80px;" data-plot-pick="trigA">'
+                + '<option value=""' + (!f.trigA ? ' selected' : '') + '>—</option>'
+                + trigOpts.map(function (o) { return '<option value="' + esc(o) + '"' + (f.trigA === o ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('')
+                + '</select>'
+                + '<span style="flex:0 0 auto;font-size:11px;color:var(--xz-muted);">~</span>'
+                + '<select class="xz-plot-select" style="flex:1 1 80px;" data-plot-pick="trigB">'
+                + ['无'].concat(trigOpts).map(function (o) { return '<option value="' + esc(o) + '"' + ((f.trigB || '无') === o ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('')
+                + '</select></div></div>';
+        }
+
         h += plotRow('氛围基调', 'mood', PLOT_MOODS, '例：将雨未雨');
-        h += plotRow('相关地点', 'place', plotPlaces(), '例：人州·沙洲·月牙泉城');
+
+        /* ── 相关地点：州 / 域 / 城 三段下拉，都带「无」── */
+        var g1 = f.geo1 || PLOT_GEO_NONE, g2 = f.geo2 || PLOT_GEO_NONE, g3 = f.geo3 || PLOT_GEO_NONE;
+        function geoSel(level, val) {
+            var opts = plotGeoOpts(level, (level >= 2 ? g1 : ''), (level >= 3 ? g2 : ''));
+            return '<select class="xz-plot-select" style="flex:1 1 0;min-width:0;" data-plot-geo="' + level + '">'
+                + opts.map(function (o) { return '<option value="' + esc(o) + '"' + (val === o ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('')
+                + '</select>';
+        }
+        h += '<div class="xz-plot-row"><span class="xz-plot-lab">相关地点</span><div class="xz-plot-ctl">'
+            + geoSel(1, g1) + geoSel(2, g2) + geoSel(3, g3)
+            + '</div></div>';
+
         h += plotRow('影响力', 'scale', PLOT_SCALE, '', true);
         h += plotRow('涵盖时长', 'span', PLOT_SPAN, '', true);
 
-        /* 相关人物：人物列表里有的点一下选中，没有的在下面「其他」里手写加入 */
+        /* 相关人物 */
         var names = [];
         try {
             var pl = (getVariables() || {}).人物列表 || {};
@@ -5743,7 +5969,6 @@ function xzTypeOf(name, fbT, fbA) {
                 var on = f.cast.indexOf(nm) >= 0;
                 h += '<button type="button" class="xz-plot-chip' + (on ? ' on' : '') + '" data-xz-act="plot-cast" data-name="' + esc(nm) + '">' + esc(nm) + '</button>';
             });
-            /* 手写加入的人也要显示出来（不然选完看不见，以为没加进去） */
             f.cast.forEach(function (nm) {
                 if (names.indexOf(nm) >= 0) return;
                 h += '<button type="button" class="xz-plot-chip on" data-xz-act="plot-cast" data-name="' + esc(nm) + '">' + esc(nm) + ' ×</button>';
@@ -5761,11 +5986,11 @@ function xzTypeOf(name, fbT, fbA) {
             + 'placeholder="这件事大概怎么起、赌注是什么、可能怎么收">' + esc(f.desc) + '</textarea></div></div>';
 
         h += '<label class="xz-plot-chk"><input type="checkbox" data-plot-field="polish"' + (f.polish ? ' checked' : '') + '>'
-            + '让 AI 扩写润色（生成后把扩写指令填进输入框）</label>';
+            + '让 AI 润色（先调模型把梗概扩写好，结果给你过目，采用了才写进条目）</label>';
 
         h += '<div style="display:flex;gap:8px;margin-top:4px;">'
             + '<button type="button" class="xz-plot-btn xz-plot-btn-main" data-xz-act="plot-submit">'
-            + (editing ? '保存修改' : '确定生成') + '</button>'
+            + (f.polish ? '调 AI 润色' : (editing ? '保存修改' : '确定生成')) + '</button>'
             + (editing ? '<button type="button" class="xz-plot-btn" data-xz-act="plot-cancel">取消</button>' : '')
             + '</div>';
         h += '</div>';
@@ -5781,11 +6006,12 @@ function xzTypeOf(name, fbT, fbA) {
             h += '<div class="xz-rpg-desc" style="font-size:11.5px;">还没有。上面填一条，点「确定生成」。</div>';
         }
         list.forEach(function (e, i) {
-            var stCol = e.state === '进行中' ? '#7ddc9a' : (e.state === '已结束' ? 'var(--xz-muted)' : 'var(--xz-gold-bright)');
+            var st = e.state || '未开始';   /* 只给玩家看的标签，条目里没有、AI 不知道 */
+            var stCol = st === '进行中' ? '#7ddc9a' : (st === '已结束' ? 'var(--xz-muted)' : 'var(--xz-gold-bright)');
             h += '<div class="xz-plot-card">'
                 + '<div class="xz-plot-card-top">'
                 + '<span class="xz-plot-card-name">' + esc(e.name) + '</span>'
-                + '<span class="xz-plot-card-st" style="color:' + stCol + ';">● ' + esc(e.state) + '</span></div>'
+                + '<span class="xz-plot-card-st" style="color:' + stCol + ';">● ' + esc(st) + '</span></div>'
                 + '<div class="xz-plot-card-meta">'
                 + esc(e.trigger) + '｜' + esc(e.scale) + '｜' + esc(e.span)
                 + (e.place ? ('｜' + esc(e.place)) : '')
@@ -9791,6 +10017,8 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             state.plotEdit,
             state.plotBusy ? 1 : 0,
             state.plotNote || '',
+            state.plotLoadState || '',
+            JSON.stringify(state.plotPend || {}),
             /* ★★★ v464（第九次踩同一个坑，这次是 `dlcBar`）★★★
                DLC 那一整块的**折叠态**同样只活在内存里，同样由点击改完调 `render(true)`。
                我一开始在 7804 写了「`dlcBar` 不进签名 —— 它对要不要重画没有发言权，
@@ -10042,8 +10270,15 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                     var k = t.getAttribute('data-plot-field');
                     if (!k) return;
                     if (!state.plotForm) state.plotForm = plotEmptyForm();
+                    /* ★ 日期两端**只收阿拉伯数字**：当场滤掉汉字/符号/小数点。
+                       作者：「这个日期就让玩家手填，只能填阿拉伯数字」。 */
+                    if ((k === 'trigA' || k === 'trigB') && state.plotForm.trigKind === '日期') {
+                        var _clean = String(t.value || '').replace(/[^0-9]/g, '');
+                        if (_clean !== t.value) t.value = _clean;
+                        state.plotForm[k] = _clean;
+                        return;
+                    }
                     state.plotForm[k] = (t.type === 'checkbox') ? !!t.checked : t.value;
-                    if (k === 'trigKind') { try { render(true); } catch (eR) {} }
                 };
                 doc.addEventListener('input', _plotTake, true);
                 doc.addEventListener('change', _plotTake, true);
@@ -10066,9 +10301,30 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                         delete state.plotForm['_o_' + k];
                         state.plotForm[k] = v;
                     }
+                    if (k === 'trigKind') {
+                        state.plotForm.trigA = '';
+                        state.plotForm.trigB = (v === '境界') ? '无' : '';
+                    }
                     try { render(true); } catch (ePk) {}
                 };
                 doc.addEventListener('change', _plotPick, true);
+
+                /* ★ 地点三框（州 / 域 / 城）联动，每框都能选「无」。
+                   上级一改，下级回到「无」；不然会留着一个已经不存在的城名，拼出来的地点就是错的。 */
+                var _plotGeo = function (e) {
+                    var t = e && e.target;
+                    if (!t || !t.getAttribute) return;
+                    var a = t.getAttribute('data-plot-geo');
+                    if (!a) return;
+                    if (!state.plotForm) state.plotForm = plotEmptyForm();
+                    var lv = parseInt(a, 10);
+                    state.plotForm['geo' + lv] = String(t.value || '');
+                    if (lv <= 1) { state.plotForm.geo2 = '无'; state.plotForm.geo3 = '无'; }
+                    else if (lv === 2) { state.plotForm.geo3 = '无'; }
+                    state.plotForm.place = plotPlaceStr(state.plotForm);
+                    try { render(true); } catch (eG) {}
+                };
+                doc.addEventListener('change', _plotGeo, true);
             }
         } catch (ePI) {}
 
@@ -10585,36 +10841,73 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                     render(true);
                     return;
                 }
-                if (act === 'plot-submit') {
-                    var _f = state.plotForm || plotEmptyForm();
-                    var _nm = String(_f.name || '').trim();
-                    var _dsc = String(_f.desc || '').trim();
-                    var _tv = String(_f.trigVal || '').trim();
-                    if (!_nm) { state.plotNote = '⚠ 事件名称不能空。'; render(true); return; }
-                    if (!_dsc) { state.plotNote = '⚠ 大致剧情不能空。'; render(true); return; }
-                    var _rec = {
-                        name: _nm, state: '未开始',
-                        trigger: (_f.trigKind === '日期' ? '日期：' : '境界：') + (_tv || '未定'),
-                        scale: _f.scale || '域级', span: _f.span || '短期',
-                        mood: String(_f.mood || '').trim(),
-                        cast: (_f.cast || []).slice(),
-                        place: String(_f.place || '').trim(),
-                        desc: _dsc,
+                /* ═══ 2026-11-04：生成 →（可选）真调 AI 润色 → 采用才写条目 ═══
+                   ⚠ 条目里的事件**不带 state**：状态只是分页给玩家看的标签。
+                     `_plotMakeRec` 里一个状态字段都没有，模型读条目时无从知道。 */
+                function _plotMakeRec(f0, descOverride) {
+                    return {
+                        name: String(f0.name || '').trim(),
+                        trigger: plotTriggerStr(f0),
+                        scale: f0.scale || '域级', span: f0.span || '短期',
+                        mood: String(f0.mood || '').trim(),
+                        cast: (f0.cast || []).slice(),
+                        place: plotPlaceStr(f0),
+                        desc: String(descOverride != null ? descOverride : (f0.desc || '')).trim(),
                         at: new Date().toISOString().slice(0, 10)
                     };
-                    var _cur = (state.plotList || []).slice();
-                    var _idx = state.plotEdit;
-                    if (_idx >= 0 && _cur[_idx]) { _rec.state = _cur[_idx].state || '未开始'; _cur[_idx] = _rec; }
-                    else _cur.push(_rec);   /* ★ 新建一律「未开始」，不许跳过状态直接进行中 */
-                    var _polish = !!_f.polish;
+                }
+                function _plotCommit(rec) {
+                    var cur = (state.plotList || []).slice();
+                    var idx = state.plotEdit;
+                    var oldSt = (idx >= 0 && cur[idx]) ? cur[idx].state : null;
+                    if (idx >= 0 && cur[idx]) {
+                        var merged = Object.assign({}, cur[idx], rec);
+                        if (oldSt) merged.state = oldSt;   /* 状态只在前端内存里，不进条目 */
+                        cur[idx] = merged;
+                    } else cur.push(rec);
                     state.plotForm = plotEmptyForm();
                     state.plotEdit = -1;
-                    plotSave(_cur, function () { if (_polish) { try { plotFillComposer(_rec); } catch (ePC) {} } });
+                    state.plotPend = null;
+                    state.plotNote = '';
+                    plotSave(cur);
+                }
+                if (act === 'plot-submit') {
+                    var _f = state.plotForm || plotEmptyForm();
+                    if (!String(_f.name || '').trim()) { state.plotNote = '⚠ 事件名称不能空。'; render(true); return; }
+                    if (!String(_f.desc || '').trim()) { state.plotNote = '⚠ 大致剧情不能空。'; render(true); return; }
+                    var _rec = _plotMakeRec(_f);
+                    state.plotNote = '';
+                    if (!_f.polish) { _plotCommit(_rec); return; }
+                    /* 勾了润色：直接调模型。结果先挂起来，**不写条目**。 */
+                    state.plotPend = { rec: _rec, text: '', err: '', busy: true };
+                    render(true);
+                    plotCallAI(_rec, function (txt, err) {
+                        if (!state.plotPend) return;   /* 玩家已经撤回 */
+                        state.plotPend.busy = false;
+                        state.plotPend.text = txt;
+                        state.plotPend.err = err;
+                        try { render(true); } catch (eRr) {}
+                    });
+                    return;
+                }
+                if (act === 'plot-adopt') {
+                    var _p = state.plotPend;
+                    if (!_p || _p.busy || _p.err) return;
+                    var _txt = String((state.plotForm && state.plotForm.pendText) || _p.text || '').trim();
+                    if (!_txt) { state.plotNote = '⚠ 润色结果是空的，点「撤回」重填。'; render(true); return; }
+                    _plotCommit(Object.assign({}, _p.rec, { desc: _txt }));
+                    return;
+                }
+                if (act === 'plot-revert') {
+                    state.plotPend = null;
+                    state.plotNote = '';
+                    render(true);   /* 表单原样还在，玩家改几个字可以再来一次 */
                     return;
                 }
                 if (act === 'plot-cancel') {
                     state.plotForm = plotEmptyForm();
                     state.plotEdit = -1;
+                    state.plotPend = null;
                     state.plotNote = '';
                     render(true);
                     return;
@@ -10624,22 +10917,27 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                     var _it = (state.plotList || [])[_ei];
                     if (!_it) return;
                     var _tg = String(_it.trigger || '');
+                    var _kind = _tg.indexOf('日期') === 0 ? '日期' : '境界';
+                    var _rest = _tg.replace(/^(境界|日期)：/, '');
+                    var _seg = _rest.split(/\s*~\s*/);
+                    var _pl = String(_it.place || '').split('·');
                     state.plotForm = {
                         name: _it.name || '',
-                        trigKind: _tg.indexOf('日期') === 0 ? '日期' : '境界',
-                        trigVal: _tg.replace(/^(境界|日期)：/, ''),
+                        trigKind: _kind, trigA: (_seg[0] || '').trim(),
+                        trigB: (_seg[1] || (_kind === '境界' ? '无' : '')).trim(),
+                        trigVal: _rest,
                         mood: _it.mood || '',
                         cast: (_it.cast || []).slice(),
+                        castOther: '',
+                        geo1: _pl[0] || '无', geo2: _pl[1] || '无', geo3: _pl[2] || '无',
                         place: _it.place || '',
-                        scale: _it.scale || '域级',
-                        span: _it.span || '短期',
+                        scale: _it.scale || '域级', span: _it.span || '短期',
                         desc: _it.desc || '',
-                        polish: false      /* 改一条老事件时不再默认勾扩写，避免手滑又填一次输入框 */
+                        polish: false, pendText: ''
                     };
-                    /* ★ 回填完必须标一次自填态：旧事件的氛围/地点大多不在预设里，
-                       不标就会在下拉里变成 `—`、输入框不出现 ⇒ 保存时被清空。 */
                     try { plotMarkOther(state.plotForm); } catch (ePM) {}
                     state.plotEdit = _ei;
+                    state.plotPend = null;
                     state.plotNote = '';
                     render(true);
                     return;
@@ -11407,6 +11705,12 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
               + 'border-radius:10px;cursor:pointer;background:rgba(212,175,55,.10);color:var(--xz-gold-bright);'
               + 'border:1px solid var(--xz-line);}',
             '.xz-tp-helpbtn:hover{color:var(--xz-gold);border-color:var(--xz-gold);}',
+            /* ★ 2026-11-04：解释入口统一成「圆圈感叹号 + 说明」。图标用 CSS 画，
+               不用 emoji（字形/颜色/基线各系统不一，项目铁律：不许用 emoji）。 */
+            '.xz-tp-helpbtn::before{content:"!";flex:none;display:inline-flex;align-items:center;justify-content:center;'
+              + 'width:11px;height:11px;margin-right:5px;border-radius:50%;vertical-align:-1px;'
+              + 'border:1px solid rgba(230,189,118,.62);color:rgba(230,189,118,.95);'
+              + 'font-size:8.5px;font-weight:var(--xz-fw-bold);line-height:1;}',
             '.xz-tp-cost{font-size:11px;color:var(--xz-text-2);margin:5px 0 4px;}',
             '.xz-tp-cost b{color:#c4b5fd;font-weight:var(--xz-fw-med);}',
             '.xz-tp-btns{display:flex;gap:6px;flex-wrap:wrap;}',
@@ -11692,9 +11996,12 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             /* ★ v535：说明文字默认折叠（作者 2026-11-02 截图：「这些默认折叠起来，点击说明按钮才会展开」）。
                折的是**说明**，不是读数：上面那三个「淬晶·X N 份」是仪表，必须一直看得见。
                ⚠ 别改成原生 `<details>`：见 v517 那段（toggle 不冒泡 / 重建后 open 丢失）。 */
+            /* ★ 2026-11-04：解释入口统一成「⚠ 说明」（作者：所有注释和解释只能改为
+               感叹号图标加"说明"这两个汉字）。图标由 CSS `::before` 画，文字恒为「说明」，
+               ▾/▴ 只是开合指示，不是解释文字。 */
             h += '<div class="xz-tp-help">'
                + '<button type="button" class="xz-tp-helpbtn" data-xz-act="tp-help">'
-               + (state.tpHelp ? '收起说明 ▴' : '说明 ▾') + '</button>';
+               + '说明 ' + (state.tpHelp ? '▴' : '▾') + '</button>';
             if (state.tpHelp) {
                 h += '<div class="xz-tp-note" style="margin-top:6px;">淬晶会作为战利品随机掉落。升级一次要 2 份同档、洗练 1 份。</div>';
             }
