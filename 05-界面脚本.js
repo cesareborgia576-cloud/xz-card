@@ -9969,6 +9969,29 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
     }
     function xzHotCheck() {
         try {
+            /* ★★★ v541：页面不可见时**不发请求** ★★★
+               这条按 20 秒一次跑、永不停止（作者口径：v1.051「20 秒一次」）。
+               玩家挂机不看屏幕时它照样每 20 秒打一次 GitHub raw：
+               8 小时 1440 次，而 raw 对同一出口 IP 是**限速**的 ——
+               打多了会开始返 429/空，于是徽章显示「检查失败」，
+               玩家回来一看以为卡坏了。这是"省的是别人的服务器、坑的是自己"那类开销。
+               ⚠ 只跳过**不可见**的那些次，不改 20 秒的节奏：
+                 玩家切回来时 `visibilitychange` 会立刻补一次，看不到延迟。
+               ⚠ 不能用 `document.visibilityState` 直接判：本脚本可能跑在 iframe 里，
+                 iframe 的 visibilityState 恒为 visible（父页面被隐藏它也不知道）。
+                 必须问**最外层可见的那个 window**。 */
+            var _vis = true;
+            try {
+                var _vw = window;
+                try { if (window.top && window.top.document) _vw = window.top; } catch (eTop) { _vw = window; }
+                if (_vw.document && _vw.document.visibilityState) {
+                    _vis = (_vw.document.visibilityState === 'visible');
+                }
+            } catch (eVis) { _vis = true; }
+            /* 不可见 ⇒ 直接返回，但**不**清掉已有结果：
+               HOTV.latest / err 保持上一次的值，玩家切回来看到的还是上次检查的结论，
+               而不是闪一下「…」。 */
+            if (!_vis) return;
             var xhr = new XMLHttpRequest();
             xhr.open('GET', HOTV_URL + '?t=' + Date.now(), true);
             xhr.timeout = 12000;
@@ -10008,6 +10031,18 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             w.__XZ_HOT_POLL__ = 1;
         } catch (e) { }
         try { setTimeout(xzHotCheck, 1500); setInterval(xzHotCheck, 20000); } catch (e) { }   /* ★ v1.051：20 秒一次（作者口径） */
+        /* ★ v541：切回页面时立刻补一次 —— 配合 xzHotCheck 里"不可见就跳过"那一条。
+           不补的话，玩家切回来最多要等 20 秒才看到正确的版本号。
+           ⚠ 仍然走 `window.top` 单例：三个 iframe 各挂一个监听会补三次。 */
+        try {
+            var _vd = w.document;
+            if (_vd && !w.__XZ_HOT_VIS__) {
+                w.__XZ_HOT_VIS__ = 1;
+                _vd.addEventListener('visibilitychange', function () {
+                    try { if (_vd.visibilityState === 'visible') xzHotCheck(); } catch (eV) {}
+                }, false);
+            }
+        } catch (eVi) {}
     })();
 
     function render(force) {
