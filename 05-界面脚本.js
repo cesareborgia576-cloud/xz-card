@@ -935,7 +935,8 @@
        ⚠ 位置是**第 2 位**（主角之后、装备之前），与 PAGE_FNS 逐位对齐。
        ⚠ 这里**不许**再写任何 `state.tab = 数字`：位置一挪，写死的下标就串页。
          现有跳转全部走 `XZ_TAB_NAMES.indexOf('名字')`（舆图那处就是这么写的）。 */
-    var XZ_TAB_NAMES = ['主角', '版本', '装备', '人物', '背包', '任务', '灵宠', '舆图', '淬炼'];
+    /* ★ 2026-11-04（作者：「新开一个分页，叫剧情」）：剧情生成器独立成页，位置在「版本」之后。 */
+    var XZ_TAB_NAMES = ['主角', '版本', '剧情', '装备', '人物', '背包', '任务', '灵宠', '舆图', '淬炼'];
     /* ★★★ v472：九个分页标题的单色线稿图标 ★★★
        用户原话（2026-10-30）：「界面脚本里的每一个分页标题，如主角，人物等这些，
          都要绘制一个简约精致的小图标，不需要颜色，比如主角就是一个人，背包就是一个背包，
@@ -995,7 +996,9 @@
               + '<path d="M12 19.9a2.7 2.7 0 0 0 2.7-2.7c0-1.7-1.3-2.6-2.7-4-1.4 1.4-2.7 2.3-2.7 4a2.7 2.7 0 0 0 2.7 2.7z"/>',
         /* 版本 —— **书签**（下方一个 V 形缺口 + 一道横线）：
            15px 下别的笔画都会糊，"缺口"是最扛缩的特征，一眼能认出是"夹在书里的那一条"。 */
-        '版本': '<path d="M6.4 3.6h11.2v16.8l-5.6-3.6-5.6 3.6z"/><path d="M9.4 8.6h5.2"/>'
+        '版本': '<path d="M6.4 3.6h11.2v16.8l-5.6-3.6-5.6 3.6z"/><path d="M9.4 8.6h5.2"/>',
+        /* 剧情 —— **折角文稿**（右上折角 + 两道正文线）：15px 下折角是唯一扛缩的特征。 */
+        '剧情': '<path d="M5.8 3.4h8.4l4.2 4.2v13H5.8z"/><path d="M14.2 3.4v4.2h4.2"/><path d="M8.8 12h6.2"/><path d="M8.8 15.8h4.2"/>'
     };
     /* 取图标；名字对不上就返回空串（**不抛错**）—— 以后加/改名不会把整页带崩 */
     function xzTabIcon(name) {
@@ -1014,6 +1017,11 @@
            _v398_memsig 抓的就是「渲染路径读到的内存态没进签名」这一条：
            不进签名的话，点「说明」改完 state 再 render(true) 会被脏检查拦下 ⇒ 点了没反应。 */
         tpHelp: 0,
+        /* ★ 2026-11-04：剧情生成页的状态
+           `plotList` = 从《剧情生成》读回来的事件数组（null = 还没读）；
+           `plotForm` = 正在填的表单；`plotEdit` = 正在改第几条（-1 = 新建）。
+           ⚠ 三个都要进签名（渲染路径读它们），否则点完不重绘 —— _v398_memsig 会抓。 */
+        plotList: null, plotForm: null, plotEdit: -1, plotBusy: false, plotNote: '',
         /* ★ v357：斗罗 DLC 按钮的三个态。**都不是缓存** ——
            `dlcSt` 只存"最近一次从世界书读回来的结果"，`dlcRead` 会在切页/点按钮时覆盖它；
            `dlcReading` / `dlcBusy` 只是防重入，防止玩家连点把状态读串。 */
@@ -5465,6 +5473,235 @@ function xzTypeOf(name, fbT, fbA) {
         return false;
     }
 
+    /* ══════════════════════════════════════════════════════════════════════════
+       剧情生成（作者 2026-11-04）
+       ──────────────────────────────────────────────────────────────────────────
+       真源 = 世界书条目《剧情生成》里的 `var EV = [...]` 数据块，下面那段 EJS 把它渲染成清单。
+       本页读它、写它；模型每轮读到的是 EJS 渲染后的结果。
+       ⚠ 为什么不用变量存：MVU 有 schema，多一个键会被静默丢掉；世界书条目是纯文本，谁都能写。
+       ⚠ 读写都走 `__XZ05__.xzWBEntry`（世界书管理那个 IIFE），本页不自己找书、不自己拼扫描逻辑。
+       ══════════════════════════════════════════════════════════════════════════ */
+    var PLOT_ENTRY = '剧情生成';
+    var PLOT_SCALE = ['世界级', '州级', '域级', '势力级', '无'];
+    var PLOT_SPAN = ['无限', '长期', '短期', '极短'];
+    var PLOT_STATES = ['未开始', '进行中', '已结束'];
+
+    function plotApi(n) {
+        try {
+            var r = (typeof globalThis !== 'undefined') ? globalThis.__XZ05__ : null;
+            return (r && typeof r[n] === 'function') ? r[n] : null;
+        } catch (e) { return null; }
+    }
+    function plotEmptyForm() {
+        return { name: '', trigKind: '境界', trigVal: '', mood: '', cast: [], place: '', scale: '域级', span: '短期', desc: '', polish: true };
+    }
+    function plotParse(txt) {
+        var m = /var\s+EV\s*=\s*(\[[\s\S]*?\]);/.exec(String(txt || ''));
+        if (!m) return [];
+        try { var a = JSON.parse(m[1]); return Array.isArray(a) ? a : []; } catch (e) { return []; }
+    }
+    function plotCompose(list) {
+        var L = [];
+        L.push('<剧情生成>');
+        L.push('<%');
+        L.push('/* 数据块：由「状态栏 → 剧情」页写入，界面读写同一份。手改也能生效，下次生成会覆盖。');
+        L.push('   结构：[{ name, state, trigger, scale, span, mood, cast:[], place, desc, at }] */');
+        L.push('var EV = ' + JSON.stringify(list, null, 2) + ';');
+        L.push('%>');
+        L.push('<% if (!EV.length) { %>【剧情生成】本局还没有生成过剧情事件。');
+        L.push('<% } else { %>');
+        L.push('【剧情生成 · 共 <%= EV.length %> 条】');
+        L.push('<% EV.forEach(function (e) { %>');
+        L.push('◆ <%= e.name %>（<%= e.state %>）');
+        L.push('　触发：<%= e.trigger %>');
+        L.push('　影响力：<%= e.scale %>｜时长：<%= e.span %>');
+        L.push('　氛围：<%= e.mood || "未写" %>');
+        L.push('　相关人物：<%= (e.cast && e.cast.length) ? e.cast.join("、") : "不限" %>');
+        L.push('　相关地点：<%= e.place || "不限" %>');
+        L.push('　梗概：<%= e.desc %>');
+        L.push('<% }); %>');
+        L.push('<% } %>');
+        L.push('</剧情生成>');
+        return L.join('\n');
+    }
+    function plotLoad(force) {
+        if (state.plotBusy) return;
+        if (state.plotList && !force) return;
+        var fn = plotApi('xzWBEntry');
+        if (typeof fn !== 'function') { state.plotNote = '⚠ 世界书接口没就绪（读不到《剧情生成》）'; return; }
+        state.plotBusy = true;
+        Promise.resolve(fn(PLOT_ENTRY)).then(function (r) {
+            state.plotBusy = false;
+            if (r && r.ok) { state.plotList = plotParse(r.content); state.plotNote = ''; }
+            else { state.plotList = state.plotList || []; state.plotNote = '⚠ 读《剧情生成》失败：' + ((r && r.msg) || '未知原因'); }
+            try { render(true); } catch (e) {}
+        }, function (e) {
+            state.plotBusy = false;
+            state.plotNote = '⚠ 读世界书抛错：' + ((e && e.message) || e);
+            try { render(true); } catch (e2) {}
+        });
+    }
+    function plotSave(list, after) {
+        var fn = plotApi('xzWBEntry');
+        if (typeof fn !== 'function') { state.plotNote = '⚠ 写不了：《剧情生成》接口没就绪'; try { render(true); } catch (e) {} return; }
+        state.plotBusy = true;
+        Promise.resolve(fn(PLOT_ENTRY, plotCompose(list))).then(function (r) {
+            state.plotBusy = false;
+            if (r && r.ok) {
+                state.plotList = list.slice();
+                state.plotNote = '';
+                if (typeof after === 'function') { try { after(); } catch (eA) {} }
+            } else {
+                state.plotNote = '⚠ 写入《剧情生成》失败：' + ((r && r.msg) || '未知原因');
+            }
+            try { render(true); } catch (e) {}
+        }, function (e) {
+            state.plotBusy = false;
+            state.plotNote = '⚠ 写入抛错：' + ((e && e.message) || e);
+            try { render(true); } catch (e2) {}
+        });
+    }
+    function plotFillComposer(rec) {
+        var txt = '【剧情生成】' + rec.name + '\n'
+            + '触发：' + rec.trigger + '｜影响力：' + rec.scale + '｜时长：' + rec.span + '\n'
+            + (rec.mood ? ('氛围：' + rec.mood + '\n') : '')
+            + (rec.cast && rec.cast.length ? ('相关人物：' + rec.cast.join('、') + '\n') : '')
+            + (rec.place ? ('相关地点：' + rec.place + '\n') : '')
+            + '梗概：' + rec.desc + '\n\n'
+            + '请把上面这件事扩写润色成可以接进正文的开场：写清此刻的场景、在场的人怎么开口、赌注是什么；'
+            + '不要替 {{user}} 说话、动作或做决定，也不要提前写出结果。';
+        try {
+            var doc = getDoc();
+            var ta = doc.querySelector('#send_textarea');
+            if (ta) {
+                ta.value = txt;
+                ta.dispatchEvent(new Event('input', { bubbles: true }));
+                toast('已填入输入框：' + rec.name + '（可直接发送，让 AI 扩写）');
+                return true;
+            }
+            try { navigator.clipboard.writeText(txt); } catch (e0) {}
+            toast('没找到输入框，扩写指令已复制到剪贴板');
+        } catch (e) { log('剧情扩写填框失败', e); }
+        return false;
+    }
+    function plotFold(title, inner) {
+        return '<details class="xz-plot-fold" style="margin-top:8px;">'
+            + '<summary style="cursor:pointer;font-size:11px;color:var(--xz-muted);list-style:none;">ⓘ ' + esc(title) + '</summary>'
+            + '<div style="font-size:11px;line-height:1.75;color:var(--xz-muted);padding:6px 2px 0;">' + inner + '</div>'
+            + '</details>';
+    }
+    function pagePlot() {
+        if (!state.plotForm) state.plotForm = plotEmptyForm();
+        if (state.plotList === null && !state.plotBusy) { try { plotLoad(false); } catch (e0) {} }
+        var f = state.plotForm;
+        var editing = (state.plotEdit >= 0);
+        var h = '<div class="xz-sub-head">✦ 剧情生成' + (editing ? '（正在修改第 ' + (state.plotEdit + 1) + ' 条）' : '') + '</div>';
+
+        /* 说明：一律折叠（新铁律 2026-11-04 —— 解释性文字只许藏在说明按钮里） */
+        h += plotFold('这一页怎么用', '填好事件、点「确定生成」，内容会写进世界书条目《剧情生成》，'
+            + '模型每轮都能读到。已生成的条目可以「修改」「改状态」「删除」——改完立刻写回条目。'
+            + '勾了「AI 扩写润色」会顺带把一段扩写指令填进输入框，你按发送即可。');
+
+        /* ── 表单 ── */
+        h += '<div style="margin-top:10px;display:flex;flex-direction:column;gap:7px;">';
+        h += '<div class="xz-st-row"><label style="flex:0 0 54px;font-size:11px;">事件名称</label>'
+            + '<input type="text" data-plot-field="name" value="' + esc(f.name) + '" maxlength="24" placeholder="例如：月牙泉城断水" style="flex:1 1 auto;min-width:0;"></div>';
+
+        h += '<div class="xz-st-row" style="gap:6px;align-items:center;">'
+            + '<label style="flex:0 0 54px;font-size:11px;">触发</label>'
+            + '<select data-plot-field="trigKind" style="flex:0 0 68px;">'
+            + '<option value="境界"' + (f.trigKind === '境界' ? ' selected' : '') + '>境界</option>'
+            + '<option value="日期"' + (f.trigKind === '日期' ? ' selected' : '') + '>日期</option>'
+            + '</select>'
+            + '<input type="text" data-plot-field="trigVal" value="' + esc(f.trigVal) + '" maxlength="20" placeholder="' + (f.trigKind === '境界' ? '例：玄枢初期' : '例：1年3月') + '" style="flex:1 1 auto;min-width:0;"></div>';
+
+        h += '<div class="xz-st-row"><label style="flex:0 0 54px;font-size:11px;">氛围基调</label>'
+            + '<input type="text" data-plot-field="mood" value="' + esc(f.mood) + '" maxlength="24" placeholder="例：压抑、将雨未雨" style="flex:1 1 auto;min-width:0;"></div>';
+
+        h += '<div class="xz-st-row"><label style="flex:0 0 54px;font-size:11px;">相关地点</label>'
+            + '<input type="text" data-plot-field="place" value="' + esc(f.place) + '" maxlength="24" placeholder="例：人州·沙洲·月牙泉城" style="flex:1 1 auto;min-width:0;"></div>';
+
+        h += '<div class="xz-st-row" style="gap:6px;align-items:center;">'
+            + '<label style="flex:0 0 54px;font-size:11px;">影响力</label>'
+            + '<select data-plot-field="scale" style="flex:1 1 auto;">'
+            + PLOT_SCALE.map(function (x) { return '<option value="' + x + '"' + (f.scale === x ? ' selected' : '') + '>' + x + '</option>'; }).join('')
+            + '</select></div>';
+
+        h += '<div class="xz-st-row" style="gap:6px;align-items:center;">'
+            + '<label style="flex:0 0 54px;font-size:11px;">涵盖时长</label>'
+            + '<select data-plot-field="span" style="flex:1 1 auto;">'
+            + PLOT_SPAN.map(function (x) { return '<option value="' + x + '"' + (f.span === x ? ' selected' : '') + '>' + x + '</option>'; }).join('')
+            + '</select></div>';
+
+        /* 相关人物：从「人物列表」现取名字做成可点标签 */
+        var names = [];
+        try {
+            var pl = (getVariables() || {}).人物列表 || {};
+            names = Object.keys(pl).slice(0, 14);
+        } catch (eN) {}
+        h += '<div style="display:flex;gap:6px;align-items:flex-start;">'
+            + '<span style="flex:0 0 54px;font-size:11px;color:var(--xz-muted);padding-top:4px;">相关人物</span>'
+            + '<div style="flex:1 1 auto;display:flex;flex-wrap:wrap;gap:5px;">';
+        if (!names.length) {
+            h += '<span style="font-size:11px;color:var(--xz-muted);">人物列表还是空的</span>';
+        } else {
+            names.forEach(function (nm) {
+                var on = f.cast.indexOf(nm) >= 0;
+                h += '<button type="button" class="xz-st-main xz-st-ghost' + (on ? ' on' : '') + '" data-xz-act="plot-cast" data-name="' + esc(nm) + '"'
+                    + ' style="flex:0 0 auto;padding:2px 8px;font-size:11px;">' + esc(nm) + '</button>';
+            });
+        }
+        h += '</div></div>';
+
+        h += '<div style="display:flex;gap:6px;align-items:flex-start;">'
+            + '<span style="flex:0 0 54px;font-size:11px;color:var(--xz-muted);padding-top:4px;">大致剧情</span>'
+            + '<textarea data-plot-field="desc" rows="4" maxlength="400" placeholder="这件事大概怎么起、赌注是什么、可能怎么收" '
+            + 'style="flex:1 1 auto;min-width:0;resize:vertical;">' + esc(f.desc) + '</textarea></div>';
+
+        h += '<label style="display:flex;gap:6px;align-items:center;font-size:11px;color:var(--xz-muted);">'
+            + '<input type="checkbox" data-plot-field="polish"' + (f.polish ? ' checked' : '') + '>'
+            + '让 AI 扩写润色（生成后把扩写指令填进输入框）</label>';
+
+        h += '<div style="display:flex;gap:8px;margin-top:2px;">'
+            + '<button type="button" class="xz-st-main" data-xz-act="plot-submit" style="flex:1 1 auto;">'
+            + (editing ? '保存修改' : '确定生成') + '</button>'
+            + (editing ? '<button type="button" class="xz-st-dice" data-xz-act="plot-cancel" style="flex:0 0 auto;">取消</button>' : '')
+            + '</div>';
+        h += '</div>';
+
+        if (state.plotNote) {
+            h += '<div style="margin-top:8px;font-size:11px;line-height:1.7;color:#fbbf24;">' + esc(state.plotNote) + '</div>';
+        }
+
+        /* ── 已生成 ── */
+        var list = state.plotList || [];
+        h += '<div class="xz-sub-head" style="margin-top:16px;">✦ 已生成（' + list.length + '）</div>';
+        if (state.plotBusy && !list.length) {
+            h += '<div class="xz-rpg-desc" style="font-size:11.5px;">正在读《剧情生成》…</div>';
+        } else if (!list.length) {
+            h += '<div class="xz-rpg-desc" style="font-size:11.5px;">还没有。上面填一条，点「确定生成」。</div>';
+        }
+        list.forEach(function (e, i) {
+            var stCol = e.state === '进行中' ? '#7ddc9a' : (e.state === '已结束' ? 'var(--xz-muted)' : 'var(--xz-gold-bright)');
+            h += '<div style="margin-top:8px;padding:9px;border:1px solid var(--xz-border-strong);border-radius:6px;">'
+                + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline;">'
+                + '<b style="font-size:12px;">' + esc(e.name) + '</b>'
+                + '<span style="flex:0 0 auto;font-size:10.5px;color:' + stCol + ';">● ' + esc(e.state) + '</span></div>'
+                + '<div style="font-size:10.5px;color:var(--xz-muted);line-height:1.75;margin-top:3px;">'
+                + esc(e.trigger) + '｜' + esc(e.scale) + '｜' + esc(e.span)
+                + (e.place ? ('｜' + esc(e.place)) : '')
+                + (e.cast && e.cast.length ? ('｜' + esc(e.cast.join('、'))) : '')
+                + '</div>'
+                + '<div style="font-size:11px;line-height:1.7;margin-top:4px;">' + esc(e.desc) + '</div>'
+                + '<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">'
+                + '<button type="button" class="xz-tianji-goto-btn" data-xz-act="plot-edit" data-i="' + i + '" style="padding:2px 8px;font-size:11px;">修改</button>'
+                + '<button type="button" class="xz-tianji-goto-btn" data-xz-act="plot-state" data-i="' + i + '" style="padding:2px 8px;font-size:11px;">改状态</button>'
+                + '<button type="button" class="xz-tianji-goto-btn" data-xz-act="plot-del" data-i="' + i + '" style="padding:2px 8px;font-size:11px;color:#f87171;">删除</button>'
+                + '</div></div>';
+        });
+        return h;
+    }
+
     /* 4. 背包面板 */
     function pageBackpack() {
         var raw = at('背包');
@@ -8887,7 +9124,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
            事件页的快捷入口也从它现算下标 —— 两处不会再各写一份而漂移。
            ⚠ 仍然：新页一律**追加在末尾**，绝不插队（页面里有按下标写死的跳转）。 */
         var tabs = XZ_TAB_NAMES;
-        var PAGE_FNS = [['主角', pageMain], ['版本', pageVersion], ['装备', pageGear], ['人物', pagePeople], ['背包', pageBackpack], ['任务', pageTask], ['灵宠', pagePet], ['舆图', pageMap], ['淬炼', pageTemper]];
+        var PAGE_FNS = [['主角', pageMain], ['版本', pageVersion], ['剧情', pagePlot], ['装备', pageGear], ['人物', pagePeople], ['背包', pageBackpack], ['任务', pageTask], ['灵宠', pagePet], ['舆图', pageMap], ['淬炼', pageTemper]];
         /* 契约守卫：页签表与内容表必须逐位同长、同名 —— 错位就是「点 A 页出 B 内容」 */
         (function () {
             var bad = [];
@@ -9448,6 +9685,13 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                也顺手保证"展开后遇到自动重绘"仍然保持展开。 */
             JSON.stringify(state.npcOpen || {}),
             state.tpHelp ? 1 : 0,   /* ★ v536：淬炼页说明折叠态（同上，_v398_memsig 要求） */
+            /* ★ 2026-11-04：剧情页三态进签名 —— 读回来的列表、正在填的表单、改第几条。
+               不进签名就点不动（`force` 不参与脏检查，同 dlcBar 那次的病）。 */
+            JSON.stringify(state.plotList || []),
+            JSON.stringify(state.plotForm || {}),
+            state.plotEdit,
+            state.plotBusy ? 1 : 0,
+            state.plotNote || '',
             /* ★★★ v464（第九次踩同一个坑，这次是 `dlcBar`）★★★
                DLC 那一整块的**折叠态**同样只活在内存里，同样由点击改完调 `render(true)`。
                我一开始在 7804 写了「`dlcBar` 不进签名 —— 它对要不要重画没有发言权，
@@ -9686,6 +9930,26 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
     function bindEvents(doc) {
         var host = doc.getElementById(HOST_ID);
         if (!host) return;
+
+        /* ★ 2026-11-04：剧情表单的输入**不重绘**（一重绘就丢焦点、光标跳到末尾），
+           只把值写进 state.plotForm；真正提交在「确定生成 / 保存修改」那一下。
+           ⚠ 用捕获阶段挂一次就够（doc 级，防重复用标记位）。 */
+        try {
+            if (!doc.__xzPlotIn) {
+                doc.__xzPlotIn = true;
+                var _plotTake = function (e) {
+                    var t = e && e.target;
+                    if (!t || !t.getAttribute) return;
+                    var k = t.getAttribute('data-plot-field');
+                    if (!k) return;
+                    if (!state.plotForm) state.plotForm = plotEmptyForm();
+                    state.plotForm[k] = (t.type === 'checkbox') ? !!t.checked : t.value;
+                    if (k === 'trigKind') { try { render(true); } catch (eR) {} }
+                };
+                doc.addEventListener('input', _plotTake, true);
+                doc.addEventListener('change', _plotTake, true);
+            }
+        } catch (ePI) {}
 
         /* ★ v494：**滚动位置要记在内存里**（见上面 `_viewScroll` 那段病历）。
            节点会被酒馆重渲染消息时整块删掉，所以监听必须**挂在节点上、每次重挂**
@@ -10178,6 +10442,93 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 }
                 /* ★ v536：血脉格那行版本号的点击 —— 只有「有新版本 / 检查失败」时可点。
                    必须刷新整个页面：只重画状态栏的话，loader 不会重新去拉新脚本。 */
+                /* ★ 2026-11-04：剧情生成 */
+                if (act === 'plot-cast') {
+                    var _pn = String(el.getAttribute('data-name') || '');
+                    if (!_pn) return;
+                    if (!state.plotForm) state.plotForm = plotEmptyForm();
+                    var _ci = state.plotForm.cast.indexOf(_pn);
+                    if (_ci >= 0) state.plotForm.cast.splice(_ci, 1); else state.plotForm.cast.push(_pn);
+                    render(true);
+                    return;
+                }
+                if (act === 'plot-submit') {
+                    var _f = state.plotForm || plotEmptyForm();
+                    var _nm = String(_f.name || '').trim();
+                    var _dsc = String(_f.desc || '').trim();
+                    var _tv = String(_f.trigVal || '').trim();
+                    if (!_nm) { state.plotNote = '⚠ 事件名称不能空。'; render(true); return; }
+                    if (!_dsc) { state.plotNote = '⚠ 大致剧情不能空。'; render(true); return; }
+                    var _rec = {
+                        name: _nm, state: '未开始',
+                        trigger: (_f.trigKind === '日期' ? '日期：' : '境界：') + (_tv || '未定'),
+                        scale: _f.scale || '域级', span: _f.span || '短期',
+                        mood: String(_f.mood || '').trim(),
+                        cast: (_f.cast || []).slice(),
+                        place: String(_f.place || '').trim(),
+                        desc: _dsc,
+                        at: new Date().toISOString().slice(0, 10)
+                    };
+                    var _cur = (state.plotList || []).slice();
+                    var _idx = state.plotEdit;
+                    if (_idx >= 0 && _cur[_idx]) { _rec.state = _cur[_idx].state || '未开始'; _cur[_idx] = _rec; }
+                    else _cur.push(_rec);   /* ★ 新建一律「未开始」，不许跳过状态直接进行中 */
+                    var _polish = !!_f.polish;
+                    state.plotForm = plotEmptyForm();
+                    state.plotEdit = -1;
+                    plotSave(_cur, function () { if (_polish) { try { plotFillComposer(_rec); } catch (ePC) {} } });
+                    return;
+                }
+                if (act === 'plot-cancel') {
+                    state.plotForm = plotEmptyForm();
+                    state.plotEdit = -1;
+                    state.plotNote = '';
+                    render(true);
+                    return;
+                }
+                if (act === 'plot-edit') {
+                    var _ei = parseInt(el.getAttribute('data-i'), 10);
+                    var _it = (state.plotList || [])[_ei];
+                    if (!_it) return;
+                    var _tg = String(_it.trigger || '');
+                    state.plotForm = {
+                        name: _it.name || '',
+                        trigKind: _tg.indexOf('日期') === 0 ? '日期' : '境界',
+                        trigVal: _tg.replace(/^(境界|日期)：/, ''),
+                        mood: _it.mood || '',
+                        cast: (_it.cast || []).slice(),
+                        place: _it.place || '',
+                        scale: _it.scale || '域级',
+                        span: _it.span || '短期',
+                        desc: _it.desc || '',
+                        polish: false      /* 改一条老事件时不再默认勾扩写，避免手滑又填一次输入框 */
+                    };
+                    state.plotEdit = _ei;
+                    state.plotNote = '';
+                    render(true);
+                    return;
+                }
+                if (act === 'plot-state') {
+                    var _si = parseInt(el.getAttribute('data-i'), 10);
+                    var _sl = (state.plotList || []).slice();
+                    if (!_sl[_si]) return;
+                    var _k = PLOT_STATES.indexOf(_sl[_si].state);
+                    _sl[_si] = Object.assign({}, _sl[_si], { state: PLOT_STATES[(_k + 1) % PLOT_STATES.length] });
+                    plotSave(_sl);
+                    return;
+                }
+                if (act === 'plot-del') {
+                    var _di = parseInt(el.getAttribute('data-i'), 10);
+                    var _dl = (state.plotList || []).slice();
+                    if (!_dl[_di]) return;
+                    var _dn = _dl[_di].name || '这一条';
+                    if (typeof confirm === 'function' && !confirm('删掉「' + _dn + '」？')) return;
+                    _dl.splice(_di, 1);
+                    if (state.plotEdit === _di) { state.plotEdit = -1; state.plotForm = plotEmptyForm(); }
+                    plotSave(_dl);
+                    return;
+                }
+
                 /* ★ v1.056：版本页的两个诊断按钮 */
                 if (act === 'hot-recheck') {
                     try { HOTV.first = true; HOTV.err = false; HOTV.at = 0; } catch (eH0) {}
@@ -13151,9 +13502,66 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         }
         return tryAt(0);
     }
+    /* ★★★ 2026-11-04：按标题**读/写世界书条目正文**（剧情生成用）★★★
+       `xzWBSetEntry` 只会开/关，改不了正文；这里补一个同扫描口径的读写。
+       传 content 不传 = 只读；传了 = 覆盖这一条的 content（其余字段原样保留）。
+       ⚠ 写完**必须回读**：宿主可能拒写（只读/权限），不回读就会"界面显示改了、书里没动"。 */
+    function xzWBEntry(title, content) {
+        var T = String(title == null ? '' : title);
+        var th = TH();
+        var isWrite = (content !== undefined && content !== null);
+        if (!T) return Promise.resolve({ ok: false, msg: '没给条目标题' });
+        if (!th) return Promise.resolve({ ok: false, msg: '读不到酒馆助手' });
+        var names = [];
+        function addName(n) { if (n && names.indexOf(n) < 0) names.push(n); }
+        try {
+            var cur = th.getCharWorldbookNames && th.getCharWorldbookNames('current');
+            if (cur) { addName(cur.primary); (cur.additional || []).forEach(addName); }
+        } catch (eB0) {}
+        try { (th.getWorldbookNames ? (th.getWorldbookNames() || []) : []).forEach(addName); } catch (eB1) {}
+        if (!names.length) return Promise.resolve({ ok: false, msg: '一本世界书都没找到' });
+        function findIn(nm) {
+            if (typeof th.getWorldbook !== 'function') return Promise.resolve(null);
+            return Promise.resolve(th.getWorldbook(nm)).then(function (list) {
+                if (!Array.isArray(list)) return null;
+                var hit = null;
+                list.forEach(function (e) { if (!hit && entryTitle(e) === T) hit = e; });
+                return hit ? { nm: nm, e: hit } : null;
+            }, function () { return null; });
+        }
+        function walk(i) {
+            if (i >= names.length) return Promise.resolve({ ok: false, msg: '书里没有「' + T + '」这条' });
+            return findIn(names[i]).then(function (hit) {
+                if (!hit) return walk(i + 1);
+                if (!isWrite) return { ok: true, book: hit.nm, content: String(hit.e.content || '') };
+                if (typeof th.updateWorldbookWith !== 'function') {
+                    return { ok: false, msg: '酒馆助手没有 updateWorldbookWith，写不了正文' };
+                }
+                return Promise.resolve(th.updateWorldbookWith(hit.nm, function (arr) {
+                    return (arr || []).map(function (e) {
+                        if (entryTitle(e) !== T) return e;
+                        var c = {};
+                        Object.keys(e).forEach(function (k) { c[k] = e[k]; });
+                        c.content = String(content);
+                        return c;
+                    });
+                })).then(function () {
+                    return findIn(hit.nm).then(function (again) {
+                        if (!again) return { ok: false, msg: '写完回读不到这一条' };
+                        var same = String(again.e.content || '') === String(content);
+                        return { ok: same, book: hit.nm, msg: same ? '' : '写入没生效（回读内容不一致）' };
+                    });
+                }, function (e2) {
+                    return { ok: false, msg: '写入失败：' + ((e2 && e2.message) || e2) };
+                });
+            });
+        }
+        return walk(0);
+    }
     try {
         if (typeof globalThis !== 'undefined' && globalThis.__XZ05__) {
             globalThis.__XZ05__.xzWBSetEntry = xzWBSetEntry;
+            globalThis.__XZ05__.xzWBEntry = xzWBEntry;
         }
     } catch (eWSet) {}
     function loadEntries() {
