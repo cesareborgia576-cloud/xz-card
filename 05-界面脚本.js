@@ -1017,6 +1017,17 @@
            _v398_memsig 抓的就是「渲染路径读到的内存态没进签名」这一条：
            不进签名的话，点「说明」改完 state 再 render(true) 会被脏检查拦下 ⇒ 点了没反应。 */
         tpHelp: 0,
+        /* ★★★ v540：三处原生 `<details>` 改成受控折叠后的开合态 ★★★
+           病根与 v517 人物卡那次**一模一样**：`render()` 走 `existing.outerHTML = html`
+           整块换节点，新的 `<details>` 天生没有 `open` ⇒ 玩家刚展开的又被收起。
+           而 `toggle` 监听在 v517 已整段删除（注释在 11094 附近），
+           所以这三处现在**没有任何东西记着它们开着**。
+           表现：点开「已学本领」/「不在场人物」/剧情页「说明」，
+                 只要 AI 回一句（变量必变 ⇒ 签名变 ⇒ 重建）就自己关上。
+           ⇒ 三个态都进 `state`，**并且必须进签名**（_v398_memsig 会抓：
+             渲染路径读到的内存态不进签名 = 点了没反应）。
+           键名统一 `fold` 前缀，与人物卡的 `npcOpen`（按人名记）区分开。 */
+        foldSkill: 0, foldAway: 0, foldPlot: 0,
         /* ★ 2026-11-04：剧情生成页的状态
            `plotList` = 从《剧情生成》读回来的事件数组（null = 还没读）；
            `plotForm` = 正在填的表单；`plotEdit` = 正在改第几条（-1 = 新建）。
@@ -2145,9 +2156,22 @@ function xzTypeOf(name, fbT, fbA) {
         } catch (e) {}
         XZ_OVL_FIT = null; XZ_OVL_FIT_WIN = null;
     }
+    /* ★★★ v540：`show(v, '')` 是**错用**，这里给它一个正确的出口 ★★★
+       旧实现 `... : (def || '—')` —— `'' || '—'` 得 `'—'`，于是 `show(v,'')` 和
+       `show(v)` 完全等价，空值一律印破折号。作者在 4141 行自己写着
+       「**绝不能用 show(v,'')** —— 空效果会被兜成字面量 —」，但文件里还有 4 处在用，
+       结果就是「种族 —」「— · — · —系」这种脏串（同一句里三个悬空破折号）。
+       ⇒ 新增哨兵 `show.BLANK`：传它就真的要空串。**不改默认行为** ——
+         另外二十多处 `show(x)` 依赖 `'—'` 兜底，动默认值会一次性改掉半个面板。
+       用法：`show(v, show.BLANK)`。 */
     function show(v, def) {
-        return (v !== undefined && v !== null && String(v).trim() !== '' && String(v).trim() !== 'undefined' && String(v).trim() !== 'null') ? String(v).trim() : (def || '—');
+        var ok = (v !== undefined && v !== null && String(v).trim() !== ''
+            && String(v).trim() !== 'undefined' && String(v).trim() !== 'null');
+        if (ok) return String(v).trim();
+        if (def === show.BLANK) return '';
+        return (def || '—');
     }
+    show.BLANK = '\u0000XZ_BLANK\u0000';
 
     /* ============================ 卡内日期工具 ============================ */
     /* 「1年1月8日」「1月8号」都换算成天数（1 年 = 360 天，1 月 = 30 天） */
@@ -3133,24 +3157,28 @@ function xzTypeOf(name, fbT, fbA) {
         '.xz-root .xz-plot-chip:hover{border-color:var(--xz-border-strong);}',
         '.xz-root .xz-plot-chip.on{color:var(--xz-gold-bright);border-color:var(--xz-gold-dim);background:rgba(212,175,55,0.14);}',
         '.xz-root .xz-plot-other{display:flex;gap:6px;align-items:center;margin-top:6px;}',
-        /* ★ 2026-11-04：解释入口统一成「圆圈感叹号 + 说明」四个字。
+        /* ★ 2026-11-04：解释入口统一成「圆圈感叹号 + 说明」。
            图标**用 CSS 画**，不用 emoji（⚪️/❗️ 各系统字形、颜色、基线全不一样，
            本项目已为 emoji 图标买过单，见「不许用 emoji」那条铁律）。
-           `list-style:none` + 隐藏 marker：原生三角会和图标并排出现两个。
-           开合**不改文案**（文案恒为「说明」），只把 ▾ 转 180° —— 一份状态。 */
-        '.xz-root .xz-plot-fold>summary{list-style:none;display:inline-flex;align-items:center;gap:5px;'
+           开合**不改文案**（文案恒为「说明」），只把 ▾ 转 180° —— 一份状态。
+           ★★★ v540：选择器从 `>summary` / `[open]` 换成 `.xz-plot-fold-hd` / `.xz-open` ★★★
+             原生 `<details>` 已下架（重建就丢开合态，见 plotFold 上方注释）。
+             `.xz-plot-fold-hd` 是普通 div，`list-style` / `::-webkit-details-marker`
+             这两条**留着不删**：它们本身无害，而且万一哪天有人把结构改回 details，
+             不会又冒出"原生三角和自制图标并排两个"那个老病。 */
+        '.xz-root .xz-plot-fold>summary,.xz-root .xz-plot-fold .xz-plot-fold-hd{list-style:none;display:inline-flex;align-items:center;gap:5px;'
           + 'font-size:11px;color:var(--xz-muted);cursor:pointer;user-select:none;outline:none;}',
         '.xz-root .xz-plot-fold>summary::-webkit-details-marker{display:none;}',
         '.xz-root .xz-plot-fold>summary::marker{content:"";}',
-        '.xz-root .xz-plot-fold>summary::before{content:"!";flex:none;display:inline-flex;align-items:center;'
-          + 'justify-content:center;width:12px;height:12px;border-radius:50%;'
+        '.xz-root .xz-plot-fold>summary::before,.xz-root .xz-plot-fold .xz-plot-fold-hd::before{content:"!";flex:none;display:inline-flex;align-items:center;'
+          + 'justify-content:center;width:12px;height:12px;border-radius:50%;box-sizing:border-box;'
           + 'border:1px solid rgba(230,189,118,.62);color:rgba(230,189,118,.95);'
           + 'font-size:9px;font-weight:var(--xz-fw-bold);line-height:1;}',
-        '.xz-root .xz-plot-fold>summary::after{content:"▾";flex:none;font-size:9px;line-height:1;'
+        '.xz-root .xz-plot-fold>summary::after,.xz-root .xz-plot-fold .xz-plot-fold-hd::after{content:"▾";flex:none;font-size:9px;line-height:1;'
           + 'transition:transform .16s;}',
-        '.xz-root .xz-plot-fold[open]>summary::after{transform:rotate(180deg);}',
-        '.xz-root .xz-plot-fold>summary:hover{color:var(--xz-text-2);}',
-        '.xz-root .xz-plot-fold[open]>summary{color:var(--xz-gold);}',
+        '.xz-root .xz-plot-fold[open]>summary::after,.xz-root .xz-plot-fold.xz-open .xz-plot-fold-hd::after{transform:rotate(180deg);}',
+        '.xz-root .xz-plot-fold>summary:hover,.xz-root .xz-plot-fold .xz-plot-fold-hd:hover{color:var(--xz-text-2);}',
+        '.xz-root .xz-plot-fold[open]>summary,.xz-root .xz-plot-fold.xz-open .xz-plot-fold-hd{color:var(--xz-gold);}',
         /* ★ v493：「已学本领」折叠框（用户：四个字 + ▼，框要窄、不要高）
            ① 原生 details 的三角必须藏掉 —— 不然会和我们自己那个 ▼ 并排出现两个；
            ② 展开时 ▼ 转 180°（css 一条 transition，不用 JS 改文案/换字）；
@@ -4677,16 +4705,23 @@ function xzTypeOf(name, fbT, fbA) {
                 flex 会把 summary 撑满整行（父级是块级），四个字就被拉成一条长框。
                 改成 `display:inline-flex;width:auto` + 左右内距收窄 + 上下不垫高，
                 框就只包住「已学本领 ▼」这一点点。
-             ⚠ `▼` 用 css 旋转做开合指示（summary 内 span），不写两套文字：
-               原生 details 没有"展开时改文案"的钩子，写 JS 同步等于多一份状态。 */
-        h += '<details class="xz-details xz-sk-fold" style="margin-top:14px;">' +
-             '<summary style="display:inline-flex;align-items:center;gap:4px;width:auto;' +
+             ⚠ `▼` 用 css 旋转做开合指示（summary 内 span），不写两套文字。
+           ★★★ v540：**原生 `<details>` 换成受控折叠** ★★★
+             原生 details 的 `open` 只是 DOM 上的一个布尔，整块重建就没了；
+             而那个记状态的 `toggle` 监听在 v517 已经被删（见文件末尾那段注释）。
+             ⇒ 玩家点开「已学本领」，AI 一回话（变量必变 ⇒ 重建）就自己关上。
+             改成：普通 div + `data-xz-act="fold-skill"`，点击走已验证的 document 委托，
+             翻 `state.foldSkill` 再 render(true)。没有原生行为参与，就没有时序可争。 */
+        var _skOpen = !!state.foldSkill;
+        h += '<div class="xz-details xz-sk-fold" data-fold="skill" style="margin-top:14px;">' +
+             '<div class="xz-sk-fold-hd" data-xz-act="fold-skill" role="button" tabindex="0"' +
+             ' style="display:inline-flex;align-items:center;gap:4px;width:auto;' +
              'padding:3px 9px;font-size:12px;font-weight:var(--xz-fw-med);color:var(--xz-gold-bright);' +
              'background:rgba(212,175,55,0.10);border:1px solid rgba(212,175,55,0.35);' +
              'border-radius:6px;cursor:pointer;user-select:none;">' +
-             '<span>已学本领</span><span class="xz-sk-fold-ar">▼</span>' +
-             '</summary>' +
-             '<div style="margin-top:10px;">' +
+             '<span>已学本领</span><span class="xz-sk-fold-ar"' + (_skOpen ? ' style="transform:rotate(180deg);"' : '') + '>▼</span>' +
+             '</div>' +
+             (_skOpen ? ('<div style="margin-top:10px;">' +
              '<div class="xz-sub-head" style="margin-top:4px;">✦ 玄技（主动 · ' + nSk + ' 门）</div>' + renderSkillsGroup('主角信息.已学本领.玄技', false) +
              /* ★ v528：学了几部 ≠ 上场几部。玩家 2026-11-01：「弄了三个玄诀，
                 但是战斗界面就显示一个」—— 引擎现在**每部都吃**（v528），这里说清楚，
@@ -4695,7 +4730,7 @@ function xzTypeOf(name, fbT, fbA) {
                   （本项目「两条并行判据是漏改温床」的铁律）。这里只讲结论。 */
              '<div class="xz-sub-head" style="margin-top:8px;">✦ 玄诀（被动 · ' + nHr + ' 部'
                  + (nHr > 1 ? ' · 每部都生效' : '') + '）</div>' + renderSkillsGroup('主角信息.已学本领.玄诀', false) +
-             '</div></details>';
+             '</div>') : '') + '</div>';
 
         h += '</div>';
         return h;
@@ -5180,7 +5215,7 @@ function xzTypeOf(name, fbT, fbA) {
 
                 /* ★ v196：人物卡漏了一大批变量（种族/在场/气血/灵力/状态/血脉/外貌/性格）——
                    这些字段在变量里都存在，卡上却看不到，玩家只能去翻变量表。全部补齐。 */
-                var _race = show(npc.种族, '');
+                var _race = show(npc.种族, show.BLANK);
                 var _onp = npc.在场状态 === true;
                 /* ★ v475（用户 2026-10-30）：「看看人物列表有没有，没有就也加上……界面脚本也同步显示」。
                    放在「在场 / 种族」那一排的第三枚：三者都是**身份小标**，读起来是一组。
@@ -5216,7 +5251,7 @@ function xzTypeOf(name, fbT, fbA) {
 
                 var _bl = npc.血脉;
                 if (_bl && (_bl.名称 || _bl.品阶)) {
-                    var _blT = show(_bl.品阶, ''), _blN = show(_bl.名称, ''), _blP = _bl.纯度;
+                    var _blT = show(_bl.品阶, show.BLANK), _blN = show(_bl.名称, show.BLANK), _blP = _bl.纯度;
                     /* ★ v311：改调模块级 `xzBloodTierColor`。
                        原来这里是手抄的一份 if-else 三元串，与主角页的 BL_TIER_COLOR **两套**：
                        凡血在主角页是灰、在这里是金；改一处必然漂移。
@@ -5262,12 +5297,20 @@ function xzTypeOf(name, fbT, fbA) {
 
                 // 四维
                 if (npc.四维) {
+                    /* ★ v540：`|| '—'` 会把 **0** 也吞成破折号。
+                       0 是合法数值（残废、被吸干、低阶妖兽都会是 0），
+                       印成「力量 —」玩家会当成"数据没写"，而不是"力量为零"。
+                       ⇒ 只对 null/undefined/空串兜底，0 照印。
+                       这与项目里 `at()` / `show()` 那几处是同一个坑，别再写 `||`。 */
+                    var _d4 = function (x) {
+                        return (x === undefined || x === null || String(x).trim() === '') ? '—' : esc(String(x).trim());
+                    };
                     s += _nBox('四维',
                         '<div class="xz-npc-grid4">'
-                        + '<div>力量 <b>' + (npc.四维.力量 || '—') + '</b></div>'
-                        + '<div>敏捷 <b>' + (npc.四维.敏捷 || '—') + '</b></div>'
-                        + '<div>体质 <b>' + (npc.四维.体质 || '—') + '</b></div>'
-                        + '<div>智力 <b>' + (npc.四维.智力 || '—') + '</b></div>'
+                        + '<div>力量 <b>' + _d4(npc.四维.力量) + '</b></div>'
+                        + '<div>敏捷 <b>' + _d4(npc.四维.敏捷) + '</b></div>'
+                        + '<div>体质 <b>' + _d4(npc.四维.体质) + '</b></div>'
+                        + '<div>智力 <b>' + _d4(npc.四维.智力) + '</b></div>'
                         + '</div>', true);
                 }
 
@@ -5279,9 +5322,23 @@ function xzTypeOf(name, fbT, fbA) {
                     var pq0 = pt0.品质 || '黄阶';
                     var pqc0 = Q_COLOR[pq0] || 'var(--xz-gold)';
                     var petSk = pt0.技能 ? (Array.isArray(pt0.技能) ? pt0.技能 : String(pt0.技能).split(/[，]/)) : [];
+                    /* ★ v540：「种族 · 境界 · 属性系」这三段是**可缺的**，缺了就不能留空档 ——
+                       旧写法直接拼 `a + ' · ' + b + ' · ' + c + '系'`，三个都空时印出
+                       「— · — · —系」，缺一个印「··」这种双点。项目里为这个脏串修过一次
+                       （见 5062 那段），这里是同一个病换了位置。
+                       ⇒ 先把非空的段收集起来，再 `join(' · ')`；一段都没有就整段不印。 */
+                    var _petBits = [];
+                    var _ptRace = show(pt0.种族, show.BLANK), _ptRealm = show(pt0.境界, show.BLANK),
+                        _ptAttr = show(pt0.属性, show.BLANK);
+                    if (_ptRace) _petBits.push(esc(_ptRace));
+                    if (_ptRealm) _petBits.push(esc(_ptRealm));
+                    if (_ptAttr) _petBits.push(esc(_ptAttr) + '系');
+                    var _petLine = _petBits.join(' · ')
+                        + (_petBits.length ? ' · ' : '')
+                        + '饱食度 ' + ((pt0.饱食度 !== undefined && pt0.饱食度 !== null) ? pt0.饱食度 : '—');
                     s += _nBox('灵宠 🐾 <b>' + esc(pt0.名称 || pk0) + '</b>',
                         '<span class="xz-chip-sm" style="color:' + pqc0 + ';border-color:' + pqc0 + ';">' + esc(pq0) + '</span> '
-                        + esc(show(pt0.种族, '')) + ' · ' + esc(show(pt0.境界, '')) + ' · ' + esc(show(pt0.属性, '')) + '系 · 饱食度 ' + (pt0.饱食度 !== undefined && pt0.饱食度 !== null ? pt0.饱食度 : '—')
+                        + _petLine
                         + (pt0.性格 ? ('<div style="margin-top:3px;">性格：' + esc(pt0.性格) + '</div>') : '')
                         + (pt0.外貌 ? ('<div style="margin-top:2px;">外貌：' + esc(pt0.外貌) + '</div>') : '')
                         + (petSk.length ? ('<div style="margin-top:2px;">招式：' + esc(petSk.join('、')) + '</div>') : ''), true);
@@ -5374,10 +5431,14 @@ function xzTypeOf(name, fbT, fbA) {
             h += renderNpcList(pList);
         }
         if (aList.length) {
-            h += '<details class="xz-details" style="margin-top:12px; background:rgba(0,0,0,0.15); border-radius:6px;">';
-            h += '<summary class="xz-sub-head" style="outline:none;cursor:pointer;padding:8px;margin:0;">✦ 不在场人物（' + aList.length + ' 人） <span style="font-size:10px;color:var(--xz-muted);font-weight:normal;">点击展开</span></summary>';
-            h += '<div style="padding:4px;">' + renderNpcList(aList) + '</div>';
-            h += '</details>';
+            /* ★ v540：同样是原生 details ⇒ 整块重建就丢开合态（理由见「已学本领」那段）。
+               改成受控折叠：`state.foldAway` 进签名，点击翻它再 render(true)。 */
+            var _awOpen = !!state.foldAway;
+            h += '<div class="xz-details" style="margin-top:12px; background:rgba(0,0,0,0.15); border-radius:6px;">';
+            h += '<div class="xz-sub-head" data-xz-act="fold-away" role="button" tabindex="0"'
+                + ' style="outline:none;cursor:pointer;padding:8px;margin:0;">✦ 不在场人物（' + aList.length + ' 人） <span style="font-size:10px;color:var(--xz-muted);font-weight:normal;">' + (_awOpen ? '点击收起' : '点击展开') + '</span></div>';
+            if (_awOpen) h += '<div style="padding:4px;">' + renderNpcList(aList) + '</div>';
+            h += '</div>';
         }
 
         return h;
@@ -5690,7 +5751,16 @@ function xzTypeOf(name, fbT, fbA) {
         return null;
     }
     function plotPolishPrompt(rec) {
-    function plotPolishPrompt(rec) {
+        /* ★★★ v540 修：这里原来被写成了**双层同名函数** ★★★
+           旧形状是：外层声明了 plotPolishPrompt，函数体里**又**声明了一个同名函数，
+           而外层自己没有 return。⇒ 外层恒返回 undefined。
+           后果不是报错（`node --check` 全绿、静态闸也抓不到），而是：
+           调用方 `var P = plotPolishPrompt(rec)` 拿到 undefined，
+           `JSON.stringify` 又把这个键整个丢掉 ⇒ 模型收到空提示，
+           玩家只看到「模型没有返回内容」。真病在外层少了一个 return。
+           ⚠ 以后改这段：函数只允许出现一层声明，别在它里面再写同名函数。
+           ⚠ 注释里**别贴旧代码原文**：本项目有几道闸是按大括号配平解析源码的，
+             注释里带一对不配平的括号就会把它们的扫描带偏（v539 在工具里踩过六次）。 */
         /* 用数组 join 拼，别在源码里写一长串 `\n` —— 上一版把换行符写到字符串外面，
            `node --check` 直接报 SyntaxError，整页白屏。 */
         var L = [];
@@ -5706,7 +5776,6 @@ function xzTypeOf(name, fbT, fbA) {
         if (rec.place) L.push('相关地点：' + rec.place);
         L.push('梗概：' + rec.desc);
         return L.join(String.fromCharCode(10));
-    }
     }
     function plotPolishOne(fn) {
         var txt = String(fn('') || '');
@@ -5761,12 +5830,20 @@ function xzTypeOf(name, fbT, fbA) {
     /* ★ 2026-11-04（作者原话）：「所有注释和解释只能改为感叹号图标加"说明"这两个汉字」。
        ⇒ 折叠标题**一律**是「说明」两个字，图标由 CSS `::before` 画（圆圈 + 感叹号）。
        参数 `title` 只用来做 aria-label，不上屏。
-       ⚠ 别再把标题改回「这一页怎么用」这类话：这是界面上的解释入口，只有一种长相。 */
+       ⚠ 别再把标题改回「这一页怎么用」这类话：这是界面上的解释入口，只有一种长相。
+       ★★★ v540：不再用原生 `<details>` ★★★
+         理由与「已学本领」同一处病：`outerHTML = html` 整块重建 ⇒ 新的 details 没有 open
+         ⇒ 玩家点开的「说明」在 AI 回一句之后就自己收起了。
+         改成受控折叠：`state.foldPlot` 进签名，点击翻它再 render(true)。
+       ⚠ 开合**不改文案**（文案恒为「说明」），只把 ▾ 转 180° —— 一份状态，
+         避免出现「展开/收起」两套文字不同步（v539 刚定的口径）。 */
     function plotFold(title, inner) {
-        return '<details class="xz-plot-fold" style="margin-top:8px;">'
-            + '<summary aria-label="' + esc(title) + '">说明</summary>'
-            + '<div style="font-size:11px;line-height:1.75;color:var(--xz-muted);padding:6px 2px 0;">' + inner + '</div>'
-            + '</details>';
+        var _open = !!state.foldPlot;
+        return '<div class="xz-plot-fold' + (_open ? ' xz-open' : '') + '" style="margin-top:8px;">'
+            + '<div class="xz-plot-fold-hd" data-xz-act="fold-plot" role="button" tabindex="0"'
+            + ' aria-label="' + esc(title) + '">说明</div>'
+            + (_open ? ('<div style="font-size:11px;line-height:1.75;color:var(--xz-muted);padding:6px 2px 0;">' + inner + '</div>') : '')
+            + '</div>';
     }
     /* ══════════════════════════════════════════════════════════════════════
        ★ 2026-11-04：剧情页每个字段都改成「下拉拉取 + 其他自填」
@@ -9787,7 +9864,13 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
     }
     function _xzScrollApply() {
         try {
-            if (!_viewScroll.tab || _viewScroll.tab !== state.tab) return;
+            /* ★★★ v540 修：`!0 === true` ⇒ 首页（主角 tab=0）的滚动位置永远恢复不了 ★★★
+               旧写法 `if (!_viewScroll.tab || _viewScroll.tab !== state.tab) return;`
+               `state.tab` 存的是**数字下标**，首页就是 0；`!0` 恒为 true ⇒ 直接 return。
+               表现：默认首页滚到第三屏，任何一次重建（变量更新 / 任意点击）都弹回顶部。
+               其它 9 页正常，所以只看日志/探针很难发现 —— 本项目「`||` 吞 0」的又一例。
+               ⇒ 用 `=== null` 判"还没有记忆"，不要用真值。 */
+            if (_viewScroll.tab === null || _viewScroll.tab !== state.tab) return;
             var doc = getDoc();
             var host = doc.getElementById(HOST_ID);
             if (!host) return;
@@ -10010,6 +10093,14 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                也顺手保证"展开后遇到自动重绘"仍然保持展开。 */
             JSON.stringify(state.npcOpen || {}),
             state.tpHelp ? 1 : 0,   /* ★ v536：淬炼页说明折叠态（同上，_v398_memsig 要求） */
+            /* ★★★ v540：三处受控折叠的开合态 —— **必须**进签名 ★★★
+               这三处在 v540 之前是原生 `<details>`，状态住在 DOM 上、不在签名里，
+               于是「整块重建就自己关上」。改成 state 之后如果不进签名，
+               会走到另一个更糟的情况：点了 `state` 变了但脏检查拦下 ⇒ **点了没反应**。
+               `_v398_memsig` 抓的就是这一条（渲染路径读到的内存态必须在签名里）。 */
+            state.foldSkill ? 1 : 0,
+            state.foldAway ? 1 : 0,
+            state.foldPlot ? 1 : 0,
             /* ★ 2026-11-04：剧情页三态进签名 —— 读回来的列表、正在填的表单、改第几条。
                不进签名就点不动（`force` 不参与脏检查，同 dlcBar 那次的病）。 */
             JSON.stringify(state.plotList || []),
@@ -11084,6 +11175,18 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                     return;
                 }
                 if (act === 'show-term') { var nm = el.getAttribute('data-term'); if (nm) openTermModal(nm); return; }
+                /* ★★★ v540：三处原生 `<details>` 下架后，它们的开合入口 ★★★
+                   与 `npc-fold` 同一套路（受控折叠）：翻 state → render(true)。
+                   为什么要自己记：`render()` 是整块 `outerHTML` 替换，
+                   原生开合态活不过一次重建，而 AI 每回一句变量就变 ⇒ 必然重建。
+                   ⚠ 用 `? 0 : 1` 不用 `!x`：旧值可能是字符串，取反会混进布尔。 */
+                if (act === 'fold-skill' || act === 'fold-away' || act === 'fold-plot') {
+                    var _foldKey = act === 'fold-skill' ? 'foldSkill'
+                        : (act === 'fold-away' ? 'foldAway' : 'foldPlot');
+                    try { state[_foldKey] = state[_foldKey] ? 0 : 1; } catch (eFk) {}
+                    render(true);
+                    return;
+                }
                 if (gotoAttr) { gotoPlace(gotoAttr); return; }
             } catch (err) { log('状态栏点击处理失败', err); }
         }, true);
@@ -14467,14 +14570,23 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         }
         bd.innerHTML = h;
 
-        /* 首次打开：按「原创开 / DLC 关」套一次默认值（只做一次，之后以玩家的手动状态为准） */
-        if (!localStorage.getItem(SEED_KEY)) {
+        /* 首次打开：按「原创开 / DLC 关」套一次默认值（只做一次，之后以玩家的手动状态为准）
+           ★★★ v540：localStorage 必须包起来 ★★★
+           本项目 4062 行写着「酒馆里 localStorage 可能被宿主策略挡掉，那里抛一次就会让
+           整个界面脚本停摆」。这里原来是裸调用：`getItem` 抛出去 → 面板已经
+           `bd.innerHTML = h` 画完了，但异常冒到 render 的调用点，被外层 catch 吞成静默，
+           玩家看到的是"列表出来了，但开关全都没反应"。
+           ⇒ 读不到就当"没播过种"（会重播一次，可接受）；写不进去就算了，
+             不要因为记不住标记就把整个面板锁死。 */
+        var _seeded = '1';
+        try { _seeded = localStorage.getItem(SEED_KEY) || ''; } catch (eLs) { _seeded = '1'; }
+        if (!_seeded) {
             var offList = [], onList = [];
             S.entries.forEach(function (e) {
                 if (groupOf(e) && entryIsOn(e)) offList.push(e.uid);    /* DLC 现在是开的 ⇒ 关掉 */
                 if (!groupOf(e) && !entryIsOn(e)) onList.push(e.uid);   /* 原创现在是关的 ⇒ 打开 */
             });
-            localStorage.setItem(SEED_KEY, '1');
+            try { localStorage.setItem(SEED_KEY, '1'); } catch (eLs2) {}
             if (offList.length) setEnabled(offList, false).then(function () { if (onList.length) setEnabled(onList, true); });
             else if (onList.length) setEnabled(onList, true);
         }
@@ -16074,9 +16186,12 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                         _open();
                     }, false);
                 }
-                /* 每楼渲染完跑一次；滑动/编辑走 MESSAGE_UPDATED */
+                /* 每楼渲染完跑一次；滑动/编辑走 MESSAGE_UPDATED
+                   ★ v540：同样要防重复挂 —— 标记挂 document，boot 只成功一次才挂一次。 */
                 try {
-                    if (typeof eventOn === 'function' && typeof tavern_events !== 'undefined') {
+                    if (typeof eventOn === 'function' && typeof tavern_events !== 'undefined'
+                        && !d.__xzPicEventBound) {
+                        d.__xzPicEventBound = 1;
                         eventOn(tavern_events.CHARACTER_MESSAGE_RENDERED, function () { setTimeout(function () { fixOne(d); }, 260); });
                         eventOn(tavern_events.MESSAGE_UPDATED, function () { setTimeout(function () { fixOne(d); }, 260); });
                     }
@@ -16085,24 +16200,51 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                    v478 起 fixOne 自己也做"框还在不在"的自检，
                    （酒馆重绘会把框清掉、而标记留在 host 上），
                    所以这里只做廉价的前置过滤，判断交给 fixOne。 */
-                setInterval(function () {
-                    try {
-                        var all = d.querySelectorAll('.mes_text');
-                        for (var q = 0; q < all.length; q++) {
-                            var tx = all[q].textContent || '';
-                            if (tx.indexOf('人物立绘') < 0) continue;
-                            fixOne(d);
-                            return;
-                        }
-                    } catch (eP) {}
-                }, 4000);
+                /* ★★★ v540 修：这条轮询和上面的 eventOn 都必须**只挂一次** ★★★
+                   旧代码把 `setInterval` 直接写在 boot() 里，而 boot() 会被调两次
+                   （见文件末尾的启动段），于是**两条 4 秒轮询同时跑**：
+                   每条 AI 楼层渲染会触发两次 fixOne（各带一个 260ms 定时器），
+                   两份 eventOn 也各触发一次。永不释放，且越切聊天越多。
+                   ⇒ 用 `d.__xzPicPollBound` 做一次性标记（与上面 `__xzPicClickBound`
+                     同一个手法）。标记挂在 **document** 上，换 document 才会重挂。 */
+                if (!d.__xzPicPollBound) {
+                    d.__xzPicPollBound = 1;
+                    setInterval(function () {
+                        try {
+                            var all = d.querySelectorAll('.mes_text');
+                            for (var q = 0; q < all.length; q++) {
+                                var tx = all[q].textContent || '';
+                                if (tx.indexOf('人物立绘') < 0) continue;
+                                fixOne(d);
+                                return;
+                            }
+                        } catch (eP) {}
+                    }, 4000);
+                }
             } catch (eB) {}
         }
+        /* ★★★ v540：boot 只跑一次 ★★★
+           旧写法 `if (loading) DOMContentLoaded(boot) else boot(); setTimeout(boot, 2000);`
+           ⇒ 第一次必然先跑一次，2 秒后又跑一次，**两次都完整执行**。
+           那个 `setTimeout` 的本意是"兜底：如果第一次挂载时 document 还没准备好"，
+           但它没有判断"第一次是否真的成功了"。
+           ⇒ 改成：用 `__xzBootDone` 记第一次成功，兜底那次只在**没成功过**时才补。
+           ⚠ 不要用"删掉 setTimeout"来修：某些情形（酒馆先给一个空 document、
+             稍后才换成真的）确实需要那 2 秒那一枪，删了会变成"偶发白屏"。 */
         try {
             var DB = doc();
-            if (DB.readyState === 'loading') DB.addEventListener('DOMContentLoaded', boot);
-            else boot();
-            setTimeout(boot, 2000);
+            var _bootOnce = function () {
+                try { if (DB.__xzBootDone) return; } catch (eOnce) { return; }
+                boot();
+                try { DB.__xzBootDone = 1; } catch (eMark) {}
+            };
+            if (DB.readyState === 'loading') DB.addEventListener('DOMContentLoaded', _bootOnce);
+            else _bootOnce();
+            /* 兜底：2 秒后如果 boot 从没成功过（document 为空 / 时机不对），再补一次 */
+            setTimeout(function () {
+                try { if (DB.__xzBootDone) return; } catch (eB2) { return; }
+                _bootOnce();
+            }, 2000);
         } catch (e0) {}
     })();
 })();
