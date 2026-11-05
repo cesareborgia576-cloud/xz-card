@@ -5648,6 +5648,71 @@ function xzTypeOf(name, fbT, fbA) {
        ⚠ 读回来时条目里没有 state，`pagePlot` 用 `e.state || '未开始'` 兜底，
          所以老数据（条目里还带 state 的）照样显示，只是下次写入时被清掉。
        ══════════════════════════════════════════════════════════════════════ */
+    /* ══════════════════════════════════════════════════════════════════════
+       ★★★ v547：剧情条目按境界过滤 ★★★
+       作者 2026-11-05：「剧情分页添加的自定义剧情没到境界还是能读取到，我才引玄初期。」
+       ── 根因 ────────────────────────────────────────────────────────────
+       《设定-剧情生成》是 constant:true 的**常驻**条目，每轮都进提示词。
+       旧模板把 `var EV` 里所有事件无条件 forEach 打出来，`trigger` 只是
+       一行显示文字，从来没被解析 ⇒ 引玄初期照样读到「引玄中期 ~ 玄枢初期」。
+       ── 为什么放在 EJS 渲染期，不放写入期 ──────────────────────────────
+       写入期过滤会把结果写死：玩家破境之后那条事件永远不再出现。
+       EJS 每轮渲染时读**当下**的 `主角信息.境界`，没到不显示、到了自动出现。
+       ── 口径 ────────────────────────────────────────────────────────────
+       · `境界：X ~ Y`：X ≤ 当前 ≤ Y 才显示；Y 为「无」= 不限上限。
+       · `境界：X`：只判下限。   · `境界：未定 / 无`：不限，始终显示。
+       · `日期：…`：按日期触发，不受境界门槛挡（别把日期事件误杀）。
+       · 取不到境界 / 认不出门槛 ⇒ **不挡**，宁可多显示也不让剧情凭空消失。
+       ⚠ 分页里的「已生成」列表仍显示全部事件 —— 那是玩家的管理列表，
+         本段只管模型读到的那份正文。
+       ⚠ PLOT_EJS_TAIL 与 世界书/剧情/剧情生成.md 是两份副本，
+         由 工具/_v547_plot_realm.mjs 逐字符比对；只改一处必红。
+       ⚠ 这段是给 EJS 用的程序，注释里不写沿革话、不写状态词、不写空参函数调用
+         （常驻条目卫生闸会扫代码痕迹）。 */
+    var PLOT_EJS_TAIL = [
+        "var _rr = ['凡人','引玄初期','引玄中期','引玄后期','引玄巅峰','凝府初期','凝府中期','凝府后期','大凝府','玄枢初期','玄枢中期','玄枢后期','大玄枢','化域初期','化域中期','化域后期','大化域','尊玄初期','尊玄中期','尊玄后期','大尊玄','穹境初期','穹境中期','穹境后期','穹主','玄罡初期','玄罡中期','玄罡后期','大玄罡','玄王初期','玄王中期','玄王后期','大玄王','玄皇初期','玄皇中期','玄皇后期','大玄皇','玄宗初期','玄宗中期','玄宗后期','大玄宗','玄圣初期','玄圣中期','玄圣后期','大玄圣','帝境初期','帝境中期','帝境后期','玄帝'];",
+        "var _cur = '';",
+        "try { if (typeof getvar === 'function') { var _g = getvar('主角信息.境界'); if (_g) _cur = String(_g); } } catch (_e1) {}",
+        "if (!_cur) { try { if (typeof vars !== 'undefined' && vars && vars.主角信息) _cur = String(vars.主角信息.境界 || ''); } catch (_e2) {} }",
+        "function _rk(v) {",
+        "  var s = String(v || '');",
+        "  var i = _rr.indexOf(s);",
+        "  if (i >= 0) return i;",
+        "  for (var j = _rr.length - 1; j >= 0; j--) { if (s.indexOf(_rr[j]) >= 0) return j; }",
+        "  return -1;",
+        "}",
+        "function _hit(t) {",
+        "  var s = String(t || '');",
+        "  if (s.indexOf('境界：') !== 0) return true;",
+        "  var body = s.slice(3);",
+        "  if (!body || body === '未定' || body === '无') return true;",
+        "  var seg = body.split(' ~ ');",
+        "  var lo = _rk(seg[0]);",
+        "  var hi = (seg.length > 1 && String(seg[1] || '') !== '无' && String(seg[1] || '') !== '') ? _rk(seg[1]) : -1;",
+        "  var cr = _rk(_cur);",
+        "  if (cr < 0 || lo < 0) return true;",
+        "  if (cr < lo) return false;",
+        "  if (hi >= 0 && cr > hi) return false;",
+        "  return true;",
+        "}",
+        "var LIVE = [];",
+        "for (var _i = 0; _i < EV.length; _i++) { if (_hit(EV[_i] && EV[_i].trigger)) LIVE.push(EV[_i]); }",
+        "%>",
+        "<% if (!LIVE.length) { %>【剧情生成】当前境界没有可触发的剧情事件。",
+        "<% } else { %>",
+        "【剧情生成 · 共 <%= LIVE.length %> 条】",
+        "<% LIVE.forEach(function (e) { %>",
+        "◆ <%= e.name %>",
+        "　触发：<%= e.trigger %>",
+        "　影响力：<%= e.scale %>｜时长：<%= e.span %>",
+        "　氛围：<%= e.mood || '未写' %>",
+        "　相关人物：<%= (e.cast && e.cast.length) ? e.cast.join('、') : '不限' %>",
+        "　相关地点：<%= e.place || '不限' %>",
+        "　梗概：<%= e.desc %>",
+        "<% }); %>",
+        "<% } %>",
+        "</剧情生成>"
+    ].join('\n');
     function plotCompose(list) {
         var L = [];
         L.push('<剧情生成>');
@@ -5660,21 +5725,7 @@ function xzTypeOf(name, fbT, fbA) {
             return o;
         });
         L.push('var EV = ' + JSON.stringify(_clean, null, 2) + ';');
-        L.push('%>');
-        L.push('<% if (!EV.length) { %>【剧情生成】本局还没有生成过剧情事件。');
-        L.push('<% } else { %>');
-        L.push('【剧情生成 · 共 <%= EV.length %> 条】');
-        L.push('<% EV.forEach(function (e) { %>');
-        L.push('◆ <%= e.name %>');
-        L.push('　触发：<%= e.trigger %>');
-        L.push('　影响力：<%= e.scale %>｜时长：<%= e.span %>');
-        L.push('　氛围：<%= e.mood || "未写" %>');
-        L.push('　相关人物：<%= (e.cast && e.cast.length) ? e.cast.join("、") : "不限" %>');
-        L.push('　相关地点：<%= e.place || "不限" %>');
-        L.push('　梗概：<%= e.desc %>');
-        L.push('<% }); %>');
-        L.push('<% } %>');
-        L.push('</剧情生成>');
+        L.push(PLOT_EJS_TAIL);
         return L.join('\n');
     }
     function plotLoad(force) {
