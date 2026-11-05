@@ -7117,7 +7117,10 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
          ⚠ 这批人**没有 small/ 缩略图**（仓库里 404），只能用原图（1.3~1.6MB）。
            卡片槽只有 52px，加载慢但能出来 —— 比空白强。等有缩略图再换。 */
       "唐舞桐": "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/douluo-qipao@main/唐舞桐/_1792939724703.png",
-      "朱竹清": "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/douluo-qipao@main/朱竹清/_1792939781034.png",
+      /* ★ v549（作者 2026-11-06）：「朱竹清原来的立绘全部删除」
+         douluo-qipao 那 5 张旗袍立绘（_1792939781034 等）整体下架。
+         新的两张走 XZ_ILLU_STAND（`朱竹清_立绘_1/2.webp`），优先级本来就高于本表。
+         ⚠ XZ_GALLERY 里同名那条也要一起删，否则相册翻页还能刷出旧的。 */
       "萧萧": "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/douluo-qipao@main/萧萧/_1792939714259.png",
       "魔皇": "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/douluo-qipao@main/魔皇/_1792939693255.png",
       "许小言": "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/douluo-qipao@main/许小言/_1792939677308.png",
@@ -7146,7 +7149,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
       "唐舞桐": ["_1792939724703", "_1792939728680", "_1792939730756", "_1792939739045", "_1792939740998", "_1792939745734", "_1792939754131", "_1792939769742", "_1792939774219", "_1792939776631", "_1792939778983", "_1792939842095", "_1792939844431", "_1792939847462"],
       "古月娜": ["_1792939685255", "_1792939687140", "_1792939702134", "_1792939703764", "_1792939705489", "_1792939707987"],
       "马小桃": ["_1792939664683", "_1792939667002", "_1792939669137", "_1792939672654", "_1792939800583", "_1792939802256"],
-      "朱竹清": ["_1792939781034", "_1792939782778", "_1792939810385", "_1792939811897", "_1792939813430"],
+      /* ★ v549：朱竹清那 5 张旗袍立绘随 XZ_PORTRAITS 一起下架，见上方注释。 */
       "萧萧": ["_1792939714259", "_1792939716115", "_1792939718616", "_1792939722155"],
       "魔皇": ["_1792939693255", "_1792939695256", "_1792939697634", "_1792939699796"],
       "阿银": ["_1792939794739", "_1792939796615", "_1792939798673"],
@@ -7197,6 +7200,117 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
        ⚠ 名字解析规则必须和 xzLookupPortrait 一致：精确 → 取尾段 → 最长键包含。
          自作聪明换一套，就会出现「古月娜有自定义头像，古月也被套上」这种串味。
        ══════════════════════════════════════════════════════════════════════ */
+  /* ══════════════════════════════════════════════════════════════════════
+     ★ v548 人物画像（v548 实传，21 张 / 13 人）
+     ──────────────────────────────────────────────────────────────────────
+     这批是**新版人物立绘**，与动作图同仓同步上传。用它替换掉 XZ_PORTRAITS 里
+     那几张外链老图（老图散在 image-hosting / imgckr 两个图床，域名不同、寿命不保）。
+
+     ⚠ 不直接改 XZ_PORTRAITS，而是**新开一张表 + 优先查它**：
+       XZ_PORTRAITS 是"出厂素材"，玩家点了「还原默认」要能回到原样；
+       而且它被 xzThumbOf / 状态栏 / 战斗界面三条路径共用，直接换值
+       会让"某条路径还是旧图"这种问题悄悄出现。
+     ⚠ 只收**本批真实存在的** 13 人。白长雪 / 鸾媚 本批没给画像 ⇒ 不在这里，
+       她们继续走 XZ_PORTRAITS 的老图（或空）。
+     ⚠ 名字解析规则与 xzLookupPortrait 完全一致：精确 → 取尾段 → 最长键包含。
+        自作聪明换一套，就会出现「古月娜有图，古月也被套上」那种串味。
+     ══════════════════════════════════════════════════════════════════════════ */
+    var XZ_ILLU_STAND = {
+      "九幽": [
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%B9%9D%E5%B9%BD/%E4%B9%9D%E5%B9%BD_%E7%AB%8B%E7%BB%98_1.webp"
+      ],
+      "云疏月": [
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E7%96%8F%E6%9C%88/%E4%BA%91%E7%96%8F%E6%9C%88_%E7%AB%8B%E7%BB%98_1.webp"
+      ],
+      "千仞雪": [
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%8D%83%E4%BB%9E%E9%9B%AA/%E5%8D%83%E4%BB%9E%E9%9B%AA_%E7%AB%8B%E7%BB%98_1.webp"
+      ],
+      "司幽怜": [
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%8F%B8%E5%B9%BD%E6%80%9C/%E5%8F%B8%E5%B9%BD%E6%80%9C_%E7%AB%8B%E7%BB%98_1.webp",
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%8F%B8%E5%B9%BD%E6%80%9C/%E5%8F%B8%E5%B9%BD%E6%80%9C_%E7%AB%8B%E7%BB%98_2.webp"
+      ],
+      "小舞": [
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%B0%8F%E8%88%9E/%E5%B0%8F%E8%88%9E_%E7%AB%8B%E7%BB%98_1.webp"
+      ],
+      "应欢欢": [
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%BA%94%E6%AC%A2%E6%AC%A2/%E5%BA%94%E6%AC%A2%E6%AC%A2_%E7%AB%8B%E7%BB%98_1.webp",
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%BA%94%E6%AC%A2%E6%AC%A2/%E5%BA%94%E6%AC%A2%E6%AC%A2_%E7%AB%8B%E7%BB%98_2.webp"
+      ],
+      "朱竹清": [
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%9C%B1%E7%AB%B9%E6%B8%85/%E6%9C%B1%E7%AB%B9%E6%B8%85_%E7%AB%8B%E7%BB%98_1.webp",
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%9C%B1%E7%AB%B9%E6%B8%85/%E6%9C%B1%E7%AB%B9%E6%B8%85_%E7%AB%8B%E7%BB%98_2.webp"
+      ],
+      "梵清仪": [
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%A2%B5%E6%B8%85%E4%BB%AA/%E6%A2%B5%E6%B8%85%E4%BB%AA_%E7%AB%8B%E7%BB%98_1.webp"
+      ],
+      "沈清颜": [
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B2%88%E6%B8%85%E9%A2%9C/%E6%B2%88%E6%B8%85%E9%A2%9C_%E7%AB%8B%E7%BB%98_1.webp"
+      ],
+      "洛璃": [
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B4%9B%E7%92%83/%E6%B4%9B%E7%92%83_%E7%AB%8B%E7%BB%98_1.webp"
+      ],
+      "清蘅元母": [
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D_%E7%AB%8B%E7%BB%98_1.webp",
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D_%E7%AB%8B%E7%BB%98_2.webp",
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D_%E7%AB%8B%E7%BB%98_3.webp"
+      ],
+      "清衍静": [
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E7%AB%8B%E7%BB%98_1.webp",
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E7%AB%8B%E7%BB%98_2.webp",
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E7%AB%8B%E7%BB%98_3.webp"
+      ],
+      "美杜莎": [
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BE%8E%E6%9D%9C%E8%8E%8E/%E7%BE%8E%E6%9D%9C%E8%8E%8E_%E7%AB%8B%E7%BB%98_1.webp",
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BE%8E%E6%9D%9C%E8%8E%8E/%E7%BE%8E%E6%9D%9C%E8%8E%8E_%E7%AB%8B%E7%BB%98_2.webp"
+      ],
+      "药仙儿": [
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%8D%AF%E4%BB%99%E5%84%BF/%E8%8D%AF%E4%BB%99%E5%84%BF_%E7%AB%8B%E7%BB%98_1.webp"
+      ],
+      "言清漪": [
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%A8%80%E6%B8%85%E6%BC%AA/%E8%A8%80%E6%B8%85%E6%BC%AA_%E7%AB%8B%E7%BB%98_1.webp",
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%A8%80%E6%B8%85%E6%BC%AA/%E8%A8%80%E6%B8%85%E6%BC%AA_%E7%AB%8B%E7%BB%98_2.webp"
+      ],
+      "阿依莎": [
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E4%BE%9D%E8%8E%8E/%E9%98%BF%E4%BE%9D%E8%8E%8E_%E7%AB%8B%E7%BB%98_1.webp",
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E4%BE%9D%E8%8E%8E/%E9%98%BF%E4%BE%9D%E8%8E%8E_%E7%AB%8B%E7%BB%98_2.webp"
+      ],
+      "阿银": [
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E9%93%B6/%E9%98%BF%E9%93%B6_%E7%AB%8B%E7%BB%98_1.webp",
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E9%93%B6/%E9%98%BF%E9%93%B6_%E7%AB%8B%E7%BB%98_2.webp"
+      ],
+      "陆昭华": [
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%99%86%E6%98%AD%E5%8D%8E/%E9%99%86%E6%98%AD%E5%8D%8E_%E7%AB%8B%E7%BB%98_1.webp"
+      ],
+      "罗衣": [
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BD%97%E8%A1%A3/%E7%BD%97%E8%A1%A3_%E7%AB%8B%E7%BB%98_1.webp"
+      ],
+      "青璃": [
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%9D%92%E7%92%83/%E9%9D%92%E7%92%83_%E7%AB%8B%E7%BB%98_1.webp"
+      ],
+      "鸾媚": [
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%B8%BE%E5%AA%9A/%E9%B8%BE%E5%AA%9A_%E7%AB%8B%E7%BB%98_1.webp"
+      ],
+      "敖凝霜": [
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%95%96%E5%87%9D%E9%9C%9C/%E6%95%96%E5%87%9D%E9%9C%9C_%E7%AB%8B%E7%BB%98_1.webp"
+      ],
+    };
+  /* 查新版画像。**返回数组**（有人有多张），由调用方决定给几张。 */
+  function xzIlluStand(nm) {
+    var n = String(nm == null ? '' : nm).trim();
+    if (!n) return [];
+    if (XZ_ILLU_STAND[n]) return XZ_ILLU_STAND[n];
+    var tail = n.split(/[·・‧∙]/).pop().trim();
+    if (tail && tail !== n && XZ_ILLU_STAND[tail]) return XZ_ILLU_STAND[tail];
+    /* 最长键包含匹配：与 xzLookupPortrait 同一条规则，别改 */
+    var best = '', bestLen = -1;
+    for (var k in XZ_ILLU_STAND) {
+      if (!XZ_ILLU_STAND[k] || !XZ_ILLU_STAND[k].length) continue;
+      if (n.indexOf(k) === -1) continue;
+      if (k.length > bestLen) { bestLen = k.length; best = k; }
+    }
+    return best ? XZ_ILLU_STAND[best] : [];
+  }
+
     var XZ_CUSTOM_PIC = {};                 /* 角色名 -> objectURL / dataURL（本会话） */
     var _XZ_PIC_DB = 'xzCustomPic';
     var _XZ_PIC_STORE = 'pic';
@@ -7461,6 +7575,12 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         /* v503：自定义立绘优先，且**只返回那一张**（自定义即唯一，不轮播） */
         var _cu1 = xzCustomPicOf(nm);
         if (_cu1) return [_cu1];
+        /* ★ v548：新版画像（有人 2~3 张）优先于斗罗那套 XZ_GALLERY。
+           ⚠ 顺序要紧：XZ_GALLERY 里是**斗罗 DLC 的旗袍立绘**（古月娜/小舞那一批），
+             与天元录本卡人物同名只是巧合，绝不能互相借图。
+             这里按"本批真实存在的人"精确查，查不到才落到 XZ_GALLERY。 */
+        var _n548g = xzIlluStand(nm);
+        if (_n548g.length) return _n548g.slice();
         var key = xzGalleryKey(nm);
         if (!key) return [];
         if (_GAL_URL_CACHE[key]) return _GAL_URL_CACHE[key];
@@ -8033,6 +8153,12 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         /* v503：自定义立绘优先（状态栏 / 战斗界面那一张） */
         var _cu3 = xzCustomPicOf(n);
         if (_cu3) return _cu3;
+        /* ★ v548：新版人物画像（本地仓库、已压到 ~80KB）优先于老图床。
+           老图散在 image-hosting / imgckr 两个域名，一张 800KB~1.5MB，
+           且随时可能失效；新的一律 .webp、同仓同源。
+           ⚠ 只取第一张：状态栏那个框是**单图**，多张的轮播在 xzGalleryUrls 里。 */
+        var _n548 = xzIlluStand(n);
+        if (_n548.length) return xzSafeImg(_n548[0]);
         var hit = function (v) { var x = String(v == null ? '' : v).trim(); return x ? xzSafeImg(x) : ''; };
         var v = XZ_PORTRAITS[n];
         if (hit(v)) return hit(v);
@@ -16878,53 +17004,418 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
        模型不会去写标签 —— 这是**正确的空态**，不是漏做。
        别为了"看起来完整"往里塞占位 URL。
      ══════════════════════════════════════════════════════════════════════ */
-  var ALL_ACTIONS = ['手势前戏', '手交', '口交', '授乳手交', '乳交', '做爱', '做爱女上位', '做爱后入'];
+  var ALL_ACTIONS = ["口交", "授乳手交", "手交", "乳交", "足交", "做爱", "做爱女上位", "做爱后入", "做爱后入特写", "做爱抱起"];
 
   var GALLERY_POOLS = {
-    /* ══ 本卡 9 人 / 27 组 / 39 张（2026-10-31 实传） ══
-       图床：GitHub 仓库 character-images → jsdelivr CDN（已去元数据）。
-       ⚠ 仓库是**共用**的，春日狂想曲那 6 个角色（meisui/久美子/桃崎/葵/静奈/香本）
-         也在同一个仓库里 ⇒ 这张表只准收本卡这 9 人，别整目录扫（会混进别人的图）。
-       ⚠ 键＝`人物|动作`，值＝有序 URL 数组（顺序就是轮播顺序，不许排序）。
-       ⚠ 文件名里全是百分号编码（中文路径必须编码，否则酒馆里 404）。
-       改图只走 工具/_v490_gen_illu_wb.mjs 反向生成世界书，别手改那两条条目。 */
     /* ── 云疏月 ── */
-    "云疏月|手交": ["https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E7%96%8F%E6%9C%88/%E4%BA%91%E7%96%8F%E6%9C%88_%E6%89%8B%E4%BA%A4_1.png"],
-    "云疏月|乳交": ["https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E7%96%8F%E6%9C%88/%E4%BA%91%E7%96%8F%E6%9C%88_%E4%B9%B3%E4%BA%A4_1.png"],
-    "云疏月|做爱": ["https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E7%96%8F%E6%9C%88/%E4%BA%91%E7%96%8F%E6%9C%88_%E5%81%9A%E7%88%B1_1.png", "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E7%96%8F%E6%9C%88/%E4%BA%91%E7%96%8F%E6%9C%88_%E5%81%9A%E7%88%B1_2.png"],
+    "云疏月|授乳手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E7%96%8F%E6%9C%88/%E4%BA%91%E7%96%8F%E6%9C%88_%E6%8E%88%E4%B9%B3%E6%89%8B%E4%BA%A4_1.webp"
+    ],
+    "云疏月|手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E7%96%8F%E6%9C%88/%E4%BA%91%E7%96%8F%E6%9C%88_%E6%89%8B%E4%BA%A4_1.webp"
+    ],
+    "云疏月|乳交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E7%96%8F%E6%9C%88/%E4%BA%91%E7%96%8F%E6%9C%88_%E4%B9%B3%E4%BA%A4_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E7%96%8F%E6%9C%88/%E4%BA%91%E7%96%8F%E6%9C%88_%E4%B9%B3%E4%BA%A4_2.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E7%96%8F%E6%9C%88/%E4%BA%91%E7%96%8F%E6%9C%88_%E4%B9%B3%E4%BA%A4_3.webp"
+    ],
+    "云疏月|足交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E7%96%8F%E6%9C%88/%E4%BA%91%E7%96%8F%E6%9C%88_%E8%B6%B3%E4%BA%A4_1.webp"
+    ],
+    "云疏月|做爱女上位": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E7%96%8F%E6%9C%88/%E4%BA%91%E7%96%8F%E6%9C%88_%E5%81%9A%E7%88%B1%E5%A5%B3%E4%B8%8A%E4%BD%8D_1.webp"
+    ],
+    "云疏月|做爱后入": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E7%96%8F%E6%9C%88/%E4%BA%91%E7%96%8F%E6%9C%88_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_1.webp"
+    ],
+    "云疏月|做爱后入特写": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E7%96%8F%E6%9C%88/%E4%BA%91%E7%96%8F%E6%9C%88_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5%E7%89%B9%E5%86%99_1.webp"
+    ],
+    "云疏月|做爱抱起": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E7%96%8F%E6%9C%88/%E4%BA%91%E7%96%8F%E6%9C%88_%E5%81%9A%E7%88%B1%E6%8A%B1%E8%B5%B7_1.webp"
+    ],
     /* ── 司幽怜 ── */
-    "司幽怜|手交": ["https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%8F%B8%E5%B9%BD%E6%80%9C/%E5%8F%B8%E5%B9%BD%E6%80%9C_%E6%89%8B%E4%BA%A4_1.png"],
-    "司幽怜|乳交": ["https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%8F%B8%E5%B9%BD%E6%80%9C/%E5%8F%B8%E5%B9%BD%E6%80%9C_%E4%B9%B3%E4%BA%A4_1.png"],
-    "司幽怜|做爱": ["https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%8F%B8%E5%B9%BD%E6%80%9C/%E5%8F%B8%E5%B9%BD%E6%80%9C_%E5%81%9A%E7%88%B1_1.png", "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%8F%B8%E5%B9%BD%E6%80%9C/%E5%8F%B8%E5%B9%BD%E6%80%9C_%E5%81%9A%E7%88%B1_2.png"],
+    "司幽怜|授乳手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%8F%B8%E5%B9%BD%E6%80%9C/%E5%8F%B8%E5%B9%BD%E6%80%9C_%E6%8E%88%E4%B9%B3%E6%89%8B%E4%BA%A4_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%8F%B8%E5%B9%BD%E6%80%9C/%E5%8F%B8%E5%B9%BD%E6%80%9C_%E6%8E%88%E4%B9%B3%E6%89%8B%E4%BA%A4_2.webp"
+    ],
+    "司幽怜|手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%8F%B8%E5%B9%BD%E6%80%9C/%E5%8F%B8%E5%B9%BD%E6%80%9C_%E6%89%8B%E4%BA%A4_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%8F%B8%E5%B9%BD%E6%80%9C/%E5%8F%B8%E5%B9%BD%E6%80%9C_%E6%89%8B%E4%BA%A4_2.webp"
+    ],
+    "司幽怜|乳交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%8F%B8%E5%B9%BD%E6%80%9C/%E5%8F%B8%E5%B9%BD%E6%80%9C_%E4%B9%B3%E4%BA%A4_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%8F%B8%E5%B9%BD%E6%80%9C/%E5%8F%B8%E5%B9%BD%E6%80%9C_%E4%B9%B3%E4%BA%A4_2.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%8F%B8%E5%B9%BD%E6%80%9C/%E5%8F%B8%E5%B9%BD%E6%80%9C_%E4%B9%B3%E4%BA%A4_3.webp"
+    ],
+    "司幽怜|足交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%8F%B8%E5%B9%BD%E6%80%9C/%E5%8F%B8%E5%B9%BD%E6%80%9C_%E8%B6%B3%E4%BA%A4_1.webp"
+    ],
+    "司幽怜|做爱女上位": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%8F%B8%E5%B9%BD%E6%80%9C/%E5%8F%B8%E5%B9%BD%E6%80%9C_%E5%81%9A%E7%88%B1%E5%A5%B3%E4%B8%8A%E4%BD%8D_1.webp"
+    ],
+    "司幽怜|做爱后入": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%8F%B8%E5%B9%BD%E6%80%9C/%E5%8F%B8%E5%B9%BD%E6%80%9C_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_1.webp"
+    ],
+    "司幽怜|做爱后入特写": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%8F%B8%E5%B9%BD%E6%80%9C/%E5%8F%B8%E5%B9%BD%E6%80%9C_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5%E7%89%B9%E5%86%99_1.webp"
+    ],
     /* ── 梵清仪 ── */
-    "梵清仪|手交": ["https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%A2%B5%E6%B8%85%E4%BB%AA/%E6%A2%B5%E6%B8%85%E4%BB%AA_%E6%89%8B%E4%BA%A4_1.png"],
-    "梵清仪|乳交": ["https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%A2%B5%E6%B8%85%E4%BB%AA/%E6%A2%B5%E6%B8%85%E4%BB%AA_%E4%B9%B3%E4%BA%A4_1.png"],
-    "梵清仪|做爱": ["https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%A2%B5%E6%B8%85%E4%BB%AA/%E6%A2%B5%E6%B8%85%E4%BB%AA_%E5%81%9A%E7%88%B1_1.png", "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%A2%B5%E6%B8%85%E4%BB%AA/%E6%A2%B5%E6%B8%85%E4%BB%AA_%E5%81%9A%E7%88%B1_2.png"],
+    "梵清仪|口交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%A2%B5%E6%B8%85%E4%BB%AA/%E6%A2%B5%E6%B8%85%E4%BB%AA_%E5%8F%A3%E4%BA%A4_1.webp"
+    ],
+    "梵清仪|乳交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%A2%B5%E6%B8%85%E4%BB%AA/%E6%A2%B5%E6%B8%85%E4%BB%AA_%E4%B9%B3%E4%BA%A4_1.webp"
+    ],
+    "梵清仪|做爱女上位": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%A2%B5%E6%B8%85%E4%BB%AA/%E6%A2%B5%E6%B8%85%E4%BB%AA_%E5%81%9A%E7%88%B1%E5%A5%B3%E4%B8%8A%E4%BD%8D_1.webp"
+    ],
+    "梵清仪|做爱后入": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%A2%B5%E6%B8%85%E4%BB%AA/%E6%A2%B5%E6%B8%85%E4%BB%AA_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%A2%B5%E6%B8%85%E4%BB%AA/%E6%A2%B5%E6%B8%85%E4%BB%AA_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_2.webp"
+    ],
+    "梵清仪|做爱后入特写": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%A2%B5%E6%B8%85%E4%BB%AA/%E6%A2%B5%E6%B8%85%E4%BB%AA_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5%E7%89%B9%E5%86%99_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%A2%B5%E6%B8%85%E4%BB%AA/%E6%A2%B5%E6%B8%85%E4%BB%AA_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5%E7%89%B9%E5%86%99_2.webp"
+    ],
     /* ── 沈清颜 ── */
-    "沈清颜|手交": ["https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B2%88%E6%B8%85%E9%A2%9C/%E6%B2%88%E6%B8%85%E9%A2%9C_%E6%89%8B%E4%BA%A4_1.png"],
-    "沈清颜|乳交": ["https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B2%88%E6%B8%85%E9%A2%9C/%E6%B2%88%E6%B8%85%E9%A2%9C_%E4%B9%B3%E4%BA%A4_1.png"],
-    "沈清颜|做爱": ["https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B2%88%E6%B8%85%E9%A2%9C/%E6%B2%88%E6%B8%85%E9%A2%9C_%E5%81%9A%E7%88%B1_1.png", "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B2%88%E6%B8%85%E9%A2%9C/%E6%B2%88%E6%B8%85%E9%A2%9C_%E5%81%9A%E7%88%B1_2.png"],
+    "沈清颜|授乳手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B2%88%E6%B8%85%E9%A2%9C/%E6%B2%88%E6%B8%85%E9%A2%9C_%E6%8E%88%E4%B9%B3%E6%89%8B%E4%BA%A4_1.webp"
+    ],
+    "沈清颜|手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B2%88%E6%B8%85%E9%A2%9C/%E6%B2%88%E6%B8%85%E9%A2%9C_%E6%89%8B%E4%BA%A4_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B2%88%E6%B8%85%E9%A2%9C/%E6%B2%88%E6%B8%85%E9%A2%9C_%E6%89%8B%E4%BA%A4_2.webp"
+    ],
+    "沈清颜|乳交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B2%88%E6%B8%85%E9%A2%9C/%E6%B2%88%E6%B8%85%E9%A2%9C_%E4%B9%B3%E4%BA%A4_1.webp"
+    ],
+    "沈清颜|足交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B2%88%E6%B8%85%E9%A2%9C/%E6%B2%88%E6%B8%85%E9%A2%9C_%E8%B6%B3%E4%BA%A4_1.webp"
+    ],
+    "沈清颜|做爱女上位": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B2%88%E6%B8%85%E9%A2%9C/%E6%B2%88%E6%B8%85%E9%A2%9C_%E5%81%9A%E7%88%B1%E5%A5%B3%E4%B8%8A%E4%BD%8D_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B2%88%E6%B8%85%E9%A2%9C/%E6%B2%88%E6%B8%85%E9%A2%9C_%E5%81%9A%E7%88%B1%E5%A5%B3%E4%B8%8A%E4%BD%8D_2.webp"
+    ],
+    "沈清颜|做爱后入": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B2%88%E6%B8%85%E9%A2%9C/%E6%B2%88%E6%B8%85%E9%A2%9C_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B2%88%E6%B8%85%E9%A2%9C/%E6%B2%88%E6%B8%85%E9%A2%9C_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_2.webp"
+    ],
+    "沈清颜|做爱后入特写": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B2%88%E6%B8%85%E9%A2%9C/%E6%B2%88%E6%B8%85%E9%A2%9C_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5%E7%89%B9%E5%86%99_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B2%88%E6%B8%85%E9%A2%9C/%E6%B2%88%E6%B8%85%E9%A2%9C_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5%E7%89%B9%E5%86%99_2.webp"
+    ],
+    /* ── 清蘅元母 ── */
+    "清蘅元母|手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D_%E6%89%8B%E4%BA%A4_1.webp"
+    ],
+    "清蘅元母|乳交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D_%E4%B9%B3%E4%BA%A4_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D_%E4%B9%B3%E4%BA%A4_2.webp"
+    ],
+    "清蘅元母|做爱女上位": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D_%E5%81%9A%E7%88%B1%E5%A5%B3%E4%B8%8A%E4%BD%8D_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D_%E5%81%9A%E7%88%B1%E5%A5%B3%E4%B8%8A%E4%BD%8D_2.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D_%E5%81%9A%E7%88%B1%E5%A5%B3%E4%B8%8A%E4%BD%8D_3.webp"
+    ],
+    "清蘅元母|做爱后入": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_2.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_3.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_4.webp"
+    ],
+    "清蘅元母|做爱后入特写": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5%E7%89%B9%E5%86%99_1.webp"
+    ],
+    /* ── 清衍静 ── */
+    "清衍静|授乳手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E6%8E%88%E4%B9%B3%E6%89%8B%E4%BA%A4_1.webp"
+    ],
+    "清衍静|手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E6%89%8B%E4%BA%A4_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E6%89%8B%E4%BA%A4_2.webp"
+    ],
+    "清衍静|乳交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E4%B9%B3%E4%BA%A4_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E4%B9%B3%E4%BA%A4_2.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E4%B9%B3%E4%BA%A4_3.webp"
+    ],
+    "清衍静|足交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E8%B6%B3%E4%BA%A4_1.webp"
+    ],
+    "清衍静|做爱女上位": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E5%81%9A%E7%88%B1%E5%A5%B3%E4%B8%8A%E4%BD%8D_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E5%81%9A%E7%88%B1%E5%A5%B3%E4%B8%8A%E4%BD%8D_2.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E5%81%9A%E7%88%B1%E5%A5%B3%E4%B8%8A%E4%BD%8D_3.webp"
+    ],
+    "清衍静|做爱后入": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_1.webp"
+    ],
+    "清衍静|做爱后入特写": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5%E7%89%B9%E5%86%99_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5%E7%89%B9%E5%86%99_2.webp"
+    ],
     /* ── 白长雪 ── */
-    "白长雪|口交": ["https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%99%BD%E9%95%BF%E9%9B%AA/%E7%99%BD%E9%95%BF%E9%9B%AA_%E5%8F%A3%E4%BA%A4_1.png"],
-    "白长雪|乳交": ["https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%99%BD%E9%95%BF%E9%9B%AA/%E7%99%BD%E9%95%BF%E9%9B%AA_%E4%B9%B3%E4%BA%A4_1.png"],
-    "白长雪|做爱": ["https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%99%BD%E9%95%BF%E9%9B%AA/%E7%99%BD%E9%95%BF%E9%9B%AA_%E5%81%9A%E7%88%B1_1.png", "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%99%BD%E9%95%BF%E9%9B%AA/%E7%99%BD%E9%95%BF%E9%9B%AA_%E5%81%9A%E7%88%B1_2.png"],
+    "白长雪|授乳手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%99%BD%E9%95%BF%E9%9B%AA/%E7%99%BD%E9%95%BF%E9%9B%AA_%E6%8E%88%E4%B9%B3%E6%89%8B%E4%BA%A4_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%99%BD%E9%95%BF%E9%9B%AA/%E7%99%BD%E9%95%BF%E9%9B%AA_%E6%8E%88%E4%B9%B3%E6%89%8B%E4%BA%A4_2.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%99%BD%E9%95%BF%E9%9B%AA/%E7%99%BD%E9%95%BF%E9%9B%AA_%E6%8E%88%E4%B9%B3%E6%89%8B%E4%BA%A4_3.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%99%BD%E9%95%BF%E9%9B%AA/%E7%99%BD%E9%95%BF%E9%9B%AA_%E6%8E%88%E4%B9%B3%E6%89%8B%E4%BA%A4_4.webp"
+    ],
+    "白长雪|手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%99%BD%E9%95%BF%E9%9B%AA/%E7%99%BD%E9%95%BF%E9%9B%AA_%E6%89%8B%E4%BA%A4_1.webp"
+    ],
+    "白长雪|乳交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%99%BD%E9%95%BF%E9%9B%AA/%E7%99%BD%E9%95%BF%E9%9B%AA_%E4%B9%B3%E4%BA%A4_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%99%BD%E9%95%BF%E9%9B%AA/%E7%99%BD%E9%95%BF%E9%9B%AA_%E4%B9%B3%E4%BA%A4_2.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%99%BD%E9%95%BF%E9%9B%AA/%E7%99%BD%E9%95%BF%E9%9B%AA_%E4%B9%B3%E4%BA%A4_3.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%99%BD%E9%95%BF%E9%9B%AA/%E7%99%BD%E9%95%BF%E9%9B%AA_%E4%B9%B3%E4%BA%A4_4.webp"
+    ],
+    "白长雪|做爱女上位": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%99%BD%E9%95%BF%E9%9B%AA/%E7%99%BD%E9%95%BF%E9%9B%AA_%E5%81%9A%E7%88%B1%E5%A5%B3%E4%B8%8A%E4%BD%8D_1.webp"
+    ],
+    "白长雪|做爱后入": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%99%BD%E9%95%BF%E9%9B%AA/%E7%99%BD%E9%95%BF%E9%9B%AA_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%99%BD%E9%95%BF%E9%9B%AA/%E7%99%BD%E9%95%BF%E9%9B%AA_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_2.webp"
+    ],
+    "白长雪|做爱后入特写": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%99%BD%E9%95%BF%E9%9B%AA/%E7%99%BD%E9%95%BF%E9%9B%AA_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5%E7%89%B9%E5%86%99_1.webp"
+    ],
+    "白长雪|做爱抱起": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%99%BD%E9%95%BF%E9%9B%AA/%E7%99%BD%E9%95%BF%E9%9B%AA_%E5%81%9A%E7%88%B1%E6%8A%B1%E8%B5%B7_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%99%BD%E9%95%BF%E9%9B%AA/%E7%99%BD%E9%95%BF%E9%9B%AA_%E5%81%9A%E7%88%B1%E6%8A%B1%E8%B5%B7_2.webp"
+    ],
     /* ── 药仙儿 ── */
-    "药仙儿|手交": ["https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%8D%AF%E4%BB%99%E5%84%BF/%E8%8D%AF%E4%BB%99%E5%84%BF_%E6%89%8B%E4%BA%A4_1.png"],
-    "药仙儿|乳交": ["https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%8D%AF%E4%BB%99%E5%84%BF/%E8%8D%AF%E4%BB%99%E5%84%BF_%E4%B9%B3%E4%BA%A4_1.png"],
-    "药仙儿|做爱": ["https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%8D%AF%E4%BB%99%E5%84%BF/%E8%8D%AF%E4%BB%99%E5%84%BF_%E5%81%9A%E7%88%B1_1.png", "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%8D%AF%E4%BB%99%E5%84%BF/%E8%8D%AF%E4%BB%99%E5%84%BF_%E5%81%9A%E7%88%B1_2.png", "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%8D%AF%E4%BB%99%E5%84%BF/%E8%8D%AF%E4%BB%99%E5%84%BF_%E5%81%9A%E7%88%B1_3.png"],
+    "药仙儿|手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%8D%AF%E4%BB%99%E5%84%BF/%E8%8D%AF%E4%BB%99%E5%84%BF_%E6%89%8B%E4%BA%A4_1.webp"
+    ],
+    "药仙儿|乳交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%8D%AF%E4%BB%99%E5%84%BF/%E8%8D%AF%E4%BB%99%E5%84%BF_%E4%B9%B3%E4%BA%A4_1.webp"
+    ],
+    "药仙儿|做爱后入": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%8D%AF%E4%BB%99%E5%84%BF/%E8%8D%AF%E4%BB%99%E5%84%BF_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_1.webp"
+    ],
+    "药仙儿|做爱后入特写": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%8D%AF%E4%BB%99%E5%84%BF/%E8%8D%AF%E4%BB%99%E5%84%BF_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5%E7%89%B9%E5%86%99_1.webp"
+    ],
     /* ── 言清漪 ── */
-    "言清漪|口交": ["https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%A8%80%E6%B8%85%E6%BC%AA/%E8%A8%80%E6%B8%85%E6%BC%AA_%E5%8F%A3%E4%BA%A4_1.png"],
-    "言清漪|乳交": ["https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%A8%80%E6%B8%85%E6%BC%AA/%E8%A8%80%E6%B8%85%E6%BC%AA_%E4%B9%B3%E4%BA%A4_1.png", "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%A8%80%E6%B8%85%E6%BC%AA/%E8%A8%80%E6%B8%85%E6%BC%AA_%E4%B9%B3%E4%BA%A4_2.png"],
-    "言清漪|做爱": ["https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%A8%80%E6%B8%85%E6%BC%AA/%E8%A8%80%E6%B8%85%E6%BC%AA_%E5%81%9A%E7%88%B1_1.png", "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%A8%80%E6%B8%85%E6%BC%AA/%E8%A8%80%E6%B8%85%E6%BC%AA_%E5%81%9A%E7%88%B1_2.png"],
+    "言清漪|手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%A8%80%E6%B8%85%E6%BC%AA/%E8%A8%80%E6%B8%85%E6%BC%AA_%E6%89%8B%E4%BA%A4_1.webp"
+    ],
+    "言清漪|乳交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%A8%80%E6%B8%85%E6%BC%AA/%E8%A8%80%E6%B8%85%E6%BC%AA_%E4%B9%B3%E4%BA%A4_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%A8%80%E6%B8%85%E6%BC%AA/%E8%A8%80%E6%B8%85%E6%BC%AA_%E4%B9%B3%E4%BA%A4_2.webp"
+    ],
+    "言清漪|做爱后入": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%A8%80%E6%B8%85%E6%BC%AA/%E8%A8%80%E6%B8%85%E6%BC%AA_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_1.webp"
+    ],
+    "言清漪|做爱后入特写": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%A8%80%E6%B8%85%E6%BC%AA/%E8%A8%80%E6%B8%85%E6%BC%AA_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5%E7%89%B9%E5%86%99_1.webp"
+    ],
+    "言清漪|做爱抱起": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%A8%80%E6%B8%85%E6%BC%AA/%E8%A8%80%E6%B8%85%E6%BC%AA_%E5%81%9A%E7%88%B1%E6%8A%B1%E8%B5%B7_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%A8%80%E6%B8%85%E6%BC%AA/%E8%A8%80%E6%B8%85%E6%BC%AA_%E5%81%9A%E7%88%B1%E6%8A%B1%E8%B5%B7_2.webp"
+    ],
     /* ── 阿依莎 ── */
-    "阿依莎|手交": ["https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E4%BE%9D%E8%8E%8E/%E9%98%BF%E4%BE%9D%E8%8E%8E_%E6%89%8B%E4%BA%A4_1.png"],
-    "阿依莎|乳交": ["https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E4%BE%9D%E8%8E%8E/%E9%98%BF%E4%BE%9D%E8%8E%8E_%E4%B9%B3%E4%BA%A4_1.png"],
-    "阿依莎|做爱": ["https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E4%BE%9D%E8%8E%8E/%E9%98%BF%E4%BE%9D%E8%8E%8E_%E5%81%9A%E7%88%B1_1.png", "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E4%BE%9D%E8%8E%8E/%E9%98%BF%E4%BE%9D%E8%8E%8E_%E5%81%9A%E7%88%B1_2.png", "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E4%BE%9D%E8%8E%8E/%E9%98%BF%E4%BE%9D%E8%8E%8E_%E5%81%9A%E7%88%B1_3.png"],
+    "阿依莎|授乳手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E4%BE%9D%E8%8E%8E/%E9%98%BF%E4%BE%9D%E8%8E%8E_%E6%8E%88%E4%B9%B3%E6%89%8B%E4%BA%A4_1.webp"
+    ],
+    "阿依莎|手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E4%BE%9D%E8%8E%8E/%E9%98%BF%E4%BE%9D%E8%8E%8E_%E6%89%8B%E4%BA%A4_1.webp"
+    ],
+    "阿依莎|乳交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E4%BE%9D%E8%8E%8E/%E9%98%BF%E4%BE%9D%E8%8E%8E_%E4%B9%B3%E4%BA%A4_1.webp"
+    ],
+    "阿依莎|足交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E4%BE%9D%E8%8E%8E/%E9%98%BF%E4%BE%9D%E8%8E%8E_%E8%B6%B3%E4%BA%A4_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E4%BE%9D%E8%8E%8E/%E9%98%BF%E4%BE%9D%E8%8E%8E_%E8%B6%B3%E4%BA%A4_2.webp"
+    ],
+    "阿依莎|做爱女上位": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E4%BE%9D%E8%8E%8E/%E9%98%BF%E4%BE%9D%E8%8E%8E_%E5%81%9A%E7%88%B1%E5%A5%B3%E4%B8%8A%E4%BD%8D_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E4%BE%9D%E8%8E%8E/%E9%98%BF%E4%BE%9D%E8%8E%8E_%E5%81%9A%E7%88%B1%E5%A5%B3%E4%B8%8A%E4%BD%8D_2.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E4%BE%9D%E8%8E%8E/%E9%98%BF%E4%BE%9D%E8%8E%8E_%E5%81%9A%E7%88%B1%E5%A5%B3%E4%B8%8A%E4%BD%8D_3.webp"
+    ],
+    "阿依莎|做爱后入": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E4%BE%9D%E8%8E%8E/%E9%98%BF%E4%BE%9D%E8%8E%8E_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_1.webp"
+    ],
+    "阿依莎|做爱后入特写": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E4%BE%9D%E8%8E%8E/%E9%98%BF%E4%BE%9D%E8%8E%8E_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5%E7%89%B9%E5%86%99_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E4%BE%9D%E8%8E%8E/%E9%98%BF%E4%BE%9D%E8%8E%8E_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5%E7%89%B9%E5%86%99_2.webp"
+    ],
+    "阿依莎|做爱抱起": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E4%BE%9D%E8%8E%8E/%E9%98%BF%E4%BE%9D%E8%8E%8E_%E5%81%9A%E7%88%B1%E6%8A%B1%E8%B5%B7_1.webp"
+    ],
     /* ── 陆昭华 ── */
-    "陆昭华|手交": ["https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%99%86%E6%98%AD%E5%8D%8E/%E9%99%86%E6%98%AD%E5%8D%8E_%E6%89%8B%E4%BA%A4_1.png"],
-    "陆昭华|口交": ["https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%99%86%E6%98%AD%E5%8D%8E/%E9%99%86%E6%98%AD%E5%8D%8E_%E5%8F%A3%E4%BA%A4_1.png"],
-    "陆昭华|做爱": ["https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%99%86%E6%98%AD%E5%8D%8E/%E9%99%86%E6%98%AD%E5%8D%8E_%E5%81%9A%E7%88%B1_1.png", "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%99%86%E6%98%AD%E5%8D%8E/%E9%99%86%E6%98%AD%E5%8D%8E_%E5%81%9A%E7%88%B1_2.png"]
+    "陆昭华|授乳手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%99%86%E6%98%AD%E5%8D%8E/%E9%99%86%E6%98%AD%E5%8D%8E_%E6%8E%88%E4%B9%B3%E6%89%8B%E4%BA%A4_1.webp"
+    ],
+    "陆昭华|手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%99%86%E6%98%AD%E5%8D%8E/%E9%99%86%E6%98%AD%E5%8D%8E_%E6%89%8B%E4%BA%A4_1.webp"
+    ],
+    "陆昭华|乳交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%99%86%E6%98%AD%E5%8D%8E/%E9%99%86%E6%98%AD%E5%8D%8E_%E4%B9%B3%E4%BA%A4_1.webp"
+    ],
+    "陆昭华|足交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%99%86%E6%98%AD%E5%8D%8E/%E9%99%86%E6%98%AD%E5%8D%8E_%E8%B6%B3%E4%BA%A4_1.webp"
+    ],
+    "陆昭华|做爱女上位": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%99%86%E6%98%AD%E5%8D%8E/%E9%99%86%E6%98%AD%E5%8D%8E_%E5%81%9A%E7%88%B1%E5%A5%B3%E4%B8%8A%E4%BD%8D_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%99%86%E6%98%AD%E5%8D%8E/%E9%99%86%E6%98%AD%E5%8D%8E_%E5%81%9A%E7%88%B1%E5%A5%B3%E4%B8%8A%E4%BD%8D_2.webp"
+    ],
+    "陆昭华|做爱后入": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%99%86%E6%98%AD%E5%8D%8E/%E9%99%86%E6%98%AD%E5%8D%8E_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_1.webp"
+    ],
+    "陆昭华|做爱后入特写": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%99%86%E6%98%AD%E5%8D%8E/%E9%99%86%E6%98%AD%E5%8D%8E_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5%E7%89%B9%E5%86%99_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%99%86%E6%98%AD%E5%8D%8E/%E9%99%86%E6%98%AD%E5%8D%8E_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5%E7%89%B9%E5%86%99_2.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%99%86%E6%98%AD%E5%8D%8E/%E9%99%86%E6%98%AD%E5%8D%8E_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5%E7%89%B9%E5%86%99_3.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%99%86%E6%98%AD%E5%8D%8E/%E9%99%86%E6%98%AD%E5%8D%8E_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5%E7%89%B9%E5%86%99_4.webp"
+    ],
+    "陆昭华|做爱抱起": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%99%86%E6%98%AD%E5%8D%8E/%E9%99%86%E6%98%AD%E5%8D%8E_%E5%81%9A%E7%88%B1%E6%8A%B1%E8%B5%B7_1.webp"
+    ],
+    /* ── 鸾媚 ── */
+    "鸾媚|手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%B8%BE%E5%AA%9A/%E9%B8%BE%E5%AA%9A_%E6%89%8B%E4%BA%A4_1.webp"
+    ],
+    "鸾媚|乳交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%B8%BE%E5%AA%9A/%E9%B8%BE%E5%AA%9A_%E4%B9%B3%E4%BA%A4_1.webp"
+    ],
+    "鸾媚|做爱后入": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%B8%BE%E5%AA%9A/%E9%B8%BE%E5%AA%9A_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_1.webp"
+    ],
+    /* ── 云韵 ── */
+    "云韵|授乳手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E9%9F%B5/%E4%BA%91%E9%9F%B5_%E6%8E%88%E4%B9%B3%E6%89%8B%E4%BA%A4_1.webp"
+    ],
+    "云韵|手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E9%9F%B5/%E4%BA%91%E9%9F%B5_%E6%89%8B%E4%BA%A4_1.webp"
+    ],
+    "云韵|乳交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E9%9F%B5/%E4%BA%91%E9%9F%B5_%E4%B9%B3%E4%BA%A4_1.webp"
+    ],
+    "云韵|足交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E9%9F%B5/%E4%BA%91%E9%9F%B5_%E8%B6%B3%E4%BA%A4_1.webp"
+    ],
+    "云韵|做爱女上位": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E9%9F%B5/%E4%BA%91%E9%9F%B5_%E5%81%9A%E7%88%B1%E5%A5%B3%E4%B8%8A%E4%BD%8D_1.webp"
+    ],
+    "云韵|做爱后入": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E9%9F%B5/%E4%BA%91%E9%9F%B5_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_1.webp"
+    ],
+    "云韵|做爱后入特写": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E9%9F%B5/%E4%BA%91%E9%9F%B5_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5%E7%89%B9%E5%86%99_1.webp"
+    ],
+    /* ── 千仞雪 ── */
+    "千仞雪|口交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%8D%83%E4%BB%9E%E9%9B%AA/%E5%8D%83%E4%BB%9E%E9%9B%AA_%E5%8F%A3%E4%BA%A4_1.webp"
+    ],
+    "千仞雪|授乳手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%8D%83%E4%BB%9E%E9%9B%AA/%E5%8D%83%E4%BB%9E%E9%9B%AA_%E6%8E%88%E4%B9%B3%E6%89%8B%E4%BA%A4_1.webp"
+    ],
+    "千仞雪|手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%8D%83%E4%BB%9E%E9%9B%AA/%E5%8D%83%E4%BB%9E%E9%9B%AA_%E6%89%8B%E4%BA%A4_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%8D%83%E4%BB%9E%E9%9B%AA/%E5%8D%83%E4%BB%9E%E9%9B%AA_%E6%89%8B%E4%BA%A4_2.webp"
+    ],
+    "千仞雪|乳交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%8D%83%E4%BB%9E%E9%9B%AA/%E5%8D%83%E4%BB%9E%E9%9B%AA_%E4%B9%B3%E4%BA%A4_1.webp"
+    ],
+    "千仞雪|足交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%8D%83%E4%BB%9E%E9%9B%AA/%E5%8D%83%E4%BB%9E%E9%9B%AA_%E8%B6%B3%E4%BA%A4_1.webp"
+    ],
+    "千仞雪|做爱后入": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%8D%83%E4%BB%9E%E9%9B%AA/%E5%8D%83%E4%BB%9E%E9%9B%AA_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_1.webp"
+    ],
+    /* ── 小舞 ── */
+    "小舞|口交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%B0%8F%E8%88%9E/%E5%B0%8F%E8%88%9E_%E5%8F%A3%E4%BA%A4_1.webp"
+    ],
+    "小舞|授乳手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%B0%8F%E8%88%9E/%E5%B0%8F%E8%88%9E_%E6%8E%88%E4%B9%B3%E6%89%8B%E4%BA%A4_1.webp"
+    ],
+    "小舞|手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%B0%8F%E8%88%9E/%E5%B0%8F%E8%88%9E_%E6%89%8B%E4%BA%A4_1.webp"
+    ],
+    "小舞|乳交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%B0%8F%E8%88%9E/%E5%B0%8F%E8%88%9E_%E4%B9%B3%E4%BA%A4_1.webp"
+    ],
+    "小舞|足交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%B0%8F%E8%88%9E/%E5%B0%8F%E8%88%9E_%E8%B6%B3%E4%BA%A4_1.webp"
+    ],
+    "小舞|做爱女上位": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%B0%8F%E8%88%9E/%E5%B0%8F%E8%88%9E_%E5%81%9A%E7%88%B1%E5%A5%B3%E4%B8%8A%E4%BD%8D_1.webp"
+    ],
+    "小舞|做爱后入": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%B0%8F%E8%88%9E/%E5%B0%8F%E8%88%9E_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_1.webp"
+    ],
+    /* ── 朱竹清 ── */
+    "朱竹清|授乳手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%9C%B1%E7%AB%B9%E6%B8%85/%E6%9C%B1%E7%AB%B9%E6%B8%85_%E6%8E%88%E4%B9%B3%E6%89%8B%E4%BA%A4_1.webp"
+    ],
+    "朱竹清|乳交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%9C%B1%E7%AB%B9%E6%B8%85/%E6%9C%B1%E7%AB%B9%E6%B8%85_%E4%B9%B3%E4%BA%A4_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%9C%B1%E7%AB%B9%E6%B8%85/%E6%9C%B1%E7%AB%B9%E6%B8%85_%E4%B9%B3%E4%BA%A4_2.webp"
+    ],
+    "朱竹清|足交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%9C%B1%E7%AB%B9%E6%B8%85/%E6%9C%B1%E7%AB%B9%E6%B8%85_%E8%B6%B3%E4%BA%A4_1.webp"
+    ],
+    "朱竹清|做爱女上位": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%9C%B1%E7%AB%B9%E6%B8%85/%E6%9C%B1%E7%AB%B9%E6%B8%85_%E5%81%9A%E7%88%B1%E5%A5%B3%E4%B8%8A%E4%BD%8D_1.webp"
+    ],
+    "朱竹清|做爱后入": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%9C%B1%E7%AB%B9%E6%B8%85/%E6%9C%B1%E7%AB%B9%E6%B8%85_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_1.webp"
+    ],
+    "朱竹清|做爱后入特写": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%9C%B1%E7%AB%B9%E6%B8%85/%E6%9C%B1%E7%AB%B9%E6%B8%85_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5%E7%89%B9%E5%86%99_1.webp"
+    ],
+    /* ── 美杜莎 ── */
+    "美杜莎|授乳手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BE%8E%E6%9D%9C%E8%8E%8E/%E7%BE%8E%E6%9D%9C%E8%8E%8E_%E6%8E%88%E4%B9%B3%E6%89%8B%E4%BA%A4_1.webp"
+    ],
+    "美杜莎|手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BE%8E%E6%9D%9C%E8%8E%8E/%E7%BE%8E%E6%9D%9C%E8%8E%8E_%E6%89%8B%E4%BA%A4_1.webp"
+    ],
+    "美杜莎|乳交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BE%8E%E6%9D%9C%E8%8E%8E/%E7%BE%8E%E6%9D%9C%E8%8E%8E_%E4%B9%B3%E4%BA%A4_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BE%8E%E6%9D%9C%E8%8E%8E/%E7%BE%8E%E6%9D%9C%E8%8E%8E_%E4%B9%B3%E4%BA%A4_2.webp"
+    ],
+    "美杜莎|足交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BE%8E%E6%9D%9C%E8%8E%8E/%E7%BE%8E%E6%9D%9C%E8%8E%8E_%E8%B6%B3%E4%BA%A4_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BE%8E%E6%9D%9C%E8%8E%8E/%E7%BE%8E%E6%9D%9C%E8%8E%8E_%E8%B6%B3%E4%BA%A4_2.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BE%8E%E6%9D%9C%E8%8E%8E/%E7%BE%8E%E6%9D%9C%E8%8E%8E_%E8%B6%B3%E4%BA%A4_3.webp"
+    ],
+    "美杜莎|做爱女上位": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BE%8E%E6%9D%9C%E8%8E%8E/%E7%BE%8E%E6%9D%9C%E8%8E%8E_%E5%81%9A%E7%88%B1%E5%A5%B3%E4%B8%8A%E4%BD%8D_1.webp"
+    ],
+    "美杜莎|做爱后入": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BE%8E%E6%9D%9C%E8%8E%8E/%E7%BE%8E%E6%9D%9C%E8%8E%8E_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BE%8E%E6%9D%9C%E8%8E%8E/%E7%BE%8E%E6%9D%9C%E8%8E%8E_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_2.webp"
+    ],
+    "美杜莎|做爱后入特写": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BE%8E%E6%9D%9C%E8%8E%8E/%E7%BE%8E%E6%9D%9C%E8%8E%8E_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5%E7%89%B9%E5%86%99_1.webp"
+    ],
+    /* ── 阿银 ── */
+    "阿银|授乳手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E9%93%B6/%E9%98%BF%E9%93%B6_%E6%8E%88%E4%B9%B3%E6%89%8B%E4%BA%A4_1.webp"
+    ],
+    "阿银|手交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E9%93%B6/%E9%98%BF%E9%93%B6_%E6%89%8B%E4%BA%A4_1.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E9%93%B6/%E9%98%BF%E9%93%B6_%E6%89%8B%E4%BA%A4_2.webp",
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E9%93%B6/%E9%98%BF%E9%93%B6_%E6%89%8B%E4%BA%A4_3.webp"
+    ],
+    "阿银|足交": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E9%93%B6/%E9%98%BF%E9%93%B6_%E8%B6%B3%E4%BA%A4_2.webp"
+    ],
+    "阿银|做爱女上位": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E9%93%B6/%E9%98%BF%E9%93%B6_%E5%81%9A%E7%88%B1%E5%A5%B3%E4%B8%8A%E4%BD%8D_1.webp"
+    ],
+    "阿银|做爱后入": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E9%93%B6/%E9%98%BF%E9%93%B6_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_1.webp"
+    ],
+    "阿银|做爱后入特写": [
+      "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E9%93%B6/%E9%98%BF%E9%93%B6_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5%E7%89%B9%E5%86%99_1.webp"
+    ]
   };
+
 
   /* ══════════════════════════════════════════════════════════════════════
      ★★★ 闭合标签必须是**可选的** ★★★
@@ -17012,13 +17503,41 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         /* ⚠⚠ 方向别写反（第一版就写反了，红在反向自证上）：
              `a.indexOf(ka) === 0` = 模型写的**更长** ⇒ 想借短的 ⇒ **禁止**
                （'做爱女上位'.indexOf('做爱') === 0 ⇒ 女上位借了做爱的图）
-             `ka.indexOf(a) === 0` = 图组动作**更长** ⇒ 模型写的短、但确实是这个姿势的子类 ⇒ **可以借**
-               （'做爱女上位'.indexOf('做爱') 反过来 ⇒ 写「做爱」能借到「做爱女上位」那组的图）
-           两边都只能借到**唯一一组**；命中多组就不借（无法判定姿势，猜错=放错图）。 */
+             `ka.indexOf(a) === 0` = 图组动作**更长** ⇒ 模型写的短，没指名姿势 ⇒ **可以借**
+               （'做爱女上位'.indexOf('做爱') 反过来 ⇒ 写「做爱」能用到「做爱女上位」那组） */
         if (ka.indexOf(a) === 0) cands.push(k);
       }
-      if (cands.length === 1) hit = GALLERY_POOLS[cands[0]];
-      /* 命中 0 个或 >1 个都不借：0 个是真没有；>1 个无法判定是哪个姿势，猜错就是放错图 */
+      if (cands.length === 1) {
+        hit = GALLERY_POOLS[cands[0]];
+      } else if (cands.length > 1) {
+        /* ★ v548：命中多组时**合并**，而不是"不借"。
+           ── 为什么改 ──────────────────────────────────────────────────────
+           上一版写的是"命中多组就不借（无法判定姿势，猜错=放错图）"。
+           那套口径在**旧词表**下成立：那时有裸「做爱」组，多组命中说明模型写的词
+           跨了姿势（'做爱女上位' 命中 做爱/做爱女上位）—— 借哪个都是骗人。
+           但 v548 这批图**没有裸「做爱」组**（只有 做爱女上位/做爱后入/做爱后入特写/做爱抱起），
+           于是模型只要写最常用的「做爱」，就命中 4 组 ⇒ 按旧口径判"不借" ⇒ **一张图都不出**。
+           实测白长雪｜做爱 → []（她明明有 11 张做爱图）。
+           ⇒ 两个方向要分开看：
+             · 模型写的词**更长**（指名了姿势，如 做爱女上位）却只有更短的组 ⇒ 仍然**严禁借**
+               —— 这就是上面铁律保住的那条，别碰。
+             · 模型写的词**更短**（如裸「做爱」）而表里有多组子类 ⇒ 它**没指名姿势**，
+               把这几个姿势的图合起来给它，语义上完全正确，且不算猜。
+           ── 合并顺序 ──
+           按 ALL_ACTIONS 的声明顺序走（不是 for-in 顺序）。for-in 的顺序在同一引擎里
+           虽然稳定，但"稳定"不等于"可预期"，换引擎/换写法就可能变 ⇒ 玩家看到的轮播
+           顺序会莫名其妙地变。 */
+        var _cands = cands.slice().sort(function (x, y) {
+          return ALL_ACTIONS.indexOf(x.slice(pre.length)) - ALL_ACTIONS.indexOf(y.slice(pre.length));
+        });
+        var _merged = [];
+        for (var _ci = 0; _ci < _cands.length; _ci++) {
+          var _arr = GALLERY_POOLS[_cands[_ci]] || [];
+          for (var _aj = 0; _aj < _arr.length; _aj++) _merged.push(_arr[_aj]);
+        }
+        if (_merged.length) hit = _merged;
+      }
+      /* 命中 0 个 = 这个人真没有这个动作的图，老实返回 []（不瞎配）。 */
     }
     _aliasCache[key] = hit || [];
     return _aliasCache[key];
