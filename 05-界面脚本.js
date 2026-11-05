@@ -7293,6 +7293,9 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
       "敖凝霜": [
         "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%95%96%E5%87%9D%E9%9C%9C/%E6%95%96%E5%87%9D%E9%9C%9C_%E7%AB%8B%E7%BB%98_1.webp"
       ],
+      "云韵": [
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E9%9F%B5/%E4%BA%91%E9%9F%B5_%E8%B6%B3%E4%BA%A4_1.webp"
+      ]
     };
   /* 查新版画像。**返回数组**（有人有多张），由调用方决定给几张。 */
   function xzIlluStand(nm) {
