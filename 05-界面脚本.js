@@ -1029,7 +1029,7 @@
            键名统一 `fold` 前缀，与人物卡的 `npcOpen`（按人名记）区分开。 */
         foldSkill: 0, foldAway: 0, foldPlot: 0,
         /* ★ 2026-11-04：剧情生成页的状态
-           `plotList` = 从《剧情生成》读回来的事件数组（null = 还没读）；
+           `plotList` = 从《设定-剧情生成》读回来的事件数组（null = 还没读）；
            `plotForm` = 正在填的表单；`plotEdit` = 正在改第几条（-1 = 新建）。
            ⚠ 三个都要进签名（渲染路径读它们），否则点完不重绘 —— _v398_memsig 会抓。 */
         plotList: null, plotForm: null, plotEdit: -1, plotBusy: false, plotNote: '',
@@ -1157,7 +1157,7 @@ function xzSkillInfo(name) { void name; return null; }
    连"看起来有人在用"的假象也没了。 */
 
 /* ===== 四维作用表（v72 · 脚本战斗口径）=====
-   四维（力量 / 敏捷 / 体质 / 智力）在《脚本战斗系统》里**各有各的用处**，
+   四维（力量 / 敏捷 / 体质 / 智力）在《设定-脚本战斗系统》里**各有各的用处**，
    不再折算成任何「总战力」—— 口径逐条对应世界书正文格式条目：
      力量×3 → 招式基础伤害加成
      敏捷×2 → 先攻总值 ／ 敏捷÷4 → 别人打你时的目标闪避
@@ -1171,13 +1171,13 @@ function xzSkillInfo(name) { void name; return null; }
 var XZ_ATTR_INFO = {
   '力量': { key: 'STR', color: 'var(--xz-gold)', short: '伤害',
     calc: '伤害加成 = 力量 × 3',
-    desc: '力量每 +1，招式基础伤害 +3（见《脚本战斗系统》第三阶段）。' },
+    desc: '力量每 +1，招式基础伤害 +3（见《设定-脚本战斗系统》第三阶段）。' },
   '敏捷': { key: 'AGI', color: 'var(--xz-gold)', short: '先攻·闪避',
     calc: '先攻 = 敏捷 × 2 ｜ 目标闪避 = 敏捷 ÷ 4',
     desc: '敏捷每 +1，先攻总值 +2；同时是别人打你时的闪避减值（敏捷÷4，同境或只差一境时不计）。' },
   '体质': { key: 'CON', color: 'var(--xz-gold)', short: '气血',
     calc: '气血上限 =（基数 + 体质×4 + 血脉生命）× 8',
-    desc: '体质每 +1，气血上限 +32（体质×4 之后再乘总倍率 8）。伤到什么程度由正文按《脚本战斗系统》的命中与伤害结算判定。' },
+    desc: '体质每 +1，气血上限 +32（体质×4 之后再乘总倍率 8）。伤到什么程度由正文按《设定-脚本战斗系统》的命中与伤害结算判定。' },
   '智力': { key: 'INT', color: 'var(--xz-gold)', short: '灵力',
     calc: '灵力上限 =（基数 + 智力×4 + 血脉蓝量）× 4',
     desc: '智力每 +1，灵力上限 +16（智力×4 之后再乘总倍率 4）。与气血同构、只差乘数 ⇒ 蓝恒为血的一半；灵力够不够放某门招，拿它的消耗现算。' }
@@ -4414,7 +4414,7 @@ function xzTypeOf(name, fbT, fbA) {
 
 
         /* v70：状态栏不再给玩家任何「总数」类指标 ——
-           胜负一律由《脚本战斗系统》逐回合判定，强弱靠境界与气血读，卡面不占版面。 */
+           胜负一律由《设定-脚本战斗系统》逐回合判定，强弱靠境界与气血读，卡面不占版面。 */
         /* ★ v222：格9「先天气运」整格删除（字段已从变量里删掉，界面不许再画空框） */
 
         /* ★ v71：格10「大道」整格删除。 */
@@ -5595,12 +5595,12 @@ function xzTypeOf(name, fbT, fbA) {
     /* ══════════════════════════════════════════════════════════════════════════
        剧情生成（作者 2026-11-04）
        ──────────────────────────────────────────────────────────────────────────
-       真源 = 世界书条目《剧情生成》里的 `var EV = [...]` 数据块，下面那段 EJS 把它渲染成清单。
+       真源 = 世界书条目《设定-剧情生成》里的 `var EV = [...]` 数据块，下面那段 EJS 把它渲染成清单。
        本页读它、写它；模型每轮读到的是 EJS 渲染后的结果。
        ⚠ 为什么不用变量存：MVU 有 schema，多一个键会被静默丢掉；世界书条目是纯文本，谁都能写。
        ⚠ 读写都走 `__XZ05__.xzWBEntry`（世界书管理那个 IIFE），本页不自己找书、不自己拼扫描逻辑。
        ══════════════════════════════════════════════════════════════════════════ */
-    var PLOT_ENTRY = '剧情生成';
+    var PLOT_ENTRY = '设定-剧情生成';       /* 世界书条目 comment，逐字要对上（v545 加了分类前缀） */
     var PLOT_SCALE = ['世界级', '州级', '域级', '势力级', '无'];
     var PLOT_SPAN = ['无限', '长期', '短期', '极短'];
     var PLOT_STATES = ['未开始', '进行中', '已结束'];
@@ -5681,7 +5681,7 @@ function xzTypeOf(name, fbT, fbA) {
         if (state.plotBusy) return;
         if (state.plotList && !force) return;
         var fn = plotApi('xzWBEntry');
-        if (typeof fn !== 'function') { state.plotNote = '⚠ 世界书接口没就绪（读不到《剧情生成》）'; state.plotLoadState = state.plotNote; return; }
+        if (typeof fn !== 'function') { state.plotNote = '⚠ 世界书接口没就绪（读不到《设定-剧情生成》）'; state.plotLoadState = state.plotNote; return; }
         state.plotBusy = true;
         state.plotLoadState = '读取中…';
         Promise.resolve(fn(PLOT_ENTRY)).then(function (r) {
@@ -5695,7 +5695,7 @@ function xzTypeOf(name, fbT, fbA) {
                 state.plotLoadState = '已读 ' + state.plotList.length + ' 条';
             } else {
                 state.plotList = state.plotList || [];
-                var _m = '⚠ 读《剧情生成》失败：' + ((r && r.msg) || '未知原因');
+                var _m = '⚠ 读《设定-剧情生成》失败：' + ((r && r.msg) || '未知原因');
                 state.plotNote = _m;
                 state.plotLoadState = _m;
             }
@@ -5709,7 +5709,7 @@ function xzTypeOf(name, fbT, fbA) {
     }
     function plotSave(list, after) {
         var fn = plotApi('xzWBEntry');
-        if (typeof fn !== 'function') { state.plotNote = '⚠ 写不了：《剧情生成》接口没就绪'; try { render(true); } catch (e) {} return; }
+        if (typeof fn !== 'function') { state.plotNote = '⚠ 写不了：《设定-剧情生成》接口没就绪'; try { render(true); } catch (e) {} return; }
         state.plotBusy = true;
         Promise.resolve(fn(PLOT_ENTRY, plotCompose(list))).then(function (r) {
             state.plotBusy = false;
@@ -5719,7 +5719,7 @@ function xzTypeOf(name, fbT, fbA) {
                 state.plotLoadState = '已读 ' + list.length + ' 条';
                 if (typeof after === 'function') { try { after(); } catch (eA) {} }
             } else {
-                state.plotNote = '⚠ 写入《剧情生成》失败：' + ((r && r.msg) || '未知原因');
+                state.plotNote = '⚠ 写入《设定-剧情生成》失败：' + ((r && r.msg) || '未知原因');
             }
             try { render(true); } catch (e) {}
         }, function (e) {
@@ -5934,7 +5934,7 @@ function xzTypeOf(name, fbT, fbA) {
         /* 说明：一律折叠（铁律：解释性文字只许藏在说明按钮里，默认收起） */
         h += plotFold('说明', '每个空都能从下拉里挑，挑不到就选「其他…」自己写。'
             + '触发填**区间**（从 X 到 X）；日期只收阿拉伯数字。勾了「AI 润色」会先调模型把梗概扩写好，'
-            + '结果摆出来给你看，点「采用」才写进世界书条目《剧情生成》，不点就一直挂着，不会偷偷加进去。'
+            + '结果摆出来给你看，点「采用」才写进世界书条目《设定-剧情生成》，不点就一直挂着，不会偷偷加进去。'
             + '卡片上的「未开始／进行中／已结束」只是给你自己看的标签，模型读不到，也不会影响任何结算。');
 
         /* ── 读取状态（读数，不是解释，可以直出）── */
@@ -6062,8 +6062,14 @@ function xzTypeOf(name, fbT, fbA) {
             + '<div class="xz-plot-ctl"><textarea class="xz-plot-ta" data-plot-field="desc" rows="4" maxlength="400" '
             + 'placeholder="这件事大概怎么起、赌注是什么、可能怎么收">' + esc(f.desc) + '</textarea></div></div>';
 
+        /* ★ v544（作者 2026-11-05 截图点名）：勾选框后面那串
+           「（先调模型把梗概扩写好，结果给你过目，采用了才写进条目）」**删掉**。
+           为什么删：勾选框只需要说"勾了会发生什么"，而这三句讲的是内部流程；
+           流程说明该收在**说明折叠**里（就在页面顶部那个「说明」），
+           摊在勾选框旁边等于把同一件事说两遍、还把表单撑长。
+           ⚠ 别把「让 AI 润色」四个字一起删：那是勾选框自己的标签。 */
         h += '<label class="xz-plot-chk"><input type="checkbox" data-plot-field="polish"' + (f.polish ? ' checked' : '') + '>'
-            + '让 AI 润色（先调模型把梗概扩写好，结果给你过目，采用了才写进条目）</label>';
+            + '让 AI 润色</label>';
 
         h += '<div style="display:flex;gap:8px;margin-top:4px;">'
             + '<button type="button" class="xz-plot-btn xz-plot-btn-main" data-xz-act="plot-submit">'
@@ -6078,7 +6084,7 @@ function xzTypeOf(name, fbT, fbA) {
         var list = state.plotList || [];
         h += '<div class="xz-sub-head" style="margin-top:16px;">✦ 已生成（' + list.length + '）</div>';
         if (state.plotBusy && !list.length) {
-            h += '<div class="xz-rpg-desc" style="font-size:11.5px;">正在读《剧情生成》…</div>';
+            h += '<div class="xz-rpg-desc" style="font-size:11.5px;">正在读《设定-剧情生成》…</div>';
         } else if (!list.length) {
             h += '<div class="xz-rpg-desc" style="font-size:11.5px;">还没有。上面填一条，点「确定生成」。</div>';
         }
@@ -8585,7 +8591,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
     ];
 
     /* ══ 九域 / 二十一域 ══
-       ⚠ **域号必须与《三州地理总纲》的域号表逐字一致**（封闭表，现编就对不上舆图）。
+       ⚠ **域号必须与《地点-三州地理总纲》的域号表逐字一致**（封闭表，现编就对不上舆图）。
          改了这张表要同步改总纲，`工具/_v298_map_guard.mjs` 会对账。
        种子点 sx/sy 是「州都」在图上的落点，也是 Voronoi 的分区依据 —— 动它等于重划疆界。 */
     var XZ_MAP_STATES = [
@@ -9509,7 +9515,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
     /* 旧址留一句说明即可，函数体不保留：留着死代码，下一个读代码的人会以为还有一条路径。 */
 
     /* ============================ 推演页（原先的悬浮球面板内容，现在常驻这一页） ============================ */
-    /* ★ v70：推演页已删除 —— 胜负一律按《脚本战斗系统》打，脚本推演整套作废。 */
+    /* ★ v70：推演页已删除 —— 胜负一律按《设定-脚本战斗系统》打，脚本推演整套作废。 */
     function build() {
         /* ★★★ v464：这里原来有 7 个局部变量（name / realAge / visualAge / age / realm /
            date / clock），全是给顶栏那排准备的。顶栏搬进 `xzTopInfoHtml()` 之后
@@ -10045,6 +10051,49 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         } catch (eVi) {}
     })();
 
+    /* ★★★ v543：重建时把「正在打字的那一格」原地接回去 ★★★
+       签名里去掉文本值只解决了**由输入本身触发**的重建；还有一类重建是别人引起的：
+       AI 回一句 ⇒ 变量更新 ⇒ 签名变；版本徽章读到号；DLC 状态读完……
+       那一刻玩家若正在剧情页打字，`outerHTML` 一换 = 节点没了 = 失焦，
+       手机上就是输入法收起（用户报的就是这个）。
+       ⇒ 换之前抄下「哪一格 + 光标什么位置」，换完立刻聚焦回去、光摆放回原位。
+       ⚠ 只认 `data-plot-field`：酒馆自己的输入栏不归我们管，乱抢焦点比丢焦点更糟。
+       ⚠ `setSelectionRange` 在 checkbox 上会抛，必须包 try。 */
+    function _xzFocusGet(doc) {
+        try {
+            var a = doc && doc.activeElement;
+            if (!a || !a.getAttribute) return null;
+            var k = a.getAttribute('data-plot-field');
+            if (!k) return null;
+            var s = null;
+            try {
+                if (typeof a.selectionStart === 'number' && typeof a.selectionEnd === 'number') {
+                    s = [a.selectionStart, a.selectionEnd];
+                }
+            } catch (eS) { s = null; }
+            return { k: k, s: s };
+        } catch (e) { return null; }
+    }
+    function _xzFocusSet(doc, snap) {
+        if (!snap || !doc) return;
+        try {
+            var el = doc.querySelector('[data-plot-field="' + snap.k + '"]');
+            if (!el) return;
+            el.focus();
+            if (snap.s) { try { el.setSelectionRange(snap.s[0], snap.s[1]); } catch (eSel) {} }
+        } catch (e) {}
+    }
+    /* 玩家此刻是不是正在剧情页填表？（只在输入类控件上才算） */
+    function _xzPlotTyping(doc) {
+        try {
+            var a = doc && doc.activeElement;
+            if (!a || !a.getAttribute) return false;
+            if (!a.getAttribute('data-plot-field')) return false;
+            var tg = String(a.tagName || '').toUpperCase();
+            return (tg === 'INPUT' || tg === 'TEXTAREA');
+        } catch (e) { return false; }
+    }
+
     function render(force) {
         var doc = getDoc();
         ensureStyle(doc);
@@ -10071,6 +10120,13 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         xzThemeApply(xzThemeGet());
         // 手指正按着状态栏时不重绘：DOM 被换掉会让这次点击落空（手机上表现为「点了没反应」）
         if (!force && state.busyUntil && Date.now() < state.busyUntil) return;
+        /* ★★★ v543：正在剧情页打字时**自动重绘一律让路** ★★★
+           签名已经不含文本值，所以"自己敲字"不会再触发重建；
+           但别人的变化（AI 变量更新、版本徽章、DLC 读完）仍会。躲开就好 ——
+           等玩家松手/移开焦点，下一轮自然补上。
+           ⚠ 只看 `force`：带 force 的都是我们自己的交互（点按钮/切页签），
+             那些动作必然已经让输入框失焦（点别处先 blur），不会被这条挡住。 */
+        if (!force && _xzPlotTyping(doc)) return;
 
         var mes = lastAiMes(doc);
         if (!mes) return;
@@ -10139,12 +10195,51 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             /* ★ 2026-11-04：剧情页三态进签名 —— 读回来的列表、正在填的表单、改第几条。
                不进签名就点不动（`force` 不参与脏检查，同 dlcBar 那次的病）。 */
             JSON.stringify(state.plotList || []),
-            JSON.stringify(state.plotForm || {}),
+            /* ★★★ v543（用户 2026-11-05）：「剧情分页每输入一个字就瞬间关上输入」★★★
+               ── 真凶就在这里 ──────────────────────────────────────────────
+               原来这一行是 `JSON.stringify(state.plotForm || {})` —— 它把**每个输入框的
+               文本内容**都塞进了脏检查签名。于是玩家每敲一个字：
+                 值进 state.plotForm → 下一轮签名必变 → `existing.outerHTML = html`
+                 整块状态栏重建 → 那个 `<input>` 节点被换成全新的 → **焦点随节点一起没了**
+               表现就是用户说的两句话：手机端输入法瞬间收起（失焦就收键盘），
+               电脑端光标瞬间消失（节点没了，`document.activeElement` 变 body）。
+               ⚠ 关键点：`render(true)` 的 `force` **不参与脏检查**（见下面 dlcBar 那段注释），
+                 所以"输入时不重绘"这件事**不能靠传参解决**，只能靠签名本身不含文本值。
+               ── 怎么改的 ──────────────────────────────────────────────────
+               签名只保留**会影响 DOM 结构**的那几项，纯文本值一律不进：
+                 · `_o_xxx` 标记 → 决定「其他…」那个输入框在不在（结构变化，必须留）
+                 · `trigKind`   → 决定触发那一行是「日期手填」还是「境界两下拉」（结构）
+                 · `geo1/2/3`   → 城的下拉选项由州、域现算（结构）
+                 · `cast`       → 相关人物那几个 chip 由它渲染（结构）
+                 · `polish`     → **提交按钮的字会变**（「调 AI 润色」↔「确定生成」），
+                                  所以它也影响结构，必须留
+                 其余的 name / trigA / trigB / desc / castOther / place 都是纯值，
+                 输入框自己就显示着，重建一次除了丢焦点没有任何好处。
+               ⚠ 别"顺手"把 polish 也删掉：它不是纯值，它改的是按钮文案。 */
+            (function () {
+                var f = state.plotForm || {};
+                var of = [];
+                for (var k in f) { if (k.indexOf('_o_') === 0 && f[k]) of.push(k); }
+                of.sort();
+                return [
+                    (f.cast || []).join(','),
+                    [f.geo1 || '', f.geo2 || '', f.geo3 || ''].join('|'),
+                    f.trigKind || '',
+                    f.polish ? 1 : 0,
+                    of.join(',')
+                ].join(';');
+            })(),
             state.plotEdit,
             state.plotBusy ? 1 : 0,
             state.plotNote || '',
             state.plotLoadState || '',
-            JSON.stringify(state.plotPend || {}),
+            /* ★ v543：同上 —— `plotPend.text` 是**玩家可以在结果框里改的文本**（见页面里那个
+               `data-plot-field="pendText"` 的 textarea）。原来整个对象进签名 ⇒
+               在那个框里打字同样会"每敲一个字就失焦"。
+               只留结构性三态：在不在 / 是不是正在润色 / 有没有报错。 */
+            state.plotPend
+                ? ((state.plotPend.busy ? 1 : 0) + '|' + (state.plotPend.err || '') + '|' + (state.plotPend.text ? 1 : 0))
+                : 'n',
             /* ★★★ v464（第九次踩同一个坑，这次是 `dlcBar`）★★★
                DLC 那一整块的**折叠态**同样只活在内存里，同样由点击改完调 `render(true)`。
                我一开始在 7804 写了「`dlcBar` 不进签名 —— 它对要不要重画没有发言权，
@@ -10266,6 +10361,10 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 '<br><span style="color:var(--xz-muted);font-size:10px;word-break:break-all;">' + esc(bStk) + '</span></div></div></div>';
         }
 
+        /* ★ v543：重建前抄住「正在打字的那一格」，见 `_xzFocusGet` 的病历。
+           ⚠ 必须抄在 `outerHTML` **之前** —— 那一句是同步替换，
+             执行完老节点（连着焦点）已经不在文档里了。 */
+        var _focusSnap = _xzFocusGet(doc);
         if (existing) {
             if (existing.parentNode === target || existing.parentNode === target.parentNode) {
                 /* ★★★ v476（用户 2026-10-30）：**页签横滚位置必须在重建前抄走、重建后写回** ★★★
@@ -10322,6 +10421,10 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
            ⚠ 也不能只在 `_navScrollSet` 里做：那条只在"我们自己换节点"时走，
              酒馆重渲染消息导致 host 消失重建时，`existing` 是 null、根本不会调用它。 */
         _xzScrollApply();
+
+        /* ★ v543：滚动恢复完再把焦点还回去（顺序不能反 —— `focus()` 自己会触发一次滚动，
+           先聚焦再写 scrollTop 会被那一滚顶掉）。 */
+        _xzFocusSet(doc, _focusSnap);
 
         /* ★ v357：第一次画出来、而且正停在「人物」页 ⇒ 立刻读一次 DLC 状态。
            ⚠ 必须放在 bindEvents 之后、**只读一次**（`dlcSt === null` 时才读），
@@ -11072,7 +11175,22 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                     var _si = parseInt(el.getAttribute('data-i'), 10);
                     var _sl = (state.plotList || []).slice();
                     if (!_sl[_si]) return;
-                    var _k = PLOT_STATES.indexOf(_sl[_si].state);
+                    /* ★★★ v546 修：原来这里读的是 `_sl[_si].state` 的原值 ★★★
+                       ── 病历（玩家点「改状态」纹丝不动，零报错）──────────────────
+                       条目里**本来就没有 state** —— 作者 2026-11-04 明令
+                         「条目里面禁止什么他妈的已完成未开始进行中什么的」
+                       ⇒ `plotParse` 从条目读回来的对象 `state === undefined`
+                       ⇒ `PLOT_STATES.indexOf(undefined) === -1`
+                       ⇒ `(-1 + 1) % 3 === 0` ⇒ 每次都算成「未开始」
+                       ⇒ 点一百次也还是「未开始」。
+                       ★ 关键：**显示**和**推进**必须用同一套兜底。
+                         上面 `pagePlot` 画的是 `e.state || '未开始'`，
+                         而这里读的是裸 `e.state` —— 两处口径不一致，
+                         界面显示"未开始"、逻辑当成"没有" ⇒ 内部状态永远追不上显示。
+                       ⚠ 老存档里条目还带 state 的，走同一条路（有值就用值）。 */
+                    var _curSt = _sl[_si].state || PLOT_STATES[0];
+                    var _k = PLOT_STATES.indexOf(_curSt);
+                    if (_k < 0) _k = 0;
                     _sl[_si] = Object.assign({}, _sl[_si], { state: PLOT_STATES[(_k + 1) % PLOT_STATES.length] });
                     plotSave(_sl);
                     return;
@@ -13369,10 +13487,52 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
        `xz_jjb_float_pos` 混用，否则玩家拖过一次管理器球，战斗球会跟着搬家。 */
     var FLOAT_KEY = 'xz_cem_float_pos';
 
+    /* ══════════════════════════════════════════════════════════════════════
+       ★★★ v544（作者 2026-11-05）：球从「圆形 + 一个字」改成「方形 + 画的图标」★★★
+       原话：「把人的悬浮球绘制一个图标，一个人的图标，然后改成正方形的悬浮球」。
+       ── 尺寸为什么是 50 ──
+       原来是 56。作者要「缩小一点」，但 44/46 是**踩过的坑**：v441 之前是 46，
+       作者原话「悬浮球是有的，就是手机点不到」—— 低于 Material/iOS 共同的最低
+       可点尺寸（48）时，手指瞄着球边按就落空，而且**一点反馈都没有**。
+       ⇒ 50 = 比 56 小一档（肉眼能看出缩小），仍站在 48 这条可点底线之上。
+       ⚠ 以后想再缩，**不要低于 48**；真要更小就得配透明热区，别直接缩本体。
+       ── 形状为什么是 13px 圆角 ──
+       作者要「正方形」。纯直角（0）在深色界面上像个贴片，13 在 50 的边上
+       还剩八成直线段，一眼是方的，又不割手。
+       ⚠ 尺寸只在这三个常量里定义，CSS 和内联兜底都读它们 —— 别在下面再写死 50。
+       ══════════════════════════════════════════════════════════════════════ */
+    var BALL_SIZE = 50;
+    var BALL_RADIUS = 13;
+    /* 图标：**内联 SVG，不用 emoji、也不用文字**。
+       · 不用 emoji：本项目铁律 —— 各系统字形/基线/配色都不同，iOS 把它渲染成
+         彩色贴图，压在深色球上像贴了张不干胶；安卓还可能缺字形印成方框。
+       · 不用纯 CSS 拼：人形两个伪元素还能看，但战斗球那颗「剑 + 盾交叉」
+         在 50px 里只剩 25px，CSS 拼出来的剑格和盾沿会糊成一团。
+       · SVG 是矢量，1.7 的描边在这个尺寸最清楚，且**不会随系统字体变**。
+       ⚠ `stroke="currentColor"` 是刻意的：颜色跟着球的 `color` 走，
+         引擎那边「亮 / 半亮 / 暗」三档改的是 el.style.color，图标会一起亮，
+         不用再单独给 SVG 上一遍色。⚠ 千万别在 SVG 里写死颜色。 */
+    var BALL_ICON = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none"'
+        + ' stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"'
+        + ' aria-hidden="true">'
+        + '<circle cx="12" cy="7.9" r="3.5"/>'
+        + '<path d="M5.2 19.6c0-3.5 3.05-5.9 6.8-5.9s6.8 2.4 6.8 5.9"/>'
+        + '</svg>';
+    /* ★★★ 样式版本：球的外观（形状 / 尺寸 / 图标）改了**必须改这个值** ★★★
+       为什么需要它：`injectStyle` 原来的逻辑是「同 ID 的 style 已经在 ⇒ 直接 return」。
+       而热更新（CDN 换 commit）**不会重新加载文档**，旧 style 还挂在 body 上
+       ⇒ 玩家那颗球还是圆的 56px、上面还是一个「人」字，
+       而且页面上**看不出任何异常**，最容易误判成「改了没打包」。
+       ⇒ 版本号对不上就把旧 style 删掉重注（见 injectStyle）。 */
+    var STYLE_VER = 'v544-square';
+
     /* ★ v476：`view` = 管理器内部的视图（list 人物条目 / gal 所有立绘 / dlc DLC 开关）。
        三块原来在「人物」页上是三个并列入口，现在收进这一个面板，靠页签切。
        ⚠ 默认 `list`：老玩家的习惯是"点管理器看条目"，别把默认改成别的。 */
-    var S = { entries: [], book: '', open: false, expanded: {}, view: 'list' };
+    /* ★ v542：`illuAt` = 「插图」视图当前看的是第几组。
+       单独存，**不和立绘共用**（立绘那份在 localStorage 的 GAL_KEY 里）——
+       两边"第 N 个"不是同一批东西，共用会互相踩。 */
+    var S = { entries: [], book: '', open: false, expanded: {}, view: 'list', illuAt: 0 };
 
     function doc() {
         try { return (window.top && window.top.document) || document; } catch (e) { return document; }
@@ -13431,9 +13591,21 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
     function injectStyle(docArg) {
         var d = docArg || doc();
         if (!d) return;
-        if (d.getElementById(STYLE_ID)) return;
+        /* ★★★ v544：样式要能"顶上"旧的那一份 ★★★
+           原来是 `if (d.getElementById(STYLE_ID)) return;` —— 只要 style 在就永不重注。
+           热更新（CDN 换 commit）**不会重新加载文档**，旧 style 还挂在 body 上，
+           于是新形状永远不生效，而页面上看不出任何异常。
+           ⇒ 用 STYLE_VER 判：版本一样才是"已经在"，版本不一样就删掉重注。
+           ⚠ 删之前先判 `getAttribute`：没有 data-ver 的是**老版本注入的**，
+             也要当"不一样"处理（否则从旧版升上来的玩家永远停在旧外观）。 */
+        var _old = d.getElementById(STYLE_ID);
+        if (_old) {
+            if (_old.getAttribute('data-ver') === STYLE_VER) return;
+            try { _old.remove(); } catch (eOld) {}
+        }
         var st = d.createElement('style');
         st.id = STYLE_ID;
+        st.setAttribute('data-ver', STYLE_VER);
         st.textContent = [
             /* ★★★ v446：球的定位**不再写在这里**。
                `right/bottom` 这套（v443 是 right:14+bottom:244）在手机上必然失效：
@@ -13442,23 +13614,21 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                ⇒ 现在由 `xzCemPlace()` 用 `left/top` 算**屏幕坐标**再写内联（照抄引擎
                  战斗球那一套，见本 IIFE 里 xzCem* 那组函数的头注释）。
                这里只留起手位置 `left:0;top:0` —— 与引擎一致，避免首帧闪到右下角。
-               ★ 视觉 56、不加 ::before：56 是 Material/iOS 共同的最低可点尺寸。
-                 原来的 44px 用户报过「手机上点不到」（v441）。 */
+               ★ 尺寸 50（v544 起）、不加 ::before：见文件头 `BALL_SIZE` 那段。
+                 40~46 都在手机上被作者报过「点不到」（v441），48 是硬底线。 */
             '#' + BALL_ID + '{position:fixed;left:0;top:0;right:auto;bottom:auto;z-index:2147483645;',
-            'width:56px;height:56px;box-sizing:border-box;padding:0;border-radius:50%;',
+            /* ★ v544：56 / 50% ⇒ 50 / 13px（方形）。**只读上面那几个常量**，别在这里写死。 */
+            'width:' + BALL_SIZE + 'px;height:' + BALL_SIZE + 'px;box-sizing:border-box;padding:0;border-radius:' + BALL_RADIUS + 'px;',
+            /* `place-items:center` 是给里面的 SVG 用的（原来是给那个「人」字居中）。 */
             'display:grid;place-items:center;cursor:pointer;',
             'background:linear-gradient(160deg,#16202a,#0a0f14);border:1px solid rgba(201,168,106,.45);',
             'box-shadow:0 8px 24px -8px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.06);',
-            /* ★★★ v470：字体族统一到 `var(--xz-font)` ★★★
-               原来写的是 `font:700 19px/1 "Noto Serif SC","Songti SC",serif` —— **衬线族**。
-               用户指定的是 Noto Sans SC（无衬线），而且本机 `Noto Serif SC` 也没有字形
-               （实测回落 Songti/雅黑），等于球上一个「人」字和旁边状态栏不是同一族。
-               ⚠ 这个球是 `d.createElement('div')` 挂在**别的 document** 的 body 上，
-                 `.xz-root button{font-family:inherit}` 那条全局兜底**覆盖不到它** ——
-                 这就是字体审计里「「人」1 个雅黑字形」的真因。
-               ⚠ 拆成 font 简写为独立属性：`font:700 19px/1 ...` 会把 font-family 一起写死，
-                 后面再补一条 font-family 容易漏；分开写一处只改一处。 */
-            'font-weight:var(--xz-fw-med);font-size:19px;line-height:1;font-family:var(--xz-font);color:#e8cb92;user-select:none;',
+            /* ★ v544：球里换成 SVG 图标后**没有文字了** —— v470 那行
+               `font-weight:var(--xz-fw-med);font-size:19px;line-height:1;` 是给「人」字排版的，
+               全部删掉（留着不报错，但会让下一个人以为"这里还有个字要排版"）。
+               ⚠ `color` **必须留**：SVG 里写的是 `stroke="currentColor"`，
+                 读的就是球本体的 color。删了图标会变成默认黑，压在深色球上看不见。 */
+            'color:#e8cb92;user-select:none;',
             'touch-action:none;-webkit-tap-highlight-color:transparent;}',
             '#' + BALL_ID + ':hover{border-color:rgba(201,168,106,.8);}',
             /* ★ v446：面板定位同样交给内联（`xzCemPlacePanel`）。
@@ -13619,6 +13789,10 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             'overflow:hidden;text-overflow:ellipsis;}',
             '#' + PANEL_ID + ' .gal-cell em{position:absolute;top:2px;right:2px;font-style:normal;',
             'font-size:9px;padding:0 3px;border-radius:3px;background:rgba(0,0,0,.62);color:#f0e2b0;}',
+            /* ★ v542：插图视图的格子要比立绘的宽 —— 它下面那行字是「人物·动作」，
+               最长的一组（白长雪·授乳手交）8 个汉字，66px 装不下，动作名会被省略号吃掉。
+               只放宽、不改高：66px 方图的比例保持不变，横向仍是一条可滑的带子。 */
+            '#' + PANEL_ID + ' .gal-list.xz-illu .gal-cell{flex:0 0 92px;}',
 
             '@media (max-width:560px){#' + PANEL_ID + '{width:calc(100vw - 16px);}',
             '#' + PANEL_ID + ' .cem-hd{padding:9px 10px;}',
@@ -14018,7 +14192,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             globalThis.__XZ05__.xzCemEntryIsOn = entryIsOn;
         }
     } catch (eExp) {}
-    /* ★ 2026-11-03：**按标题开关单条世界书**（《灰雾总纲》/《亲缘·六姐与娘》共用）。
+    /* ★ 2026-11-03：**按标题开关单条世界书**（《设定-灰雾总纲》/《亲缘·六姐与娘》共用）。
        引擎只有 xzWBSetDlc（按 dlc- 前缀批量），没有按标题的出口；
        05 这里已经有 TH()/bookName()/entryTitle()/entryIsOn() 一整套，就在这儿实现。
        ⚠ 不许静默假成功：写完 getWorldbook 回读，按**真状态**回 ok；
@@ -14155,7 +14329,10 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             (list || []).forEach(function (e) {
                 if (!e) return;
                 var c = entryTitle(e);
-                if (!(/(^|-)人物-/.test(c) || /^dlc-/.test(c))) return;
+                /* ★ v545：DLC 判据收紧成 `dlc-<包>-人物-`。原来是裸 `/^dlc-/`，
+                   于是 `dlc-斗罗-势力-斗罗宗` 这种**地点/势力**条目也被当成人物塞进
+                   人物管理器（点开是一张宗门卡）。分包前缀只认第一段，不受影响。 */
+                if (!(/(^|-)人物-/.test(c) || /^dlc-[^-]+-人物-/.test(c))) return;
                 /* ★ 常驻名录不是人物：《人物-总览》是 blue-light 常驻，正文是整本名录，
                    点开不是"人物卡"，也不该出现在开关列表里（关掉它，AI 就丢了全宗名册）。 */
                 if (entryIsConstant(e) && /^人物-(总览|名录|人物总览)$/.test(c)) return;
@@ -14337,37 +14514,125 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         h += '<div class="cem-full' + (open ? ' on' : '') + '" data-full="' + e.uid + '">' + esc(e.content || '') + '</div>';
         return h;
     }
-    function sectionHtml(title, sub, list, allLabel, allTo) {
-        var uids = list.map(function (e) { return e.uid; });
-        /* ★★★ v494（用户 2026-10-31）：**整组默认折叠，标题上一个三角** ★★★
-           原话：「人物条目分页，改成自选按钮，不然太长了，滑的很难受，
-                  也就是所有部分改成默认折叠……原创人物有个三角符号，
-                  意思是可以展开，然后点击才展开，其他 dlc 也是」。
-           ── 改前 ──
-           一个人 20 人、五个 DLC 各十几人 ⇒ 打开管理器就是一面几百行的墙，
-           手机上要滑很久才看得到下面的包（这也是「卡」的一半来源：
-           所有卡片一次性全进 DOM）。
-           ── 改后 ──
-           每组只渲染标题行（三角 + 名字 + 人数 + 整包开关），**卡片默认不进 DOM**；
-           点标题才展开。展开态记在 `S.expanded[组名]`，切页签/重画都保持。
-           ⚠ 「整包开启 / 关闭」按钮**留在标题行**：折叠状态下也要能一键开关整包，
-             否则玩家得先展开才能操作，等于把批量功能藏起来了。
-           ⚠ 标题行与按钮是**父子关系**（按钮在标题行里），所以点击委托里
-             `[data-all]` 的判定必须排在 `[data-cem-group]` **前面** ——
-             否则点按钮会被当成"点标题"，结果是"开整包的同时把组收起来"。
-           ⚠ 三角用 `▸ / ▾`（不是 `▶`）：字重轻、和本项目其它折叠符号一致。 */
-        var key = String(title);
-        var open = !!(S.expanded && S.expanded[key]);
+    /* ══════════════════════════════════════════════════════════════════════
+       通用折叠框。管理器里**所有**的栏都走这里（原创 / DLC 总栏 / 作品 / 期），
+       保证三角、标题行、展开态、点击委托只有一份实现。
+
+       ── 参数 ─────────────────────────────────────────────────────────────
+         key   展开态在 `S.expanded[key]` 里的键。**必须分层加前缀**
+               （`G:` 人物组 / `W:` 作品 / `P:` 期）。为什么：作品名和期名会撞字 ——
+               「斗破」既是作品名、又是那一期的组名，不加前缀点一个会展开两处。
+         title 标题行上的名字
+         sub   名字后面那串读数（N 人 · 已开启 K/N · 默认…）
+         inner 展开后塞进去的 HTML（可以为空；调用方自己判展开态做惰性构造）
+         btn   标题行右侧的按钮 HTML（可以为空）
+
+       ⚠ 三角用 `▸ / ▾`（不是 `▶`）：字重轻，和本项目其它折叠符号一致。
+       ⚠ 标题行与按钮是**父子关系**，所以点击委托里 `[data-all]` 必须排在
+         `[data-cem-group]` 前面判 —— 否则点按钮会被当成"点标题"，
+         变成"开整包的同时把组收起来"（v494 修过）。
+       ══════════════════════════════════════════════════════════════════════ */
+    function foldHtml(key, title, sub, inner, btn) {
+        var k = String(key);
+        var open = !!(S.expanded && S.expanded[k]);
         return '<div class="cem-group">'
-            + '<div class="cem-sec cem-sec-tg" data-cem-group="' + esc(key) + '">'
+            + '<div class="cem-sec cem-sec-tg" data-cem-group="' + esc(k) + '">'
             + '<span class="cem-tri">' + (open ? '▾' : '▸') + '</span>'
             + '<b>' + esc(title) + '</b><i>' + esc(sub) + '</i>'
-            /* ★ data-to 必须跟着当前状态走：原来硬编码 "1"，于是「全部关闭」「关掉整包」
-               点了也是开 —— 按钮在，方向永远反的。 */
-            + '<button class="cem-all" data-all="' + esc(uids.join(',')) + '" data-to="' + (allTo ? 1 : 0) + '">' + esc(allLabel) + '</button>'
+            + (btn || '')
             + '</div>'
-            + (open ? '<div class="cem-glist">' + list.map(cardHtml).join('') + '</div>' : '')
+            + (open ? (inner || '') : '')
             + '</div>';
+    }
+
+    /* 人物组：标题行 + （展开时）一张张人物卡。
+       ★★★ v494（用户 2026-10-31）：**整组默认折叠，标题上一个三角** ★★★
+       原话：「人物条目分页，改成自选按钮，不然太长了，滑的很难受，
+              也就是所有部分改成默认折叠……原创人物有个三角符号，
+              意思是可以展开，然后点击才展开，其他 dlc 也是」。
+       ── 改前 ──
+       一个人 20 人、五个 DLC 各十几人 ⇒ 打开管理器就是一面几百行的墙，
+       手机上要滑很久才看得到下面的包（这也是「卡」的一半来源：
+       所有卡片一次性全进 DOM）。
+       ── 改后 ──
+       每组只渲染标题行（三角 + 名字 + 人数 + 整包开关），**卡片默认不进 DOM**；
+       点标题才展开。展开态记在 `S.expanded[key]`，切页签/重画都保持。
+       ⚠ 「整包开启 / 关闭」按钮**留在标题行**：折叠状态下也要能一键开关整包。
+       ★★★ v542（用户 2026-11-05）：「DLC开关我不要了，没用，多余了」★★★
+       ⇒ DLC 组的整包按钮**删掉**；只有原创人物那组还带「全部开启 / 全部关闭」。
+       ── 怎么删的 ──
+       调用方给 DLC 组传 `allLabel = null`，这里判 null 就不渲染那颗按钮。
+       为什么不做成"函数里判标题含 DLC"：标题是**会被改的文案**，
+       拿文案当判据迟早出事（本项目铁律：判据只许认 id / 结构，不许认文案）。
+       ⚠ 不要顺手把 `allTo` 一起删：原创组还在用它，而且它必须**跟着当前状态走**
+         （硬编码 "1" 会让「全部关闭」点了反而全开，v494 修过一次）。 */
+    function sectionHtml(key, title, sub, list, allLabel, allTo) {
+        var uids = list.map(function (e) { return e.uid; });
+        /* 惰性构造：没展开就不 map 那几十张卡（v494 的目标是"卡片不进 DOM"，
+           其实连字符串也不该拼 —— 直接铺在 bd.innerHTML 里会白跑一遍）。 */
+        var _open = !!(S.expanded && S.expanded[String(key)]);
+        return foldHtml(key, title, sub,
+            _open ? ('<div class="cem-glist">' + list.map(cardHtml).join('') + '</div>') : '',
+            allLabel
+                /* ★ data-to 必须跟着当前状态走：原来硬编码 "1"，于是「全部关闭」「关掉整包」
+                   点了也是开 —— 按钮在，方向永远反的。 */
+                ? ('<button class="cem-all" data-all="' + esc(uids.join(',')) + '"'
+                    + ' data-to="' + (allTo ? 1 : 0) + '">' + esc(allLabel) + '</button>')
+                : '');
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       ★★★ v542（用户 2026-11-05）：DLC 人物改成四级折叠 ★★★
+       原话：「原创人物条目/DLC人物条目→原创人物条目展开后直接是人物，
+              DLC人物条目展开后是作品名→点击作品名后展开期→期展开后是人物」
+
+       ── 结构 ────────────────────────────────────────────────────────────
+         [▸ 原创人物条目]   → 人物卡
+         [▸ DLC 人物条目]   → [▸ 斗罗]   → 人物卡（只有一个期，不再多套一层）
+                            → [▸ 斗破]   → [▸ 斗破终] → 人物卡
+                                         → [▸ 斗破少] → 人物卡
+                            → [▸ 武动] / [▸ 大主宰] 同构（各两期）
+
+       ── 组名是**磁盘文件名**决定的，不是配置 ──────────────────────────────
+       `groupOf()` 从 `dlc-<组名>-人物-<名>` 切出组名。现存七个：
+       斗罗 / 斗破 / 斗破少 / 武动终 / 武动少 / 大主宰终 / 大主宰少。
+       ⇒ 下面三个函数都按**后缀规则**推导，不写死四部作品的名单，
+         以后加「凡人」/「凡人少」不用改这里。
+       ══════════════════════════════════════════════════════════════════════ */
+    /* 组名 → 作品名：削掉末尾的期别后缀「终」/「少」。 */
+    function dlcWorkOf(g) {
+        return String(g || '').replace(/[终少]$/, '');
+    }
+    /* 组名 → 期别文字（给副标题用）。无后缀的组回空串 —— 它要么是唯一一期（斗罗），
+       要么是没标后缀的大结局篇（斗破），两种都不该在副标题里瞎猜一个期名。 */
+    function dlcPeriodText(g, work) {
+        var s = String(g || '');
+        if (s === work) return '';
+        if (/终$/.test(s)) return '大结局篇';
+        if (/少$/.test(s)) return '少年篇';
+        return '';
+    }
+    /* 组名 → 期层显示名。
+       ★ 用户 2026-11-05：「斗破改为斗破终，对齐大主宰和武动乾坤的命名格式。」
+       磁盘上「斗破」这一组没有后缀，但它是**大结局篇**（另一组叫「斗破少」）。
+       不补后缀的话，两个斗破在界面上一个叫「斗破」一个叫「斗破少」，
+       玩家会以为前者是整部作品。⇒ 同属一部作品且有多个期时，无后缀那组显示「斗破终」。
+       只有一期时（斗罗）保持原样 —— 加个「终」反而像还有少年篇。
+       ⚠ 这是**显示层**改名，磁盘文件名一个不动（改文件名会动到世界书条目名、
+         pack.js 对齐、引擎的 DLC 前缀判定和一批闸里的清单）。 */
+    function dlcPeriodLabel(g, work, multi) {
+        var s = String(g || '');
+        return (multi && s === work) ? (work + '终') : s;
+    }
+    /* 期别排序：大结局篇在前、少年篇在后。
+       ⚠ 不能靠组名字典序：Unicode 里「少」(5C41 附近) 排在「终」前面，
+         直接 sort 会把少年篇排到大结局篇上面（玩家会以为默认年龄段是少年）。
+       ── 与 07 的 `xzDlcGroups()` 同一个口径：大结局篇在前。 */
+    function dlcPeriodRank(g, work) {
+        var s = String(g || '');
+        if (s === work || /终$/.test(s)) return 0;
+        if (/少$/.test(s)) return 1;
+        return 2;
     }
 
     /* ══════════════════════════════════════════════════════════════════════
@@ -14457,6 +14722,123 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         }
     }
 
+    /* ══════════════════════════════════════════════════════════════════════
+       ★★★ v542 · 「插图」视图（用户 2026-11-05）★★★
+       原话：「在人物管理器里做一个插图预览界面，跟查看所有立绘一样的。」
+
+       ── 数据从哪来 ──
+       正文里 `<插图>人物｜动作</插图>` 能出图，靠的是**文件末尾那个插图 IIFE** 里的
+       `GALLERY_POOLS`（键＝`人物|动作`，值＝有序 URL 数组）。那张表在那个 IIFE 内部，
+       本 IIFE 看不到（跨 IIFE 作用域），只能走它挂出来的出口 `HOST.__thIlluRender.pools`。
+       ⇒ 取不到就**明写「没读到插图表」**，不许静默画一个空白网格 ——
+         本项目铁律：跨 IIFE 取不到必须出声，否则就是"页面在、内容是空的、零报错"。
+
+       ── 为什么和「所有立绘」长得一样 ──
+       用户要的就是"跟查看所有立绘一样"。所以这里**复用同一套 DOM 结构与 CSS**
+       （`.gal-stage` / `.gal-nav` / `.gal-cap` / `.gal-list` / `.gal-cell`），
+       大图切换也走同一个 `galShow()` —— 不另写一套翻页，
+       否则「‹ › 回绕 / 张数计数 / 九宫格高亮」迟早两份对不上。
+       ══════════════════════════════════════════════════════════════════════ */
+
+    /* 取插图表。**返回 null 表示"表没拿到"**，返回 [] 表示"表拿到了但里面是空的"——
+       这两种必须分开：前者是模块没起来（要报出来），后者是作者还没传图（正常空态）。 */
+    function _illuPools() {
+        var E = null;
+        try { if (typeof globalThis !== 'undefined' && globalThis.__thIlluRender) E = globalThis.__thIlluRender; } catch (e0) {}
+        if (!E) { try { if (window.top && window.top.__thIlluRender) E = window.top.__thIlluRender; } catch (e1) {} }
+        if (!E) { try { if (window.parent && window.parent.__thIlluRender) E = window.parent.__thIlluRender; } catch (e2) {} }
+        return (E && E.pools) ? E.pools : null;
+    }
+
+    /* 摊平成 [{name:'人物｜动作', who, act, urls}]。
+       ⚠ **顺序照对象字面量的书写顺序**（`for...in` 对字符串键就是插入序），
+         不排序：那张表的顺序是作者按"人物 → 动作"排好的，排序反而会打乱。 */
+    function xzCemAllIllus() {
+        var pools = _illuPools();
+        if (!pools) return null;
+        var out = [];
+        for (var k in pools) {
+            if (!Object.prototype.hasOwnProperty.call(pools, k)) continue;
+            var raw = pools[k];
+            if (!raw || !raw.length) continue;
+            var arr = [];
+            for (var i = 0; i < raw.length; i++) { if (raw[i]) arr.push(raw[i]); }
+            if (!arr.length) continue;
+            var bar = k.indexOf('|');
+            var who = bar > 0 ? k.slice(0, bar) : k;
+            var act = bar > 0 ? k.slice(bar + 1) : '';
+            out.push({ name: who + '｜' + act, who: who, act: act, urls: arr });
+        }
+        return out;
+    }
+
+    function renderIlluView(d, p, bd) {
+        var list = xzCemAllIllus();
+        if (list === null) {
+            bd.innerHTML = '<div class="cem-empty">没有读到插图表（插图模块没起来），这一页暂时是空的。</div>';
+            return;
+        }
+        if (!list.length) {
+            bd.innerHTML = '<div class="cem-empty">插图表里还没有任何一组图。</div>';
+            return;
+        }
+        /* 与立绘不同：这里**默认选第一组**并把大图显示出来。
+           立绘页首次进来是空的（"点下面的人名看大图"），因为那是玩家的角色名单；
+           插图页进来就是要看图的，先给一张比先给一片空白有用。 */
+        var idx = Number(S.illuAt);
+        if (!isFinite(idx) || idx < 0 || idx >= list.length) idx = 0;
+
+        var h = '';
+        h += '<div class="gal-stage" data-at="0" style="position:relative;margin:2px 0 8px;">'
+            + '<img class="gal-img" alt="" loading="lazy" onerror="xzImgAlt(this)" '
+            + 'style="display:block;width:100%;max-height:44vh;object-fit:contain;'
+            + 'background:rgba(0,0,0,.35);border-radius:8px;">'
+            + '<div class="gal-nav gal-prev off" data-gal-nav="-1">‹</div>'
+            + '<div class="gal-nav gal-next off" data-gal-nav="1">›</div>'
+            + '<div class="gal-empty" style="position:absolute;inset:0;display:grid;place-items:center;'
+            + 'color:#615c55;font-size:11.5px;pointer-events:none;">点下面的图组看大图</div>'
+            + '<div class="gal-cap"><b></b><i></i></div>'
+            + '</div>';
+        h += '<div class="gal-list xz-illu">';
+        list.forEach(function (it, i) {
+            h += '<div class="gal-cell' + (i === idx ? ' on' : '') + '" data-gal="' + i + '">'
+                + '<img src="' + esc(galImgOf(it.urls[0])) + '" alt="" loading="lazy" onerror="xzImgAlt(this)">'
+                + (it.urls.length > 1 ? '<em>' + it.urls.length + '</em>' : '')
+                /* 缩略图下面的字是「人物·动作」。
+                   ⚠ 不写空格（`·` 两侧留白在 9px 字号下要多占 4px），
+                     格子宽度由 `.xz-illu` 那条 CSS 放宽到 92px —— 立绘那边是 66px，
+                     66px 装不下「白长雪·授乳手交」这 8 个字，会被省略号吃掉动作名，
+                     而**动作名正是这一页要看的东西**。 */
+                + '<span>' + esc(it.who) + '·' + esc(it.act) + '</span>'
+                + '</div>';
+        });
+        h += '</div>';
+        bd.innerHTML = h;
+        try { galShow(d, p, list, idx, _illuSet); } catch (e2) {}
+    }
+
+    function _illuSet(i) { S.illuAt = i; }
+
+    /* ★★★ v542：同一个 `.gal-cell` 在两个视图里指向**不同的东西** ★★★
+       立绘视图 → 人；插图视图 → 图组。点击委托只有一条，所以取"当前这一份"的入口
+       必须收在这里，三处（点格子 / 点 ‹ › / 记位置）都走它 ——
+       否则迟早出现"点格子用了插图表、翻页用了立绘表"这种半对半错。 */
+    function galCurList() {
+        if (S.view === 'illu') return xzCemAllIllus() || [];
+        return xzCemAllPortraits();
+    }
+    function galCurAt() {
+        if (S.view === 'illu') {
+            var n = Number(S.illuAt);
+            return (isFinite(n) && n >= 0) ? n : 0;
+        }
+        return galAt();
+    }
+    function galCurSet(i) {
+        if (S.view === 'illu') { S.illuAt = i; return; }
+        galSet(i);
+    }
+
     /* ★★★ v527：`renderDlcView()` **整个函数删掉** ★★★
        它只服务「DLC 开关」那个页签，页签已下线（用户：「dlc开关删了」）。
        DLC 开关的唯一入口仍是**人物页顶部那一条**（`xzPeopleDlcBar`，v357 起就在），
@@ -14501,8 +14883,9 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
            ⚠ 老存档的 `S.view` 里可能还存着 'dlc'（它会落进聊天变量），
              不回落的话这条分支没了、后面的 list 分支又会因为 `S.view !== 'list'`
              把页签全判成未选中 ⇒ 面板看起来"一个视图都没选"。所以这里显式回落。 */
-        if (S.view !== 'list' && S.view !== 'gal') S.view = 'list';
+        if (S.view !== 'list' && S.view !== 'gal' && S.view !== 'illu') S.view = 'list';
         if (S.view === 'gal') { renderGalView(d, p, bd); return; }
+        if (S.view === 'illu') { renderIlluView(d, p, bd); return; }
         if (S.err) { bd.innerHTML = '<div class="cem-empty">' + esc(S.err) + '</div>'; return; }
 
         var orig = [], groups = {};
@@ -14573,26 +14956,88 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
              前两段是会变的读数，第三段是设计口径（原创默认开、DLC 默认关）。
              把「默认」写进会变的那一段，玩家就分不清"现在是什么"和"本该是什么"。 */
         var _onOf = function (arr) { return arr.filter(entryIsOn).length; };
+        var _byName = function (a, b) {
+            var x = cleanName(nameOf(a)), y = cleanName(nameOf(b));
+            return x < y ? -1 : (x > y ? 1 : 0);
+        };
+        /* ★★★ v542：两个总栏（用户 2026-11-05）★★★
+           「原创人物条目/DLC人物条目→原创人物条目展开后直接是人物，
+             DLC人物条目展开后是作品名→点击作品名后展开期→期展开后是人物」 */
         if (!orig.length) h += '<div class="cem-empty">这本书里没有原创人物条目。</div>';
-        else h += sectionHtml('原创人物',
+        else h += sectionHtml('G:orig', '原创人物条目',
             orig.length + ' 人 · 已开启 ' + _onOf(orig) + '/' + orig.length + ' · 默认开启', orig,
             allOn ? '全部关闭' : '全部开启', !allOn);
+
+        var _gNames = Object.keys(groups);
         /* ★ v437：DLC 区为空也要给一句 —— 只印原创那句的话，读者会以为「原创没有、
            DLC 可能还没加载」，而实际是整本一条都没读到。 */
-        if (!Object.keys(groups).length && orig.length) {
-            h += '<div class="cem-empty">这本书里没有 DLC 人物条目。</div>';
-        }
-
-        Object.keys(groups).sort().forEach(function (g) {
-            var list = groups[g].slice().sort(function (a, b) {
-                var x = cleanName(nameOf(a)), y = cleanName(nameOf(b));
-                return x < y ? -1 : (x > y ? 1 : 0);
+        if (!_gNames.length) {
+            if (orig.length) h += '<div class="cem-empty">这本书里没有 DLC 人物条目。</div>';
+        } else {
+            /* ① 组名归并成作品：斗破 + 斗破少 → 作品「斗破」。
+               ② 作品内按「大结局篇 → 少年篇」排（**不能靠字典序**，见 `dlcPeriodRank`）。
+               ③ 只有一期就不再多套一层 —— 点开作品直接是人（斗罗）。 */
+            var _works = [], _wIdx = {};
+            _gNames.sort().forEach(function (g) {
+                var w = dlcWorkOf(g);
+                if (!Object.prototype.hasOwnProperty.call(_wIdx, w)) {
+                    _wIdx[w] = _works.length;
+                    _works.push({ name: w, groups: [], list: [] });
+                }
+                _works[_wIdx[w]].groups.push(g);
             });
-            var gOn = list.every(entryIsOn);
-            h += sectionHtml(g + ' DLC',
-                list.length + ' 人 · 已开启 ' + _onOf(list) + '/' + list.length + ' · 默认关闭', list,
-                gOn ? '关掉整包' : '开启整包', !gOn);
-        });
+            _works.forEach(function (wk) {
+                wk.groups.sort(function (a, b) {
+                    var ra = dlcPeriodRank(a, wk.name), rb = dlcPeriodRank(b, wk.name);
+                    if (ra !== rb) return ra - rb;
+                    return a < b ? -1 : (a > b ? 1 : 0);
+                });
+                wk.groups.forEach(function (g) { wk.list = wk.list.concat(groups[g]); });
+            });
+            var _dlcAll = [];
+            _works.forEach(function (wk) { _dlcAll = _dlcAll.concat(wk.list); });
+
+            /* ⚠ 惰性构造：这一段整体包在 `if (_dlcOpen)` 里。
+               不包的话，每 1.5 秒一次的重绘都会把 174 张卡拼成字符串再扔掉
+               （DLC 总栏默认是收起的，玩家根本看不到）。
+               这是 v494 那条「卡片默认不进 DOM」的完整版 —— 不进 DOM 也不拼串。 */
+            var _dlcOpen = !!(S.expanded && S.expanded['DLC']);
+            var _dlcInner = '';
+            if (_dlcOpen) _works.forEach(function (wk) {
+                var _multi = wk.groups.length > 1;
+                /* 作品层的读数：多期先写「N 期」，两边的「已开启 K/N」都按**整部作品**算 ——
+                   玩家关心的是"这部我开了几个"，不是"这个期开了几个"。 */
+                var _wSub = (_multi ? (wk.groups.length + ' 期 · ') : '')
+                    + wk.list.length + ' 人 · 已开启 ' + _onOf(wk.list) + '/' + wk.list.length;
+                var _wOpen = !!(S.expanded && S.expanded['W:' + wk.name]);
+                var _wInner = '';
+                if (_wOpen) {
+                    if (_multi) {
+                        /* 多期：作品展开是**期**，期展开才是人 */
+                        wk.groups.forEach(function (g) {
+                            var _pl = groups[g].slice().sort(_byName);
+                            var _pt = dlcPeriodText(g, wk.name);
+                            _wInner += sectionHtml('P:' + g,
+                                dlcPeriodLabel(g, wk.name, true),
+                                _pl.length + ' 人 · 已开启 ' + _onOf(_pl) + '/' + _pl.length
+                                    + (_pt ? (' · ' + _pt) : ''),
+                                _pl, null, false);
+                        });
+                    } else {
+                        /* 单期（斗罗，或以后新加的"只有一部"的作品）：展开直接出人。
+                           多套一层"唯一一期"纯属浪费一次点击，而且那一层的副标题
+                           只能写「N 人」，和作品层一模一样 —— 等于同一句话说两遍。 */
+                        var _ol = wk.list.slice().sort(_byName);
+                        _wInner = '<div class="cem-glist">' + _ol.map(cardHtml).join('') + '</div>';
+                    }
+                }
+                _dlcInner += foldHtml('W:' + wk.name, wk.name + ' DLC', _wSub, _wInner, '');
+            });
+            h += foldHtml('DLC', 'DLC 人物条目',
+                _works.length + ' 部 · ' + _dlcAll.length + ' 人 · 已开启 '
+                    + _onOf(_dlcAll) + '/' + _dlcAll.length + ' · 默认关闭',
+                _dlcInner, '');
+        }
         if (!orig.length && !Object.keys(groups).length) {
             /* ★ v437：这条以前说「期望的命名」—— 而真实原因是**字段读错**时也长这样，
                玩家照着提示去改名，改完还是空。现在把诊断口一起印出来：
@@ -14781,7 +15226,10 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 var gi = Number(gcell.getAttribute('data-gal'));
                 var gs0 = p.querySelector('.gal-stage');
                 if (gs0) { gs0.setAttribute('data-at', '0'); gs0.removeAttribute('data-name'); }
-                try { galShow(d, p, xzCemAllPortraits(), gi); } catch (eGs) {}
+                /* ★ v542：`xzCemAllPortraits()` 换成 `galCurList()` ——
+                   插图视图里这些格子是图组，不是人。写死立绘表的话，
+                   点插图的格子会去翻一批人名表，image 直接不换（且零报错）。 */
+                try { galShow(d, p, galCurList(), gi, galCurSet); } catch (eGs) {}
                 return;
             }
             var gnav = t.closest('[data-gal-nav]');
@@ -14789,13 +15237,13 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 try { ev.stopPropagation(); ev.preventDefault(); } catch (eGn2) {}
                 var gdir = Number(gnav.getAttribute('data-gal-nav')) || 1;
                 var gs1 = p.querySelector('.gal-stage');
-                var glist = xzCemAllPortraits();
-                var gidx = galAt();
+                var glist = galCurList();
+                var gidx = galCurAt();
                 /* 还没点过任何人（idx 越界）时不许翻 —— 否则会翻出"空气里的下一张" */
                 if (!glist[gidx]) return;
                 var gat = (Number(gs1 && gs1.getAttribute('data-at')) || 0) + gdir;
                 if (gs1) gs1.setAttribute('data-at', String(gat));
-                try { galShow(d, p, glist, gidx); } catch (eGs2) {}
+                try { galShow(d, p, glist, gidx, galCurSet); } catch (eGs2) {}
                 return;
             }
             /* ★★★ v476：DLC 视图里的「一键开启/关闭」★★★
@@ -14954,6 +15402,10 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 + '<div class="cem-tabs">'
                 + '<button type="button" class="cem-tab" data-cem-view="list">人物条目</button>'
                 + '<button type="button" class="cem-tab" data-cem-view="gal">所有立绘</button>'
+                /* ★ v542：第三个视图「插图」（用户 2026-11-05：「在人物管理器里做一个
+                   插图预览界面，跟查看所有立绘一样的」）。数据是正文 `<插图>人物｜动作</插图>`
+                   实际会命中的那张图组表 —— 玩家能看到"模型能配出哪些图、长什么样"。 */
+                + '<button type="button" class="cem-tab" data-cem-view="illu">插图</button>'
                 /* ★★★ v527：「DLC 开关」页签**删掉**了（用户截图指过来：「dlc开关删了」）★★★
                    理由：DLC 开关本来就是**人物页顶部那一条**（`xzPeopleDlcBar`，v357 起就在），
                    而这里又摆一个页签把同一条搬进管理器 —— 两处写同一份开关，
@@ -15021,7 +15473,10 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             if (!el) {
                 el = d.createElement('div');
                 el.id = BALL_ID;
-                el.textContent = '人';
+                /* ★ v544：原来是 `el.textContent = '人'` —— 一个汉字当图标。
+                   现在换成 SVG 人形（见文件头 `BALL_ICON`）。 */
+                el.innerHTML = BALL_ICON;
+                el.setAttribute('data-ico', STYLE_VER);
                 el.title = '人物条目管理器（可拖动）';
                 /* ★ click 只作桌面兜底；手机走 xzCemBind 里的 touchend/pointerup。
                    去重靠 _xzFireTap（400ms），否则手机上会 touchend 一次、click 再一次，
@@ -15032,6 +15487,17 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                     else openCem();
                 });
                 d.body.appendChild(el);
+            } else if (el.getAttribute('data-ico') !== STYLE_VER) {
+                /* ★★★ v544：**球已经存在**时也要补它的图标 ★★★
+                   这是本项目的老病（引擎那颗战球在 v441 踩过一模一样的坑）：
+                   热更新不会重建 DOM，`if (!el)` 那段对**已经在页面上的球**一行都不跑
+                   ⇒ 样式换成了方形，球里还是那个「人」字，看起来就是"只改了一半"。
+                   ⇒ 这里按版本号补一次。用 `data-ico` 记版本，重复执行不会反复重建节点
+                     （innerHTML 重建会销毁子节点，虽然这里没监听，但没必要每帧都做）。 */
+                try {
+                    el.innerHTML = BALL_ICON;
+                    el.setAttribute('data-ico', STYLE_VER);
+                } catch (eIco) {}
             }
             /* 记忆里的位置（玩家拖过就以他拖的为准，不强行搬走） */
             var saved = null;
@@ -15319,10 +15785,15 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         var n = p.querySelector('.gal-n');
         if (n) n.textContent = list.length + ' 人 / ' + list.reduce(function (a, x) { return a + x.urls.length; }, 0) + ' 张';
     }
-    function galShow(d, p, list, idx) {
+    /* ★★★ v542：多一个可选参数 `setFn` —— "把当前第几个记下来"这件事有两种存法 ★★★
+       立绘那份存 localStorage（`GAL_KEY`，跨会话还在），插图那份存 `S.illuAt`
+       （只在本局有效）。两边的"第 N 个"不是同一批东西，共用一份记忆会互相踩：
+       看完插图第 3 组，切回立绘页会直接跳到第 3 个人。
+       ⚠ 不传 `setFn` 时行为与原来**完全一致**（相册那三处调用一个字都不用改）。 */
+    function galShow(d, p, list, idx, setFn) {
         if (!list.length) return;
         var i = ((idx % list.length) + list.length) % list.length;
-        galSet(i);
+        (setFn || galSet)(i);
         var it = list[i];
         var stage = p.querySelector('.gal-stage');
         if (!stage) return;
@@ -16308,9 +16779,9 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
    ── 与本卡既有实现的两个对齐点 ──────────────────────────────────────────
    · 图源：本卡的图一律走绝对 https（`XZ_PORTRAITS` 也是），这里同样只放链接、
      不放文件（卡是单文件 PNG，塞不进图）。
-   · 名单：本组只认 `GALLERY_POOLS` 的键。世界书的《插图系统》《插图库》两条
+   · 名单：本组只认 `GALLERY_POOLS` 的键。世界书的《设定-插图系统》一条
      **由 `工具/_v490_gen_illu_wb.mjs` 从这张表反向生成** —— 改表就是改名单，
-     永远不要手改那两条（手改必然与表漂移，玩家看到的就是"写了标签不出图"）。
+     永远不要手改那一条（手改必然与表漂移，玩家看到的就是"写了标签不出图"）。
    ══════════════════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
@@ -16346,13 +16817,13 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
   /* ══════════════════════════════════════════════════════════════════════
      图组库：键「人物|动作」→ 有序 URL 数组（顺序 = 播放顺序）
      ──────────────────────────────────────────────────────────────────────
-     ⚠ 这张表是**唯一真相**。世界书那两条（《插图系统》的可写名单、《插图库》的
-       不能写谁）全部由 `工具/_v490_gen_illu_wb.mjs` 从这里生成。
+     ⚠ 这张表是**唯一真相**。世界书《设定-插图系统》的可写名单与否定铁律
+       全部由 `工具/_v490_gen_illu_wb.mjs` 从这里生成。
        要加图 / 删图 / 改动作名，**只改这里**，然后重跑那个生成器。
      ⚠ 动作名必须逐字落在下面 ALL_ACTIONS 里 —— 生成器与闸都会校验；
        自己发明一个「抚摸」，玩家看到的就是"永远查不到图"。
      ⚠ 只放链接，不放文件。
-     ⚠ 空表 = 还没有任何动作图。空表时《插图系统》会明写「暂无」，
+     ⚠ 空表 = 还没有任何动作图。空表时《设定-插图系统》会明写「暂无」，
        模型不会去写标签 —— 这是**正确的空态**，不是漏做。
        别为了"看起来完整"往里塞占位 URL。
      ══════════════════════════════════════════════════════════════════════ */
