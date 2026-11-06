@@ -7637,6 +7637,13 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         /* v503：自定义立绘优先（这是管理器卡片上那 56px 的槽） */
         var _cu2 = xzCustomPicOf(name);
         if (_cu2) return _cu2;
+        /* ★ v1.175：新版立绘表也必须喂给这个小槽 —— 原来它只认 small/ 那 9 张
+           和出厂单图表，于是青璃／姜清柚／罗衣这些只在有新表的人，
+           管理器人物卡片上连头像都是空的，而「所有立绘」页里明明有图。
+           xzIlluStand 内部已经做完「精确 → 取尾段 → 最长键包含」，一次调用全覆盖；
+           优先级放在 small/ 之前，跟状态栏那套「新版画像优先」保持同一口径。 */
+        var _nSt = xzIlluStand(name);
+        if (_nSt.length) return xzSafeImg(_nSt[0]) || _nSt[0];
         var THUMB = {
             '千仞雪': 1, '古月': 1, '古月娜': 1, '宁荣荣': 1, '小舞': 1,
             '比比东': 1, '白沉香': 1, '阿银': 1, '马小桃': 1
@@ -7677,14 +7684,38 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                ⚠ 只挂表，不挂函数：`xzGalleryUrls` 依赖 XZ_GALLERY 的拼址规则，
                  相册那边直接用完整 URL 数组更直接，避免两处拼址规则漂移。 */
             try {
-                var _galPlain = {};
-                for (var _gk in XZ_GALLERY) {
-                    if (!Object.prototype.hasOwnProperty.call(XZ_GALLERY, _gk)) continue;
+                /* ★★★ v1.175：键集合必须是**三表并集** ★★★
+                   作者 2026-11-06：「人物条目管理器的立绘没同步」。
+                   病根：这里原来只遍历斗罗相册那十几个键，而 v549 之后新建的
+                   新版立绘表（青璃／姜清柚／云韵…24 人）**从没挂出去** ⇒
+                   管理器的「所有立绘」和正文内联标签都看不到这批人，
+                   清蘅元母、阿依莎换过的图也跟着不生效（卡里明明改了、界面还是旧的）。
+                   ⇒ 三表并集逐人调同一个 xzGalleryUrls()：它内部已经是
+                     「自定义 → 新版画像 → 斗罗相册」的优先级，拼址规则只有一处。
+                     只在出厂单图表里的人补那一张；空串占位键不许混进来。 */
+                var _allNames = {}, _galPlain = {};
+                var _collect = function (o) {
+                    if (!o) return;
+                    for (var k in o) {
+                        if (!Object.prototype.hasOwnProperty.call(o, k)) continue;
+                        _allNames[k] = 1;
+                    }
+                };
+                _collect(XZ_ILLU_STAND);
+                _collect(XZ_GALLERY);
+                _collect(XZ_PORTRAITS);
+                for (var _gk in _allNames) {
                     var _gu = [];
                     try { _gu = xzGalleryUrls(_gk) || []; } catch (e_gu) { _gu = []; }
+                    if (!_gu.length && typeof XZ_PORTRAITS[_gk] === 'string' && XZ_PORTRAITS[_gk]) {
+                        _gu = [XZ_PORTRAITS[_gk]];
+                    }
+                    _gu = _gu.filter(function (u) { return !!u; });
                     if (_gu.length) _galPlain[_gk] = _gu;
                 }
                 window.XZ_GALLERY = _galPlain;
+                /* 新版立绘表也单独挂一份（只读），以后校验三表同源不用再猜 */
+                window.XZ_ILLU_STAND = XZ_ILLU_STAND;
             } catch (eGalExp) {}
             /* ★★★ v438：管理器要的是**小缩略图**，不是原图。
                病根：管理器的卡片图槽只有 56px 宽，而 XZ_PORTRAIT_LOOKUP 的第 ① 步是
@@ -14987,13 +15018,19 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         return (E && E.pools) ? E.pools : null;
     }
 
-    /* 摊平成 [{name:'人物｜动作', who, act, urls}]。
-       ⚠ **顺序照对象字面量的书写顺序**（`for...in` 对字符串键就是插入序），
-         不排序：那张表的顺序是作者按"人物 → 动作"排好的，排序反而会打乱。 */
+    /* ★★★ v1.175：一人一格，把同一个人的所有动作图收在一起 ★★★
+       作者 2026-11-06：「插图倒是同一个人就结合起来啊，别他妈同一个人一张一个格子啊」。
+       病根：原来每个「人物|动作」组各占一格 ⇒ 白长雪一个人刷出七八格，
+         跟立绘站那版「一人一格、点开翻她的几张」完全反着来。
+       ⇒ 现在按人名聚合：一格的 urls 是这个人所有动作图顺序拼接，
+         acts 与 urls 一一对应（翻大图时把当前这张的动作名带进计数里）。
+         galShow 的 data-at / ‹ › / 九宫格高亮本来就按 urls 走，不用另写一套翻页。
+       ⚠ 顺序照对象字面量的书写顺序（for...in 对字符串键是插入序），不排序：
+         那张表是作者按「人物 → 动作」排好的，排序反而打乱。 */
     function xzCemAllIllus() {
         var pools = _illuPools();
         if (!pools) return null;
-        var out = [];
+        var byWho = {}, order = [];
         for (var k in pools) {
             if (!Object.prototype.hasOwnProperty.call(pools, k)) continue;
             var raw = pools[k];
@@ -15004,9 +15041,16 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             var bar = k.indexOf('|');
             var who = bar > 0 ? k.slice(0, bar) : k;
             var act = bar > 0 ? k.slice(bar + 1) : '';
-            out.push({ name: who + '｜' + act, who: who, act: act, urls: arr });
+            if (!byWho[who]) {
+                byWho[who] = { name: who, who: who, urls: [], acts: [] };
+                order.push(who);
+            }
+            for (var j = 0; j < arr.length; j++) {
+                byWho[who].urls.push(arr[j]);
+                byWho[who].acts.push(act);
+            }
         }
-        return out;
+        return order.map(function (w) { return byWho[w]; });
     }
 
     function renderIlluView(d, p, bd) {
@@ -15041,12 +15085,9 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             h += '<div class="gal-cell' + (i === idx ? ' on' : '') + '" data-gal="' + i + '">'
                 + '<img src="' + esc(galImgOf(it.urls[0])) + '" alt="" loading="lazy" onerror="xzImgAlt(this)">'
                 + (it.urls.length > 1 ? '<em>' + it.urls.length + '</em>' : '')
-                /* 缩略图下面的字是「人物·动作」。
-                   ⚠ 不写空格（`·` 两侧留白在 9px 字号下要多占 4px），
-                     格子宽度由 `.xz-illu` 那条 CSS 放宽到 92px —— 立绘那边是 66px，
-                     66px 装不下「白长雪·授乳手交」这 8 个字，会被省略号吃掉动作名，
-                     而**动作名正是这一页要看的东西**。 */
-                + '<span>' + esc(it.who) + '·' + esc(it.act) + '</span>'
+                /* ★ v1.175：一人一格 ⇒ 下面只写人名，动作名挪到大图计数里（见 galShow）。
+                   角标就是这个人的总张数，点开左右键能把她所有动作翻到底。 */
+                + '<span>' + esc(it.who) + '</span>'
                 + '</div>';
         });
         h += '</div>';
@@ -15057,7 +15098,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
     function _illuSet(i) { S.illuAt = i; }
 
     /* ★★★ v542：同一个 `.gal-cell` 在两个视图里指向**不同的东西** ★★★
-       立绘视图 → 人；插图视图 → 图组。点击委托只有一条，所以取"当前这一份"的入口
+       立绘视图 → 人；插图视图 → **人**（v1.175 起同一个人所有动作图收进一格）。点击委托只有一条，所以取"当前这一份"的入口
        必须收在这里，三处（点格子 / 点 ‹ › / 记位置）都走它 ——
        否则迟早出现"点格子用了插图表、翻页用了立绘表"这种半对半错。 */
     function galCurList() {
@@ -16054,7 +16095,15 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         var cap = stage.querySelector('.gal-cap b');
         if (cap) cap.textContent = it.name;
         var cnt = stage.querySelector('.gal-cap i');
-        if (cnt) cnt.textContent = it.urls.length > 1 ? ((at + 1) + '/' + it.urls.length) : '1 张';
+        if (cnt) {
+            /* ★ v1.175：插图视图按人合并后，动作名得在这里带出来 ——
+               原来格子底下写「人物·动作」，现在一人一格，动作名只能跟着当前这张走。
+               立绘视图没有 acts，走原来的纯计数，不受影响。 */
+            var _actTag = (it.acts && it.acts[at]) ? (it.acts[at] + ' · ') : '';
+            cnt.textContent = it.urls.length > 1
+                ? (_actTag + (at + 1) + '/' + it.urls.length)
+                : (_actTag ? it.acts[at] : '1 张');
+        }
         /* 左右键：只有一张就藏起来（但仍保留在 DOM 里，避免布局跳动） */
         var prev = stage.querySelector('.gal-prev'), next = stage.querySelector('.gal-next');
         if (prev) prev.className = 'gal-nav gal-prev' + (it.urls.length > 1 ? '' : ' off');
