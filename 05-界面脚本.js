@@ -7090,7 +7090,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
       "沈清颜": "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/image-hosting@main/blog/XL_shenqingyan_20261030.jpg",
       "凌星遥": "",
       "言清漪": "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/image-hosting@main/blog/Ab3qJJDgRKZTAAAAAElFTkSuQmCC.png",
-      "阿依莎": "https://a.imgckr.com/2026/10/14/XDkl5.png",   /* 异域仙子 · 沙洲月牙泉城供奉仙姬 */
+      /* [v550] 阿依莎出厂图与立绘_2 作者判定弃用，下架；只留 立绘_1（见 XZ_ILLU_STAND）。 */
 
       /* ★ v406：斗罗 DLC 旗袍立绘（与 04 的 PORTRAIT_URLS 同一批、同 8 人）。
          512 宽 JPEG 放仓库 small/ 下；原图 1.5MB 会让面板加载卡死。
@@ -7250,10 +7250,9 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B4%9B%E7%92%83/%E6%B4%9B%E7%92%83_%E7%AB%8B%E7%BB%98_1.webp"
       ],
       "清蘅元母": [
-        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D_%E7%AB%8B%E7%BB%98_1.webp",
-        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D_%E7%AB%8B%E7%BB%98_2.webp",
-        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D_%E7%AB%8B%E7%BB%98_3.webp"
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D/%E6%B8%85%E8%98%85%E5%85%83%E6%AF%8D_%E7%AB%8B%E7%BB%98_4.webp"
       ],
+      /* [v550] 原 _1/_2/_3 三张作者判定全错，删除；换上面这张新图（编号 _4 避开 CDN 缓存）。 */
       "清衍静": [
         "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E7%AB%8B%E7%BB%98_1.webp",
         "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E7%AB%8B%E7%BB%98_2.webp",
@@ -7271,8 +7270,11 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%A8%80%E6%B8%85%E6%BC%AA/%E8%A8%80%E6%B8%85%E6%BC%AA_%E7%AB%8B%E7%BB%98_2.webp"
       ],
       "阿依莎": [
-        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E4%BE%9D%E8%8E%8E/%E9%98%BF%E4%BE%9D%E8%8E%8E_%E7%AB%8B%E7%BB%98_1.webp",
-        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E4%BE%9D%E8%8E%8E/%E9%98%BF%E4%BE%9D%E8%8E%8E_%E7%AB%8B%E7%BB%98_2.webp"
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E4%BE%9D%E8%8E%8E/%E9%98%BF%E4%BE%9D%E8%8E%8E_%E7%AB%8B%E7%BB%98_1.webp"
+      ],
+      /* [v550] 姜清柚新增立绘（作者 2026-11-06 给图）。 */
+      "姜清柚": [
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%A7%9C%E6%B8%85%E6%9F%9A/%E5%A7%9C%E6%B8%85%E6%9F%9A_%E7%AB%8B%E7%BB%98_1.webp"
       ],
       "阿银": [
         "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%98%BF%E9%93%B6/%E9%98%BF%E9%93%B6_%E7%AB%8B%E7%BB%98_1.webp",
@@ -7285,7 +7287,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BD%97%E8%A1%A3/%E7%BD%97%E8%A1%A3_%E7%AB%8B%E7%BB%98_1.webp"
       ],
       "青璃": [
-        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%9D%92%E7%92%83/%E9%9D%92%E7%92%83_%E7%AB%8B%E7%BB%98_1.webp"
+        "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%9D%92%E7%92%83/%E9%9D%92%E7%92%83_%E7%AB%8B%E7%BB%98_2.webp"
       ],
       "鸾媚": [
         "https://cdn.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%B8%BE%E5%AA%9A/%E9%B8%BE%E5%AA%9A_%E7%AB%8B%E7%BB%98_1.webp"
