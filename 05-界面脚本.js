@@ -5541,9 +5541,12 @@ function xzTypeOf(name, fbT, fbA) {
             return p2(d.getHours()) + ':' + p2(d.getMinutes()) + ':' + p2(d.getSeconds());
         })() : '还没查过';
         var _online = HOTV.err ? '检查失败（网络/被拦）' : (HOTV.first ? '检查中…' : (HOTV.latest || '没取到'));
+        /* ★ v1.173：「卡版本」和「实际运行」分开印 —— 热更新之后这两个数会不一样，
+           以前只印一个，作者看到"卡版本 v1.171"就以为已经是最新（或反过来一直提示新版本）。 */
         h += '<div style="margin-top:14px;padding:10px;border:1px solid var(--xz-border-strong);border-radius:6px;font-size:11px;line-height:1.9;">'
             + '<div style="font-size:10.5px;color:var(--xz-muted);letter-spacing:.04em;margin-bottom:4px;">诊断</div>'
             + '卡版本：<b style="color:var(--xz-gold-bright);">' + esc(_cv2 || '未知') + '</b>'
+            + '　实际运行：<b style="color:var(--xz-gold-bright);">' + esc(xzHotCurVer() || '未知') + '</b>'
             + '　通道：<b>' + esc(_chan === 'dev' ? '开发' : '稳定') + '</b><br>'
             + '本页脚本来自：<b style="word-break:break-all;">' + esc(_ref ? _ref.slice(0, 12) : '未知') + '</b>'
             + '（' + (_ref && /^[0-9a-f]{40}$/.test(_ref) ? 'commit' : 'tag') + '）<br>'
@@ -5586,7 +5589,7 @@ function xzTypeOf(name, fbT, fbA) {
             if (xzVarCompleteStatus().issue) return true;
         } catch (e3) {}
         try {
-            var cv = (typeof window !== 'undefined' && window.__XZ_CARD_VER__) ? String(window.__XZ_CARD_VER__) : '';
+            var cv = xzHotCurVer();
             if (xzVerNewer(HOTV.latest, cv)) return true;
         } catch (e2) {}
         return false;
@@ -10112,6 +10115,30 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         return false;
     }
     var HOTV = { latest: '', err: false, first: true, at: 0 };
+    /* ★★★ v1.173：「这张卡到底跑的是哪一版」不能只看卡自带版本号 ★★★
+       作者 2026-11-06：「热更新没用啊，总是点击了刷新，但是还是一样提示新版本」。
+       ── 病根 ──────────────────────────────────────────────────────────────
+         `xzHotVerHtml` 原来拿 **卡自带的 `__XZ_CARD_VER__`** 跟线上号比。
+         可热更新的结果**不改卡**：05/07/08 换成新版脚本，卡上印的版本号还是旧的。
+         ⇒ 玩家已经跑上新脚本了，徽章还拿旧号去比，永远「📦 新版本」；
+           而「点此刷新」当时只做了一件事——`location.reload()`，**没有告诉 loader
+           下次该用哪个 tag**，所以刷新多少次都还是从卡里钉的那个 ref 拉旧脚本。
+         两边一起坏：脚本没真换 + 比的值还是旧的 ⇒ 死循环。
+       ── 现在怎么比 ────────────────────────────────────────────────────────
+         loader 把**实际使用的 ref** 写在 `window.__XZ_HOT_TAG__`：
+           稳定卡刚导入 = commit sha（40 位十六进制）
+           点过刷新并被 loader 采纳 = 版本 tag（`v1.173`）
+         是版本 tag 就以它为准（那才是真正在跑的号），否则回落卡自带版本号。
+       ⚠ 只此一处定义，`xzHotVerHtml` / `xzVerAlertOn` / 诊断块全部调它。 */
+    function xzHotCurVer() {
+        var t = '';
+        try { t = (typeof window !== 'undefined' && window.__XZ_HOT_TAG__) ? String(window.__XZ_HOT_TAG__) : ''; } catch (eHt0) { t = ''; }
+        if (!t) { try { t = (window.top && window.top.__XZ_HOT_TAG__) ? String(window.top.__XZ_HOT_TAG__) : ''; } catch (eHt1) { t = ''; } }
+        if (/^v[\d.]+$/.test(t)) return t;
+        var v = '';
+        try { v = (typeof window !== 'undefined' && window.__XZ_CARD_VER__) ? String(window.__XZ_CARD_VER__) : ''; } catch (eHt2) { v = ''; }
+        return v;
+    }
     /* ★★★ 2026-11-03：`/main/` → `/refs/heads/main/`（与 loader 同一个坑）★★★
        实测同一分钟：`/main/` 给 v1.053（旧值，带 query 不换），`/refs/heads/main/` 给 v1.055。
        写成 `/main/` 的话，作者推完新版看不到号变化 —— 「实时刷新」这条就永远是假的。 */
@@ -10119,9 +10146,10 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
     function xzHotVerHtml() {
         /* ⚠ 不能读 CARD_VER：它声明在**第一个 IIFE**里，状态栏这个 IIFE 看不见 ——
            直接引用会抛 ReferenceError，整页渲染在这里断掉（lint 的 undef 就是抓这个）。
-           版本号由第一个 IIFE 写到 window.__XZ_CARD_VER__ 上，读那个才是同一个真源。 */
-        var cv = '';
-        try { cv = (typeof window !== 'undefined' && window.__XZ_CARD_VER__) ? String(window.__XZ_CARD_VER__) : ''; } catch (eCV2) { cv = ''; }
+           版本号由第一个 IIFE 写到 window.__XZ_CARD_VER__ 上，读那个才是同一个真源。
+           ★ v1.173：改走 xzHotCurVer() —— 热更新过之后要认「真正在跑的号」，
+             不是卡上印的那个旧号（否则永远提示有新版本）。 */
+        var cv = xzHotCurVer();
         var isNew = xzVerNewer(HOTV.latest, cv);
         var txt, col, bc, bg;
         if (HOTV.first) {
@@ -10148,9 +10176,13 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             + 'font-size:11px;line-height:1.5;letter-spacing:.02em;color:' + col + ';'
             + 'white-space:normal;word-break:break-word;text-align:center;'
             + (clickable ? 'cursor:pointer;' : '');
+        var _hint = isNew
+            ? ('点了之后会记住 ' + HOTV.latest + ' 并整页重载，下次加载就从该 tag 拉脚本。'
+               + '\n若刷新后还是这一行，说明卡里钉的 ref 没被替换（拿去「版本」页看「实际运行」那行）。')
+            : '当前脚本已是线上版本';
         var attrs = (!HOTV.first && (HOTV.err || isNew))
-            ? ' data-xz-act="hot-refresh" style="' + bd + '"'
-            : ' style="' + bd + '"';
+            ? ' data-xz-act="hot-refresh" title="' + esc(_hint) + '" style="' + bd + '"'
+            : ' title="' + esc(_hint) + '" style="' + bd + '"';
         return '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-top:4px;">'
             + '<span style="flex:0 0 auto;font-size:10.5px;color:var(--xz-muted);letter-spacing:.04em;padding-top:9px;">卡版本</span>'
             + '<span' + attrs + '>' + esc(txt) + '</span></div>';
@@ -11406,6 +11438,29 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                     return;
                 }
                 if (act === 'hot-refresh') {
+                    /* ★★★ v1.173：刷新之前**必须先把「下次用哪个 tag」告诉 loader** ★★★
+                       原来这里只有一句 `location.reload()` —— 而 loader 每次开机都按
+                       **卡里钉的那个 ref**（稳定卡是 commit sha）去拉 05/07/08。
+                       卡没换 ⇒ ref 没变 ⇒ 刷新一百次拉到的还是同一批旧脚本，
+                       徽章自然继续喊「有新版本」。作者 2026-11-03 和 2026-11-06 各骂过一次，
+                       前一次只加了诊断（这次把诊断也留着），没动真因。
+                       ⇒ 写 `localStorage.xzHotTag = 线上版本号`，loader 开机读它（脚本/00 第 102 行
+                         `if (!DEV && saved && /^v[\d.]+$/.test(saved)) TAG = saved;`）就会改从
+                         那个版本 tag 拉脚本。这是「热更新」唯一能真正换脚本的通道：
+                         已经跑起来的 IIFE 卸不掉，只能下次加载换源。
+                       ⚠ 只写 xzHotTag，**别动 xzHotCardTag**：后者存的是卡自带 ref，
+                         脚本比你手改它会让 loader 判成"换了张卡"，把记住的 tag 清掉。 */
+                    var _tg = String(HOTV.latest || '');
+                    var _cvv = xzHotCurVer();
+                    var _dev = false;
+                    try { _dev = (String(window.__XZ_CHAN__ || '') === 'dev'); } catch (eSd) { _dev = false; }
+                    if (!_dev && /^v[\d.]+$/.test(_tg) && xzVerNewer(_tg, _cvv)) {
+                        try { localStorage.setItem('xzHotTag', _tg); } catch (eS0) {}
+                        try { if (window.top && window.top !== window) window.top.localStorage.setItem('xzHotTag', _tg); } catch (eS1) {}
+                        try { if (window.parent && window.parent !== window) window.parent.localStorage.setItem('xzHotTag', _tg); } catch (eS2) {}
+                        /* 记一笔，刷新回来徽章能核对"上一步到底生效没" */
+                        try { HOTV.pending = _tg; } catch (eS3) {}
+                    }
                     try { (window.top || window).location.reload(); }
                     catch (eR) { try { location.reload(); } catch (eR2) {} }
                     return;
