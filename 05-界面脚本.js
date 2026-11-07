@@ -7381,9 +7381,9 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%A2%B5%E6%B8%85%E4%BB%AA/%E6%A2%B5%E6%B8%85%E4%BB%AA_%E7%AB%8B%E7%BB%98_1.webp"
       ],
       "绯雪": [
+        "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BB%AF%E9%9B%AA/%E7%BB%AF%E9%9B%AA_%E7%AB%8B%E7%BB%98_3.webp",
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BB%AF%E9%9B%AA/%E7%BB%AF%E9%9B%AA_%E7%AB%8B%E7%BB%98_1.webp",
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BB%AF%E9%9B%AA/%E7%BB%AF%E9%9B%AA_%E7%AB%8B%E7%BB%98_2.webp",
-        "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BB%AF%E9%9B%AA/%E7%BB%AF%E9%9B%AA_%E7%AB%8B%E7%BB%98_3.webp",
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BB%AF%E9%9B%AA/%E7%BB%AF%E9%9B%AA_%E7%AB%8B%E7%BB%98_4.webp",
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BB%AF%E9%9B%AA/%E7%BB%AF%E9%9B%AA_%E7%AB%8B%E7%BB%98_5.webp",
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BB%AF%E9%9B%AA/%E7%BB%AF%E9%9B%AA_%E7%AB%8B%E7%BB%98_6.webp"
@@ -7405,6 +7405,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E9%9B%B7%E7%94%B5%E5%B0%86%E5%86%9B/%E9%9B%B7%E7%94%B5%E5%B0%86%E5%86%9B_%E7%AB%8B%E7%BB%98_1.webp"
       ],
       "蕾米埃尔": [
+        "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%95%BE%E7%B1%B3%E5%9F%83%E5%B0%94/%E8%95%BE%E7%B1%B3%E5%9F%83%E5%B0%94_%E7%AB%8B%E7%BB%98_11.webp",
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%95%BE%E7%B1%B3%E5%9F%83%E5%B0%94/%E8%95%BE%E7%B1%B3%E5%9F%83%E5%B0%94_%E7%AB%8B%E7%BB%98_1.webp",
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%95%BE%E7%B1%B3%E5%9F%83%E5%B0%94/%E8%95%BE%E7%B1%B3%E5%9F%83%E5%B0%94_%E7%AB%8B%E7%BB%98_2.webp",
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%95%BE%E7%B1%B3%E5%9F%83%E5%B0%94/%E8%95%BE%E7%B1%B3%E5%9F%83%E5%B0%94_%E7%AB%8B%E7%BB%98_3.webp",
@@ -7415,7 +7416,6 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%95%BE%E7%B1%B3%E5%9F%83%E5%B0%94/%E8%95%BE%E7%B1%B3%E5%9F%83%E5%B0%94_%E7%AB%8B%E7%BB%98_8.webp",
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%95%BE%E7%B1%B3%E5%9F%83%E5%B0%94/%E8%95%BE%E7%B1%B3%E5%9F%83%E5%B0%94_%E7%AB%8B%E7%BB%98_9.webp",
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%95%BE%E7%B1%B3%E5%9F%83%E5%B0%94/%E8%95%BE%E7%B1%B3%E5%9F%83%E5%B0%94_%E7%AB%8B%E7%BB%98_10.webp",
-        "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%95%BE%E7%B1%B3%E5%9F%83%E5%B0%94/%E8%95%BE%E7%B1%B3%E5%9F%83%E5%B0%94_%E7%AB%8B%E7%BB%98_11.webp",
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%95%BE%E7%B1%B3%E5%9F%83%E5%B0%94/%E8%95%BE%E7%B1%B3%E5%9F%83%E5%B0%94_%E7%AB%8B%E7%BB%98_12.webp"
       ],
       "绫清竹": [
@@ -14255,10 +14255,13 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             'overflow:hidden;text-overflow:ellipsis;}',
             '#' + PANEL_ID + ' .gal-cell em{position:absolute;top:2px;right:2px;font-style:normal;',
             'font-size:9px;padding:0 3px;border-radius:3px;background:rgba(0,0,0,.62);color:#f0e2b0;}',
-            /* ★ v542：插图视图的格子要比立绘的宽 —— 它下面那行字是「人物·动作」，
-               最长的一组（白长雪·授乳手交）8 个汉字，66px 装不下，动作名会被省略号吃掉。
-               只放宽、不改高：66px 方图的比例保持不变，横向仍是一条可滑的带子。 */
-            '#' + PANEL_ID + ' .gal-list.xz-illu .gal-cell{flex:0 0 92px;}',
+            /* ★ v559：插图视图**不再放宽格子**（作者 2026-11-08 改成一人一格）。
+               原来放宽到 92px，是因为那时一格写「人物·动作」，最长 8 个汉字装不下。
+               现在一格只写人名（最长「蕾米埃尔」4 字），66px 足够 —— 与立绘页同宽，
+               两页长得一样，正是作者要的「跟查看所有立绘一样」。
+               ⚠ 这条规则保留但改成 66px，别删：`xz-illu` 这个 class 还在用，
+                 删了就会回落到 `.gal-cell` 的默认值，看着一样但少一层显式意图。 */
+            '#' + PANEL_ID + ' .gal-list.xz-illu .gal-cell{flex:0 0 66px;}',
 
             '@media (max-width:560px){#' + PANEL_ID + '{width:calc(100vw - 16px);}',
             '#' + PANEL_ID + ' .cem-hd{padding:9px 10px;}',
@@ -15216,13 +15219,22 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         return (E && E.pools) ? E.pools : null;
     }
 
-    /* 摊平成 [{name:'人物｜动作', who, act, urls}]。
-       ⚠ **顺序照对象字面量的书写顺序**（`for...in` 对字符串键就是插入序），
-         不排序：那张表的顺序是作者按"人物 → 动作"排好的，排序反而会打乱。 */
+    /* 摊平成 [{who, urls, acts}] —— ★ v559：**一个人一格**（作者 2026-11-08）
+       ── 为什么改 ──────────────────────────────────────────────────────
+       原来一格 = 一个「人物｜动作」，7 个人占 38 格、背后 115 张图。
+       作者原话：「不是叫你改一个人一格吗」—— 他要的是跟「所有立绘」一样的
+       **按人分格**：一格里放这个人的全部插图（跨动作合并），点开再翻。
+       这样「维琳娜 / 至冬女王 / 清宵」才是一眼能数出来的人，而不是一堆动作名。
+       ── 合并口径 ──
+       · 键是人名（`k.split('|')[0]`），同一个人下面所有动作的图**按动作表顺序**接起来；
+       · 顺序照 `GALLERY_POOLS` 的书写顺序（作者按人物 → 动作排好的），不排序；
+       · `acts` 记下这个人都涉及哪些动作（给角标/说明用），去重保序。
+       ⚠ 不丢图：谁有 37 张，合并后还是 37 张。 */
     function xzCemAllIllus() {
         var pools = _illuPools();
         if (!pools) return null;
         var out = [];
+        var idxOf = {};          /* 人名 → out 里的下标 */
         for (var k in pools) {
             if (!Object.prototype.hasOwnProperty.call(pools, k)) continue;
             var raw = pools[k];
@@ -15233,7 +15245,13 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             var bar = k.indexOf('|');
             var who = bar > 0 ? k.slice(0, bar) : k;
             var act = bar > 0 ? k.slice(bar + 1) : '';
-            out.push({ name: who + '｜' + act, who: who, act: act, urls: arr });
+            if (idxOf[who] === undefined) {
+                idxOf[who] = out.length;
+                out.push({ name: who, who: who, act: '', acts: [], urls: [] });
+            }
+            var it = out[idxOf[who]];
+            if (act && it.acts.indexOf(act) < 0) it.acts.push(act);
+            for (var j = 0; j < arr.length; j++) it.urls.push(arr[j]);
         }
         return out;
     }
@@ -15262,7 +15280,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             + '<div class="gal-nav gal-prev off" data-gal-nav="-1">‹</div>'
             + '<div class="gal-nav gal-next off" data-gal-nav="1">›</div>'
             + '<div class="gal-empty" style="position:absolute;inset:0;display:grid;place-items:center;'
-            + 'color:#615c55;font-size:11.5px;pointer-events:none;">点下面的图组看大图</div>'
+            + 'color:#615c55;font-size:11.5px;pointer-events:none;">点下面的人看大图</div>'
             + '<div class="gal-cap"><b></b><i></i></div>'
             + '</div>';
         h += '<div class="gal-list xz-illu">';
@@ -15270,12 +15288,10 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             h += '<div class="gal-cell' + (i === idx ? ' on' : '') + '" data-gal="' + i + '">'
                 + '<img src="' + esc(galImgOf(it.urls[0])) + '" alt="" loading="lazy" onerror="xzImgAlt(this)">'
                 + (it.urls.length > 1 ? '<em>' + it.urls.length + '</em>' : '')
-                /* 缩略图下面的字是「人物·动作」。
-                   ⚠ 不写空格（`·` 两侧留白在 9px 字号下要多占 4px），
-                     格子宽度由 `.xz-illu` 那条 CSS 放宽到 92px —— 立绘那边是 66px，
-                     66px 装不下「白长雪·授乳手交」这 8 个字，会被省略号吃掉动作名，
-                     而**动作名正是这一页要看的东西**。 */
-                + '<span>' + esc(it.who) + '·' + esc(it.act) + '</span>'
+                /* ★ v559：一人一格，格子下面只写**人名**（作者要的就是跟「所有立绘」一致）。
+                   原来写「人物·动作」，因为那时一格是一个动作；现在一个人一格，
+                   动作名放不下也没必要 —— 张数由右上角 `<em>` 角标给。 */
+                + '<span>' + esc(it.who) + '</span>'
                 + '</div>';
         });
         h += '</div>';
