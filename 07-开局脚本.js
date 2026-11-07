@@ -983,7 +983,7 @@
          引擎的关键词表一条都认不出来（既不报错也不生效）—— 这正是本项目
          「写了毫无反应」那一类最贵的 bug。所以被动池**必须**是独立的一张表，
          不能直接复用 EFF_POOL。判据 `工具/_v468_pas_probe.mjs` 会拿这张表逐个
-         对照引擎的 BLOOD_EFFECT_KEYS 核关键词，对不上就红。
+         对照引擎的 SPIRIT_ROOT_EFFECT_KEYS 核关键词，对不上就红。
 
        ── 为什么下面这些"看起来该有"的没有 ────────────────────────────────
        · 伤害 / 持续伤害 / 治疗 / 吸血 / 护盾 → 都是**一次性动作**，挂在被动上
@@ -1004,7 +1004,7 @@
       { k: 'p守', label: '护体' },
       { k: 'p根', label: '根基' }
     ];
-    /* 每条：机制名 / 组 / 封顶（引擎 cap）/ 值 / 关键词（必须是 BLOOD_EFFECT_KEYS 里认得的写法）
+    /* 每条：机制名 / 组 / 封顶（引擎 cap）/ 值 / 关键词（必须是 SPIRIT_ROOT_EFFECT_KEYS 里认得的写法）
        ⚠ `kw` 是**渲染出来的那一行**里用的名字，必须能被 `SPIRIT_ROOT_EFFECT_KEYS` 的正则命中。
          写错的表现是「勾了、效果栏也有字、但战斗里没有任何变化」。
        ⚠ `cap` 抄自引擎同一条规则，**不许自己另定**：自选器允许玩家填 999%，
@@ -1813,6 +1813,26 @@ function xzSkeletonOfSkill(skill) {
             sects: [], place: '人州·雪域·霜天观',
             people: ['清宵', '绯雪'],
             blurb: '雪域深处的道观，客人二位：挂名的剑仙与客居的巫女'
+        },
+        /* ★★★ v554（作者 2026-11-08）：「新增一个角色，雷电将军，原神的，还有申鹤」★★★
+           原神包，两人共一个落点（与「鸣潮」「绝区零」同构：sects 留空，只有人物）。
+           落点定在魔州·焦雷域的「鸣神无想阁」：
+             · 焦雷域本就是「雷池罡风，雷火常年劈在谷底」——雷主在这里长出来不用另编地理；
+             · 申鹤是冰系仙家弟子，客居在雷主的阁里，一处落点装得下两个人
+               （两处落点会让 DLC_PACKS 的 place 只能二选一，另一个挂不出来）。
+           ⚠ 与 05 的 `XZ_DLC_PLACES` 逐字一致；people 必须与磁盘 dlc-原神-人物-* 逐名相等。
+
+           ★ v555（作者 2026-11-08）：「再加一个角色，要速度的，快，原神新出的至冬女王」
+             · 至冬女王（安娜丝塔夏）按作者拍板**并入本包**，不另开一新包；
+             · ⚠ `place` 只能填一处，所以她的「启程之地」卡也落在鸣神无想阁。
+               这是界面层的取舍，不是设定层：她是至冬之主，住的是至冬宫。
+               总览里把她的住处单独写清楚（「至冬宫」），模型照总览写就不会串。
+             · 她是速度型：敏捷 15（全卡炼虚档最高）、圣灵根、提速 60（引擎封顶）。 */
+        {
+            id: '原神', label: '原神 DLC',
+            sects: [], place: '魔州·焦雷域·鸣神无想阁',
+            people: ['雷电将军', '申鹤', '至冬女王'],
+            blurb: '焦雷域雷池尽头的鸣神无想阁，阁中三位：执掌永恒的雷主、客居的鹤仙，与借居西厢的至冬女皇'
         }
     ];
 
@@ -1985,7 +2005,7 @@ function xzSkeletonOfSkill(skill) {
                      我们的最新不用翻译的格式。」
 
        为什么必须改（旧写法不是"风格问题"，是**同一件事两套词**）：
-         旧池写的是中文句子（「受到伤害降低 15%」），靠 BLOOD_EFFECT_KEYS 那 19 条正则**猜**；
+         旧池写的是中文句子（「受到伤害降低 15%」），靠 SPIRIT_ROOT_EFFECT_KEYS 那 19 条正则**猜**；
          而玄技/玄诀/武器从 v296 起写的是 `机制:数值｜描写`，引擎按机制名直读。
          两套词并存的结果：灵根这一路的数值看起来"能生效"，其实全靠关键词命中，
          一旦有人写「护体之气挡住三成」这种自然语言，就静默归零、面板还写着这条效果。
@@ -1995,7 +2015,7 @@ function xzSkeletonOfSkill(skill) {
          减伤 5 / 4+吸血 3 / 气血上限 6 / 减伤 5+回蓝 3 …（逐条对应旧池）。
        品阶越高 → 数值越大、条目越多（伪灵根一条，圣灵根三条）。
        玩家仍可手改或清空（手写的那句永远优先）。 */
-    var BLOOD_EFFECT_POOL = {
+    var SPIRIT_ROOT_EFFECT_POOL = {
         '伪灵根': [
             '减伤:5｜血薄，却天生皮实',
             '减伤:4，吸血:3｜灵根自愈，破口收得比常人快',
@@ -2038,10 +2058,10 @@ function xzSkeletonOfSkill(skill) {
         ]
     };
     function rollBloodEffect(rank) {
-        var pool = BLOOD_EFFECT_POOL[rank];
+        var pool = SPIRIT_ROOT_EFFECT_POOL[rank];
         if (!pool || !pool.length) {
             /* 兜底：拿「无」/未知档时，退回伪灵根池（保证一定抽得到一条） */
-            pool = BLOOD_EFFECT_POOL['伪灵根'];
+            pool = SPIRIT_ROOT_EFFECT_POOL['伪灵根'];
         }
         return pool[Math.floor(Math.random() * pool.length)];
     }
@@ -3251,7 +3271,7 @@ d.attrs[a] = v;
         '练气': 95, '筑基': 275, '金丹': 680, '元婴': 1470, '化神': 2940, '炼虚': 5500
     };
     /* 灵根品阶定额（满纯度 100 的气血值；灵力 = 气血 × 0.6）—— 与 04 的 SPIRIT_ROOT_HP_FLAT 一字不差 */
-    var BLOOD_HP_FLAT_350 = { '无': 0, '伪灵根': 30, '四灵根': 70, '三灵根': 120, '双灵根': 190, '天灵根': 260, '圣灵根': 350 };
+    var SPIRIT_ROOT_HP_FLAT_350 = { '无': 0, '伪灵根': 30, '四灵根': 70, '三灵根': 120, '双灵根': 190, '天灵根': 260, '圣灵根': 350 };
 
     function _bigRealm07(realm) {
         var v = String(realm == null ? '' : realm).trim();
@@ -3337,7 +3357,7 @@ d.attrs[a] = v;
         var con = Number((d.attrs && d.attrs.体质) || 0);
         var rank = String(d.spiritRootRank || '伪灵根');
         var pu = Math.max(0, Math.min(100, Number(d.spiritRootPurity || 0)));
-        var flat = (BLOOD_HP_FLAT_350[rank] || 0) * pu / 100;
+        var flat = (SPIRIT_ROOT_HP_FLAT_350[rank] || 0) * pu / 100;
         /* ★ v363：上限百分比改成**三源合并**（灵根 + 玄诀 + 武器），见 capPctOfDraft。
            以前只算灵根那一源 —— 于是条目里写着「气血上限+20%」的玄诀/武器
            在开局数值里一点都没体现（玩家看不出来，只是数字偏小）。 */
@@ -3360,7 +3380,7 @@ d.attrs[a] = v;
         var it = Number((d.attrs && d.attrs.智力) || 0);
         var rank = String(d.spiritRootRank || '伪灵根');
         var pu = Math.max(0, Math.min(100, Number(d.spiritRootPurity || 0)));
-        var flat = (BLOOD_HP_FLAT_350[rank] || 0) * pu / 100;
+        var flat = (SPIRIT_ROOT_HP_FLAT_350[rank] || 0) * pu / 100;
         var cap = capPctOfDraft(d);      /* ★ v363：同上，三源合并 */
         return Math.round((base + it * 4 + flat) * 4 * (1 + cap.mp));
     }
@@ -3480,9 +3500,23 @@ d.attrs[a] = v;
                     品阶: String(d.spiritRootRank || '伪灵根'),
                     纯度: Number(d.spiritRootPurity || 0),
                     /* ★ v74：灵根四样之四 —— 自由文本的永久被动。开局必须一并落盘，
-                       否则状态栏「效果：」永远空着（用户报障）。空字符串也照写，保持字段存在。 */
-                    效果: String(d.spiritRootEffect || ''),
-                    说明: String(d.bloodDesc || '')
+                       否则状态栏「效果：」永远空着（用户报障）。空字符串也照写，保持字段存在。
+                       ★★ 2026-11-07 修：原来这里还多写一行 `说明: String(d.bloodDesc || '')`，
+                       而 `说明` 这个子字段 **v296 就已从 schema 删掉**（《灵根规则》只留
+                       名称/品阶/纯度/效果 四样，与玄技/玄诀/兵器齐名）。
+                       MVU 的 z.object 会静默剥掉多余子字段 ⇒ 玩家在开局面板填的那 80 字
+                       「来历与体征」**每次开局都丢**，而且没有任何报错。
+                       按 v296 的原意并进 `效果`（用户原话：「灵根里的描述和效果融合…只留效果」）：
+                       `效果` 的格式本就是 `机制串｜描写`，`｜` 右侧正好承载来历与体征。 */
+                    效果: (function () {
+                        var _mech = String(d.spiritRootEffect || '').trim();
+                        var _desc = String(d.bloodDesc || '').trim();
+                        if (!_desc) return _mech;
+                        if (!_mech) return _desc;
+                        /* 已带竖线就以机制串那一侧为准，描写侧不重复拼 */
+                        if (_mech.indexOf('｜') >= 0 || _mech.indexOf('|') >= 0) return _mech;
+                        return _mech + '｜' + _desc;
+                    })()
                 },
                 /* ★ v1.052：**天骄必须落盘**。原来这一段没写天骄，
                    变量里就一直是默认的「非天骄」——选什么灵根都一样，
@@ -4346,7 +4380,7 @@ d.attrs[a] = v;
          ② `效果` 里的「气血上限 / 灵力上限」百分比（封顶 30%，与《设定-数值表》效果封顶一致）。
           其余效果（减伤 / 吸血 / 闪避 / 回蓝…）交给战斗引擎，不进开局面板的数字。
        ⚠ 这张表与 04-核心脚本.js 的 SPIRIT_ROOT_HP_FLAT **必须一致**；改一处就改两处。 */
-    /* ★★★ v363：`spiritRootLine()` / `initAttrPrompt()` / `bloodCapPct()` / `BLOOD_HP_FLAT_07`
+    /* ★★★ v363：`spiritRootLine()` / `initAttrPrompt()` / `bloodCapPct()` / `SPIRIT_ROOT_HP_FLAT_07`
        全部删除（连同它们的调用点 `fillComposer(initAttrPrompt())`）。
 
        用户 2026-10-23：「开局不再初始化，而是根据血量和蓝量公式，然后检测玄诀和灵根和武器的
@@ -4357,8 +4391,11 @@ d.attrs[a] = v;
        capPctOfDraft），它们就成了零引用死代码。
        ⚠ 别留恋：留着最坏 —— 下一版有人看到 `initAttrPrompt` 会以为"开局还在让 AI 校准"，
          去改一段根本不执行的模板字符串。
-       ⚠ `BLOOD_HP_FLAT_350` 与 `_bloodCapPct350` **保留**：前者是 computedHpMax 的定额表，
-         后者是 single-source 的字符串口径（闸要拿它对比 04 的真常量）。 */
+       ⚠ `SPIRIT_ROOT_HP_FLAT_350` 与 `_bloodCapPct350` **保留**：前者是 computedHpMax 的定额表，
+         后者是 single-source 的字符串口径（闸要拿它对比 04 的真常量）。
+         ★ 2026-11-07：`_bloodCapPct350` 这个**旧血名前缀不许跟着改名** ——
+           `工具/_v350_opening_vitals.mjs` 用 `grab(SRC07, '_bloodCapPct350')` 从源码里抠它，
+           改名即抠不到、那条闸立刻变成量空气。函数名是闸的取物地址，不是文案。 */
 
     /* ============================ 样式 ============================ */
     function injectStyle() {
@@ -7100,7 +7137,7 @@ d.attrs[a] = v;
 
         /* 框二：灵根 */
         /* ★ v43 灵根选择：品阶定上限、纯度定兑现。可手填，也可「随机灵根」掷一组。 */
-        var BLOOD_RANKS = ['伪灵根', '四灵根', '三灵根', '双灵根', '天灵根', '圣灵根'];  // 顺序：低→高；圣灵根为顶（用户口径：圣灵根 > 天灵根）
+        var SPIRIT_ROOT_RANKS = ['伪灵根', '四灵根', '三灵根', '双灵根', '天灵根', '圣灵根'];  // 顺序：低→高；圣灵根为顶（用户口径：圣灵根 > 天灵根）
         var tjNow = draftTianjiao(d);
         /* 右侧小字放"预计天骄"—— 它是**会变的读数**，必须留在折叠区外。
            原来它是一整行长句（还带"圣灵根·天选之子 天灵根·大天骄…"那段对照表），
@@ -7125,7 +7162,7 @@ d.attrs[a] = v;
         h += '<div class="xz-st-flow" style="margin-top:0;">' +
              '<div class="xz-st-cell" style="flex:1 1 200px;"><label>名称</label>' +
              '<input type="text" data-xz-field="spiritRootName" value="' + esc(d.spiritRootName || '') + '" placeholder="如：九幽地冥蟒 / 太古虚龙"></div>' +
-             '<div class="xz-st-cell"><label>品阶</label><select data-xz-field="spiritRootRank">' + opts(BLOOD_RANKS, d.spiritRootRank || '伪灵根') + '</select></div>' +
+             '<div class="xz-st-cell"><label>品阶</label><select data-xz-field="spiritRootRank">' + opts(SPIRIT_ROOT_RANKS, d.spiritRootRank || '伪灵根') + '</select></div>' +
             '<div class="xz-st-cell" style="flex:0 0 104px;"><label>天骄预计</label>' +
             '<div style="padding:5px 8px;border:1px solid rgba(212,175,55,.45);border-radius:8px;background:rgba(212,175,55,.10);color:var(--xz-gold-bright);font-size:12.5px;font-weight:var(--xz-fw-med);text-align:center;">' +
             esc((tjNow && tjNow.name) || '非天骄') + '</div></div>' +
