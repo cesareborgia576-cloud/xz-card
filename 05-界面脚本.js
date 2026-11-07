@@ -7886,6 +7886,29 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 }
                 window.XZ_GALLERY = _galPlain;
             } catch (eGalExp) {}
+            /* ★★★ v557：新版画像表也必须挂出去 ★★★
+               病根（作者 2026-11-08：「你这立绘查看，图呢」）：
+                 `XZ_ILLU_STAND` 是本 IIFE 内的 var，跨 IIFE 不可见；
+                 而「查看所有立绘」那个页（末尾独立 IIFE 的 `xzCemAllPortraits`）
+                 只读 `window.XZ_GALLERY` + `window.XZ_PORTRAITS`。
+                 ⇒ v548 / v557 两批新立绘（朱竹清/姜清柚/至冬女王…共 33 人 62 张）
+                   **一张都不会出现在立绘页里**，而状态栏、相册、管理器的卡片槽全都正常。
+                 症状是"图明明装了，立绘查看里就是没有" —— 跟 v446 那次一模一样，
+                 只是那次漏的是 XZ_GALLERY，这次漏的是更新的一张表。
+
+               ⚠ 这里**直接挂原始表**（`{人名: [url...]}`），不是挂 xzIlluStand 的结果：
+                 相册要的是"这个人有哪些图"，不是"按名字模糊查出来的那一组"。
+                 查表逻辑留在 05 内部，出口只给数据 —— 与 XZ_GALLERY 那条同口径。 */
+            try {
+                var _isPlain = {};
+                for (var _ik in XZ_ILLU_STAND) {
+                    if (!Object.prototype.hasOwnProperty.call(XZ_ILLU_STAND, _ik)) continue;
+                    var _iu = XZ_ILLU_STAND[_ik];
+                    if (!_iu || !_iu.length) continue;
+                    _isPlain[_ik] = _iu.slice();
+                }
+                window.XZ_ILLU_STAND = _isPlain;
+            } catch (eIsaExp) {}
             /* ★★★ v438：管理器要的是**小缩略图**，不是原图。
                病根：管理器的卡片图槽只有 56px 宽，而 XZ_PORTRAIT_LOOKUP 的第 ① 步是
                「多图优先」—— 多图全是仓库根目录下的 1.3MB 原图（古月娜 6 张、阿银 3 张…）。
@@ -16068,10 +16091,24 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             seen[name] = 1;
             out.push({ name: name, urls: arr });
         }
-        var G = null, P = null;
+        var G = null, P = null, I = null;
         try { G = (typeof window !== 'undefined' && window.XZ_GALLERY) || null; } catch (eG0) { G = null; }
         try { P = (typeof window !== 'undefined' && window.XZ_PORTRAITS) || null; } catch (eP0) { P = null; }
-        /* ① 多图（能翻页的那批）先走 —— 他们图最多 */
+        try { I = (typeof window !== 'undefined' && window.XZ_ILLU_STAND) || null; } catch (eI0) { I = null; }
+        /* ① 新版画像表**最先走** —— 它优先级最高（与 xzGalleryUrls 同一条链：
+              自定义 > XZ_ILLU_STAND > XZ_GALLERY），而且是这批新图唯一的出口。
+              ⚠ 顺序要紧：先收进来的人占住 seen，后面 ②③ 就不会用老图把它盖掉。
+                以前把 ②③ 放前面，同一角色会显示成老图 —— 正是这次的病根。 */
+        try {
+            if (I && typeof I === 'object') {
+                Object.keys(I).forEach(function (k) {
+                    var v = I[k];
+                    if (!v || !v.length) return;
+                    push(k, v);
+                });
+            }
+        } catch (eI) {}
+        /* ② 多图（能翻页的那批）先走 —— 他们图最多 */
         try {
             if (G && typeof G === 'object') {
                 Object.keys(G).forEach(function (k) {
