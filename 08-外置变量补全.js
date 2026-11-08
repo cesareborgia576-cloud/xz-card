@@ -99,6 +99,7 @@
     statusText: '待机',
     lastPrompt: '', lastSystem: '', lastRaw: '',
     lastNpcs: [], lastMissing: false,
+    lastPathNotes: [],          /* ★ v568：路径判定的"无害提示"（remove 不存在的路径这种），只进开发者区 */
     history: [],
     panel: null,
     chatKey: null,
@@ -345,12 +346,17 @@
   function loadWorldbook(force) {
     if (!force && S.wbCache) return Promise.resolve(S.wbCache);
     return fetchWorldbookEntries().then(function (list) {
-      var rules = '', format = [], roster = '';
+      var rules = '', format = [], roster = '', effects = '';
       list.forEach(function (e) {
         if (!e) return;
         var nm = entryName(e);
         if (!rules && nm.indexOf('变量更新规则') >= 0) rules = entryContent(e).trim();
-        if (!rules && nm.indexOf('变量更新规则') >= 0) rules = entryContent(e).trim();
+        /* ★ v567：把《设定-效果表》整段喂进补算提示词。
+           以前提示词里手写了一份 26 词的机制清单，里面留着一批已下架名、
+           回血／回蓝 这类旧写法，却缺了 持续治疗／持续回蓝 等大半正名 ——
+           AI 照着残表补算，就会自造「魅惑」这种引擎根本不认的机制。
+           现在唯一真相源是世界书条目，改表即改提示词，不会再漂。 */
+        if (!effects && nm.indexOf('效果表') >= 0) effects = entryContent(e).trim();
         /* ★ v429：只收**真带结构**的条目。
            现在完整格式已经并进《变量更新规则》，剩下那条《变量输出格式强调》正文只有
            `<UpdateVariable> ... </UpdateVariable>` 这种占位壳 —— 它当"结构照抄"送进去，
@@ -372,10 +378,10 @@
       /* 规则条目里已经含完整输出结构 ⇒ 视为"格式已覆盖"，无需额外条目 */
       var fmtInRules = !!(rules && rules.indexOf('<JSONPatch') >= 0);
       format.sort(function (a, b) { return a.name.length - b.name.length; });   /* 主格式在前，强调在后 */
-      S.wbCache = { at: Date.now(), rules: rules, format: format, fmtInRules: fmtInRules, roster: roster, count: list.length };
+      S.wbCache = { at: Date.now(), rules: rules, format: format, fmtInRules: fmtInRules, roster: roster, effects: effects, count: list.length };
       return S.wbCache;
     }).catch(function () {
-      S.wbCache = { at: Date.now(), rules: '', format: [], fmtInRules: false, roster: '', count: 0 };
+      S.wbCache = { at: Date.now(), rules: '', format: [], fmtInRules: false, roster: '', effects: '', count: 0 };
       return S.wbCache;
     });
   }
@@ -716,9 +722,18 @@
     return -1;
   }
 
+  /* ── v567：效果表兜底词表 ────────────────────────────────────────────────
+     世界书读不到时的**只读兜底**（比如玩家把《设定-效果表》条目关了）。
+     ⚠ 这块由 工具/_v567_gen_effect_words.mjs 从《效果表》现抽生成，**别手改**；
+       改了效果表就重跑生成器，否则提示词又会和真相源分叉。 */
+  /* XZ_EFFECT_FALLBACK_BEGIN */
+  /* ⚠ 由 工具/_v567_gen_effect_words.mjs 生成，手改会在下次重跑时被覆盖 */
+  var XZ_EFFECT_FALLBACK = "## 机制名只能取下面这 56 个\n\n- 伤害：`伤害`\n- 增益：`治疗` `护盾` `吸血` `增伤` `减伤` `闪避` `提速` `暴击` `暴伤` `穿防` `持续治疗` `持续回蓝` `抗暴` `免死` `破盾` `反震` `拉条` `净化` `溅射` `换命`\n- 长驻／特殊：`气血上限` `灵力上限`（这两条玄技不能写，只能写在被动，见下）\n- 条件增益：`牺牲` `低血增伤` `高血增伤` `低血减伤` `高血减伤` `目标残血` `目标满血` `敌众增伤` `敌少增伤` `友多增伤` `友少增伤` `快攻增伤` `慢攻增伤` `敌快增伤` `敌慢增伤` `叠层增伤` `叠层减伤` `叠层暴击` `叠层暴伤` `叠层提速` `叠层治疗` `叠满换伤`\n- 减益（给对面挂）：`持续伤害` `虚弱` `易伤` `减速` `驱散` `乱序` `叠层破甲` `叠层减速`\n- 召唤：`召唤`\n\n⚠ 定身、禁锢、眩晕、封印、沉默、石化、麻痹 **全都不是机制名**，写了不生效。\n要控场就写 `减速`（拖行动）或 `虚弱`（削输出）。\n\n### 谁能写哪些\n\n玄技与「玄诀／兵器／灵根」**认的不是同一套词**：玄技按这一击结算，被动挂一整场。\n把玄技的词写进被动，一条都不生效（不报错、也没有任何变化）。\n\n**① 玄技（主动招式）—— 只能用这 52 个**\n\n`伤害` `治疗` `护盾` `吸血` `持续伤害` `增伤` `减伤` `闪避` `提速` `暴击` `暴伤` `穿防`\n`持续治疗` `持续回蓝` `抗暴` `免死` `破盾` `反震` `拉条` `净化` `溅射` `换命` `牺牲`\n`低血增伤` `高血增伤` `低血减伤` `高血减伤` `目标残血` `目标满血` `敌众增伤` `敌少增伤`\n`友多增伤` `友少增伤` `快攻增伤` `慢攻增伤` `敌快增伤` `敌慢增伤` `叠层增伤` `叠层减伤`\n`叠层暴击` `叠层暴伤` `叠层提速` `叠层治疗` `叠满换伤` `虚弱` `易伤` `减速` `驱散` `乱序`\n`叠层破甲` `叠层减速` `召唤`\n\n玄技**不许写**：`气血上限` `灵力上限` —— 想保命写 `护盾` 或 `减伤`。\n\n**② 玄诀／兵器／灵根（被动）—— 只能用这 16 个**\n\n| 分组 | 写法 |\n| --- | --- |\n| 攻伐 | `增伤` `穿防` `暴击率` `暴击伤害` `命中回复` |\n| 护体 | `减伤` `闪避` `抗暴` `受击回复` `护盾` `免死` |\n| 根基 | `气血上限` `灵力上限` `持续治疗` `持续回蓝` `提速` |\n\n被动这三处一律**不写手数**（写上去反而会让它中途散掉）。\n\n「每手回一次」的那两条，名字里都带「持续」：`持续治疗`（气血）、`持续回蓝`（灵力）。\n名字里没有「持续」的都是**一次性**结算 —— 例如 `治疗` 是瞬间回一口。\n\n⚠ 被动**与玄技不完全同名**：玄技写 `暴击`／`暴伤`／`吸血`，被动要写 `暴击率`／`暴击伤害`／`命中回复`。\n  上面这些是**正式名**。引擎对 `暴伤`／`暴击` 也做了**只读兜底**（写了能认），但兜底只是兜底，不是正确名字 —— 新写的一律用正式名。";
+  /* XZ_EFFECT_FALLBACK_END */
+
   /* ══════════════════ 八、提示词：只送规则 + 格式 + 命中的人 ══════════════════ */
   function buildPrompt(mode, sd, prose, extraHistory) {
-    var wb = S.wbCache || { rules: '', format: [], roster: '' };
+    var wb = S.wbCache || { rules: '', format: [], roster: '', effects: '' };
     var pAi = String((prose && prose.ai) || '');
     var pUser = String((prose && prose.user) || '');
     /* 关键词扫描要拿「正文文本」，不是正文对象 —— 传对象进去会 join 成 "[object Object]"，
@@ -763,6 +778,16 @@
     sys.push('/主角信息/*（含 四维、已学本领.玄技/玄诀、装备武器、灵根、天骄、灵宠）');
     sys.push('/人物列表/{姓名}/*（含 好感度(0~100)、心里话、在场状态、境界、气血/灵力、已学本领、装备武器、势力、天骄、灵宠、灵根）');
     sys.push('/背包/{物品名}/*（物品数量减到 0 必须用 remove 整条删掉，不许 replace 成 0）');
+    /* ★★★ v568：`{xxx}` 那一段**必须真写出来** —— 用户点名的那个 bug ★★★
+       错的：`{"op":"insert","path":"/人物列表","value":{"姓名":"至冬女王","好感度":50}}`
+       对的：`{"op":"insert","path":"/人物列表/至冬女王","value":{"姓名":"至冬女王","好感度":50}}`
+       为什么会错还没提示：MVU 的 insert 在目标已存在时走 lodash `_.merge` ⇒ 人物字段被并进
+       **记录根**，于是记录里多出一个键名叫「姓名」的假条目。零报错、界面里永远看不见那个人。
+       这条写在白名单**紧跟上文**的位置，因为它管的是所有 `{名字}` 而不是某一个顶层。
+       ⚠ 同时必须给「整组替换」留出豁免口径，否则模型会连正常的 `replace /人物列表` + 人名 map 都不敢写。 */
+    sys.push('**路径里凡带 `{名字}` 的那一段，必须把名字真写出来** —— `insert /人物列表/至冬女王`、`insert /背包/一品回春丹`、`insert /任务/进行中/护送商队`、`insert /主角信息/已学本领/玄技/烈焰诀`。');
+    sys.push('**只写到容器本身是错的**：`insert /人物列表`、`/背包`、`/任务/进行中`、`/已学本领/玄技`、`/灵宠` —— 这样写会把条目里的字段（`姓名`、`数量`、`品阶`…）直接并到容器的根上，造出一个键名叫「姓名」的假条目：**不报错、不看日志根本发现不了、界面上什么也不会出现**。');
+    sys.push('唯一例外是**整组替换**：`replace /人物列表` 配 `{"张三":{...},"李四":{...}}` 这种「值里自己带全了人名」的写法是对的；`replace /人物列表/张三` 配 `{"好感度":60}` 也对。删人一律 `remove /人物列表/某某`，写到人名，别 remove 整个列表。');
     /* ★★★ v432：热议 / 闲杂事件 —— 这两栏是**整组替换**，不是往上堆。
        用户 2026-10-28：「九州热议改成每3或4轮更新一次…一次三个评论，只对目前的事件议论；
        新弄一个闲杂事件…大概每4轮生成一次」。节奏用**游戏内日期差**判（/全局/*更新日 对比 /时间/日期）。
@@ -814,9 +839,20 @@
          所以这类"清单/枚举"必须和机制名表**同一轮**改，不能留到下一轮补。
        ⚠ 反过来也别在这里加引擎没有的名字：这份清单是**硬约束**（下面写着"只能取"），
          多写一个不存在的名字，等于骗 AI 去写死效果。要加减必须与 XZ_ATOM_TYPES 同步。 */
-    sys.push('**玄技/玄诀的「效果」是效果集：键＝机制名，值＝「数值[:手数]｜描写」**（`{ 灼烧: "8:3｜衣角沾上一星不灭的火" }`，第二个数字是手数），中文竖线 `｜` 之后写画面与手感。键里的机制名就是引擎读的那个机制，脚本**不做翻译**；`｜` 后面那半句人看，脚本不读，写多写少都不影响结算。兵器与灵根的 `效果` 是一整串字符串（没有键），照旧写完整的 `机制:数值｜描写`（`增伤:10，暴击:15｜银白古剑…`）。');
-    sys.push('**一个效果键只放一条机制，机制名只写在键上、值里不许再写一遍**（多一条效果就多开一个键；同一招要两条同机制就写 `伤害`、`伤害2`）。机制名只能取《设定-效果表》那张表：伤害／治疗／护盾／吸血／持续伤害／灼烧／中毒／流血／腐蚀／增伤／减伤／闪避／提速／暴击／暴伤／穿防／回血／回蓝／气血上限／灵力上限／免死／破盾／抗暴／虚弱／易伤／减速。');
-    sys.push('**值是「数字[:手数]｜描写」，机制名只在键上**：`{ 伤害: "2400｜火焰席卷前方，热浪迫人", 灼烧: "8:3｜衣角沾上一星不灭的火" }` —— 键已经写了机制名，值里就不要再写一遍（写成 `{ 增伤: "增伤:20:3｜…" }` 是把数值位占了，加成会变成 0）。同一招要两条同机制就写 `伤害`、`伤害2`。');
+    sys.push('**玄技/玄诀的「效果」是效果集：键＝机制名，值＝「数值[:手数]｜描写」**（`{ 持续伤害: "8:3｜衣角沾上一星不灭的火" }`，第二个数字是手数），中文竖线 `｜` 之后写画面与手感。键里的机制名就是引擎读的那个机制，脚本**不做翻译**；`｜` 后面那半句人看，脚本不读，写多写少都不影响结算。兵器与灵根的 `效果` 是一整串字符串（没有键），照旧写完整的 `机制:数值｜描写`（`增伤:10，暴击:15｜银白古剑…`）。');
+    /* ★★★ v567：机制名清单**不再手写** ★★★
+       病历：这里原来硬编码了一份 26 词清单，既留着一批已下架名，又缺了 持续治疗／
+       持续回蓝 等大半正名。
+       补算器照着这份残表写新招 ⇒ 玩家看到「魅惑」「定身」这类引擎零生效的死效果，
+       而且不报错。上面 v449 的注释其实早就写明「这类清单必须和机制名表同一轮改」，
+       结果还是漂了 —— 根因就是**手写第二份**。
+       ⇒ 现在只送世界书《设定-效果表》原文（改表即改提示词），读不到才用生成器的兜底。 */
+    sys.push('');
+    sys.push('════ 效果机制名：唯一合法表（照抄原文，不许自造） ════');
+    sys.push(String((wb && wb.effects) || '').trim() || XZ_EFFECT_FALLBACK);
+    sys.push('**机制名只能取上表「① 玄技」与「② 玄诀／兵器／灵根」两栏列出的正式名**。表里没有的一律不许自造：魅惑、蛊惑、定身、禁锢、眩晕、封印、沉默、石化、麻痹、恐惧……这些**都不是机制名**，写了引擎不认、结算零生效，而且不会报错。要控场就写上表里的 `减速` 或 `虚弱`。');
+    sys.push('**一个效果键只放一条机制，机制名只写在键上、值里不许再写一遍**（多一条效果就多开一个键；同一招要两条同机制就写 `伤害`、`伤害2`）。');
+    sys.push('**值是「数字[:手数]｜描写」，机制名只在键上**：`{ 伤害: "2400｜火焰席卷前方，热浪迫人", 持续伤害: "8:3｜衣角沾上一星不灭的火" }` —— 键已经写了机制名，值里就不要再写一遍（写成 `{ 增伤: "增伤:20:3｜…" }` 是把数值位占了，加成会变成 0）。同一招要两条同机制就写 `伤害`、`伤害2`。');
     sys.push('**升级只改数字**：招式变强就在**区间内**把 `效果` 里的绝对值改大（一次最多 ×1.25），持续与百分比不变，其余字段原样不动。');
     /* ★ v297（用户 2026-10-21）：「升级技能的我们要弄个伤害区间…伤害最高多少，回血类最高多少，
        增益类最高多少，减益类最高多少」。
@@ -828,7 +864,8 @@
     /* ★ v77：删掉提示里的「伤势状态」—— 该字段已整体废除（用户定：气血已经表达了一切）。
        战后的气血/灵力照常按《变量更新规则》写进 /主角信息/气血 与 /灵力。 */
     sys.push('');
-    if (!S.settings.wantAnalysis) sys.push('（本轮不要 <Analysis>，只给 <JSONPatch>。）');
+    /* ★ v567：原来这里有个按开关跳过 Analysis 的分支，已删。
+       变量细则本来就要求 <Analysis>，恒输出；老存档里存着 false 也不许再关掉。 */
     sys.push('第一个字符必须是 <，直接开始写 <UpdateVariable>。');
 
     var user = [];
@@ -850,7 +887,7 @@
     user.push(pUser ? pUser.slice(0, 1500) : '（无）');
     user.push('');
     user.push('【本楼正文】');
-    user.push(pAi.slice(0, mode === 'deep' ? 6000 : 4000));
+    user.push(pAi.slice(0, (mode === 'deep' || mode === 'rewrite') ? 6000 : 4000));
     user.push('');
     user.push('按规则与格式，给出这一楼应当写入的 <UpdateVariable> 块。没变的字段不要出现；全都没变就只给 <JSONPatch>[]。');
 
@@ -1771,8 +1808,42 @@
      ⇒ 判据只能是「[InitVar] 里有的顶层，这里必须都有」。（`任务` 就是唯一漏的那个。）
      ⚠ 加字段时照这个：**先看 [InitVar]初始变量.md 的顶层键**，别凭印象拼。
      曾经就是凭印象拼的 —— 拼的时候 `任务` 还没进初始变量，后来加上了没人回头补这里。 */
-  var TOP_OK = ['战斗模式', '观战名单', '全局', '时间', '地理', '主角信息', '人物列表', '背包', '任务'];
+  /* ★★★ v568：`TOP_OK` 不再手写，改成从结构树现取 ★★★
+     v431 的病历就写在这上面：手写的那 9 个顶层漏了 `任务`，
+     模型给的 `/任务/*` 全部进 dropped，任务表永远是空的、零报错。
+     ⇒ 现在唯一真源是 21 的 schema（经 XZ_PATH_MODEL），
+       加顶层字段只改 schema + 重跑生成器，这里自动跟上。
+     ⚠ `战斗模式` / `观战名单` 例外：它们是 07 开局脚本自己写进变量树的
+       （按下标存战斗参与者/旁观者），**不在 21 的 schema 里** ——
+       schema 是给模型看的形状，这两格是脚本私用的运行时槽位。
+       所以在这里显式追加，并注明来由，别让下一个人以为是漏抄。
+     ⚠ 定义在 XZ_PATH_MODEL **之后**（下面几行），别往上挪：
+       反过来拿到的会是 undefined，TOP_OK 变空数组 ⇒ 每条补丁都被判"顶层不在白名单"。 */
+  var TOP_EXTRA = ['战斗模式', '观战名单'];   /* 07 脚本私用，不在 schema */
   function unescSeg(s) { return String(s).replace(/~1/g, '/').replace(/~0/g, '~'); }
+
+  /* ══════════════════ 路径结构树（v568） ══════════════════
+     ★ 为什么要有它：补丁能不能落地，取决于**路径有没有指到真的能写的那个位置**。
+       最典型的一种错（用户 2026-11-08 点名）：新增人物写成 `insert /人物列表`，
+       少了 `/{人名}` 这一层。MVU 的 insert 在目标存在时是**深合并**，
+       于是 `{姓名:"至冬女王", 势力:"至冬"}` 被并进人物列表**根上** ——
+       生成一个叫「姓名」的假人物，零报错、零提示，玩家只看到"人没进来"。
+       ⇒ 只有知道「/人物列表 是记录、每条长什么样」才判得出这件事。
+       而这张结构**不能手写第二份**（变量表一改就过期，判据开始误报，本项目犯过多次）
+       ⇒ 由 工具/_v568_gen_path_model.mjs 从 脚本/21-变量结构.js 的 zod schema 现抽。
+     节点：$o=对象(固定键) $r=记录(自由键) $l=列表 $id=该记录的标识字段
+           叶子：s=文本 n=数值 e=枚举 b=布尔 a=任意 */
+  /* XZ_PATH_MODEL_BEGIN */
+  /* ⚠ 由 工具/_v568_gen_path_model.mjs 从 脚本/21-变量结构.js 现抽生成。
+     改了 21（加字段/改类型）就重跑生成器；**手改会在下次重跑时被覆盖**。
+     $o=对象(固定键) $r=记录(自由键) $l=列表 $id=该记录的标识字段
+     s=文本 n=数值 e=枚举 b=布尔 a=任意 */
+  var XZ_PATH_MODEL = {"全局":{"$o":{}},"地理":{"$o":{"大位置":"s","小位置":"s"}},"时间":{"$o":{"日期":"s","精确时间":"s"}},"主角信息":{"$o":{"姓名":"s","性别":"s","年龄":"n","境界":"s","经验值":"n","气血":"n","气血上限":"n","灵力":"n","灵力上限":"n","玄元属性":{"$o":{"属性":"s"}},"灵根":{"$o":{"名称":"s","品阶":"e","纯度":"n","效果":"s"}},"天骄":"e","可用四维点":"n","四维":{"$o":{"力量":"n","敏捷":"n","体质":"n","智力":"n"}},"装备武器":{"$o":{"武器名":"s","品质":"s","效果":"s"}},"已学本领":{"$o":{"玄技":{"$r":{"$o":{"玄技名":"s","品质":"s","类型":"e","目标":"s","效果":{"$r":"s"},"消耗":"n"}},"$id":"玄技名"},"玄诀":{"$r":{"$o":{"玄技名":"s","品质":"s","类型":"e","目标":"s","效果":{"$r":"s"},"消耗":"n"}},"$id":"玄技名"}}},"灵宠":{"$r":{"$o":{"名称":"s","种族":"s","境界":"s","属性":"s","品质":"s","四维":{"$o":{"力量":"n","敏捷":"n","体质":"n","智力":"n"}},"技能":{"$l":"s"},"饱食度":"n","性格":"s","外貌":"s","出战":"b"}},"$id":"名称"}}},"人物列表":{"$r":{"$o":{"姓名":"s","性别":"s","种族":"s","外貌":"s","性格":"s","关系":"s","好感度":"n","心里话":"s","境界":"s","气血":"n","气血上限":"n","灵力":"n","灵力上限":"n","玄元属性":{"$o":{"属性":"s"}},"四维":{"$o":{"力量":"n","敏捷":"n","体质":"n","智力":"n"}},"部位":{"$o":{"私处":"s","奶子":"s","大腿":"s","足部":"s"}},"已学本领":{"$o":{"玄技":{"$r":{"$o":{"玄技名":"s","品质":"s","类型":"e","目标":"s","效果":{"$r":"s"},"消耗":"n"}},"$id":"玄技名"},"玄诀":{"$r":{"$o":{"玄技名":"s","品质":"s","类型":"e","目标":"s","效果":{"$r":"s"},"消耗":"n"}},"$id":"玄技名"}}},"装备武器":{"$o":{"武器名":"s","品质":"s","效果":"s"}},"势力":"s","天骄":"e","灵根":{"$o":{"名称":"s","品阶":"e","纯度":"n","效果":"s"}},"灵宠":{"$r":{"$o":{"名称":"s","种族":"s","境界":"s","属性":"s","品质":"s","四维":{"$o":{"力量":"n","敏捷":"n","体质":"n","智力":"n"}},"技能":{"$l":"s"},"饱食度":"n","性格":"s","外貌":"s"}},"$id":"名称"},"在场状态":"b"}},"$id":"姓名"},"背包":{"$r":{"$o":{"物品名称":"s","数量":"n","品质":"s","类型":"e","效果":"s","描述":"s"}},"$id":"物品名称"},"任务":{"$o":{"进行中":{"$r":{"$o":{"阶":"e","来源":"e","委托人":"s","地点":"s","目标":"s","期限":"s","酬劳":"s"}}},"已完成":{"$l":"s"}}}};
+  /* XZ_PATH_MODEL_END */
+
+  /* ★ v568：顶层白名单与结构树同源 —— 见上方 TOP_EXTRA 的说明。
+     ⚠ 必须写在 XZ_PATH_MODEL 之后。 */
+  var TOP_OK = Object.keys(XZ_PATH_MODEL).concat(TOP_EXTRA);
 
   function parsePatch(raw) {
     /* ★ v308：思维链里的草稿块不许当正文用 —— 否则取到的 Analysis/JSONPatch 是 think 里那份 */
@@ -1793,9 +1864,12 @@
     return { analysis: am ? am[1].trim() : '', ops: arr };
   }
 
-  /* 不合法的一律剔掉：顶层不在白名单、地点类、斗法台专属字段 */
+  /* 不合法的一律剔掉：顶层不在结构里、地点类、路径结构走不通 */
   function sanitizeOps(ops) {
     var keep = [], dropped = [];
+    var sd = null;
+    try { sd = readState(); } catch (e) { sd = null; }
+    var hasState = !!(sd && typeof sd === 'object' && Object.keys(sd).length);
     (ops || []).forEach(function (op) {
       if (!op || !op.path || !op.op) { dropped.push('缺 op/path'); return; }
       var p = String(op.path).trim();
@@ -1844,6 +1918,15 @@
         keep.push({ op: kept, path: p, value: '' });
         return;
       }
+      /* ★★★ v568：路径结构判定 —— 写进去会丢的，一律**剔掉并报出来** ★★★
+         这里是"补算 / 只补格式"两条路共用的同一道闸（都在 sanitizeOps 后面）。
+         用户点名的那种 `/人物列表` 漏人名，走的就是这里：
+         旧代码只查 replace 的路径存不存在 ⇒ insert 漏层一个红字都没有，
+         然后 _.merge 把字段并进记录根上，生成假条目、真人物没进来、零报错。
+         ⚠ 判定函数与嗅探用的**同一个**（pathJudgeOne），两处结论永远一致 ——
+           不许在这里另写一套简化版，那就是同一件事两处判断，早晚漂。 */
+      var miss = recordMissedEntryName(p.slice(1).split('/').map(unescSeg), kept, op.value);
+      if (miss) { dropped.push(miss); return; }
       keep.push({ op: kept, path: p, value: op.value });
     });
     return { keep: keep, dropped: dropped };
@@ -2257,6 +2340,64 @@
     } catch (e) { return []; }
   }
 
+  /* ★★★ v567：只补格式（不调模型、不重写内容）★★★
+     用户要把原来的「精细 / 快速」合并成一个按钮，功能是：
+       **保留正文 AI 那一楼已经写好的更新内容，只把 <UpdateVariable> 的形状补齐。**
+     以前两个按钮其实都会调补算模型按正文重新生成一整套 ops（差别只是精细多给
+     6 楼上下文），等于悄悄把 AI 写的内容换掉了 —— 这正是要分开的那个口子。
+     ⇒ 这条路完全本地：parsePatch 抽原文已有的 JSONPatch → 重新序列化成规范块
+       → 写回 MVU 与消息层。不调 executeApiCall、不花 token、不改一个数值。
+     ⚠ 原文压根没写补丁 ⇒ 不能凭空造，明确报错让玩家改点「按正文重写」。
+     ⚠ sanitizeOps 仍要过（路径白名单是安全底线），剔掉几条必须报出来，不静默。 */
+  function runFormatOnly(targetIdx, raw) {
+    S.running = true;
+    setStatus('running', '🩹 只补格式进行中…');
+    var t0 = Date.now();
+    return Promise.resolve().then(function () {
+      var parsed = parsePatch(raw);
+      if (!parsed.ops || !parsed.ops.length) {
+        throw new Error('这一楼没有 AI 写好的更新内容，没格式可补；要用「按正文重写」重新生成一套。');
+      }
+      var clean = sanitizeOps(parsed.ops);
+      if (!clean.keep.length) {
+        throw new Error('这一楼 ' + parsed.ops.length + ' 条补丁全部不合法，只补格式不会替你改内容：'
+          + clean.dropped.slice(0, 3).join('；'));
+      }
+      var block = buildBlock(parsed.analysis, clean.keep);
+      return applyOps(clean.keep, targetIdx).then(function (w) {
+        if (targetIdx >= 0 && w && !w.msgOk) {
+          throw new Error('变量没写进 MVU 消息层（第 ' + targetIdx + ' 楼）'
+            + (w.errs && w.errs.length ? '：' + String(w.errs[0]).slice(0, 60) : ''));
+        }
+        return writeBackBlock(targetIdx, block).then(function () {
+          return { ms: Date.now() - t0, ops: clean.keep, dropped: clean.dropped, block: block, write: w };
+        });
+      });
+    }).then(function (res) {
+      S.running = false;
+      S.lastMissing = false;
+      setStatus('ok', '只补格式完成（' + res.ops.length + ' 条内容原样写回）');
+      pushHistory({ status: 'ok', ms: res.ms, n: res.ops.length, npcs: [],
+        summary: res.dropped.length ? ('只补格式，剔掉 ' + res.dropped.length + ' 条非法') : '只补格式，内容未改' });
+      toast('✓ 格式已补齐：' + res.ops.length + ' 条内容原样写回'
+        + (res.dropped.length ? '（剔掉 ' + res.dropped.length + ' 条非法）' : ''), 'success');
+      try {
+        var d0 = doc();
+        if (d0 && typeof d0.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
+          d0.dispatchEvent(new CustomEvent('xz-var-completed', { detail: { formatOnly: true, n: res.ops.length } }));
+        }
+      } catch (eF) {}
+      return { ok: true, ms: res.ms, n: res.ops.length, dropped: res.dropped.length, formatOnly: true };
+    }).catch(function (err) {
+      S.running = false;
+      var msg = String((err && err.message) || err);
+      setStatus('bad', '只补格式失败：' + msg);
+      pushHistory({ status: 'bad', ms: Date.now() - t0, n: 0, npcs: [], summary: msg.slice(0, 60) });
+      toast('只补格式出错：' + msg, 'error');
+      return { ok: false, error: msg };
+    });
+  }
+
   function runComplete(mode) {
     if (S.running) return Promise.resolve({ skipped: 'running' });
     if (!S.settings) loadSettings();
@@ -2272,15 +2413,19 @@
     var proseAi = stripVarBlocks(aiRaw);
     var proseUser = stripVarBlocks(userRaw);
 
+    /* ★ v567：「只补格式」是一条完全本地的路，不进下面的模型补算链。 */
+    if (mode === 'format') return runFormatOnly(targetIdx, aiRaw);
+
+    var isRewrite = (mode === 'deep' || mode === 'rewrite');
     S.running = true;
-    setStatus('running', (mode === 'deep' ? '🧠 全文精细补算' : '⚡ 快速补算') + '进行中…');
+    setStatus('running', (isRewrite ? '🧠 按正文重写' : '⚡ 自动补算') + '进行中…');
     var t0 = Date.now();
 
     return loadWorldbook().then(function () {
       var sd = readState();
       var extra = '';
-      if (mode === 'deep') {
-        /* 精细模式：再多给几楼上下文（剥掉变量块，只留正文） */
+      /* ★ v567：合并后默认走精细那套（多 6 楼上下文）；自动补算的 'fast' 保持原行为。 */
+      if (isRewrite) {
         var lines = [];
         for (var i = Math.max(0, targetIdx - 6); i < targetIdx; i++) {
           var mm = chat[i];
@@ -3226,17 +3371,28 @@
        都不许污染正文的判定（旧写法两样都会误判成「格式正常/格式错误」）。 */
     var s = withoutReasoning(raw);
     var rawHasTag = /<\s*UpdateVariable\b[^>]*>/i.test(raw);
-    if (!/<UpdateVariable\b[^>]*>/i.test(s)) {
+    var uHead = /<UpdateVariable\b[^>]*>/i.test(s);
+    var uTail = /<\/UpdateVariable\s*>/i.test(s);
+    if (!uHead) {
       if (rawHasTag) {
         /* 块写在 think 里了：这已经是根因，别再叠一条「JSON 缺失」去误导玩家改错地方 */
         problems.push('变量块写在思维链里（MVU 读不到，得挪到正文）');
         return problems;
       }
-      problems.push('缺少 <UpdateVariable> 起始标签');
-    } else if (!/<\/UpdateVariable\s*>/i.test(s)) {
+      /* ★ v567：头尾全无 ≠ 只少头部 —— 玩家要分别看到"完全没输出"和"少了头部"。 */
+      problems.push(uTail ? '缺少 <UpdateVariable> 起始标签' : '完全没输出 <UpdateVariable>');
+    } else if (!uTail) {
       problems.push('<UpdateVariable> 标签未闭合');
     }
-    if (!hasCompletePatch(raw)) problems.push('<JSONPatch> 缺失或 JSON 未闭合');
+    /* ★ v567：把「缺失 / 未闭合」拆开，玩家分得清是少了尾巴还是压根没写。
+       ⚠ hasCompletePatch 还要求 JSON 能解析 —— 标签齐全但 JSON 坏，走兜底那句。 */
+    if (!hasCompletePatch(raw)) {
+      var pHead = /<\s*(?:JSONPatch|json_?patch)\b[^>]*>/i.test(s);
+      var pTail = /<\s*\/\s*(?:JSONPatch|json_?patch)\s*>/i.test(s);
+      if (pHead && !pTail) problems.push('<JSONPatch> 缺尾部');
+      else if (!pHead && !pTail) problems.push('<JSONPatch> 完全没有');
+      else problems.push('<JSONPatch> 缺失或 JSON 未闭合');
+    }
     /* ★ v565：空数组也等于「这一楼没写变量」。旧写法只看 JSON 是不是数组，
        `<JSONPatch>[]</JSONPatch>` 永远绿灯，玩家以为更新了、实际一条没落。 */
     if (problems.length === 0) {
@@ -3269,28 +3425,181 @@
     var problems = [];
     var arr = lastPatchArray(patchText);
     if (!arr || !arr.length) return problems;
-    var need = false;
-    for (var i = 0; i < arr.length; i++) {
-      if (arr[i] && arr[i].op === 'replace') { need = true; break; }
-    }
-    if (!need) return problems;
     var sd = null;
     try { sd = readState(); } catch (e) { sd = null; }
-    if (!sd || typeof sd !== 'object' || !Object.keys(sd).length) return problems;  /* 读不到就不判，免得误报 */
+    var hasState = !!(sd && typeof sd === 'object' && Object.keys(sd).length);
+    S.lastPathNotes = [];
     for (var j = 0; j < arr.length; j++) {
       var op = arr[j];
-      if (!op || op.op !== 'replace') continue;
-      var p = String(op.path || '');
-      if (!p || p.charAt(0) !== '/') continue;
-      var segs = p.slice(1).split('/').map(function (x) { return x.replace(/~1/g, '/').replace(/~0/g, '~'); });
-      var cur = sd, ok = true;
-      for (var k = 0; k < segs.length; k++) {
-        if (cur && typeof cur === 'object' && Object.prototype.hasOwnProperty.call(cur, segs[k])) cur = cur[segs[k]];
-        else { ok = false; break; }
-      }
-      if (!ok) problems.push('路径不存在：' + p + '（replace 会被 MVU 跳过，改用 insert）');
+      if (!op || !op.op || !op.path) continue;
+      pathJudgeOne(op, sd, hasState, problems, S.lastPathNotes);
     }
     return problems;
+  }
+
+  /* ★★★ v568：路径判定 —— 一律拿**结构树**当尺子，不再只查"这条路径现在有没有值" ★★★
+     ── 为什么要换尺子（用户 2026-11-08 点名的那一条） ─────────────────────
+       新增人物写成 `{"op":"insert","path":"/人物列表","value":{姓名:"至冬女王",…}}`。
+       旧判据只查 replace 的路径存不存在 ⇒ 这条一个红字都不报，而实际后果是：
+       MVU 的 insert 在目标存在时是 **_.merge 深合并**，
+       ⇒ `{姓名:"至冬女王", 势力:"至冬"}` 被并进**人物列表根上**，
+         生成一个名叫「姓名」的假人物（值是整个对象），真正的至冬女王没进来。
+       零报错、零提示、界面看着"有东西"，玩家只发现人不对。
+     ⇒ 判据必须知道「/人物列表 是记录、它下面那一段是人名、人名下面才是字段」。
+       这份结构由 工具/_v568_gen_path_model.mjs 从 21 的 schema 现抽（见 XZ_PATH_MODEL），
+       **不手写第二份路径表** —— 手写的那份早晚跟 schema 分叉，然后开始误报。
+
+     ── 分成两档（都要报，但话不一样） ─────────────────────────────────
+       · 断（死路）：路径在结构上就到不了 —— 目标父节点是叶子、中间键不在结构里、
+         记录下面漏了一层人名。这类**写进去一定丢**，必须报。
+       · 提示（软）：结构上合法，但对象现在还没有（老档缺字段）。
+         replace 会被 MVU 跳过，得用 insert —— 也报，但说清"这不是写错，是这档还没有"。
+
+     ── 判定顺序（按"最坏的先报"） ───────────────────────────────────
+       ① path 不以 / 开头 → 必定整条失败（RFC 6902）
+       ② 顶层不在 XZ_PATH_MODEL → 结构性错
+       ③ 逐段走结构；走到叶子还要往下走 = 死路
+       ④ 记录层：这一段是人名/物品名（$id 会给"该记录的身份字段"），
+          漏了这一层（直接停在记录上做 insert 且 value 不是条目形状）= 死路 ← 用户报的那个 */
+  function pathJudgeOne(op, sd, hasState, problems, notes) {
+    var p = String(op.path == null ? '' : op.path).trim();
+    var opN = String(op.op || '').toLowerCase();
+    if (!p) { problems.push('补丁没有 path'); return; }
+    if (p.charAt(0) !== '/') {
+      problems.push('路径没以 / 开头：' + p + '（RFC 6902 要求，少了它整条失败）');
+      return;
+    }
+    var segs = p.slice(1).split('/').map(unescSeg);
+    if (!segs.length || !segs[0]) { problems.push('路径是空的：' + p); return; }
+    /* 数组末尾追加 `-` 是合法写法，不参与结构匹配 */
+    var tailDash = (segs[segs.length - 1] === '-');
+
+    /* ② 顶层 + ③ 逐段走结构 —— 与落库前用的是**同一个**导航函数 */
+    var w = walkPathModel(segs);
+    if (w.dead) {
+      problems.push('路径写错了：' + p + ' —— ' + w.dead);
+      return;
+    }
+    /* ④ 停在记录层：漏了「条目名」这一层 —— 用户点名的那种写法。
+       ⚠ 只有 value 的键**撞上条目字段名**时才判红（详见 recordMissedEntryName 的注释）。
+         没有这条豁免，正常的整组写法会被误报，误报比不报更坏。 */
+    var missEntry = recordMissedEntryName(segs, opN, op.value);
+    if (missEntry) { problems.push(missEntry); return; }
+
+    /* ⑤ 结构合法，再看这档里现在有没有。
+          没有 ⇒ replace 会被 MVU 跳过（setPathMissing）；insert 才是对的。 */
+    if (!hasState) return;            /* 读不到存档就不判存在性，免得误报 */
+    var exists = pathExistsIn(sd, segs, tailDash);
+    if (exists) return;
+    if (opN === 'replace') {
+      problems.push('这条路径现在还不存在：' + p + '（老档没这个字段；replace 会被 MVU 直接跳过，改用 insert）');
+    } else if (opN === 'remove') {
+      /* remove 一个不存在的路径：MVU 是幂等删，不算错，但值得在开发者区留一句 */
+      if (notes) notes.push('remove 不存在的路径（无害）：' + p);
+    }
+    return;
+  }
+
+  /* 路径停在「记录」上 = 少了条目名这一层。**只有 value 的键撞上条目字段名时才成立。**
+     ── 为什么必须这么判（误报比不报更坏） ──────────────────────────────
+       `insert /人物列表` + `{姓名:"至冬女王",…}` ⇒ 键是「姓名」，正是人物条目的第一个字段
+       ⇒ 这条补丁会把整份字段 merge 进人物列表根上，生成一个叫「姓名」的假人物。**真 bug。**
+       `replace /人物列表` + `{"张三":{…},"李四":{…}}` ⇒ 键是人名，没撞任何字段 ⇒ 正常写法，放过。
+       只看"路径停在记录上"就报，会把上面第二种正常写法一起打死。 */
+  function recordMissedEntryName(segs, opN, value) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return '';
+    var walkRes = walkPathModel(segs);
+    /* ⚠ 这里**不能**因为 missEntry=true 就跳过 —— 那个标志本身就是本函数要吃的东西。
+       只跳过"已经死掉的路径"（死路有它自己的、更准确的话术）。 */
+    if (walkRes.dead) return '';
+    var nodeAt = walkRes.node;
+    if (!nodeAt || !nodeAt.$r) return '';
+    var fields = (nodeAt.$r && nodeAt.$r.$o) || {};
+    var fkeys = Object.keys(fields);
+    if (!fkeys.length) return '';                            /* 结构未知，宁可不判 */
+    var vkeys = Object.keys(value);
+    var hit = vkeys.filter(function (k) { return fkeys.indexOf(k) >= 0; });
+    /* 撞上 ≥1 个字段名，且**大多数键都是字段名** ⇒ 这份 value 明显是"一个条目"，
+       被塞到了记录根上。只撞一个的（比如碰巧有个键叫人名）不算。 */
+    if (!hit.length) return '';
+    if (hit.length * 2 < vkeys.length) return '';
+    var idf = nodeAt.$id || '条目名';
+    return '路径少了「' + idf + '」这一层：/' + segs.join('/')
+      + ' —— 这里的键（' + hit.slice(0, 3).join('、') + '）是条目里的**字段**，'
+      + '说明它下面还差一层「' + idf + '」。直接写会在记录根上生成一个假条目，'
+      + '正确写法是 /' + segs.join('/') + '/某人的' + idf;
+  }
+
+  /* ── 结构树导航：一段一段走，返回终点节点与"怎么死的" ──────────────
+     嗅探（pathJudgeOne）和落库前（sanitizeOps）**都调这一个**，
+     保证「提示给你的」和「实际拦下来的」永远是同一个结论。 */
+  function walkPathModel(segs) {
+    var out = { node: null, dead: '', missEntry: false, where: '' };
+    if (!segs || !segs.length) { out.dead = '路径是空的'; return out; }
+    var top = segs[0];
+    if (!Object.prototype.hasOwnProperty.call(XZ_PATH_MODEL, top)) {
+      /* 07 脚本私用的槽位（战斗模式/观战名单）不在 schema 里，结构未知 ⇒ 放到行，
+         只做「存在性」判定，不参与结构匹配。宁可不判，也别拿不存在的结构误报。 */
+      if (TOP_EXTRA.indexOf(top) >= 0) { out.node = null; out.where = '/' + top; return out; }
+      out.dead = '顶层不存在：/' + top;
+      return out;
+    }
+    out.node = XZ_PATH_MODEL[top];
+    out.where = '/' + top;
+    var segAt = 1;
+    var tailDash = (segs[segs.length - 1] === '-');
+    while (segAt < segs.length) {
+      var seg = segs[segAt];
+      var nodeAt = out.node;
+      if (!nodeAt || typeof nodeAt !== 'object') {
+        out.dead = '「' + out.where + '」后面不能再往下写了（它已经是最终值，不是对象）';
+        return out;
+      }
+      if (nodeAt.$r) {
+        if (tailDash && seg === '-' && segAt === segs.length - 1) { segAt++; out.node = nodeAt.$r; break; }
+        if (!seg) { out.dead = '「' + out.where + '」后面少了一层名字（空路径段）'; return out; }
+        out.where += '/' + seg;
+        out.node = nodeAt.$r;
+        segAt++;
+        continue;
+      }
+      if (nodeAt.$l) {
+        if (seg === '-') { segAt++; out.node = nodeAt.$l; continue; }
+        if (!/^\d+$/.test(seg)) { out.dead = '「' + out.where + '」是列表，只能写下标数字或 -'; return out; }
+        out.where += '/' + seg;
+        out.node = nodeAt.$l;
+        segAt++;
+        continue;
+      }
+      if (nodeAt.$o) {
+        if (!Object.prototype.hasOwnProperty.call(nodeAt.$o, seg)) {
+          out.dead = '「' + out.where + '」下面没有「' + seg + '」这个字段（可用：'
+            + Object.keys(nodeAt.$o).slice(0, 8).join('、')
+            + (Object.keys(nodeAt.$o).length > 8 ? ' …' : '') + '）';
+          return out;
+        }
+        out.where += '/' + seg;
+        out.node = nodeAt.$o[seg];
+        segAt++;
+        continue;
+      }
+      out.dead = '「' + out.where + '」已经是最终值，后面不能再接「' + seg + '」';
+      return out;
+    }
+    /* 走到终点了：终点是"记录"本身 ⇒ 少了条目名那一层 */
+    if (out.node && out.node.$r) out.missEntry = true;
+    return out;
+  }
+
+  function pathExistsIn(sd, segs, tailDash) {
+    var cur = sd;
+    for (var k = 0; k < segs.length; k++) {
+      if (tailDash && k === segs.length - 1) return true;      /* `-` 追加永远可写 */
+      if (cur == null || typeof cur !== 'object') return false;
+      if (!Object.prototype.hasOwnProperty.call(cur, segs[k])) return false;
+      cur = cur[segs[k]];
+    }
+    return true;
   }
 
   /* 同一楼同一段补丁只读一次 stat_data（读 MVU 是深拷贝，2 秒一次没必要反复啃） */
@@ -3353,14 +3662,47 @@
     _pathCacheKey = ''; _pathCacheAt = 0; _pathCacheRes = [];
   }
 
+  /* ★★★ v567：玩家只看一句人话，技术明细全进开发者区 ★★★
+     用户点名的四种（标签一律写**全名**，不许真写成「JSON 标签 / 变量标签」）：
+       ① 有头没尾的 UpdateVariable → 「UpdateVariable 标签少了尾部」
+       ② 有头没尾的 JSONPatch     → 「JSONPatch 标签少了尾部」
+       ③ JSONPatch 头尾都没有     → 「没有 JSONPatch 标签」
+       ④ UpdateVariable 头尾全无  → 「完全没输出 UpdateVariable 标签」
+     ⚠ 外层优先：UpdateVariable 坏了，里面那句 JSON 问题是连带症状，
+       只报外层一句，别叠术语让玩家不知道该补哪个。
+     ⚠ ④ 必须排在 ③ 前面：连外层都没有时，内层自然也没有，但根因是"完全没输出"。
+     ★★★ v568：**标签全对、但路径写错**也要单独给一句话 ★★★
+       这种以前会掉进最后的兜底，显示成「UpdateVariable 标签没完整」——
+       玩家照着去补标签，而标签根本没坏，坏的是路径。**把人往错的改比不说更坏。**
+       所以路径类问题必须在兜底之前拦掉，并按"少了哪一层"分开说。 */
+  function plainMissingText(list) {
+    var t = (list || []).join('|');
+    /* ① 路径类：标签没坏，坏的是 path —— 必须优先于所有标签话术 */
+    if (/路径少了「[^」]*」这一层/.test(t)) {
+      var m = t.match(/路径少了「([^」]*)」这一层/);
+      return '补丁路径少写了' + (m ? '「' + m[1] + '」那一层' : '一层名字') + '，变量没写进去';
+    }
+    if (/路径少了条目名/.test(t)) return '补丁路径少写了条目名，变量没写进去';
+    if (/路径写错了/.test(t)) return '补丁路径写错了，变量没写进去';
+    if (/这条路径现在还不存在|路径不存在/.test(t)) return '补丁指向的字段还不存在，变量没写进去';
+    if (/路径没以 \/ 开头/.test(t)) return '补丁路径少开头的 /，变量没写进去';
+    if (/顶层不存在/.test(t)) return '补丁写到了不存在的顶层，变量没写进去';
+    /* ② 标签类（用户点名的四种，顺序不能动） */
+    if (/标签未闭合/.test(t)) return 'UpdateVariable 标签少了尾部';
+    if (/完全没输出 <UpdateVariable>|本楼没有变量块/.test(t)) return '完全没输出 UpdateVariable 标签';
+    if (/变量块写在思维链/.test(t)) return 'UpdateVariable 标签写在了思维链里';
+    if (/缺少 <UpdateVariable> 起始标签/.test(t)) return 'UpdateVariable 标签少了头部';
+    if (/<JSONPatch> 缺尾部/.test(t)) return 'JSONPatch 标签少了尾部';
+    if (/<JSONPatch> 完全没有/.test(t)) return '没有 JSONPatch 标签';
+    if (/<JSONPatch>/.test(t)) return 'JSONPatch 标签没完整';
+    return 'UpdateVariable 标签没完整';
+  }
+
   /* ★ v76：格式异常的唯一出口 = 一条轻提示 + 亮状态栏红标。
      **绝不**自动弹「🩺 变量补全」面板，**绝不**把玩家卡住。 */
   function notifyIssue(problems) {
     try {
-      var arr = problems || [];
-      var n = arr.length || 1;
-      var detail = arr.slice(0, 4).join('、') + (arr.length > 4 ? (' 等共 ' + n + ' 项') : '');
-      toast('⚠【天元录】变量块格式异常：' + detail + '（点状态栏「🩺 变量补全」可查看 / 补算）', 'warning', 5600);
+      toast('⚠【天元录】' + plainMissingText(problems) + '（点状态栏「🩺 变量补全」可查看 / 补算）', 'warning', 5600);
     } catch (eN) {}
   }
 
@@ -3451,6 +3793,8 @@
     if (S.settings.autoRepair && !S.running && _autoRepairedKey !== key) {
       _autoRepairedKey = key;
       if (S.pendingTimer) clearTimeout(S.pendingTimer);
+      /* ★ v567：自动补全仍走「按正文重写」那条路（'fast' 是内部名 = 不带 6 楼上下文，
+         不是面板上被合并掉的「快速」按钮）。面板只剩两颗：只补格式 / 按正文重写。 */
       S.pendingTimer = setTimeout(function () { S.pendingTimer = null; runComplete('fast'); }, 800);
     }
     return false;
@@ -3496,6 +3840,8 @@
 
     if (hasMissing && force && S.settings.autoRepair && !S.running) {
       if (S.pendingTimer) clearTimeout(S.pendingTimer);
+      /* ★ v567：自动补全仍走「按正文重写」那条路（'fast' 是内部名 = 不带 6 楼上下文，
+         不是面板上被合并掉的「快速」按钮）。面板只剩两颗：只补格式 / 按正文重写。 */
       S.pendingTimer = setTimeout(function () { S.pendingTimer = null; runComplete('fast'); }, 800);
     }
     return !hasMissing;
@@ -3554,9 +3900,7 @@
       title = '上次补算失败：' + (S.statusText || '');
     } else if (S.lastMissing) {
       label = '❌'; color = '#ef4444';
-      title = (S.missingList && S.missingList.length)
-        ? ('变量块格式异常：' + S.missingList.join('、') + '，点开修复')
-        : '最新一楼没有合规的 <UpdateVariable>，点开补一下';
+      title = plainMissingText(S.missingList) + '，点开修复';
     } else if (!S.settings || !S.settings.enabled) {
       label = '关'; color = '#7e7769';
       title = '外置变量补全总开关是关的，点开面板打开';
@@ -3589,11 +3933,13 @@
       }
       var tipEl = S.panel.querySelector('#xz-varc-missing-tip');
       if (tipEl) {
+        /* ★ v567：这行常驻（顶掉原存档键那行），正常也给一句绿灯。 */
         if (S.lastMissing) {
-          tipEl.style.display = 'block';
-          tipEl.textContent = '⚠ ' + (S.missingList && S.missingList.length ? ('变量块格式异常：' + S.missingList.join('、')) : '最新一楼没有合规的 <UpdateVariable>，点下面补一下。');
+          tipEl.textContent = '⚠ ' + plainMissingText(S.missingList);
+          tipEl.style.color = '#f59e0b';
         } else {
-          tipEl.style.display = 'none';
+          tipEl.textContent = '✓ 变量块完整';
+          tipEl.style.color = '#10b981';
         }
       }
     } catch (e) {}
@@ -3696,6 +4042,29 @@
     var npcStr = (S.lastNpcs && S.lastNpcs.length) ? S.lastNpcs.join('、') : '（未扫描）';
     var hist = S.history || [];
 
+    /* ★★★ v567：玩家界面只留"一眼看懂"的结论，扫描类诊断全进开发者区 ★★★
+       用户：「把一大堆的什么扫描到什么什么的，全部塞入开发者那」。
+       存档键 / 世界书读了几条 / 命中哪些人 / 原始问题清单 / 补算历史 —— 这些是排障用的，
+       摆在玩家面前只会让人不知道该点哪颗按钮。 */
+    var devDiag =
+      '存档键：' + (S.chatKey || '—') + '\n' +
+      '世界书：' + wbInfo + '\n' +
+      '效果表：' + (wb && wb.effects ? ('✔ 已读 ' + Array.from(wb.effects).length + ' 字') : '✘ 未读到（用内置兜底）') + '\n' +
+      '本轮命中人物：' + npcStr + '\n' +
+      '原始问题清单：' + (S.missingList && S.missingList.length ? S.missingList.join('、') : '（无）');
+
+    var histHtml = hist.length ? (
+      '<div style="border-top:1px solid rgba(212,175,55,.2);padding-top:8px;">' +
+      '<div style="font-size:11px;color:#94a3b8;margin-bottom:4px;">本存档最近 ' + hist.length + ' 次：</div>' +
+      hist.map(function (h) {
+        var hOk = h.status === 'ok';
+        return '<div style="font-size:11px;padding:3px 6px;background:rgba(255,255,255,.03);border-radius:4px;margin-bottom:3px;display:flex;justify-content:space-between;gap:8px;color:' + (hOk ? '#10b981' : '#ef4444') + ';">' +
+          '<span>' + (hOk ? '✓' : '✘') + ' ' + (h.ms ? (h.ms / 1000).toFixed(1) + 's' : '') + ' · ' + (h.n || 0) + ' 条' + (h.npcs && h.npcs.length ? ' · ' + h.npcs.join(',') : '') + '</span>' +
+          '<span style="color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:45%;">' + esc(h.summary || '') + '</span></div>';
+      }).join('') +
+      '</div>'
+    ) : '';
+
     var btn = 'background:rgba(255,255,255,.05);border:1px solid rgba(212,175,55,.3);color:#93c5fd;border-radius:6px;cursor:pointer;';
     var boxWidth = set.devMode ? 'max-width:880px;width:100%;' : 'max-width:560px;width:100%;';
 
@@ -3718,19 +4087,22 @@
       '<span style="color:#93c5fd;font-weight:600;">状态</span>' +
       '<span id="xz-varc-status-val" style="font-size:12px;color:' + (S.status === 'bad' ? '#ef4444' : (S.status === 'ok' ? '#10b981' : (S.running ? '#f59e0b' : '#7fd2c1'))) + ';">' + esc(S.statusText) + '</span>' +
       '</div>' +
-      '<div style="font-size:12px;color:#94a3b8;">存档键：<span style="color:#d4af37;">' + esc(S.chatKey || '—') + '</span></div>' +
-      '<div style="font-size:12px;color:#94a3b8;">世界书：' + esc(wbInfo) + '</div>' +
-      '<div style="font-size:12px;color:#94a3b8;">本轮命中人物：<span style="color:#d4af37;">' + esc(npcStr) + '</span></div>' +
-      '<div id="xz-varc-missing-tip" style="font-size:12px;color:#f59e0b;' + (S.lastMissing ? '' : 'display:none;') + '">⚠ ' + (S.missingList && S.missingList.length ? ('变量块格式异常：' + esc(S.missingList.join('、'))) : '最新一楼没有合规的 &lt;UpdateVariable&gt;，点下面补一下。') + '</div>' +
+      /* ★ v567：这一行**顶掉原来的「存档键」那行**，常驻显示"哪个地方有问题"。
+         正常时给一句绿灯，别让玩家盯着一片空白猜。 */
+      '<div id="xz-varc-missing-tip" style="font-size:12.5px;color:' + (S.lastMissing ? '#f59e0b' : '#10b981') + ';">' +
+        (S.lastMissing ? ('⚠ ' + esc(plainMissingText(S.missingList))) : '✓ 变量块完整') + '</div>' +
+      /* ★★★ v567：两个按钮重新分工（用户：「精细和快速合并，默认精细」）★★★
+         左 = 按正文重写：补格式 **＋** 丢掉 AI 写的更新内容，按正文重新生成一套。
+         右 = 只补格式（默认，代替原「精细补算」那颗）：保留 AI 的更新内容，只修块形状。
+         原来两颗其实都调模型重写内容，差别只在上下文长度 —— 现在按"改不改内容"分开。 */
       '<div style="display:flex;gap:8px;margin-top:3px;">' +
-      '<button type="button" id="xz-varc-fast" style="flex:1;padding:10px 0;background:linear-gradient(135deg,#1d3a6f,#2b529a);border:1px solid #d4af37;border-radius:6px;color:#f1ede4;font-weight:700;cursor:pointer;">' + (S.running ? '⏳ 计算中…' : '⚡ 快速补算') + '</button>' +
-      '<button type="button" id="xz-varc-deep" style="flex:1;padding:10px 0;background:linear-gradient(135deg,#3b1d6f,#5b2b9a);border:1px solid #a78bfa;border-radius:6px;color:#f1ede4;font-weight:700;cursor:pointer;">🧠 精细补算</button>' +
+      '<button type="button" id="xz-varc-rewrite" title="补格式，并按正文重新写一次更新内容（丢弃 AI 原更新内容，会调用模型）" style="flex:1;padding:10px 0;background:linear-gradient(135deg,#1d3a6f,#2b529a);border:1px solid #d4af37;border-radius:6px;color:#f1ede4;font-weight:700;cursor:pointer;">' + (S.running ? '⏳ 计算中…' : '🧠 按正文重写') + '</button>' +
+      '<button type="button" id="xz-varc-format" title="默认：不改变正文 AI 写好的更新内容，只把变量块格式补齐（本地完成，不调用模型）" style="flex:1;padding:10px 0;background:linear-gradient(135deg,#3b1d6f,#5b2b9a);border:1px solid #d4af37;border-radius:6px;color:#f1ede4;font-weight:700;cursor:pointer;">🩹 只补格式（默认）</button>' +
       '</div>' +
-      '<div style="display:flex;gap:8px;">' +
-      '<button type="button" id="xz-varc-pre" style="flex:1;padding:7px 0;' + btn + 'font-size:12px;">🔍 预览提示词</button>' +
-      '<button type="button" id="xz-varc-sniff" style="flex:1;padding:7px 0;' + btn + 'font-size:12px;">🩺 嗅探一次</button>' +
-      '<button type="button" id="xz-varc-wbrefresh" style="flex:1;padding:7px 0;' + btn + 'font-size:12px;">📚 重读世界书</button>' +
-      '</div>' +
+      /* ★ v567：三颗按钮全删（用户：「界面要干净」）。
+         · 嗅探一次 → 本来就有 2 秒自动轮询，手动那颗是多余的；
+         · 重读世界书 → WORLDINFO_UPDATED 事件里改成自动重读；
+         · 预览提示词 → 勾开发者模式时自动构建并摊开，不再要按钮。 */
       /* ★★★ v510：整块时讯入口已删 ★★★
          用户 2026-10-31：「变量补全脚本中时讯相关的删了啊，都他妈没东西了」。
          「刷新坊间时讯（热议/闲杂）」那颗绿按钮 + 它下面那行状态（今天/事件 N 件/热议…）
@@ -3745,10 +4117,10 @@
       '<div style="font-weight:700;color:#d4af37;">⚙ API 通道</div>' +
       '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12.5px;">' +
       '<input type="radio" name="xz-varc-mode" id="xz-varc-m-main"' + (set.apiMode !== 'custom' ? ' checked' : '') + ' style="accent-color:#d4af37;">' +
-      '<span>酒馆主模型（不用填 Key，但主模型看到的是「补算」提示词）</span></label>' +
+      '<span>酒馆主模型</span></label>' +
       '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12.5px;">' +
       '<input type="radio" name="xz-varc-mode" id="xz-varc-m-custom"' + (set.apiMode === 'custom' ? ' checked' : '') + ' style="accent-color:#d4af37;">' +
-      '<span>另选专属接口（推荐：便宜快的小模型，别跟主模型抢上下文）</span></label>' +
+      '<span>另选专属接口</span></label>' +
       '<div style="display:' + (set.apiMode === 'custom' ? 'flex' : 'none') + ';flex-direction:column;gap:8px;" id="xz-varc-custom-box">' +
       '<div><div style="font-size:12px;color:#93c5fd;margin-bottom:3px;">地址 Base URL</div>' +
       '<input type="text" id="xz-varc-base" value="' + esc(set.base) + '" placeholder="https://api.openai.com/v1" style="width:100%;box-sizing:border-box;background:#06101e;border:1px solid rgba(212,175,55,.3);border-radius:6px;padding:7px 9px;color:#f1ede4;font-size:13px;"></div>' +
@@ -3774,7 +4146,7 @@
       '<div style="display:flex;flex-direction:column;gap:8px;background:rgba(7,23,32,0.9);border:1px solid rgba(212,175,55,.15);border-radius:10px;padding:10px 13px;">' +
       sw('xz-varc-c-sniffer', set.sniffer, '实时嗅探：最新一楼缺变量块就把状态栏按钮变黄提醒') +
       sw('xz-varc-c-autorepair', set.autoRepair, '嗅探到缺失就自动补（费 token，慎重）') +
-      sw('xz-varc-c-analysis', set.wantAnalysis, '要求 AI 输出 <Analysis>（变量细则本来就要）') +
+      /* ★ v567：「要求 AI 输出 <Analysis>」开关已删 —— 本来就恒输出，多余。 */
       sw('xz-varc-c-dev', set.devMode, '开发者模式：摊开提示词与原始返回') +
       '</div>' +
 
@@ -3786,27 +4158,20 @@
         '<span style="font-size:11px;color:#64748b;">拖拽右下角可继续拉高</span>' +
         '</div>' +
         '<div id="xz-varc-dev-box" style="background:#06101e;border:1.5px solid #2563eb;border-radius:10px;padding:14px;min-height:60vh;max-height:78vh;height:60vh;resize:vertical;overflow-y:auto;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:13px;line-height:1.6;color:#93c5fd;white-space:pre-wrap;box-sizing:border-box;">' +
+        '<div style="color:#f59e0b;font-weight:700;border-bottom:1px solid rgba(251,191,36,.25);padding-bottom:4px;margin-bottom:8px;">【0. 诊断明细（玩家界面已收起）】</div>' +
+        esc(devDiag) + '\n\n' +
         '<div style="color:#fbbf24;font-weight:700;border-bottom:1px solid rgba(251,191,36,.25);padding-bottom:4px;margin-bottom:8px;">【1. System / 规则 + 格式要求】</div>' +
         esc(S.lastSystem || '（还没构建过，点上方「🔍 预览提示词」）') + '\n\n' +
         '<div style="color:#7fd2c1;font-weight:700;border-bottom:1px solid rgba(213,180,121,0.28);padding-bottom:4px;margin-bottom:8px;margin-top:14px;">【2. User / 当前局面 + 人物速查 + 楼层正文】</div>' +
         esc(S.lastPrompt || '（同上）') + '\n\n' +
         '<div style="color:#a78bfa;font-weight:700;border-bottom:1px solid rgba(167,139,250,.25);padding-bottom:4px;margin-bottom:8px;margin-top:14px;">【3. 模型原始返回结果】</div>' +
         esc(S.lastRaw || '（还没有返回）') +
-        '</div></div>'
-      ) : '') +
-
-      /* 历史 */
-      (hist.length ? (
-        '<div style="border-top:1px solid rgba(212,175,55,.2);padding-top:8px;">' +
-        '<div style="font-size:11px;color:#94a3b8;margin-bottom:4px;">本存档最近 ' + hist.length + ' 次：</div>' +
-        hist.map(function (h) {
-          var ok = h.status === 'ok';
-          return '<div style="font-size:11px;padding:3px 6px;background:rgba(255,255,255,.03);border-radius:4px;margin-bottom:3px;display:flex;justify-content:space-between;gap:8px;color:' + (ok ? '#10b981' : '#ef4444') + ';">' +
-            '<span>' + (ok ? '✓' : '✘') + ' ' + (h.ms ? (h.ms / 1000).toFixed(1) + 's' : '') + ' · ' + (h.n || 0) + ' 条' + (h.npcs && h.npcs.length ? ' · ' + h.npcs.join(',') : '') + '</span>' +
-            '<span style="color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:45%;">' + esc(h.summary || '') + '</span></div>';
-        }).join('') +
+        '</div>' +
+        histHtml +
         '</div>'
       ) : '') +
+
+      /* ★ v567：补算历史已挪进开发者区（histHtml），玩家区不再摊。 */
 
       /* 底部 */
       '<div style="display:flex;gap:9px;">' +
@@ -3845,43 +4210,26 @@
     on('xz-varc-save', 'click', function () {
       pullInputs(); saveSettings(); toast('✓ 设置已保存', 'success'); renderPanel();
     });
-    on('xz-varc-fast', 'click', function () { pullInputs(); saveSettings(); runComplete('fast'); });
-    on('xz-varc-deep', 'click', function () { pullInputs(); saveSettings(); runComplete('deep'); });
+    on('xz-varc-rewrite', 'click', function () { pullInputs(); saveSettings(); runComplete('rewrite'); });
+    on('xz-varc-format', 'click', function () { pullInputs(); saveSettings(); runComplete('format'); });
     /* ★ v510：`#xz-varc-ticker` 的绑定已删 —— 那颗按钮下架了（用户：「时讯相关的删了啊」）。 */
-    on('xz-varc-sniff', 'click', function () {
-      /* ★ v564：玩家刚输入完、AI 还没回时别报「缺变量块」—— 给一条中性说明就收 */
-      if (pendingUserTurn()) {
-        toast('⏸ 当前停在玩家输入，等下一楼 AI 回复后再嗅探', 'info');
-        renderPanel();
-        return;
-      }
-      var ok = sniff(true);
-      toast(ok ? '✓ 最新 AI 楼变量块完整' : '⚠ 最新 AI 楼缺变量块', ok ? 'success' : 'error');
-      renderPanel();
-    });
-    on('xz-varc-wbrefresh', 'click', function () {
-      loadWorldbook(true).then(function (wb) {
-        toast('✓ 世界书已重读：规则 ' + (wb.rules ? '有' : '无') + '｜格式 ' + (wb.format.length ? (wb.format.length + ' 条') : (wb.fmtInRules ? '在细则内' : '无')) + '｜速查 ' + (wb.roster ? '有' : '无'), wb.rules ? 'success' : 'error');
-        renderPanel();
-      });
-    });
-    on('xz-varc-pre', 'click', function () {
-      pullInputs();
+    /* ★ v567：三颗按钮的事件绑定一并删。预览改成开发者模式自动构建：
+       勾上「开发者模式」就摊开提示词，不再要玩家多点一下。 */
+    function buildPreview() {
       var idx = latestAiIndex();
       var chat = chatArray();
-      if (idx < 0) { toast('没有可预览的楼层', 'error'); return; }
+      if (idx < 0) return;
       loadWorldbook().then(function () {
         var sd = readState();
         var ui = latestUserIndexBefore(idx);
-        var built = buildPrompt('fast', sd, {
+        var built = buildPrompt('rewrite', sd, {
           ai: stripVarBlocks(msgText(chat[idx])),
           user: ui >= 0 ? stripVarBlocks(msgText(chat[ui])) : ''
         }, '');
         S.lastSystem = built.system; S.lastPrompt = built.user;
-        S.settings.devMode = true; saveSettings(); renderPanel();
-        toast('已构建提示词并摊开（命中 ' + built.npcs.length + ' 人）', 'success');
+        if (S.panel) renderPanel();
       });
-    });
+    }
     on('xz-varc-pull', 'click', function () {
       pullInputs();
       toast('正在拉模型列表…', 'info');
@@ -3932,8 +4280,11 @@
     });
     chk('xz-varc-c-sniffer', 'sniffer', function () { sniff(); });
     chk('xz-varc-c-autorepair', 'autoRepair');
-    chk('xz-varc-c-analysis', 'wantAnalysis');
-    chk('xz-varc-c-dev', 'devMode', renderPanel);
+    /* ★ v567：wantAnalysis 只为兼容老存档保留，脚本恒输出 <Analysis>，别再加 UI。 */
+    chk('xz-varc-c-dev', 'devMode', function () {
+      if (S.settings.devMode) buildPreview();   /* 自动摊开提示词，不用点按钮 */
+      else renderPanel();
+    });
   }
 
   function pullInputs() {
@@ -3995,7 +4346,12 @@
         /* 流式期间会反复触发 → 只武装，不查（此刻正文还是半截，查必误判） */
         onEvt(EV.CHARACTER_MESSAGE_RENDERED || 'CHARACTER_MESSAGE_RENDERED', function () { armSniff(); });
         onEvt(EV.MESSAGE_UPDATED || 'MESSAGE_UPDATED', function () { armSniff(); });
-        onEvt(EV.WORLDINFO_UPDATED || 'WORLDINFO_UPDATED', function () { S.wbCache = null; });
+        /* ★ v567：「重读世界书」按钮删了 ⇒ 世界书一改就必须自己重读完，
+           不能只清缓存等下次用到才读（玩家会以为改了没生效）。 */
+        onEvt(EV.WORLDINFO_UPDATED || 'WORLDINFO_UPDATED', function () {
+          S.wbCache = null;
+          try { loadWorldbook(true).then(function () { if (S.panel) renderPanel(); }); } catch (eW) {}
+        });
       }
     } catch (eE) {}
 
@@ -4028,14 +4384,16 @@
       }
     } catch (eB) {}
 
-    /* 斜杠指令：/xz补 与 /xz补全 */
+    /* 斜杠指令：/xz补格式（默认·只补格式）｜/xz补（自动补算）｜/xz补全（按正文重写） */
     try {
       var s = st();
       if (s && s.SlashCommandParser && typeof s.SlashCommandParser.addCommand === 'function') {
-        s.SlashCommandParser.addCommand('xz补', function () { runComplete('fast'); return '已触发外置变量补算（快速）'; },
-          [], '外置 AI 给最新一楼补 <UpdateVariable>（快速）');
-        s.SlashCommandParser.addCommand('xz补全', function () { runComplete('deep'); return '已触发外置变量补算（精细）'; },
-          [], '外置 AI 给最新一楼补 <UpdateVariable>（精细，带上下文）');
+        s.SlashCommandParser.addCommand('xz补格式', function () { runComplete('format'); return '已只补格式（保留 AI 原更新内容）'; },
+          [], '只把最新一楼的变量块格式补齐，不改变 AI 写好的更新内容（本地，不调模型）');
+        s.SlashCommandParser.addCommand('xz补', function () { runComplete('fast'); return '已触发自动补算'; },
+          [], '自动补算：按正文重写最新一楼的 <UpdateVariable>');
+        s.SlashCommandParser.addCommand('xz补全', function () { runComplete('rewrite'); return '已按正文重写更新内容'; },
+          [], '补格式并按正文重新写一次更新内容（丢弃 AI 原更新内容，带 6 楼上下文）');
       }
     } catch (eC) {}
   }
