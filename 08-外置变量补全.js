@@ -268,6 +268,8 @@
     try { if (typeof uninjectPrompts === 'function') uninjectPrompts([INJECT_NAME]); } catch (e6) {}
     try { var s = st(); if (s && s.extensionPrompts) delete s.extensionPrompts[INJECT_NAME]; } catch (e7) {}
     try { resetSniffState(); } catch (e8) {}
+    /* ★ v565：换档后也要自动武装 —— 否则切到另一个存档，最新 AI 楼坏了同样不报 */
+    try { armSniffSoon(4000); } catch (e9) {}
     notifyStatus();
     if (S.panel) renderPanel();
     if (!quiet) console.log('[外置变量补全] 已换存档，上一局缓存全部归零：' + S.chatKey);
@@ -3170,7 +3172,72 @@
       problems.push('<UpdateVariable> 标签未闭合');
     }
     if (!hasCompletePatch(raw)) problems.push('<JSONPatch> 缺失或 JSON 未闭合');
+    /* ★ v565：空数组也等于「这一楼没写变量」。旧写法只看 JSON 是不是数组，
+       `<JSONPatch>[]</JSONPatch>` 永远绿灯，玩家以为更新了、实际一条没落。 */
+    if (problems.length === 0) {
+      var arr0 = lastPatchArray(raw);
+      if (arr0 && arr0.length === 0) problems.push('<JSONPatch> 是空数组（一条补丁都没有）');
+    }
     return problems;
+  }
+
+  /* ★ v565（用户 2026-11-08）：标签闭合、JSON 能解析 ≠ 变量真的写进去了。
+     MVU 本体对 replace 有一道 _.has 闸 —— 路径不存在就整条跳过（setPathMissing），
+     不弹窗、不写变量。人物列表是动态 record：老档 / 新建人物时少写一层「部位」，
+     之后所有 `replace /人物列表/某人/部位/xx` 全被静默丢掉，玩家只看到「没更新」。
+     ⇒ 补一道路径存在性检查：replace 打在不存在的路径上就报出来，并提示改用 insert。 */
+  function lastPatchArray(text) {
+    var s = withoutReasoning(String(text || ''));
+    var re = /<\s*(?:JSONPatch|json_?patch)\b[^>]*>([\s\S]*?)<\s*\/\s*(?:JSONPatch|json_?patch)\s*>/ig;
+    var bodies = [], m;
+    while ((m = re.exec(s)) !== null) bodies.push(m[1]);
+    for (var i = bodies.length - 1; i >= 0; i--) {
+      try {
+        var arr = JSON.parse(String(bodies[i]).replace(/```(?:json)?/gi, '').replace(/```/g, '').trim());
+        if (Array.isArray(arr)) return arr;
+      } catch (e) { /* 这段不像话，看下一段 */ }
+    }
+    return null;
+  }
+
+  function checkVarPaths(patchText) {
+    var problems = [];
+    var arr = lastPatchArray(patchText);
+    if (!arr || !arr.length) return problems;
+    var need = false;
+    for (var i = 0; i < arr.length; i++) {
+      if (arr[i] && arr[i].op === 'replace') { need = true; break; }
+    }
+    if (!need) return problems;
+    var sd = null;
+    try { sd = readState(); } catch (e) { sd = null; }
+    if (!sd || typeof sd !== 'object' || !Object.keys(sd).length) return problems;  /* 读不到就不判，免得误报 */
+    for (var j = 0; j < arr.length; j++) {
+      var op = arr[j];
+      if (!op || op.op !== 'replace') continue;
+      var p = String(op.path || '');
+      if (!p || p.charAt(0) !== '/') continue;
+      var segs = p.slice(1).split('/').map(function (x) { return x.replace(/~1/g, '/').replace(/~0/g, '~'); });
+      var cur = sd, ok = true;
+      for (var k = 0; k < segs.length; k++) {
+        if (cur && typeof cur === 'object' && Object.prototype.hasOwnProperty.call(cur, segs[k])) cur = cur[segs[k]];
+        else { ok = false; break; }
+      }
+      if (!ok) problems.push('路径不存在：' + p + '（replace 会被 MVU 跳过，改用 insert）');
+    }
+    return problems;
+  }
+
+  /* 同一楼同一段补丁只读一次 stat_data（读 MVU 是深拷贝，2 秒一次没必要反复啃） */
+  var _pathCacheKey = '', _pathCacheAt = 0, _pathCacheRes = [];
+  function checkVarPathsCached(patchText, idx) {
+    var s = String(patchText || '');
+    var key = String(idx) + '::' + s.length + '::' + s.slice(0, 24);
+    var now = Date.now();
+    if (key === _pathCacheKey && now - _pathCacheAt < 10000) return _pathCacheRes;
+    var res = checkVarPaths(s);
+    _pathCacheKey = key; _pathCacheAt = now; _pathCacheRes = res;
+    return res;
   }
 
   /* ─────────────────────────────────────────────────────────────
@@ -3196,6 +3263,15 @@
   var CONFIRM_ISSUE_MS = 1900;   /* ★ v76：异常需持续这么久才真弹（≥ 一个轮询周期） */
   var _pollAt = 0;               /* 上一次轮询嗅探的时刻（节流用） */
   var _sniffArmed = false;       /* 本会话是否已观察过一轮生成（未武装不嗅，免得拿历史楼层误报） */
+  var _armTimer = null;
+  /* ★ v565：载入页面 / 切存档后**自动武装**。
+     旧口径是「必须观察到一轮生成才嗅」，结果玩家刷新页面看到最新 AI 楼变量坏了，
+     脚本一声不吭 —— 用户 2026-11-08 报的就是这个。
+     ⇒ 延迟 4 秒武装：只判最新 AI 楼，历史楼层不碰；二次确认 + 长度闸照旧。 */
+  function armSniffSoon(delay) {
+    if (_armTimer) clearTimeout(_armTimer);
+    _armTimer = setTimeout(function () { _armTimer = null; _sniffArmed = true; }, delay == null ? 4000 : delay);
+  }
   var _sniffedKey = '';          /* 已经提示过的楼层 —— 同一楼只弹一次 */
   var _pendingKey = '';          /* 疑似异常的楼层（等下一轮复核，防误报） */
   var _pendingAt = 0;            /* 第一次发现异常的时刻 */
@@ -3205,6 +3281,9 @@
   function resetSniffState() {
     _sniffedKey = ''; _pendingKey = ''; _pendingAt = 0;
     _sniffArmed = false; _pollAt = 0; _lastLen = -1; _lastSniffIdx = -1;
+    /* ★ v565：换档要把「延迟武装」的定时器一起撤掉，否则旧档排的 4 秒会把新档直接开闸 */
+    if (_armTimer) { clearTimeout(_armTimer); _armTimer = null; }
+    _pathCacheKey = ''; _pathCacheAt = 0; _pathCacheRes = [];
   }
 
   /* ★ v76：格式异常的唯一出口 = 一条轻提示 + 亮状态栏红标。
@@ -3274,6 +3353,8 @@
     if (isSnapshotStreaming() || grew) return true;
 
     var problems = checkVarFormat(txt);
+    /* ★ v565：格式合规但 replace 打在不存在的路径上 —— MVU 会静默跳过，也算「写不进去」 */
+    if (problems.length === 0) problems = checkVarPathsCached(txt, idx);
     var key = 'p' + idx;
 
     if (_sniffedKey === key) {                           /* 这一楼已经提示过 → 只复查红标该不该熄 */
@@ -3320,6 +3401,8 @@
     var chat = chatArray();
     var txt = msgText(chat[idx]);
     var problems = checkVarFormat(txt);
+    /* ★ v565：同上 —— 路径不存在也是「变量没写进去」，手动查一样要报 */
+    if (problems.length === 0) problems = checkVarPathsCached(txt, idx);
     var hasMissing = (problems.length > 0);
     var missingKey = idx + '::' + problems.slice().sort().join('|');
 
@@ -3975,9 +4058,11 @@
     exposeBridge();
     setupEvents();
     loadWorldbook().catch(function () {});
-    /* ★ v76：初始化时**不武装嗅探**。心跳虽然从第 700ms 就开始跑 pollSniff，
-       但 _sniffArmed 还是 false —— 不给「刚载页 / 刚切聊天」拿历史楼层误报的机会。
-       等本会话观察到第一轮生成（GENERATION_STARTED / ENDED / 收到回复）才真正启用。 */
+    /* ★ v76：初始化时**不立刻**武装嗅探。心跳虽然从第 700ms 就开始跑 pollSniff，
+       但 _sniffArmed 还是 false —— 不给「刚载页」拿历史楼层误报的机会。
+       ★ v565：但也不能永远不武装 —— 4 秒后自动开闸，只判最新 AI 楼。
+       否则「刷新页面看到最新一楼变量坏了」永远等不到提示（用户 2026-11-08 报的）。 */
+    armSniffSoon(4000);
     console.log('[天元录] 外置变量补全 v2.1 已就绪｜缓存按存档隔离：' + S.chatKey +
       '｜嗅探＝每 2 秒轮询（抄春日狂想曲 v97，只弹提示不弹面板）｜入口＝状态栏「🩺 变量补全」按钮');
   }
