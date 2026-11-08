@@ -42,7 +42,13 @@
   /* ══════════════════ 一、默认设置与常量 ══════════════════ */
   var DEFAULTS = {
     enabled: true,            /* 总开关 */
-    auto: false,              /* 每次正文生成完自动嗅探（默认关：没填接口时别空跑） */
+    /* ★ v566：下面两个键是**历史残留**，只为兼容老存档的 localStorage；
+       面板已从「开关区」删掉，运行时也没有任何代码读它们：
+       · auto：原设计「生成完再嗅一次」，但实时嗅探（sniffer）本来就常驻轮询，
+         两者作用完全一样；而全脚本**没有任何地方读 settings.auto** ⇒ 勾了也没用。
+       · tickerAuto：v446 起时讯改成玩家自己按，自动触发整段已删 ⇒ 同样是死开关。
+       ⇒ 别再给它们加 UI，也别在新代码里读它们；老存档里的值不影响任何行为。 */
+    auto: false,
     autoRepair: false,        /* 嗅探到缺失就自动补（默认关，先只提醒） */
     sniffer: true,            /* 实时嗅探：最新一楼缺 <UpdateVariable> 就把状态栏按钮变黄提醒 */
     /* ★★★ v446【用户 2026-10-29 定的】：「一进卡第一瞬间就是疯狂调动 api 去生成那些事件，
@@ -54,8 +60,8 @@
          ② 判断「该不该刷」靠两个日期变量（热议那天 / 闲杂那天），
             新存档这两个值是空的 ⇒ 恒判「从来没刷过」 ⇒ 第一次必然真发请求。
        ⇒ 现在**默认关，且永不自动**：只有玩家自己在「目前事件」页点刷新才走。
-         这个设置项保留（老存档里可能存着 true，见下面对它的强制迁移），
-         但自动触发那段已经整段删掉，开着也不会自己跑。 */
+         这个设置项只为兼容老存档保留（界面上的开关 v566 已删，运行时也没人读它），
+         自动触发那段已经整段删掉，存着 true 也不会自己跑。 */
     tickerAuto: false,
     apiMode: 'main',          /* main = 走酒馆自己的模型（不用填 key）；custom = 另填接口 */
     temperature: 0.2,         /* 变量计算要稳，温度压低 */
@@ -1967,8 +1973,8 @@
     var removals = packed.removals;
     var deltas = packed.deltas;
     var appends = packed.appends;
-    var ok = 0, errs = [];
-    var targets = [{ type: 'chat' }];
+    var ok = 0, msgOk = 0, errs = [];
+    var targets = [];
     if (targetIdx != null && targetIdx >= 0) targets.push({ type: 'message', message_id: targetIdx });
     /* ★ v564：这里原来还压了一层 {type:'message', message_id:'latest'}。
        玩家输入后停住时，'latest' 指向的是**用户楼** —— 补算结果会被写进一条
@@ -1977,6 +1983,12 @@
        ⇒ 只写最新 AI 楼，且与 targetIdx 去重。 */
     var liveAiIdx = latestAiIndex();
     if (liveAiIdx >= 0 && liveAiIdx !== targetIdx) targets.push({ type: 'message', message_id: liveAiIdx });
+    /* ★★★ v566：`{type:'chat'}` 挪到**最后**当兜底 ★★★
+       卡里的 stat_data 在**消息层**（05 的 getVariables 读的就是 message_id:-1）。
+       旧写法把它排第一 ⇒ 它写成功就 ok>0，消息层失败也不会触发兜底，
+       玩家看到「补算完成：写入 N 条」，变量实际一条没动。
+       ⇒ 消息层优先；chat 层只在消息层全失败时才兜底。 */
+    targets.push({ type: 'chat' });
 
     var mvu = null;
     var cands = windows();
@@ -2008,8 +2020,9 @@
             var pr = null;
             try { pr = mvu.replaceMvuData(root, t); } catch (e1) { errs.push('MVU 写入 ' + JSON.stringify(t) + ' 异常'); res(); return; }
             if (pr && typeof pr.then === 'function') {
-              pr.then(function () { ok++; res(); }).catch(function (e2) { errs.push(String(e2 && e2.message || e2)); res(); });
-            } else { ok++; res(); }
+              pr.then(function () { ok++; if (t.type === 'message') msgOk++; res(); })
+                .catch(function (e2) { errs.push(String(e2 && e2.message || e2)); res(); });
+            } else { ok++; if (t.type === 'message') msgOk++; res(); }
           });
         });
       });
@@ -2039,7 +2052,7 @@
           }
         } catch (e3) { errs.push(String(e3 && e3.message || e3)); }
       }
-      return { ok: ok, errs: errs };
+      return { ok: ok, msgOk: msgOk, errs: errs };
     });
   }
 
@@ -2077,6 +2090,23 @@
     return last;
   }
   /* 返回 { text, spliced }：spliced=true 表示真的换掉了旧块（而不是追加） */
+  /* ★ v566：变量块之后**不许被吃掉的正文标签**。只开没收时用它当截断边界；
+     名字必须与正文/界面里真实使用的标签一致（状态栏、占位符、人物面板、战斗标记）。 */
+  var XZ_BLOCK_BOUNDARY = ['状态栏', 'StatusPlaceHolderImpl', '人物面板', '战斗开始', '战斗结束', '选项', 'UpdateVariable'];
+  function findNextBlockBoundary(s, from) {
+    var best = -1;
+    var src = String(s || '');
+    for (var i = 0; i < XZ_BLOCK_BOUNDARY.length; i++) {
+      /* ★ v566：同 keepOtherTagsIntact —— 中文标签后面不能用 \b，必须看 '>' / '/' / 空白 */
+      var re = new RegExp('<\\s*' + XZ_BLOCK_BOUNDARY[i] + '(?=[\\s/>])', 'i');
+      var m = re.exec(src.slice(from));
+      if (m) {
+        var p = from + m.index;
+        if (best < 0 || p < best) best = p;
+      }
+    }
+    return best;
+  }
   function spliceVarBlock(raw, block) {
     var mk = maskReasoning(raw);
     var s = mk.text;
@@ -2092,7 +2122,16 @@
         var t1 = lastCloseTagEnd(s, 'JSONPatch');
         var t2 = lastCloseTagEnd(s, 'Analysis');
         var tail = Math.max(t1, t2);
-        endAt = tail > at ? tail : s.length;
+        /* ★★★ v566：**绝不能无条件吃到结尾** ★★★
+           玩家实测：自动补全跑过一次，正文里的 <状态栏> / <StatusPlaceHolderImpl/>
+           等标签整块没了。根因就是这里 —— 块没闭合时 endAt = s.length，
+           把后面的所有正文标签一并吃掉。
+           ⇒ 先找「下一个非变量块标签」的起点，截在那里；只有后面真的什么都没有，
+             才允许吃到结尾。 */
+        var bound = findNextBlockBoundary(s, open.index + open[0].length);
+        if (tail > at) endAt = tail;
+        else if (bound > 0) endAt = bound;
+        else endAt = s.length;
       }
     } else {
       /* 没有 <UpdateVariable>，但有裸 <JSONPatch>/<Analysis>：当旧块从那儿开始 */
@@ -2134,6 +2173,24 @@
     return true;
   }
 
+  /* ★ v566 第二道保险：正文里的其他标签一个都不许少。
+     截断逻辑再小心，也可能有没预料到的写法；这里按**开标签出现次数**比一遍，
+     少了就退回「原文 + 追加块」—— 宁可块位置难看，也不许把状态栏吃掉。 */
+  function keepOtherTagsIntact(raw, next) {
+    var tags = ['状态栏', 'StatusPlaceHolderImpl', '人物面板', '战斗开始', '战斗结束'];
+    for (var i = 0; i < tags.length; i++) {
+      /* ★ v566：标签名后面必须跟 空白 / '/' / '>'。原来用 \b（单词边界）是错的：
+         中文标签 `<状态栏>` 里「栏」和「>」都不是 \w，两边同为非单词字符 ⇒ \b 不成立，
+         于是「状态栏 / 人物面板 / 战斗开始」这些**中文标签一个都匹配不到**，
+         这道保险等于只护住了英文的 StatusPlaceHolderImpl —— 玩家报的正是中文标签被吞。 */
+      var re = new RegExp('<\\s*' + tags[i] + '(?=[\\s/>])', 'gi');
+      var a = (String(raw).match(re) || []).length;
+      var b = (String(next).match(re) || []).length;
+      if (b < a) return false;
+    }
+    return true;
+  }
+
   /* 把补好的块塞回那一楼：正文一个字都不动，只换掉/追加变量块 */
   function writeBackBlock(targetIdx, block) {
     var chat = chatArray();
@@ -2141,7 +2198,7 @@
     if (!m) return Promise.reject(new Error('目标楼层不存在'));
     var raw = msgText(m);
     var next = spliceVarBlock(raw, block).text;
-    if (!keepReasoningIntact(raw, next)) {
+    if (!keepReasoningIntact(raw, next) || !keepOtherTagsIntact(raw, next)) {
       /* 兜底：块追加到末尾，原文一个字节不动 */
       next = raw + (raw.trim() ? '\n\n' : '') + block;
     }
@@ -2254,6 +2311,13 @@
       var block = buildBlock(parsed.analysis, clean.keep);
 
       return applyOps(clean.keep, targetIdx).then(function (w) {
+        /* ★★★ v566：变量没进**消息层** ⇒ 不许报「补算完成」★★★
+           旧写法只看 ops 条数：`{type:'chat'}` 那一层写成功就算 ok，
+           消息层失败也照样弹「写入 N 条」，玩家实际一点变化都看不到。 */
+        if (targetIdx >= 0 && w && !w.msgOk) {
+          throw new Error('变量没写进 MVU 消息层（第 ' + targetIdx + ' 楼）' +
+            (w.errs && w.errs.length ? '：' + String(w.errs[0]).slice(0, 60) : ''));
+        }
         return writeBackBlock(targetIdx, block).then(function () {
           return { ms: ms, ops: clean.keep, dropped: clean.dropped, block: block, write: w };
         });
@@ -3128,7 +3192,8 @@
      于是"开卡瞬间"就等于"连问好几次"；再加上新存档的两个日期变量是空的，
      恒判「从来没刷过」，所以第一次必然真发。
      ⇒ 现在时讯只走手动一条路：`__xzVarComplete.ticker()` / 「目前事件」页的刷新按钮
-       / 设置页 verbal 都没有自动入口。`tickerAuto` 那个开关保留但恒为 false（见 loadSettings）。
+       / 设置页都没有自动入口。`tickerAuto` 键只为兼容老存档保留、恒抹 false，
+       界面上那个「时讯自动刷新」开关 v566 已删（它从来就不生效）。
      ⚠ 以后要恢复自动，别在原处加回来 —— 必须先解决"重放历史楼层不算事件"这一层，
        否则同样的病会立刻复发。 */
 
@@ -3273,6 +3338,7 @@
     _armTimer = setTimeout(function () { _armTimer = null; _sniffArmed = true; }, delay == null ? 4000 : delay);
   }
   var _sniffedKey = '';          /* 已经提示过的楼层 —— 同一楼只弹一次 */
+  var _autoRepairedKey = '';     /* ★ v566：已经自动补过的楼层 —— 每楼只补一次，不无限重试 */
   var _pendingKey = '';          /* 疑似异常的楼层（等下一轮复核，防误报） */
   var _pendingAt = 0;            /* 第一次发现异常的时刻 */
   var _lastLen = -1;             /* 上一次看到的最新一楼正文长度（还在变＝还在流，不查） */
@@ -3281,6 +3347,7 @@
   function resetSniffState() {
     _sniffedKey = ''; _pendingKey = ''; _pendingAt = 0;
     _sniffArmed = false; _pollAt = 0; _lastLen = -1; _lastSniffIdx = -1;
+    _autoRepairedKey = '';
     /* ★ v565：换档要把「延迟武装」的定时器一起撤掉，否则旧档排的 4 秒会把新档直接开闸 */
     if (_armTimer) { clearTimeout(_armTimer); _armTimer = null; }
     _pathCacheKey = ''; _pathCacheAt = 0; _pathCacheRes = [];
@@ -3376,7 +3443,13 @@
     S.lastMissing = true; S.missingList = problems.slice();
     try { notifyStatus(); } catch (eN) {}
     notifyIssue(problems);
-    if (force && S.settings.autoRepair && !S.running) {
+    /* ★★★ v566：自动补全不再要求 force ★★★
+       旧写法只有 GENERATION_* / MESSAGE_RECEIVED 的快速通道才带 force=true，
+       而 MESSAGE_RECEIVED 在「末尾是玩家楼」时会被挡掉 ⇒ 玩家实测
+       「自动补全只补几楼就没用了」。
+       ⇒ 每一楼只自动补一次（_autoRepairedKey 去重），失败也不无限重试。 */
+    if (S.settings.autoRepair && !S.running && _autoRepairedKey !== key) {
+      _autoRepairedKey = key;
       if (S.pendingTimer) clearTimeout(S.pendingTimer);
       S.pendingTimer = setTimeout(function () { S.pendingTimer = null; runComplete('fast'); }, 800);
     }
@@ -3455,7 +3528,8 @@
     /* ★★★ v446：**强制迁移** —— 老存档里 tickerAuto 存的是 true（v432 的默认值），
        光改 DEFAULTS 对已经玩过的人一点用都没有：他们的 localStorage 里躺着那个 true。
        而这一项的语义已经从「自动刷新」变成「玩家自己按」，true 也不再有任何自动行为
-       （maybeTicker 整段已删），所以这里直接抹成 false，与界面上那个开关的显示一致。
+       （maybeTicker 整段已删），所以这里直接抹成 false，免得老存档里留个假的 true。
+       界面上那个「时讯自动刷新」开关 v566 已删：挂着只会让玩家以为勾了有用。
        ⚠ 别写成「只在没值时给 false」—— 那就等于老存档永远停在 true。 */
     out.tickerAuto = false;
     S.settings = out;
@@ -3699,9 +3773,7 @@
       /* 开关 */
       '<div style="display:flex;flex-direction:column;gap:8px;background:rgba(7,23,32,0.9);border:1px solid rgba(212,175,55,.15);border-radius:10px;padding:10px 13px;">' +
       sw('xz-varc-c-sniffer', set.sniffer, '实时嗅探：最新一楼缺变量块就把状态栏按钮变黄提醒') +
-      sw('xz-varc-c-auto', set.auto, '生成完自动嗅探（只嗅探，不自动补）') +
       sw('xz-varc-c-autorepair', set.autoRepair, '嗅探到缺失就自动补（费 token，慎重）') +
-      sw('xz-varc-c-tickerauto', set.tickerAuto !== false, '时讯自动刷新：事件换了 / 满 3 天，自动更新热议与闲杂事件') +
       sw('xz-varc-c-analysis', set.wantAnalysis, '要求 AI 输出 <Analysis>（变量细则本来就要）') +
       sw('xz-varc-c-dev', set.devMode, '开发者模式：摊开提示词与原始返回') +
       '</div>' +
@@ -3859,9 +3931,7 @@
       renderPanel();
     });
     chk('xz-varc-c-sniffer', 'sniffer', function () { sniff(); });
-    chk('xz-varc-c-auto', 'auto');
     chk('xz-varc-c-autorepair', 'autoRepair');
-    chk('xz-varc-c-tickerauto', 'tickerAuto');
     chk('xz-varc-c-analysis', 'wantAnalysis');
     chk('xz-varc-c-dev', 'devMode', renderPanel);
   }
