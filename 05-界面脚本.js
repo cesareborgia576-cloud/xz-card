@@ -16643,21 +16643,65 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             (d.head || d.documentElement).appendChild(el);
         }
 
-        /* ── 两张图库合成一张「有图的人 → 有序 URL 数组」总表 ──
-           ⚠ 必须**两张都查**：`XZ_GALLERY` 只有 15 个斗罗人（多图），
-             `XZ_PORTRAITS` 才是本卡原创那批（姜绾绾/沈清颜/白长雪…全是单图）。
+        /* ── 三张图库合成一张「有图的人 → 有序 URL 数组」总表 ──
+           ⚠ 必须**三张都查**：
+             · `XZ_GALLERY`    只有 15 个斗罗人（多图）
+             · `XZ_PORTRAITS`  才是本卡原创那批（姜绾绾/沈清颜/白长雪…单图）
+             · `XZ_ILLU_STAND` **v548/v557 那两批新立绘唯一的家**
              原来只查 XZ_GALLERY ⇒ 姜绾绾查不到 ⇒ 返回空 ⇒ 原样留着标签 ⇒
-             玩家看到的「完全像没识别」。这是 v477 之前最硬的一根刺。 */
+             玩家看到的「完全像没识别」。这是 v477 之前最硬的一根刺。
+
+           ★★★ v561（作者 2026-11-08：「我说你妈逼的<人物立绘>这个标签识别不到！」）★★★
+             又踩了同一个坑，只是这次漏的是**第三张表**：
+               表里明明有至冬女王/维琳娜/蕾米埃尔/绯雪…33 人 62 张，
+               状态栏、相册、立绘页全都有图，
+               但**正文里的 `<人物立绘>` 一个都不换图**，标签原样糊在正文上。
+             病根：这张表 `XZ_ILLU_STAND` 是 05 内部 IIFE 的 var，挂到
+               `window.XZ_ILLU_STAND` 是为了让**别的 IIFE**（立绘页）看见；
+               而正文这个 IIFE 是自己人，本该直接读 var —— 结果两边都没读，
+               因为这里写死只收 window 上的 G / P 两张。
+             ⇒ 取表顺序：window 上的（给跨 IIFE）→ 同 IIFE 的 var（给这里）。
+               两张都给，谁先挂上谁先用，**去重后合并**，不会互相覆盖。
+           ⚠ 顺序决定"同名不同图"时谁赢：新表 `XZ_ILLU_STAND` 排最前，
+             因为它装的是作者拍过序的最新立绘（首图就是默认展示那张）。
+             与 `xzCemAllPortraits` 的口径一致（那边也是 I → G → P）。 */
         function xzPicTable() {
-            var out = {}, G = null, P = null;
+            var out = {}, G = null, P = null, I = null;
             try { G = (typeof window !== 'undefined' && window.XZ_GALLERY) || null; } catch (e1) { G = null; }
             try { P = (typeof window !== 'undefined' && window.XZ_PORTRAITS) || null; } catch (e2) { P = null; }
+            /* ★ v561：新立绘表。先取挂出去的（别的 IIFE 用），
+               再退回同 IIFE 的 var —— 本函数自己就在那个 IIFE 里，直接可见。 */
+            try { I = (typeof window !== 'undefined' && window.XZ_ILLU_STAND) || null; } catch (e5) { I = null; }
+            try {
+                if (!I && typeof XZ_ILLU_STAND !== 'undefined' && XZ_ILLU_STAND) I = XZ_ILLU_STAND;
+            } catch (e6) { I = null; }
+
+            /* ① 新表最前（首图 = 玩家该看到的那张） */
+            try {
+                if (I) for (var k0 in I) {
+                    if (!Object.prototype.hasOwnProperty.call(I, k0)) continue;
+                    var u0 = I[k0];
+                    if (!u0 || !u0.length) continue;
+                    var a0 = [];
+                    for (var i0 = 0; i0 < u0.length; i0++) {
+                        if (u0[i0] && typeof u0[i0] === 'string') a0.push(u0[i0]);
+                    }
+                    if (a0.length) out[k0] = a0;
+                }
+            } catch (e0) {}
+            /* ② 相册多图：只补新表里没有的人与图，不覆盖新表的顺序 */
             try {
                 if (G) for (var k in G) {
                     if (!Object.prototype.hasOwnProperty.call(G, k)) continue;
-                    if (G[k] && G[k].length) out[k] = G[k].slice();
+                    if (!G[k] || !G[k].length) continue;
+                    if (out[k]) {
+                        for (var gi = 0; gi < G[k].length; gi++) {
+                            if (G[k][gi] && out[k].indexOf(G[k][gi]) < 0) out[k].push(G[k][gi]);
+                        }
+                    } else out[k] = G[k].slice();
                 }
             } catch (e3) {}
+            /* ③ 单图表兜底（本卡原创那批） */
             try {
                 if (P) for (var k2 in P) {
                     if (!Object.prototype.hasOwnProperty.call(P, k2)) continue;
