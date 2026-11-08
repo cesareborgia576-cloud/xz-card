@@ -423,12 +423,19 @@
   function readState() {
     var merged = null;
     var cands = windows();
+    /* ★ v564：不再用 message_id:'latest'。玩家输入后停住时它指向用户楼，
+       读出来是空 stat_data（部分 MVU 版本直接抛错），补算/预览会跟着报错。
+       ⇒ 显式锁到最新 AI 楼；拿不到就走下面的 chat 全局兜底。 */
+    var aiIdx = latestAiIndex();
     for (var i = 0; i < cands.length && !merged; i++) {
       try {
         var w = cands[i];
         var m = w && w.Mvu;
         if (m && typeof m.getMvuData === 'function') {
-          var d = m.getMvuData({ type: 'message', message_id: 'latest' });
+          var d = null;
+          if (aiIdx >= 0) {
+            try { d = m.getMvuData({ type: 'message', message_id: aiIdx }); } catch (eIdx) { d = null; }
+          }
           var b = d && (d.stat_data || d.sata_data);
           if (b && typeof b === 'object') merged = JSON.parse(JSON.stringify(b));
         }
@@ -657,19 +664,46 @@
     }
     return false;
   }
+  /* ★ v564（2026-11-08）：「最新楼层」在本脚本里曾经有两套语义，这就是作者说的「歧义」：
+       ① 最新一条 **AI** 楼 —— 变量块、嗅探、补算、写回，全都该只认它；
+       ② 聊天数组最后一条消息 / MVU 的 message_id:'latest' —— 玩家刚输入完、
+          AI 还没回时，它指向的是**玩家输入楼**。
+     ② 会把玩家楼当成要检查的目标：玩家楼当然没有 <UpdateVariable>，于是
+     「输入之后停住、没推进」就会报「变量块格式异常」，这是错的。
+     ⇒ 全脚本统一：楼层身份只走下面三个判定；所有 message_id:'latest'
+       一律改写成显式的 latestAiIndex()；末尾停在玩家楼时嗅探直接进入「待推进」，
+       不判、不弹、不亮红。 */
+  function isUserMessage(m) {
+    if (!m || typeof m !== 'object') return false;
+    return m.is_user === true || m.is_user === 'true' || m.is_user === 1 ||
+           m.role === 'user' || m.role === 'user_input';
+  }
+  function isSystemMessage(m) {
+    if (!m || typeof m !== 'object') return false;
+    return m.is_system === true || m.is_system === 'true' || m.is_system === 1 ||
+           m.role === 'system';
+  }
+  function isAiMessage(m) {
+    return !!m && typeof m === 'object' && !isUserMessage(m) && !isSystemMessage(m);
+  }
   function latestAiIndex() {
     var chat = chatArray();
     for (var i = chat.length - 1; i >= 0; i--) {
-      var m = chat[i];
-      if (m && !m.is_user && !m.is_system && m.role !== 'user') return i;
+      if (isAiMessage(chat[i])) return i;
     }
     return -1;
+  }
+  /* 末尾停在玩家输入（AI 还没回 / 玩家中断 / 生成还没起）→ 此刻不存在「新的一楼」。
+     注意：这不改变 latestAiIndex()，它仍指向上一条 AI 楼；只是这一轮不许拿任何楼判错。 */
+  function pendingUserTurn() {
+    var chat = chatArray();
+    if (!chat.length) return false;
+    return isUserMessage(chat[chat.length - 1]);
   }
   function latestUserIndexBefore(idx) {
     var chat = chatArray();
     for (var i = idx - 1; i >= 0 && i >= idx - 4; i--) {
-      var m = chat[i];
-      if (m && (m.is_user || m.role === 'user')) return i;
+      if (isUserMessage(chat[i])) return i;
     }
     return -1;
   }
@@ -1934,7 +1968,13 @@
     var ok = 0, errs = [];
     var targets = [{ type: 'chat' }];
     if (targetIdx != null && targetIdx >= 0) targets.push({ type: 'message', message_id: targetIdx });
-    targets.push({ type: 'message', message_id: 'latest' });
+    /* ★ v564：这里原来还压了一层 {type:'message', message_id:'latest'}。
+       玩家输入后停住时，'latest' 指向的是**用户楼** —— 补算结果会被写进一条
+       根本没有 stat_data 的玩家楼（部分版本直接抛错），而且和上面那层通常
+       是同一条 AI 楼、等于把变量写两遍。
+       ⇒ 只写最新 AI 楼，且与 targetIdx 去重。 */
+    var liveAiIdx = latestAiIndex();
+    if (liveAiIdx >= 0 && liveAiIdx !== targetIdx) targets.push({ type: 'message', message_id: liveAiIdx });
 
     var mvu = null;
     var cands = windows();
@@ -3206,6 +3246,17 @@
     /* 本会话还没观察过一轮完整生成（刚载页 / 刚切聊天）→ 不嗅，免得拿历史楼层误报 */
     if (!_sniffArmed) return true;
 
+    /* ★ v564（作者口径）：末尾停在**玩家输入楼**＝AI 还没回／玩家没推进，
+       此刻根本不存在「新的一楼」。旧写法会继续拿楼去判格式，玩家楼没有
+       <UpdateVariable>，于是「输入完停住」就弹「变量块格式异常」—— 错的。
+       ⇒ 不判、不弹、不亮红；顺手清掉待确认状态（否则新楼一落地就带着
+       上一轮的 pending 秒误报），长度闸归零让新楼重新走「定稿后才判」。 */
+    if (pendingUserTurn()) {
+      _pendingKey = ''; _pendingAt = 0;
+      _lastSniffIdx = -1; _lastLen = -1;
+      return true;
+    }
+
     var idx = latestAiIndex();
     if (idx < 0) { clearMissingFlag(); return true; }
     var chat = chatArray();
@@ -3257,6 +3308,13 @@
     if (!S.settings) loadSettings();
     if (!S.settings.sniffer) { clearMissingFlag(); return true; }
     _sniffArmed = true;      /* 玩家主动查过 → 顺手武装轮询（万一某个酒馆版本不发那批事件） */
+    /* ★ v564：末尾停在玩家输入楼 → 没有可判的「新 AI 楼」。
+       不报错、不亮红、不攒 pending；也不动已有红标（上一楼真坏了别掩盖）。 */
+    if (pendingUserTurn()) {
+      _pendingKey = ''; _pendingAt = 0;
+      _lastSniffIdx = -1; _lastLen = -1;
+      return true;
+    }
     var idx = latestAiIndex();
     if (idx < 0) { clearMissingFlag(); return true; }
     var chat = chatArray();
@@ -3636,8 +3694,14 @@
     on('xz-varc-deep', 'click', function () { pullInputs(); saveSettings(); runComplete('deep'); });
     /* ★ v510：`#xz-varc-ticker` 的绑定已删 —— 那颗按钮下架了（用户：「时讯相关的删了啊」）。 */
     on('xz-varc-sniff', 'click', function () {
+      /* ★ v564：玩家刚输入完、AI 还没回时别报「缺变量块」—— 给一条中性说明就收 */
+      if (pendingUserTurn()) {
+        toast('⏸ 当前停在玩家输入，等下一楼 AI 回复后再嗅探', 'info');
+        renderPanel();
+        return;
+      }
       var ok = sniff(true);
-      toast(ok ? '✓ 最新一楼变量块完整' : '⚠ 最新一楼缺变量块', ok ? 'success' : 'error');
+      toast(ok ? '✓ 最新 AI 楼变量块完整' : '⚠ 最新 AI 楼缺变量块', ok ? 'success' : 'error');
       renderPanel();
     });
     on('xz-varc-wbrefresh', 'click', function () {
@@ -3767,7 +3831,9 @@
             var ch = ctx && ctx.chat;
             if (ch && ch.length) {
               var m = (typeof msgId === 'number' && ch[msgId]) ? ch[msgId] : ch[ch.length - 1];
-              if (m && m.is_user) return;      /* 自己刚发出去的那条不算「收到回复」 */
+              /* ★ v564：统一走 isAiMessage —— 有些酒馆版本只有 role / 字符串 is_user，
+                 旧写法只认 m.is_user === true，玩家楼会被当成「收到回复」触发嗅探。 */
+              if (m && !isAiMessage(m)) return;   /* 自己刚发出去的那条不算「收到回复」 */
             }
           } catch (eMsg) {}
           fastSniff(true);
