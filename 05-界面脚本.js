@@ -10343,7 +10343,8 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         }
         return false;
     }
-    var HOTV = { latest: '', err: false, first: true, at: 0 };
+    /* ★ v564：note = 线上这一版的一句话更新说明（版本页显示），按通道从 version.json 取。 */
+    var HOTV = { latest: '', err: false, first: true, at: 0, note: '' };
     /* ★★★ v1.173：「这张卡到底跑的是哪一版」不能只看卡自带版本号 ★★★
        作者 2026-11-06：「热更新没用啊，总是点击了刷新，但是还是一样提示新版本」。
        ── 病根 ──────────────────────────────────────────────────────────────
@@ -10412,9 +10413,20 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         var attrs = (!HOTV.first && (HOTV.err || isNew))
             ? ' data-xz-act="hot-refresh" title="' + esc(_hint) + '" style="' + bd + '"'
             : ' title="' + esc(_hint) + '" style="' + bd + '"';
-        return '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-top:4px;">'
+        /* ★ v564（作者口径）：版本页常驻一行「这次更新改了啥」—— 一句话，极其简短。
+           内容由 _gh_push_card.mjs 推送时写进 version.json 的 note / devNote；
+           没取到就整行不渲染，绝不编一句假说明出来。 */
+        var _note = String(HOTV.note || '').replace(/\s+/g, ' ').trim().slice(0, 40);
+        var _noteHtml = _note
+            ? '<div style="margin-top:5px;font-size:10.5px;line-height:1.6;color:var(--xz-muted);text-align:center;word-break:break-word;">'
+              + (HOTV.latest ? '<b style="color:var(--xz-gold-bright);">' + esc(HOTV.latest) + '</b> · ' : '')
+              + esc(_note) + '</div>'
+            : '';
+        return '<div>'
+            + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-top:4px;">'
             + '<span style="flex:0 0 auto;font-size:10.5px;color:var(--xz-muted);letter-spacing:.04em;padding-top:9px;">卡版本</span>'
-            + '<span' + attrs + '>' + esc(txt) + '</span></div>';
+            + '<span' + attrs + '>' + esc(txt) + '</span></div>'
+            + _noteHtml + '</div>';
     }
     function xzHotCheck() {
         try {
@@ -10444,12 +10456,13 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             var xhr = new XMLHttpRequest();
             xhr.open('GET', HOTV_URL + '?t=' + Date.now(), true);
             xhr.timeout = 12000;
-            var done = function (ok, latest) {
-                var before = [HOTV.latest, HOTV.err, HOTV.first].join('|');
+            var done = function (ok, latest, note) {
+                /* ★ v564：note 也进签名 —— 说明换了要重绘版本页，别等版本号变才刷 */
+                var before = [HOTV.latest, HOTV.err, HOTV.first, HOTV.note].join('|');
                 HOTV.first = false;
                 HOTV.at = Date.now();   /* ★ v1.056：诊断用，页面上印"上次检查 hh:mm:ss" */
-                if (ok) { HOTV.err = false; HOTV.latest = latest; } else { HOTV.err = true; }
-                if ([HOTV.latest, HOTV.err, HOTV.first].join('|') !== before) {
+                if (ok) { HOTV.err = false; HOTV.latest = latest; HOTV.note = String(note || ''); } else { HOTV.err = true; }
+                if ([HOTV.latest, HOTV.err, HOTV.first, HOTV.note].join('|') !== before) {
                     try { render(true); } catch (e) {}
                 }
             };
@@ -10464,8 +10477,14 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 var st = (_isDev === 'dev')
                     ? ((j && j.dev) ? String(j.dev) : '')
                     : ((j && j.stable) ? String(j.stable) : '');
+                /* ★ v564：一句话更新说明按同一条通道挑 —— 开发卡读 devNote、玩家卡读 note。
+                   极简：只留一行、最多 40 字，远端写坏了也不会把版本页撑爆。 */
+                var _nt = (_isDev === 'dev')
+                    ? ((j && j.devNote) ? String(j.devNote) : ((j && j.note) ? String(j.note) : ''))
+                    : ((j && j.note) ? String(j.note) : '');
+                _nt = String(_nt || '').replace(/\s+/g, ' ').trim().slice(0, 40);
                 if (xhr.status !== 200 || !/^v[\d.]+$/.test(st)) done(false);
-                else done(true, st);
+                else done(true, st, _nt);
             };
             xhr.onerror = function () { done(false); };
             xhr.ontimeout = function () { done(false); };
