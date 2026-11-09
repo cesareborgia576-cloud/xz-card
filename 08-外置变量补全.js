@@ -665,18 +665,18 @@
   function hasCompletePatch(text) {
     if (!text) return false;
     /* ★ v308：只在思维链**之外**找块；且把每一个 <JSONPatch> 都试一遍 ——
-       旧写法只取第一个，思维链里一段草稿就能把整楼判成「未闭合」。 */
+       旧写法只取第一个，思维链里一段草稿就能把整楼判成「未闭合」。
+       ★ v571：抽正文改走 `pickPatchText`，与 `parsePatch` **同一份口径**。
+       以前这里是「遍历所有块」，而 parsePatch 只取第一个 ⇒ 首个块空/坏时
+       「格式检查说没事、只补格式说没写」，作者点名的那个 bug 就是它。
+       ⚠ 这两个函数必须永远同口径，改一个就改另一个。 */
     var s = withoutReasoning(text);
-    var re = /<\s*(?:JSONPatch|json_?patch)\b[^>]*>([\s\S]*?)<\s*\/\s*(?:JSONPatch|json_?patch)\s*>/ig;
-    var bodies = [], m;
-    while ((m = re.exec(s)) !== null) bodies.push(m[1]);
-    for (var i = bodies.length - 1; i >= 0; i--) {
-      try {
-        var arr = JSON.parse(String(bodies[i]).replace(/```(?:json)?/gi, '').replace(/```/g, '').trim());
-        if (Array.isArray(arr)) return true;
-      } catch (e) { /* 这一段不像话，看下一段 */ }
-    }
-    return false;
+    var body = pickPatchText(s);
+    if (!body) return false;
+    try {
+      var arr = JSON.parse(body);
+      return Array.isArray(arr) || !!(arr && typeof arr === 'object');
+    } catch (e) { return false; }
   }
   /* ★ v564（2026-11-08）：「最新楼层」在本脚本里曾经有两套语义，这就是作者说的「歧义」：
        ① 最新一条 **AI** 楼 —— 变量块、嗅探、补算、写回，全都该只认它；
@@ -813,7 +813,7 @@
     sys.push('任务了结（交差或判定失败）必须把 /任务/进行中/{任务名} 整条 remove，并在 /任务/已完成 追加「任务名（阶·来源）」；不许 replace 成空对象留在表里。进行中满 10 条时不许硬接第 11 条（超出会静默丢最早那条）。');
     /* ★ 功勋的记账口径：它不是独立变量，而是背包里的一条材料，按出处命名 */
     sys.push('功勋写进 /背包，**不写 /任务/功勋（这个字段不存在，故意的）**：给谁的活就记成「谁家的功勋」，如「太一门功勋」「轩辕氏功勋」「玄冰卫城功勋」；类型=材料、品质=无、描述写清是哪一处给的活（如「太一门功德堂账」），数量累加。太一门的功勋在轩辕氏那里不认，反之亦然 —— 别把不同出处的功勋合并成一条。');
-    sys.push('功勋只在「交差结付」时增加、「兑换／打点关系」时减少；打怪、采药、赶路不直接给功勋（那是玄石与材料的事）。');
+    sys.push('功勋只在「交差结付」时增加、「兑换／打点关系」时减少；打怪、采药、赶路不直接给功勋（那是灵石与材料的事）。');
     /* ★ v296（用户 2026-10-21）：「大位置只能写州+地区，如中州·xxx·城市/势力，小位置写具体的
        如这个城市的哪个地方。不然以后地图怎么显示你在哪」。
        域号是封闭表（见世界书《地点-三州地理总纲》），现编就对不上舆图坐标 —— 这条必须在提示词里钉死。 */
@@ -1845,23 +1845,139 @@
      ⚠ 必须写在 XZ_PATH_MODEL 之后。 */
   var TOP_OK = Object.keys(XZ_PATH_MODEL).concat(TOP_EXTRA);
 
+  /* ══════════════════ 抽补丁正文（v571，parsePatch 与 hasCompletePatch 共用） ══════════════════
+     ★★★ 为什么必须抽成一份：**同一个问题只许一套口径** ★★★
+     作者 2026-11-09 报的 D：「删了标签后，哪怕按只补格式，它提示什么 ai 没写更新内容，
+       不让补全格式，实际上是写了的，这是严重bug」
+
+     ── 真因：两条口径并存，互相打脸 ────────────────────────────────────────
+     · `hasCompletePatch`（格式检查用）**遍历所有** `<JSONPatch>` 块，逐个 try 解析；
+     · `parsePatch`（只补格式用）**只取第一个**块 ⇒ 首个块空/坏，后面那块明明写着，
+       玩家却被回一句「这一楼没有 AI 写好的更新内容，没格式可补」。
+     实测到的三种形状（探针 `工具/_v571_format_only_probe.mjs` 钉着）：
+       · 首个块空、第二个有内容 → hasCompletePatch=true，parsePatch 拿到 ops=0 → 误报
+       · 首个块 JSON 坏、第二个好 → hasCompletePatch=true，parsePatch 直接抛错 → 误报
+       · 补丁写成单个对象漏了方括号 `{...}` → 两边都判「没写」
+
+     ── 口径（与 hasCompletePatch 完全一致，改一处必须改另一处）──────────────
+     把所有 `<JSONPatch>` 块**全收集**，从后往前（最后一块最可能是定稿）逐个试解析，
+     第一段能解析成数组/对象的就是正文。**一个块都没有**才走两档宽松兜底：
+       ① 全文最像数组的那一段 `[...]`（可跨行，贪婪到最后一个 `]`）；
+       ② 全文只剩一个裸对象 `{...}` —— 模型常把单条补丁写成对象。
+     ⚠ 宽松兜底是**兜底**，不是正路：`aforth` 只在"作者已经把标签删了/写坏了"时才有意义。
+     ⚠ 兜底也不许乱抓：必须含 `"op"` 或 `"path"` 才算补丁，免得把正文里随便一个
+       JSON 片段（比如战利品清单）当成变量块写进去。 */
+  function pickPatchText(txt) {
+    var s = String(txt == null ? '' : txt);
+    var re = /<\s*(?:JSONPatch|json_?patch)\b[^>]*>([\s\S]*?)<\s*\/\s*(?:JSONPatch|json_?patch)\s*>/ig;
+    var bodies = [], m;
+    while ((m = re.exec(s)) !== null) {
+      var b = String(m[1] || '').replace(/```(?:json)?/gi, '').replace(/```/g, '').trim();
+      if (b) bodies.push(b);
+    }
+    /* 从后往前挑：模型若写了草稿块 + 定稿块，定稿总在后面 */
+    for (var i = bodies.length - 1; i >= 0; i--) {
+      var t = bodies[i];
+      if (!/"op"|"path"/.test(t)) continue;      /* 空数组 `[]` 也算「写了」，但没内容 */
+      return t;
+    }
+    if (bodies.length) {
+      /* 全是空块 / 空数组 —— 原样交给调用方：由它报「一条补丁都没有」 */
+      return bodies[bodies.length - 1];
+    }
+    /* ① 完全没标签：全文找最像数组的一段。贪婪到最后一个 `]`，
+       因为模型常把数组写成多行、中间夹着别的括号。 */
+    var lo = s.match(/\[\s*\{[\s\S]*\}\s*\]/);
+    if (lo && /"op"|"path"/.test(lo[0])) return lo[0].trim();
+    if (/\[\s*\]/.test(s)) return '[]';
+    /* ② 只剩一个裸对象（单条补丁漏了方括号）—— 用括号配对取最外层那一段 */
+    var ob = braceSlice(s);
+    if (ob && /"op"|"path"/.test(ob)) return '[' + ob + ']';
+    return '';
+  }
+  /* 取字符串里第一段**括号配对完整**的 `{...}`。配对时跳过字符串内部的括号，
+     否则 value 里的 `{` `}` 会把配对带偏（例如 `"value":"符{咒}"`）。 */
+  function braceSlice(s) {
+    var src = String(s || '');
+    var start = src.indexOf('{');
+    if (start < 0) return '';
+    var depth = 0, inStr = false, esc = false;
+    for (var i = start; i < src.length; i++) {
+      var ch = src.charAt(i);
+      if (inStr) {
+        if (esc) { esc = false; continue; }
+        if (ch === '\\') { esc = true; continue; }
+        if (ch === '"') inStr = false;
+        continue;
+      }
+      if (ch === '"') { inStr = true; continue; }
+      if (ch === '{') depth++;
+      else if (ch === '}') {
+        depth--;
+        if (depth === 0) return src.slice(start, i + 1);
+      }
+    }
+    return '';                       /* 没配对上（半截）→ 当没写 */
+  }
+
   function parsePatch(raw) {
     /* ★ v308：思维链里的草稿块不许当正文用 —— 否则取到的 Analysis/JSONPatch 是 think 里那份 */
     var txt = withoutReasoning(String(raw == null ? '' : raw)).replace(/```(?:json|xml|html)?/gi, '').replace(/```/g, '');
-    var pm = txt.match(/<\s*(?:JSONPatch|json_?patch)\b[^>]*>([\s\S]*?)<\s*\/\s*(?:JSONPatch|json_?patch)\s*>/i);
-    var patchRaw = pm ? pm[1].trim() : '';
-    if (!patchRaw) {
-      var loose = txt.match(/\[\s*\{[\s\S]*\}\s*\]/);
-      if (loose) patchRaw = loose[0];
-      else if (/\[\s*\]/.test(txt)) patchRaw = '[]';
-    }
+    /* ★ v571：抽正文的口径收到 `pickPatchText` 一处，见它上面的说明 */
+    var patchRaw = pickPatchText(txt);
     var arr = [];
     if (patchRaw) {
-      try { arr = JSON.parse(patchRaw); } catch (e) { throw new Error('JSONPatch 解析失败：' + e.message); }
-      if (!Array.isArray(arr)) arr = [];
+      try { arr = JSON.parse(patchRaw); } catch (e) {
+        throw new Error('JSONPatch 解析失败：' + e.message + '（原文 ' + patchRaw.length + ' 字：'
+          + patchRaw.slice(0, 60).replace(/\s+/g, ' ') + '…）');
+      }
+      if (!Array.isArray(arr)) arr = (arr && typeof arr === 'object') ? [arr] : [];
     }
     var am = txt.match(/<\s*Analysis\b[^>]*>([\s\S]*?)<\s*\/\s*Analysis\s*>/i);
-    return { analysis: am ? am[1].trim() : '', ops: arr };
+    return { analysis: am ? am[1].trim() : '', ops: arr, patchRaw: patchRaw };
+  }
+
+  /* ★ v571：报错时的「实测证据」。只陈述**扫到了什么**，不下结论。
+     ⚠ 这个函数存在的唯一理由：以前那句「这一楼没有 AI 写好的更新内容」
+       是在没有任何证据的情况下断言的 —— 而实际写了，只是形状不对。
+       凡是要对玩家说「你没写」，先拿得出下面这几项实测数字。 */
+  function describePatchEvidence(raw) {
+    try {
+      var full = String(raw == null ? '' : raw);
+      var body = withoutReasoning(full);
+      var heads = (body.match(/<\s*(?:JSONPatch|json_?patch)\b[^>]*>/ig) || []).length;
+      var tails = (body.match(/<\s*\/\s*(?:JSONPatch|json_?patch)\s*>/ig) || []).length;
+      var uHead = (body.match(/<\s*UpdateVariable\b[^>]*>/ig) || []).length;
+      var uTail = (body.match(/<\s*\/\s*UpdateVariable\s*>/ig) || []).length;
+      var picked = pickPatchText(body);
+      var bits = [];
+      if (!full.trim()) return '（这一楼是空的）';
+      bits.push('正文 ' + full.length + ' 字');
+      bits.push('UpdateVariable 开/闭 ' + uHead + '/' + uTail);
+      bits.push('JSONPatch 开/闭 ' + heads + '/' + tails);
+      /* ★ 顺序要紧：先判「抽到的是空数组」，再判「抽到了但解析为空」。
+         反过来的话 `[]` 会掉进「抽到 2 字但解析出来是空的」那句，玩家看不出是
+         「真的写了 0 条」还是「形状坏了」。 */
+      if (/^\[\s*\]$/.test(String(picked || '').trim()) || (!picked && /\[\s*\]/.test(body))) {
+        bits.push('<JSONPatch> 里是空数组（一条补丁都没有，等于没写内容）');
+      } else if (picked) {
+        bits.push('抽到补丁正文 ' + picked.length + ' 字但解析出来是空的：'
+          + picked.slice(0, 60).replace(/\s+/g, ' ') + '…');
+      } else {
+        var ob = braceSlice(body);
+        if (ob) bits.push('有个像补丁的对象但括号没配对（多半是半截）：'
+          + ob.slice(0, 60).replace(/\s+/g, ' ') + '…');
+        else if (/["“]op["”]\s*:/.test(body) || /["“]path["”]\s*:/.test(body)) {
+          /* 有 op/path 但既不成数组也不成配对对象 ⇒ 多半是中文引号 / 尾逗号 / 半截 */
+          var near = body.search(/["“](?:op|path)["”]\s*:/);
+          bits.push('正文里出现了 op/path 字样但取不出成对括号，附近：'
+            + body.slice(Math.max(0, near - 20), near + 60).replace(/\s+/g, ' ') + '…');
+        } else {
+          bits.push('正文里既没有补丁数组也没有补丁对象');
+        }
+      }
+      return '（实测：' + bits.join('；') + '）';
+    } catch (eEV) { return ''; }
   }
 
   /* 不合法的一律剔掉：顶层不在结构里、地点类、路径结构走不通 */
@@ -2190,6 +2306,104 @@
     }
     return best;
   }
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     ★★★ v572：**「吞正文」的根治点** ★★★
+     玩家实测（2026-11-09）：「还是会吞正文，补全之后，这是严重的问题」
+
+     ── 旧写法有三条路会吃穿正文（探针 `工具/_v572_swallow_probe.mjs` 逐条钉着）──
+     ① **裸 `<JSONPatch>` 无闭合**：`else` 分支写的是 `endAt = s.length` ——
+        直接吃到楼尾，后面整段正文与 `<状态栏>` 全没。v566 只修了「有 `<UpdateVariable>`
+        开标签」那条路，**这条没修**，而它恰恰是模型最常犯的（忘了包外层）。
+     ② **`tail` 取的是全文最后一个 `</JSONPatch>`**，不是「这个块之后的第一个」。
+        正文里只要出现过一次该字样（或者有两个块），就会跨过整段正文去吃到那里。
+     ③ **`close` 会跨块**：模型写了「首个块未闭合 + 第二个块完整」时，
+        `findCloseTagFrom` 找到的是**第二个块**的闭合 ⇒ 中间正文全被当块内容。
+
+     ── 现在的判据（只认结构，绝不吃正文）────────────────────────────────
+     `blockEndGuess` 从块的正文起点开始，**逐段吃掉「变量块结构」**：
+       闭合标签 → 开标签 `<JSONPatch>` + 括号配对的 JSON → 成对的 `<Analysis>` →
+       中间只允许空白。**任何一步对不上就立刻停**。
+     ⇒ 少吃的后果：残留一点块碎片在正文里（难看，但不丢字）；
+       多吃的后果：玩家正文没了。
+       按本项目铁律，**宁可块难看，绝不许吞字**。
+     ══════════════════════════════════════════════════════════════════════════ */
+
+  /* 从 from 开始找「第一个开标签」的位置（用来检测跨块） */
+  function findNextOpenFrom(s, from, tag) {
+    var re = new RegExp('<\\s*' + tag + '\\b[^>]*>', 'ig');
+    re.lastIndex = from;
+    var m = re.exec(String(s || ''));
+    return m ? m.index : -1;
+  }
+
+  /* 从 from 起找第一段「括号配对完整」的 JSON（`[...]` 或 `{...}`），返回结束位置。
+     配对时跳过字符串内部的括号，否则 value 里的 `{` `}` 会把配对带偏。
+     ⚠ 遇到 `<` 就放弃：说明这块压根没写 JSON，别把后面的正文当 JSON 吞。 */
+  function bracketEndFrom(s, from) {
+    var src = String(s || '');
+    var i = Number(from) || 0;
+    while (i < src.length && src.charAt(i) !== '[' && src.charAt(i) !== '{') {
+      if (src.charAt(i) === '<') return -1;
+      i++;
+    }
+    if (i >= src.length) return -1;
+    var depth = 0, inStr = false, esc = false;
+    for (; i < src.length; i++) {
+      var ch = src.charAt(i);
+      if (inStr) {
+        if (esc) { esc = false; continue; }
+        if (ch === '\\') { esc = true; continue; }
+        if (ch === '"') inStr = false;
+        continue;
+      }
+      if (ch === '"') { inStr = true; continue; }
+      if (ch === '[' || ch === '{') { depth++; continue; }
+      if (ch === ']' || ch === '}') {
+        depth--;
+        if (depth <= 0) return i + 1;
+      }
+    }
+    return -1;                       /* 半截（模型被截断）⇒ 交给上层兜底 */
+  }
+
+  /* ★ v572：块的「结构尾」—— 只吃块结构，碰到正文立刻停。
+     返回 -1 表示一个结构都没吃到（调用方自己兜底）。 */
+  function blockEndGuess(s, from) {
+    var src = String(s || '');
+    var i = Number(from) || 0;
+    var hit = 0;
+    for (var guard = 0; guard < 60; guard++) {
+      var j = i;
+      while (j < src.length && /\s/.test(src.charAt(j))) j++;
+      var rest = src.slice(j);
+      var m;
+      /* ① 闭合标签（三种都算块结构） */
+      m = /^<\s*\/\s*(?:UpdateVariable|JSONPatch|json_?patch|Analysis)\s*>/i.exec(rest);
+      if (m) { i = j + m[0].length; hit++; continue; }
+      /* ② <JSONPatch> 开标签 + 紧跟的 JSON */
+      m = /^<\s*(?:JSONPatch|json_?patch)\b[^>]*>/i.exec(rest);
+      if (m) {
+        i = j + m[0].length; hit++;
+        var be = bracketEndFrom(src, i);
+        if (be > 0) { i = be; hit++; }
+        continue;
+      }
+      /* ③ <Analysis> 开标签 → 吃到它的闭合；**找不到闭合就停在这儿**，
+            绝不能一路吃到楼尾（那正是玩家正文被吞的形状）。 */
+      m = /^<\s*Analysis\b[^>]*>/i.exec(rest);
+      if (m) {
+        i = j + m[0].length; hit++;
+        var ac = findCloseTagFrom(src, i, 'Analysis');
+        if (ac > 0) { i = ac; hit++; }
+        continue;
+      }
+      /* ④ 都不是 ⇒ 正文开始了，停 */
+      break;
+    }
+    return hit ? i : -1;
+  }
+
   function spliceVarBlock(raw, block) {
     var mk = maskReasoning(raw);
     var s = mk.text;
@@ -2197,24 +2411,23 @@
     var open = /<\s*UpdateVariable\b[^>]*>/i.exec(s);
     if (open) {
       at = open.index;
-      var close = findCloseTagFrom(s, open.index + open[0].length, 'UpdateVariable');
+      var bodyFrom = open.index + open[0].length;
+      var close = findCloseTagFrom(s, bodyFrom, 'UpdateVariable');
+      /* ★ v572 真因③：跨块检测 —— close 之前若又冒出 <UpdateVariable> 开标签，
+         说明第一个块没闭合，这个 close 属于第二个块 ⇒ 当「未闭合」处理。 */
+      var nOpen = findNextOpenFrom(s, bodyFrom, 'UpdateVariable');
+      if (close > 0 && nOpen >= 0 && nOpen < close) close = -1;
       if (close > 0) endAt = close;
       else {
-        /* 只开没收（模型被截断）：吃到最后一个 </JSONPatch> 或 </Analysis> 为止，
-           再不行就吃到结尾 —— 但**仅限思维链之外**，think 已被遮住。 */
-        var t1 = lastCloseTagEnd(s, 'JSONPatch');
-        var t2 = lastCloseTagEnd(s, 'Analysis');
-        var tail = Math.max(t1, t2);
-        /* ★★★ v566：**绝不能无条件吃到结尾** ★★★
-           玩家实测：自动补全跑过一次，正文里的 <状态栏> / <StatusPlaceHolderImpl/>
-           等标签整块没了。根因就是这里 —— 块没闭合时 endAt = s.length，
-           把后面的所有正文标签一并吃掉。
-           ⇒ 先找「下一个非变量块标签」的起点，截在那里；只有后面真的什么都没有，
-             才允许吃到结尾。 */
-        var bound = findNextBlockBoundary(s, open.index + open[0].length);
-        if (tail > at) endAt = tail;
-        else if (bound > 0) endAt = bound;
-        else endAt = s.length;
+        /* 只开没收（模型被截断）。★ v572：改成「只吃结构」的猜测，不再无条件吃到结尾。 */
+        var guess = blockEndGuess(s, bodyFrom);
+        if (guess > at) endAt = guess;
+        else {
+          /* 一个结构都没吃到（比如只有 `<UpdateVariable>` 孤零零一个开标签）：
+             截在下一个正文标签之前；实在没有就吃到楼尾 —— 此时块内确实没有内容。 */
+          var bound = findNextBlockBoundary(s, bodyFrom);
+          endAt = (bound > 0) ? bound : s.length;
+        }
       }
     } else {
       /* 没有 <UpdateVariable>，但有裸 <JSONPatch>/<Analysis>：当旧块从那儿开始 */
@@ -2225,8 +2438,20 @@
       if (an) cands.push(an.index);
       if (cands.length) {
         at = Math.min.apply(null, cands);
-        var tail2 = Math.max(lastCloseTagEnd(s, 'JSONPatch'), lastCloseTagEnd(s, 'Analysis'));
-        endAt = tail2 > at ? tail2 : s.length;
+        /* ★★★ v572 真因①②：这里旧写法是 `endAt = tail2 > at ? tail2 : s.length`。
+           裸 `<JSONPatch>` 没有闭合时 tail2 = -1 ⇒ `endAt = s.length` ⇒
+           **后面整段正文和 <状态栏> 全被吃掉**。这就是玩家这次报的那条。 */
+        var guess2 = blockEndGuess(s, at);
+        if (guess2 > at) endAt = guess2;
+        else {
+          var bound2 = findNextBlockBoundary(s, at);
+          /* tail2 只在「没越过正文标签」时才可信（真因②） */
+          var tail2 = Math.max(lastCloseTagEnd(s, 'JSONPatch'), lastCloseTagEnd(s, 'Analysis'));
+          if (bound2 > 0 && tail2 > bound2) tail2 = -1;
+          if (tail2 > at) endAt = tail2;
+          else if (bound2 > 0) endAt = bound2;
+          else endAt = s.length;
+        }
       }
     }
     if (at >= 0 && endAt > at) {
@@ -2257,21 +2482,62 @@
   }
 
   /* ★ v566 第二道保险：正文里的其他标签一个都不许少。
-     截断逻辑再小心，也可能有没预料到的写法；这里按**开标签出现次数**比一遍，
-     少了就退回「原文 + 追加块」—— 宁可块位置难看，也不许把状态栏吃掉。 */
+     ★★★ v572：从「5 个标签的白名单」改成「原文里出现的**所有**标签」★★★
+     白名单永远漏：正文里还有 <选项>、<战斗开始>、DLC 自造标签……
+     漏一个就意味着那个标签被吞了也发现不了，而玩家正文里的标签是任意写的。
+     ⇒ 现扫原文，逐个比出现次数。
+     ⚠ 变量块自身的标签要排除 —— 它们本来就会被整块替换掉。 */
   function keepOtherTagsIntact(raw, next) {
-    var tags = ['状态栏', 'StatusPlaceHolderImpl', '人物面板', '战斗开始', '战斗结束'];
-    for (var i = 0; i < tags.length; i++) {
-      /* ★ v566：标签名后面必须跟 空白 / '/' / '>'。原来用 \b（单词边界）是错的：
-         中文标签 `<状态栏>` 里「栏」和「>」都不是 \w，两边同为非单词字符 ⇒ \b 不成立，
-         于是「状态栏 / 人物面板 / 战斗开始」这些**中文标签一个都匹配不到**，
-         这道保险等于只护住了英文的 StatusPlaceHolderImpl —— 玩家报的正是中文标签被吞。 */
-      var re = new RegExp('<\\s*' + tags[i] + '(?=[\\s/>])', 'gi');
-      var a = (String(raw).match(re) || []).length;
-      var b = (String(next).match(re) || []).length;
-      if (b < a) return false;
+    var SKIP = { updatevariable: 1, jsonpatch: 1, json_patch: 1, analysis: 1 };
+    function tagCounts(t) {
+      var out = {}, m;
+      /* 标签名可含中文（<状态栏>）—— 不能用 \w，中文不在 \w 里；
+         也不能用 \b（见 v566 那条注释）。这里只取「标签名」这一段字符。
+         ⚠ 不能要求后面紧跟 [\s/>]：`<StatusPlaceHolderImpl/>` 是自闭合，
+           中间还有个 `/`，卡死了就漏掉它。 */
+      var re = /<\s*\/?\s*([A-Za-z\u4e00-\u9fa5][\w\u4e00-\u9fa5.\-]*)/g;
+      while ((m = re.exec(String(t || ''))) !== null) {
+        var nm = m[1].toLowerCase();
+        if (SKIP[nm]) continue;
+        out[nm] = (out[nm] || 0) + 1;
+      }
+      return out;
+    }
+    var a = tagCounts(raw), b = tagCounts(next), k;
+    for (k in a) {
+      if (!(b[k] >= a[k])) return false;
     }
     return true;
+  }
+
+  /* ★★★ v572 第三道保险：**块以外的正文一个字都不许少** ★★★
+     前两道都护不住「纯文字正文」：玩家正文里没有标签时，块边界一算错就整段吃掉，
+     两道保险全发现不了（探针用例②就是这个形状：`<状态栏>` 被吞只是**附带**，
+     真正没的是它前面那一整段叙述）。
+     做法：把原文里「不在变量块内」的正文行挑出来，逐行要求原样出现在结果里。
+     怎么判「不在块内」：只剥**成对且闭合**的块 —— 未闭合的块剥不掉，它的内容
+     会被当成正文行，于是校验失败 ⇒ 退回「原文 + 追加块」。
+     ⚠ 退回追加是**安全**的（块位置难看一点，一个字都不丢）。
+       本项目铁律：宁可块好看不了，也不许吞玩家正文。 */
+  function keepProseIntact(raw, next) {
+    try {
+      var s = maskReasoning(String(raw || '')).text;
+      s = s.replace(/<\s*Analysis\b[^>]*>[\s\S]*?<\s*\/\s*Analysis\s*>/gi, '\n');
+      s = s.replace(/<\s*(?:JSONPatch|json_?patch)\b[^>]*>[\s\S]*?<\s*\/\s*(?:JSONPatch|json_?patch)\s*>/gi, '\n');
+      s = s.replace(/<\s*\/?\s*UpdateVariable\b[^>]*>/gi, '\n');
+      var lines = s.split(/\r?\n/);
+      var nxt = String(next || '');
+      for (var i = 0; i < lines.length; i++) {
+        var L = lines[i].replace(/^\s+|\s+$/g, '');
+        /* 只挑「像正文的行」：够长、且不含标签/JSON 字符。
+           含 < > 的行可能是残留标签，含 { } " [ ] 的行可能是 JSON —— 这些不判，
+           免得把「块没剥干净」误判成「吞正文」（误报会让人去改对的地方）。 */
+        if (L.length < 6) continue;
+        if (/[<>{}"\[\]]/.test(L)) continue;
+        if (nxt.indexOf(L) < 0) return false;
+      }
+      return true;
+    } catch (eKP) { return true; }
   }
 
   /* 把补好的块塞回那一楼：正文一个字都不动，只换掉/追加变量块 */
@@ -2281,9 +2547,20 @@
     if (!m) return Promise.reject(new Error('目标楼层不存在'));
     var raw = msgText(m);
     var next = spliceVarBlock(raw, block).text;
-    if (!keepReasoningIntact(raw, next) || !keepOtherTagsIntact(raw, next)) {
+    /* ★ v572：四道保险，任何一道不过就退回「原文 + 追加块」（原文一个字节都不动）：
+         ① 思维链一字不许少  ② 标签一个不许少
+         ③ 正文行一句不许少  ④ 总长不许明显变短（防前三道都漏掉的怪形状） */
+    var _v572bad = '';
+    if (!keepReasoningIntact(raw, next)) _v572bad = '思维链';
+    else if (!keepOtherTagsIntact(raw, next)) _v572bad = '正文标签';
+    else if (!keepProseIntact(raw, next)) _v572bad = '正文';
+    else if (next.length + 40 < raw.length) _v572bad = '总长骤降';
+    if (_v572bad) {
       /* 兜底：块追加到末尾，原文一个字节不动 */
       next = raw + (raw.trim() ? '\n\n' : '') + block;
+      try {
+        console.warn('[天元录] 补全写回时检测到「' + _v572bad + '」会被吃掉，已退回追加，原文未动。');
+      } catch (eWarn) {}
     }
 
     /* 走 swipe 的就改当前 swipe，别把别的 swipe 一起冲掉 */
@@ -2356,7 +2633,14 @@
     return Promise.resolve().then(function () {
       var parsed = parsePatch(raw);
       if (!parsed.ops || !parsed.ops.length) {
-        throw new Error('这一楼没有 AI 写好的更新内容，没格式可补；要用「按正文重写」重新生成一套。');
+        /* ★★★ v571：**不许在没证据的时候断言「AI 没写」** ★★★
+           作者原话：「它提示什么ai没写更新内容，不让补全格式，实际上是写了的，这是严重bug」
+           ⇒ 报错必须带上「实测扫到了什么」，让玩家/作者一眼看出是哪种情况：
+             · 抽到了补丁正文但它是空数组 → 真的没写内容；
+             · 压根没抽到补丁正文 → 说清扫到了几个标签、正文里有没有 `[`/`{`。 */
+        var evidence = describePatchEvidence(raw);
+        throw new Error('只补格式：这一楼没扫到可用的补丁内容。' + evidence
+          + '　要重新生成一套请点「按正文重写」。');
       }
       var clean = sanitizeOps(parsed.ops);
       if (!clean.keep.length) {
@@ -3647,7 +3931,74 @@
     _armTimer = setTimeout(function () { _armTimer = null; _sniffArmed = true; }, delay == null ? 4000 : delay);
   }
   var _sniffedKey = '';          /* 已经提示过的楼层 —— 同一楼只弹一次 */
-  var _autoRepairedKey = '';     /* ★ v566：已经自动补过的楼层 —— 每楼只补一次，不无限重试 */
+  /* ★ v572：`_autoRepairedKey` **已删**。它原来是「这楼补过了」的一刀切标记，
+     只写不读（判重已改由 `_autoTries` 计次）。留着一个没有读者的变量，
+     下一个人会以为它还在起作用 —— 本项目最贵的一类 bug 就是「有写无读」。
+     ⇒ 现在「这楼补过几次、成没成、为什么没成」全在 `_autoTries` / `AUTO_STAT` 里。 */
+  /* ══════════════════════════════════════════════════════════════════════════
+     ★★★ v572：自动补全的**尝试账本** + 面板红框 ★★★
+     作者原话（2026-11-09）：「加一个自动补全的检测，我看看到底是自动了，但是破不了限，
+       所以断了。还是真的又没自动补全。也就是在自动补全的按钮旁边写一个红色的小框，
+       里面写:失败-已尝试:x轮，比如2轮。」
+
+     ── 为什么必须记这个：现在「没补上」有三种可能，玩家看到的现象完全一样 ──
+       ① 嗅探压根没报异常 ⇒ 自动补全**根本没被触发**（tries=0）
+       ② 触发了，但 runComplete 失败（接口 4xx/超时/返回里没有变量块/写不进 MVU）
+       ③ 触发了也"成功"了，但补出来的块本身还是坏的 ⇒ 下一轮嗅探继续报，
+          可 `_autoRepairedKey` 已经把这楼记过了 ⇒ **再也不补**（就是作者说的"断了"）
+     红框同时报 `已尝试 N 轮` 与最后一次失败原因，三种情况一眼能分开。
+
+     ── 三条硬规矩 ────────────────────────────────────────────────────────────
+       · 计数按**楼层**记（`_autoTries[key]`），不是全局累加 —— 全局累加会让人
+         误以为「补了 8 轮」，实际是 4 楼各 2 轮。
+       · **绝不在「内容变化」时清零**。v571 那条注释还在这儿：自动补全会把补齐块
+         写回消息，长度因此变化 ⇒ 若跟着清零，下一轮又判"新内容"→ 再补 →
+         无限自动补全、烧接口。所以只认 `AUTO_REPAIR_MAX` 这个硬上限。
+       · 达到上限仍是坏的就 `stopped='达上限'`，红框继续亮着并写明原因 ——
+         **不许静默放弃**（这正是作者这次报的那个"断了"）。
+     ══════════════════════════════════════════════════════════════════════════ */
+  var AUTO_REPAIR_MAX = 2;       /* 同一楼最多自动补几次（每次都要花 token，别设大） */
+  var _autoTries = {};           /* { 'p3': 2 } —— 每楼已尝试次数 */
+  var AUTO_STAT = { key: '', tries: 0, fails: 0, lastErr: '', at: 0, stopped: '' };
+
+  function resetAutoStat() {
+    _autoTries = {};
+    AUTO_STAT = { key: '', tries: 0, fails: 0, lastErr: '', at: 0, stopped: '' };
+  }
+  /* 记一次尝试（在**发请求之前**调，这样"卡住/超时"也算得上一轮） */
+  function autoTryBegin(key) {
+    if (!_autoTries[key]) _autoTries[key] = 0;
+    _autoTries[key]++;
+    if (AUTO_STAT.key !== key) {
+      AUTO_STAT = { key: key, tries: 0, fails: 0, lastErr: '', at: 0, stopped: '' };
+    }
+    AUTO_STAT.tries = _autoTries[key];
+    AUTO_STAT.at = Date.now();
+    return AUTO_STAT.tries;
+  }
+  /* 记一次结果。ok=true 清掉红框；失败累加并写明原因；到上限且仍失败 ⇒ 标「达上限」 */
+  function autoTryEnd(key, res) {
+    if (AUTO_STAT.key !== key) return;
+    var ok = !!(res && res.ok);
+    var skipped = res && res.skipped;
+    AUTO_STAT.at = Date.now();
+    if (ok) {
+      /* ★ 成功必须把**失败计数**一起清掉 —— 只清 lastErr 的话红框还亮着
+         （判据是 `st.fails > 0`），玩家看到「补成功了但框还红着」，等于没修。 */
+      AUTO_STAT.lastErr = '';
+      AUTO_STAT.stopped = '';
+      AUTO_STAT.fails = 0;
+    } else if (skipped) {
+      /* 跳过不算失败：正在补/开关关/没找到楼层 —— 不能让它把红框染红 */
+      AUTO_STAT.lastErr = '跳过：' + String(skipped);
+    } else {
+      AUTO_STAT.fails++;
+      AUTO_STAT.lastErr = String((res && res.error) || '未知原因').slice(0, 160);
+      if (AUTO_STAT.tries >= AUTO_REPAIR_MAX) AUTO_STAT.stopped = '达上限';
+    }
+    try { notifyStatus(); } catch (eNS2) {}
+    if (S.panel) { try { renderPanel(); } catch (eRP2) {} }
+  }
   var _pendingKey = '';          /* 疑似异常的楼层（等下一轮复核，防误报） */
   var _pendingAt = 0;            /* 第一次发现异常的时刻 */
   var _lastLen = -1;             /* 上一次看到的最新一楼正文长度（还在变＝还在流，不查） */
@@ -3656,7 +4007,9 @@
   function resetSniffState() {
     _sniffedKey = ''; _pendingKey = ''; _pendingAt = 0;
     _sniffArmed = false; _pollAt = 0; _lastLen = -1; _lastSniffIdx = -1;
-    _autoRepairedKey = '';
+    /* ★ v572：换档/换楼要连**尝试账本**一起清 —— 不清的话新档的红框会带着
+       上一档的「已尝试 2 轮」进来，玩家以为这楼补过其实一次没补。 */
+    resetAutoStat();
     /* ★ v565：换档要把「延迟武装」的定时器一起撤掉，否则旧档排的 4 秒会把新档直接开闸 */
     if (_armTimer) { clearTimeout(_armTimer); _armTimer = null; }
     _pathCacheKey = ''; _pathCacheAt = 0; _pathCacheRes = [];
@@ -3755,10 +4108,38 @@
     if (idx !== _lastSniffIdx) {
       _lastSniffIdx = idx; _lastLen = -1; _pendingKey = ''; _pendingAt = 0;
     }
-    /* 长度闸：这一轮长度变了＝正文还在长，本轮不判，下一轮再看 */
+    /* ══════════════════════════════════════════════════════════════════════
+       ★★★ v571：长度闸只管「还在长」，**不管「变短」** ★★★
+       作者原话（2026-11-09）：「变量补全脚本的嗅探不是实时循环隔多少秒的，
+         这是严重的bug，我自己手动删了标签，它也不提醒」
+
+       ── 真因（两条叠在一起，所以以前怎么等都不报）────────────────────────
+       ① 旧判据是 `grew = (len !== _lastLen)` —— **只要长度变了就跳过**。
+          玩家手动删掉标签，长度**变短**，同样被当成「正文还在流」⇒ 这一轮不判。
+          下一轮长度稳定了，却撞上 ②。
+       ② `_sniffedKey` 只按楼层号去重（`'p' + idx`）。这一楼之前提示过一次，
+          之后无论内容怎么改都不再提示 ⇒ 玩家删标签删得再狠也一声不吭。
+
+       ── 判据改成什么样 ─────────────────────────────────────────────────
+       · 只有 **长度变长**（流式只会追加）或 `is_generating` 才算「还在流」；
+         变短 = 一定不是流式（生成不会让正文缩短），立刻判。
+       · 去重键带上**内容长度**：内容一变就作废上一次的「已提示过」记录，
+         删了再删也能重新报。
+       ══════════════════════════════════════════════════════════════════════ */
     var len = String(txt).length;
-    var grew = (len !== _lastLen);
+    var grew = (len > _lastLen);          /* ⚠ 只有「变长」算流式；变短必须立刻判 */
+    var contentChanged = (len !== _lastLen);
     _lastLen = len;
+    if (contentChanged) {
+      /* 内容变了 ⇒ 「这一楼已提示过」作废，删了再删也能重新报（见上面 ②）。
+         ⚠⚠ **自动补全的尝试账本绝不许在这里重置** ⚠⚠
+           自动补全会把补齐块**写回消息**，消息长度因此改变 ⇒ 若也跟着清零，
+           下一轮就判「新内容」→ 再补一次 → 又改长度 → 再补……**无限自动补全**。
+           ⇒ v572 起改用 `_autoTries[key]` 硬上限（AUTO_REPAIR_MAX），只增不清；
+             这里一个字节都不动它。 */
+      _sniffedKey = '';
+      _pendingKey = ''; _pendingAt = 0;
+    }
     if (isSnapshotStreaming() || grew) return true;
 
     var problems = checkVarFormat(txt);
@@ -3768,6 +4149,11 @@
 
     if (_sniffedKey === key) {                           /* 这一楼已经提示过 → 只复查红标该不该熄 */
       if (problems.length === 0) clearMissingFlag();
+      /* ★★★ v572：**早退分支也要给自动补全留下一次机会** ★★★
+         旧写法这里直接 return，于是「补过一次就算完」——
+         第一次补失败之后，这一楼再也不会被自动补，玩家看到的就是作者说的「断了」。
+         ⇒ 只要还没到上限就再试（`maybeAutoRepair` 自己判上限，这里只管调用）。 */
+      else maybeAutoRepair(key);
       return problems.length === 0;
     }
     if (problems.length === 0) {                         /* 格式正常 → 清掉待确认状态与红标 */
@@ -3785,19 +4171,90 @@
     S.lastMissing = true; S.missingList = problems.slice();
     try { notifyStatus(); } catch (eN) {}
     notifyIssue(problems);
-    /* ★★★ v566：自动补全不再要求 force ★★★
-       旧写法只有 GENERATION_* / MESSAGE_RECEIVED 的快速通道才带 force=true，
-       而 MESSAGE_RECEIVED 在「末尾是玩家楼」时会被挡掉 ⇒ 玩家实测
-       「自动补全只补几楼就没用了」。
-       ⇒ 每一楼只自动补一次（_autoRepairedKey 去重），失败也不无限重试。 */
-    if (S.settings.autoRepair && !S.running && _autoRepairedKey !== key) {
-      _autoRepairedKey = key;
+    /* ★★★ v572：自动补全的**唯一入口** ★★★
+       v566：不再要求 force（旧写法只有快速通道才补，玩家实测「只补几楼就没用了」）。
+       v572：从「每楼只补一次」改成「每楼最多 AUTO_REPAIR_MAX 次」，并且
+             **首次提示段**与**早退段**都调同一个函数 —— 否则「补过一次失败」之后
+             就再也不补，玩家看到的就是作者说的「断了」。
+       ⚠ 必须传 key（`'p' + idx`），不能在这里自己算：早退段与首次段手里都有 key。 */
+    maybeAutoRepair(key, idx);
+    return false;
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     ★★★ v572：自动补全的**唯一实现**（首次提示 + 早退复查，两处都走它）★★★
+     作者原话：「我看看到底是自动了，但是破不了限，所以断了。还是真的又没自动补全。」
+
+     ── 三种「没补上」必须能分开，否则这条诊断做了等于没做 ──────────────────
+       ① 压根没被触发（嗅探没报异常 / 开关关着）  ⇒ 账本 tries=0，面板「未触发」
+       ② 触发了、请求也发了，但 runComplete 失败   ⇒ fails++，红框「失败-已尝试:N轮」
+       ③ 触发了、"成功"了，但补出来的块还是坏的   ⇒ 见下面那条 `tried > 0` 的判据
+
+     ── 为什么 ③ 必须单独判 ──────────────────────────────────────────────────
+       runComplete 只报「补丁写进 MVU 了」，它不保证「写进去的东西本身合规」。
+       若不判 ③，会出现：绿框「已补」→ 下一轮嗅探照样报异常 → 再补 → 再绿 ……
+       **每 2 秒烧一次接口，玩家完全看不见**。
+       ⇒ 判据：这一楼已经补过（tried>0）却仍被判出 problems ⇒ 上一轮"成功"是假的，
+         记一次失败并写明原因。配合 `_autoTries` 只增不清，最多只烧满上限。
+
+     ── 上限到了也不许静默 ───────────────────────────────────────────────────
+       `tried >= AUTO_REPAIR_MAX` 时把 `stopped='达上限'` 补上（幂等），
+       面板红框会写「（达上限，不再自动重试）」，状态栏 title 也带这句 ——
+       作者要的正是「看得出它到底停在哪一步」。
+     ══════════════════════════════════════════════════════════════════════════ */
+  function maybeAutoRepair(key, idx) {
+    try {
+      if (!S.settings || !S.settings.autoRepair || S.running) return false;
+      var tried = _autoTries[key] || 0;
+      if (tried >= AUTO_REPAIR_MAX) {
+        /* 到上限：确保标记在位（可能是上一轮 ok 分支把它清掉的） */
+        if (AUTO_STAT.key === key && AUTO_STAT.fails > 0 && !AUTO_STAT.stopped) {
+          AUTO_STAT.stopped = '达上限';
+          try { notifyStatus(); } catch (eNS4) {}
+          if (S.panel) { try { renderPanel(); } catch (eRP4) {} }
+        }
+        return false;
+      }
+      /* ③ 补过却仍异常 ⇒ 上一轮"成功"是假的 */
+      if (tried > 0 && AUTO_STAT.key === key && AUTO_STAT.fails === 0) {
+        AUTO_STAT.fails = 1;
+        AUTO_STAT.lastErr = '上一轮补完，这一楼仍然不合规（补出来的内容没通过校验）';
+        try { notifyStatus(); } catch (eNS3) {}
+        if (S.panel) { try { renderPanel(); } catch (eRP3) {} }
+      }
       if (S.pendingTimer) clearTimeout(S.pendingTimer);
       /* ★ v567：自动补全仍走「按正文重写」那条路（'fast' 是内部名 = 不带 6 楼上下文，
-         不是面板上被合并掉的「快速」按钮）。面板只剩两颗：只补格式 / 按正文重写。 */
-      S.pendingTimer = setTimeout(function () { S.pendingTimer = null; runComplete('fast'); }, 800);
-    }
-    return false;
+         不是面板上被合并掉的「快速」按钮）。面板只剩两颗：只补格式 / 按正文重写。
+         ★ v572：**先记账再发请求** —— 超时/卡住这种情况也要算一轮，否则红框永远 0。 */
+      var _tryNo = autoTryBegin(key);
+      try {
+        S.pendingTimer = setTimeout(function () {
+          S.pendingTimer = null;
+          /* ⚠ 这里**同步**调 runComplete，只在它返回后接 Promise。
+             别包成 `Promise.resolve().then(function(){ runComplete() })` ——
+             那样 runComplete 会被推到微任务里，定时器回调返回时它还没开跑，
+             探针「定时器跑到 runComplete」那条会假红（v572 撞过）。 */
+          var _pr;
+          try {
+            _pr = runComplete('fast');
+          } catch (eRC) {
+            autoTryEnd(key, { ok: false, error: '补全调用抛错：' + ((eRC && eRC.message) || eRC) });
+            return;
+          }
+          if (_pr && typeof _pr.then === 'function') {
+            _pr.then(function (r) { autoTryEnd(key, r); })
+              .catch(function (e) { autoTryEnd(key, { ok: false, error: (e && e.message) || e }); });
+          } else {
+            autoTryEnd(key, _pr);
+          }
+        }, 800);
+      } catch (eAT) {
+        autoTryEnd(key, { ok: false, error: '定时器创建失败：' + ((eAT && eAT.message) || eAT) });
+      }
+      /* 开发者区留一行，便于对照红框 */
+      S.lastAutoNote = '自动补全第 ' + _tryNo + ' 轮（第 ' + idx + ' 楼）';
+      return true;
+    } catch (eMAR) { return false; }
   }
 
   /* 手动路径：「嗅探一次」按钮 / 桥接 xzSniff —— 立刻查、立刻回报，
@@ -3845,6 +4302,52 @@
       S.pendingTimer = setTimeout(function () { S.pendingTimer = null; runComplete('fast'); }, 800);
     }
     return !hasMissing;
+  }
+
+  /* ══════════════════ 十二·b 心跳（嗅探的定时循环本体）══════════════════
+     ★★★ v571：从 `setupEvents()` 里拆出来的独立函数 ★★★
+     作者原话：「变量补全脚本的嗅探不是实时循环隔多少秒的，这是严重的bug」
+
+     为什么拆：原来这行 setInterval 夹在 setupEvents 的中间，而 setupEvents 又夹在
+     init 的中间。init 里任何一句抛异常（酒馆版本缺函数 / 存储读失败），
+     后面**一行都不会执行**，setInterval 根本没被创建 —— 而界面上一切正常，
+     控制台也不会说「嗅探没起来」。玩家于是遇到「删了标签也不提醒」。
+     ⇒ 现在：init 里**第一件事**就是起心跳（见 init 里的调用），
+       而且带自愈 —— 万一被清掉/挂死，下一次 tick 检查发现超时就重挂。
+
+     ⚠ 两处节流别混：
+       · 本心跳 700ms 一跳，只为「反应快」（玩家点完立刻就能被看到）；
+       · `pollSniff` 内部 2 秒节流，那才是真正的判间隔。
+     把 700 改成 2000 会让人以为「更省」，实际是把「生成结束后 0.7 秒就报」
+     拖成最坏 2.7 秒，手感反而更差。
+     ══════════════════════════════════════════════════════════════════════ */
+  var _hbTimer = null;
+  var _hbLastTick = 0;
+
+  function startHeartbeat() {
+    /* 幂等：重复调用只保留一个定时器（init 重入 / 换档都不会多出一份） */
+    if (_hbTimer) { try { clearInterval(_hbTimer); } catch (e0) {} _hbTimer = null; }
+    _hbLastTick = Date.now();
+    _hbTimer = setInterval(function () {
+      _hbLastTick = Date.now();
+      /* 每个动作各包一层 try：换档判定失败不许把嗅探一起带下去，
+         嗅探失败也不许让「换档后归零」这条永远不跑。 */
+      try { watchChatSwitch(); } catch (e1) {}
+      try { pollSniff(false); } catch (e2) {}
+    }, 700);
+    /* 自愈看门狗：宿主清掉定时器（某些酒馆版本重载 iframe 会）时自动重挂。
+       ⚠ 判据用「上次 tick 距今多久」而不是「_hbTimer 是否为空」——
+         定时器被静默挂死（对象还在、但不跳）时问它没用。
+       ⚠ 看门狗自己只挂一个（`__xzHbWatch`），别每次 startHeartbeat 都加一个。 */
+    if (!window.__xzHbWatch) {
+      window.__xzHbWatch = setInterval(function () {
+        try {
+          if (Date.now() - _hbLastTick < 3000) return;    /* 心跳活着 */
+          _hbLastTick = Date.now();
+          startHeartbeat();
+        } catch (eHw) {}
+      }, 5000);
+    }
   }
 
   /* ══════════════════ 十三、配置存取 ══════════════════ */
@@ -3900,7 +4403,19 @@
       title = '上次补算失败：' + (S.statusText || '');
     } else if (S.lastMissing) {
       label = '❌'; color = '#ef4444';
-      title = plainMissingText(S.missingList) + '，点开修复';
+      title = plainMissingText(S.missingList) + '，点开修复'
+        /* ★ v572：把自动补全的尝试结果带到状态栏 title 上 ——
+           玩家不打开面板也能看出「是补过没成功」还是「压根没补」。 */
+        + (function () {
+          try {
+            if (!S.settings || !S.settings.autoRepair) return '（自动补全未开启）';
+            if (AUTO_STAT.key && AUTO_STAT.fails > 0) {
+              return '（自动补全：失败-已尝试' + AUTO_STAT.fails + '轮'
+                + (AUTO_STAT.stopped ? '，' + AUTO_STAT.stopped : '') + '）';
+            }
+            return '（自动补全：未触发）';
+          } catch (eAS) { return ''; }
+        })();
     } else if (!S.settings || !S.settings.enabled) {
       label = '关'; color = '#7e7769';
       title = '外置变量补全总开关是关的，点开面板打开';
@@ -4145,7 +4660,10 @@
       /* 开关 */
       '<div style="display:flex;flex-direction:column;gap:8px;background:rgba(7,23,32,0.9);border:1px solid rgba(212,175,55,.15);border-radius:10px;padding:10px 13px;">' +
       sw('xz-varc-c-sniffer', set.sniffer, '实时嗅探：最新一楼缺变量块就把状态栏按钮变黄提醒') +
-      sw('xz-varc-c-autorepair', set.autoRepair, '嗅探到缺失就自动补（费 token，慎重）') +
+      '<div style="display:flex;align-items:center;flex-wrap:wrap;">'
+        + sw('xz-varc-c-autorepair', set.autoRepair, '嗅探到缺失就自动补（费 token，慎重）')
+        + autoStatBox()
+        + '</div>' +
       /* ★ v567：「要求 AI 输出 <Analysis>」开关已删 —— 本来就恒输出，多余。 */
       sw('xz-varc-c-dev', set.devMode, '开发者模式：摊开提示词与原始返回') +
       '</div>' +
@@ -4185,6 +4703,45 @@
       return '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12.5px;">' +
         '<input type="checkbox" id="' + id + '"' + (checked ? ' checked' : '') + ' style="accent-color:#d4af37;">' +
         '<span>' + label + '</span></label>';
+    }
+
+    /* ★★★ v572：自动补全的**状态小框** ★★★
+       作者原话：「在自动补全的按钮旁边写一个红色的小框，里面写:失败-已尝试:x轮，比如2轮」
+       三态，用来分开「没触发」和「触发了但补不上」：
+         · 有失败记录  → 红框：失败-已尝试:N轮（title 里是最后一次的原因）
+         · 开着但没跑过 → 灰框：未触发（说明嗅探压根没报异常）
+         · 刚补成功    → 绿框：已补 N 轮（会随下一次渲染消失）
+       ⚠ 框里**只写轮数与结论**，长原因放 title —— 面板窄，塞进去就换行，玩家不看。 */
+    function autoStatBox() {
+      var st = AUTO_STAT || {};
+      var on = !!(S.settings && S.settings.autoRepair);
+      var base = 'display:inline-block;margin-left:8px;padding:1px 7px;border-radius:6px;'
+        + 'font-size:11.5px;font-weight:700;line-height:1.6;white-space:nowrap;vertical-align:middle;';
+      var tip = function (t) { return ' title="' + esc(String(t || '')) + '"'; };
+      if (!on) {
+        /* 开关关着时也要有个提示，否则玩家会以为是"补了没效果" */
+        return '<span style="' + base + 'background:rgba(100,116,139,.18);border:1px solid #475569;color:#94a3b8;"'
+          + tip('自动补全开关是关的 —— 嗅探只会亮红标提醒，不会自己去补') + '>未开启</span>';
+      }
+      if (st.fails > 0) {
+        var nm = '失败-已尝试:' + st.fails + '轮';
+        if (st.stopped) nm += '（' + st.stopped + '，不再自动重试）';
+        return '<span style="' + base + 'background:rgba(220,38,38,.20);border:1px solid #ef4444;color:#fca5a5;"'
+          + tip('自动补全失败 ' + st.fails + ' 轮｜最后一次：' + (st.lastErr || '未知原因')
+            + (st.stopped ? '｜已达到每楼 ' + AUTO_REPAIR_MAX + ' 轮上限，需要手动点「按正文重写」' : ''))
+          + '>' + esc(nm) + '</span>';
+      }
+      if (st.tries > 0) {
+        if (st.lastErr) {
+          /* 有尝试、没失败、但最后一次是「跳过」（正在补/没找到楼层）—— 别谎报成功 */
+          return '<span style="' + base + 'background:rgba(100,116,139,.18);border:1px solid #475569;color:#94a3b8;"'
+            + tip('已触发 ' + st.tries + ' 轮，最后一次：' + st.lastErr) + '>已触发 ' + st.tries + ' 轮</span>';
+        }
+        return '<span style="' + base + 'background:rgba(16,185,129,.18);border:1px solid #10b981;color:#6ee7b7;"'
+          + tip('自动补全成功（第 ' + st.tries + ' 轮）') + '>已补 ' + st.tries + ' 轮</span>';
+      }
+      return '<span style="' + base + 'background:rgba(100,116,139,.18);border:1px solid #475569;color:#94a3b8;"'
+        + tip('还没触发过：嗅探没在这一楼发现异常，或者刚换档还没走到第一次轮询') + '>未触发</span>';
     }
 
     function on(id, ev, fn) {
@@ -4362,11 +4919,17 @@
        入口：
          ① 心跳每 700ms 调 pollSniff()，函数内部按 2 秒节流（主路）；
          ② GENERATION_ENDED / STOPPED / MESSAGE_RECEIVED → fastSniff() 立刻补查一次；
-         ③ 玩家手动点状态栏「🩺 变量补全」→ 只有这里才会弹面板。 */
-    setInterval(function () {
-      watchChatSwitch();
-      try { pollSniff(false); } catch (ePoll) {}
-    }, 700);
+         ③ 玩家手动点状态栏「🩺 变量补全」→ 只有这里才会弹面板。
+       ★★★ v571：心跳搬到 `startHeartbeat()`，由 `init()` 直接调 ★★★
+       作者原话：「变量补全脚本的嗅探不是实时循环隔多少秒的，这是严重的bug」。
+       真因不只是判据（v571 已在 pollSniff 里修了长度闸与去重键），还有**起不来**这件事：
+       原来这行 setInterval 写在 `setupEvents()` 里，而 `setupEvents()` 排在
+       `init()` 的中间 —— 只要它前面任何一句抛异常（`exposeBridge`、
+       `loadWorldbook`、某个酒馆版本缺函数…），`init()` 就断在那儿，
+       **setInterval 一次都没创建**，界面看着一切正常、日志也只打前半句，
+       于是嗅探永远不跑，玩家怎么删标签都没人管。
+       ⇒ 拆成独立函数 + 幂等 + 带自愈看门狗：定时器被谁清掉或挂死，10 秒内自动重挂。 */
+    startHeartbeat();
 
     /* 状态栏的按钮在另一个 iframe 里，跨窗调不到接口时靠这个广播兜底 */
     try {
@@ -4476,27 +5039,41 @@
 
   /* ══════════════════ 十七、初始化 ══════════════════ */
   function init() {
-    loadSettings();
-    S.chatKey = chatId();
-    _chatKeySeen = S.chatKey;
-    S.history = loadHistory();
+    /* ★★★ v571：**先起心跳，再干别的** ★★★
+       作者原话：「变量补全脚本的嗅探不是实时循环隔多少秒的，这是严重的bug」。
+       真因就在这五行：旧写法把 setInterval 藏在 `setupEvents()` 里，
+       而 `setupEvents()` 前面还排着 loadSettings / chatId / loadHistory / loadModels /
+       exposeBridge 五步 —— 任何一步在某个酒馆版本上抛异常，`init()` 就断在这里，
+       **心跳一次都没创建**，而界面上一切正常、控制台也只打了前半句。
+       ⇒ 顺序改成「心跳第一」，并给每一步单独兜住。
+         `startHeartbeat()` 自己是幂等的，重复调用不会多出一个定时器。 */
+    if (typeof startHeartbeat === 'function') { try { startHeartbeat(); } catch (eHb) {} }
+    try { loadSettings(); } catch (e0) {}
+    try { S.chatKey = chatId(); _chatKeySeen = S.chatKey; } catch (e1) {}
+    try { S.history = loadHistory(); } catch (e2) {}
     /* ★ v389：把上次拉到的模型列表读回来 —— 不读的话，豆包玩家每次刷新页面
        都要再点一次「拉取模型」，而那个按钮只会再报一次 404。 */
-    S.models = loadModels();
-    exposeBridge();
-    setupEvents();
-    loadWorldbook().catch(function () {});
+    try { S.models = loadModels(); } catch (e3) {}
+    try { exposeBridge(); } catch (e4) {}
+    try { setupEvents(); } catch (e5) {}
+    try { loadWorldbook().catch(function () {}); } catch (e6) {}
     /* ★ v76：初始化时**不立刻**武装嗅探。心跳虽然从第 700ms 就开始跑 pollSniff，
        但 _sniffArmed 还是 false —— 不给「刚载页」拿历史楼层误报的机会。
        ★ v565：但也不能永远不武装 —— 4 秒后自动开闸，只判最新 AI 楼。
        否则「刷新页面看到最新一楼变量坏了」永远等不到提示（用户 2026-11-08 报的）。 */
-    armSniffSoon(4000);
+    try { armSniffSoon(4000); } catch (e7) {}
     console.log('[天元录] 外置变量补全 v2.1 已就绪｜缓存按存档隔离：' + S.chatKey +
-      '｜嗅探＝每 2 秒轮询（抄春日狂想曲 v97，只弹提示不弹面板）｜入口＝状态栏「🩺 变量补全」按钮');
+      '｜嗅探＝心跳 700ms + 内部节流 2 秒（只弹提示不弹面板）｜入口＝状态栏「🩺 变量补全」按钮');
   }
 
   /* 等 Mvu 就位再起（等不到也照样起，写完会走 insertOrAssignVariables 兜底） */
   function boot() {
+    /* ★ v571：心跳必须**在 boot 第一行**就起。
+       `waitGlobalInitialized('Mvu')` 在某些酒馆版本里会永远不 resolve
+       （Mvu 没装 / 名字改了 / 加载顺序错），那时下面那句 init() 要等 3 秒兜底；
+       更糟的是 `boot` 自己抛异常时整段都不执行 —— 心跳一样起不来。
+       ⇒ 先起心跳（幂等），再走原来的 Mvu 等待链。 */
+    try { startHeartbeat(); } catch (eHb) {}
     /* ★ v1.08：世界书补丁在启动后跑一次。
        ⚠ 延迟 6 秒：酒馆刚打开时 `world_info` 可能还没加载完，
          这时候 `updateWorldbookWith` 拿到的是一本**空书**，
