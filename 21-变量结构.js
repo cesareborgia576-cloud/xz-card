@@ -33,7 +33,8 @@ const finite = (value, fallback) => (Number.isFinite(value) ? value : fallback);
 const num = (fallback, min, max) => z.coerce.number().catch(fallback).transform(v => _.clamp(finite(v, fallback), min, max)).prefault(fallback);
 const anyNum = fallback => z.coerce.number().catch(fallback).transform(v => finite(v, fallback)).prefault(fallback);
 const text = fallback => z.preprocess(v => (v == null ? fallback : v), z.coerce.string()).catch(fallback).transform(v => (v.trim() === '' ? fallback : v)).prefault(fallback);
-/* ★ v272：「心里话」限 30 字（用户 2026-10-20 定）。超了按**字符**截断而不是字节，
+/* ★ v272 起限 30 字；**v572（2026-11-09 用户改口）放宽到 70 字** —— 30 字写不下一句像样的独白。
+   超了按**字符**截断而不是字节，
    中文一个字算一个；截断后仍是合法字符串，不会让整条 patch 失败、也不会把别的字段连坐掉。 */
 const shortText = (fallback, n) => text(fallback).transform(v => Array.from(String(v)).slice(0, n).join(''));
 const flag = fallback => z.preprocess(v => (typeof v === 'string' ? /^(true|1|是|有|开|yes)$/i.test(v.trim()) : v == null ? fallback : Boolean(v)), z.boolean()).catch(fallback).prefault(fallback);
@@ -285,10 +286,10 @@ export const Schema = z.object({
        自由文本，不做枚举：世界上会出现的关系种类写不完，枚举一次就要改一次结构。 */
     "关系": text(""),
     /* ★ v272（用户 2026-10-20）：`好感度` / `心里话` 恢复上线。口径：
-       好感度 0~100 整数、默认 50；心里话 ≤30 字；**模型写、脚本只读**（05 状态栏显示）。
+       好感度 0~100 整数、默认 50；心里话 ≤70 字；**模型写、脚本只读**（05 状态栏显示）。
        08 的提示词白名单与《变量更新规则》同步放开了这两个字段，别只改这里。 */
     "好感度": num(50, 0, 100).transform(v => Math.round(v)),
-    "心里话": shortText("", 30),
+    "心里话": shortText("", 70),
     "境界": route("练气初期"), // ★ v9 不固值：以后新增境界（炼虚/合体…）老存档照旧；引擎 REALM_COEFFS 认不出时按 1.15 兜底
     /* ★ v11（脚本战斗）：NPC 与主角**完全同构** —— 气血/灵力/上限/状态四件套，境界＝层级。
        对手的强弱靠他的境界档位与当前气血来读，没有「双方总数对撞」这回事。 */
