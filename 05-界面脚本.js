@@ -16805,9 +16805,13 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             /* ★ v561：新立绘表。先取挂出去的（别的 IIFE 用），
                再退回同 IIFE 的 var —— 本函数自己就在那个 IIFE 里，直接可见。 */
             try { I = (typeof window !== 'undefined' && window.XZ_ILLU_STAND) || null; } catch (e5) { I = null; }
-            try {
-                if (!I && typeof XZ_ILLU_STAND !== 'undefined' && XZ_ILLU_STAND) I = XZ_ILLU_STAND;
-            } catch (e6) { I = null; }
+            /* ★ v572：**「退回同 IIFE 的 var」那一档已删** —— 它是死兜底，不是保险。
+               `XZ_ILLU_STAND` 是**另一个 IIFE** 里的 `var`（定义在 7366），
+               而本函数在立绘页这个 IIFE 里 ⇒ 跨 IIFE 根本不可见。
+               旧写法 `typeof XZ_ILLU_STAND !== 'undefined'` **恒 false**，
+               一次都不会生效；lint 把它报成 `[undef] XZ_ILLU_STAND is not defined`，
+               报得对（`typeof` 守卫只是让它不抛错，掩盖了它永远进不去）。
+               表已经由 7910 那句挂到 `window` 上，上面一行取的就是它。 */
 
             /* ① 新表最前（首图 = 玩家该看到的那张） */
             try {
