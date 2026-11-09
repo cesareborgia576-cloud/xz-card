@@ -3945,7 +3945,7 @@
        ① 嗅探压根没报异常 ⇒ 自动补全**根本没被触发**（tries=0）
        ② 触发了，但 runComplete 失败（接口 4xx/超时/返回里没有变量块/写不进 MVU）
        ③ 触发了也"成功"了，但补出来的块本身还是坏的 ⇒ 下一轮嗅探继续报，
-          可 `_autoRepairedKey` 已经把这楼记过了 ⇒ **再也不补**（就是作者说的"断了"）
+          可旧的「这楼补过了」一刀切标记已经把这楼记过 ⇒ **再也不补**（就是作者说的"断了"）
      红框同时报 `已尝试 N 轮` 与最后一次失败原因，三种情况一眼能分开。
 
      ── 三条硬规矩 ────────────────────────────────────────────────────────────
@@ -4207,12 +4207,26 @@
       if (!S.settings || !S.settings.autoRepair || S.running) return false;
       var tried = _autoTries[key] || 0;
       if (tried >= AUTO_REPAIR_MAX) {
-        /* 到上限：确保标记在位（可能是上一轮 ok 分支把它清掉的） */
-        if (AUTO_STAT.key === key && AUTO_STAT.fails > 0 && !AUTO_STAT.stopped) {
-          AUTO_STAT.stopped = '达上限';
-          try { notifyStatus(); } catch (eNS4) {}
-          if (S.panel) { try { renderPanel(); } catch (eRP4) {} }
+        /* ★★★ v572 修（闸抓出来的真 bug）：到上限时**无条件**把失败标记立住 ★★★
+           旧写法要求 `AUTO_STAT.fails > 0` 才写 stopped，而 `autoTryEnd` 的 ok 分支
+           会把 fails 清零 —— 于是最后一轮「补全报成功」正好把红框擦掉，
+           走到这里 fails 是 0 ⇒ 既不写 stopped、也不红。
+           玩家看到的是**绿框「已补 2 轮」**，而这一楼其实仍然不合规 ——
+           正是作者要查的那种「自动了、破不了限、看不出断在哪」。
+
+           ⇒ 凭什么无条件判失败：本函数**只在 `problems.length > 0` 时被调用**
+             （两个调用点都在问题分支里：早退段的 `else maybeAutoRepair(key)`、
+               首次段的 `maybeAutoRepair(key, idx)`）。
+             所以「能走到上限分支」＝「补满了，这一楼还是坏的」，这本身就是失败。
+             runComplete 说 ok 只代表「补丁写进 MVU 了」，不代表「这楼合规了」。 */
+        if (AUTO_STAT.key !== key) {
+          AUTO_STAT = { key: key, tries: tried, fails: 0, lastErr: '', at: 0, stopped: '' };
         }
+        AUTO_STAT.fails = Math.max(AUTO_STAT.fails || 0, tried);
+        if (!AUTO_STAT.lastErr) AUTO_STAT.lastErr = '补了 ' + tried + ' 轮，这一楼仍然不合规';
+        AUTO_STAT.stopped = '达上限';
+        try { notifyStatus(); } catch (eNS4) {}
+        if (S.panel) { try { renderPanel(); } catch (eRP4) {} }
         return false;
       }
       /* ③ 补过却仍异常 ⇒ 上一轮"成功"是假的 */
