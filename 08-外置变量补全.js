@@ -4369,7 +4369,21 @@
        **一个字节都不进 MVU**：不进 `变量表.yaml`、不进 `21`、
        不会让《变量列表》每楼多序列化一份，也不会盖玩家存档。
        代价（认）：换设备不同步；清浏览器缓存会丢一次锚点（丢了就重新抽，不报错）。
+
+     ── ★★★ v577：整块下架（作者 2026-11-10「后台推演部分暂时下架关闭」）★★★
+       不是"藏起来"，是**运行时彻底不跑**。分三层关，缺一层都算没关干净：
+         ① 开关从面板撤掉 —— 界面上再也点不到；
+         ② `bgTick` 第一行判 `BG_OFF` 直接 return —— **老存档里 bgDeduce:true 的也停**，
+            这条最要紧：只在界面上删开关，那批人每次心跳照样发请求烧 token，而他以为关掉了；
+         ③ 注入的那条 extensionPrompt 在换档/首次进入时撤掉 —— 上一版推演的场外动向
+            还挂在提示词里的话，正文 AI 会继续照它写（人会继续出现在旧城）。
+       模块代码与探针**一律保留原样**：下架不是删除，要复活只需把 `BG_OFF` 改成 false、
+       把面板那两行加回来。真删了下次要重写一遍，还会把踩过的坑再踩一遍。
+       ⚠ 探针 `_v576_bg_deduce_probe.mjs` 仍照跑（它验的是"复活时能不能用"）——
+         但闸里要额外验「下架是不是真关了」，见 `_v577_bg_off.mjs`。
      ══════════════════════════════════════════════════════════════════════ */
+  /* ★ v577：后台推演总闸。true = 下架（整块不跑）。改回 false 即复活，别的地方不用动。 */
+  var BG_OFF = true;
   var KEY_BG = 'xzBgDeduce::';
   var INJECT_BG = 'script_inject_xz_bg_deduce';
   var BG_MAX_NPC = 6;          /* 一轮最多推几个人（人物列表上限 20，全推等于每轮烧两倍 token） */
@@ -4838,6 +4852,10 @@
 
   /* ── 主流程 ── */
   function bgRun(why) {
+    /* ★ v577：下架总闸，和 bgTick 同一道。
+       这里必须也有：对外 API 上还挂着 `bgRun`（console 也能直接调），
+       只在 bgTick 拦的话，绕过心跳照样能发请求。两处都守才算真关。 */
+    if (BG_OFF) return Promise.resolve({ skipped: '已下架' });
     if (!S.bg) S.bg = bgLoad();
     if (S.bg.status === 'running') return Promise.resolve({ skipped: 'running' });
     if (!S.settings) loadSettings();
@@ -4930,6 +4948,10 @@
      ⚠ 第 ⑤ 条里的「换大位置」是作者要的「人去新地方立刻推」——
        否则玩家跨州走了，场外的人还停在旧城，第一楼就会写错。 */
   function bgTick() {
+    /* ★ v577：下架总闸，**必须在最前面** ——
+       老存档里 bgDeduce 还是 true。只在面板上把开关删掉的话，
+       那批玩家每次心跳照样发请求烧 token，而他以为已经关掉了。 */
+    if (BG_OFF) return;
     if (!S.settings) loadSettings();
     if (S.settings.bgDeduce !== true) return;
     if (!S.bg) S.bg = bgLoad();
@@ -4971,6 +4993,31 @@
     try { if (typeof uninjectPrompts === 'function') uninjectPrompts([INJECT_BG]); } catch (e) {}
     try { var s = st(); if (s && s.extensionPrompts) delete s.extensionPrompts[INJECT_BG]; } catch (e2) {}
   }
+
+  /* ★ v577：下架后**要把已经注入的那条撤掉**。
+     光让 bgTick 不跑是不够的：上一版推演的结果还挂在
+     `script_inject_xz_bg_deduce` 这条 extensionPrompt 上，
+     正文 AI 每轮都还在读它、还会照它写（人会继续出现在旧城、继续做旧事）。
+     ⇒ 开机先撤一次：玩家更新到这一版时，上一版留下的痕迹立刻消失。 */
+  function bgOffSweep() {
+    if (!BG_OFF) return false;
+    var did = false;
+    try { if (typeof uninjectPrompts === 'function') { uninjectPrompts([INJECT_BG]); did = true; } } catch (e) {}
+    try {
+      var s = st();
+      if (s && s.extensionPrompts && s.extensionPrompts[INJECT_BG] !== undefined) {
+        delete s.extensionPrompts[INJECT_BG]; did = true;
+      }
+    } catch (e2) {}
+    try {
+      var cx = getContext();
+      if (cx && cx.extensionPrompts && cx.extensionPrompts[INJECT_BG] !== undefined) {
+        delete cx.extensionPrompts[INJECT_BG]; did = true;
+      }
+    } catch (e3) {}
+    return did;
+  }
+  try { setTimeout(function () { try { bgOffSweep(); } catch (e) {} }, 3000); } catch (eSweep) {}
 
   /* ══════════════════ 十二·b 心跳（嗅探的定时循环本体）══════════════════
      ★★★ v571：从 `setupEvents()` 里拆出来的独立函数 ★★★
@@ -5335,16 +5382,13 @@
         + sw('xz-varc-c-autorepair', set.autoRepair, '嗅探到缺失就自动补（费 token，慎重）')
         + autoStatBox()
         + '</div>' +
-      /* ★★★ v576：后台推演（场外人物动向）★★★
-         作者要的是「不激活的条目，人也活着」：他们在动、在做自己的事、去了哪儿。
-         开关旁边那颗按钮是「现在就推一次」—— 玩家想立刻看到变化时不必等三楼的节拍。
-         ⚠ 那个红/灰小框沿用 autoStatBox 的做法：把状态写在按钮旁边，
-           否则玩家点完不知道推没推（后台的事本来就没有正文可看）。 */
-      '<div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">'
-        + sw('xz-varc-c-bg', set.bgDeduce, '后台推演：让不在场的人也活着（写他们在哪儿、在做什么）')
-        + bgStatBox()
-        + '<button type="button" id="xz-varc-bg-run" style="' + btn + 'font-size:11.5px;padding:2px 8px;margin-left:4px;' + (S.bg && S.bg.status === 'running' ? 'opacity:.55;cursor:default;' : '') + '">⚡ 现在推一次</button>'
-        + '</div>' +
+      /* ★★★ v577：后台推演的开关与「现在推一次」按钮**整块撤掉**（作者：暂时下架关闭）。
+         不是藏起来：`BG_OFF` 那条总闸让运行时一次都不跑，老存档里 bgDeduce:true 的也停。
+         这里只留状态框那一个调用点（下架时它自己返回空串、不产生任何 DOM），
+         这样函数仍有读点、不会被死代码闸判成零读，复活时也不必改结构。
+         ⚠ 复活要动两处：`BG_OFF` 改 false，再把开关 `sw('xz-varc-c-bg', …)`
+           与「现在推一次」按钮加回来（事件绑定也一起加回）。 */
+      bgStatBox() +
       /* ★ v567：「要求 AI 输出 <Analysis>」开关已删 —— 本来就恒输出，多余。 */
       sw('xz-varc-c-dev', set.devMode, '开发者模式：摊开提示词与原始返回') +
       '</div>' +
@@ -5434,6 +5478,10 @@
        为什么必须画：后台推演**没有正文可看**，玩家唯一的反馈就是这小框。
          什么都不显示时，玩家会以为"开了但没生效"，然后跑去关它。 */
     function bgStatBox() {
+      /* ★ v577：下架期间整块不画 —— 面板上已经没有它旁边那个开关了。
+         为什么留着整个函数不删：复活时把 `BG_OFF` 改回 false 就原样回来。
+         它现在唯一的读点就在面板那行 `+ bgStatBox()`。 */
+      if (BG_OFF) return '';
       var b = S.bg || {};
       var on = !!(S.settings && S.settings.bgDeduce);
       var base = 'display:inline-block;margin-left:8px;padding:1px 7px;border-radius:6px;'
@@ -5555,23 +5603,12 @@
     });
     chk('xz-varc-c-sniffer', 'sniffer', function () { sniff(); });
     chk('xz-varc-c-autorepair', 'autoRepair');
-    /* ★ v576：后台推演开关。打开时顺手把 S.bg 读回来并重绘一次 ——
-       否则小框还停在「未开启」上，玩家会以为勾选没生效。 */
-    chk('xz-varc-c-bg', 'bgDeduce', function () {
-      if (!S.bg) S.bg = bgLoad();
-      renderPanel();
-    });
-    on('xz-varc-bg-run', 'click', function () {
-      if (!S.bg) S.bg = bgLoad();
-      if (S.bg.status === 'running') { toast('正在推演，等它回来', 'info'); return; }
-      pullInputs(); saveSettings();
-      toast('后台推演：现在推一次…', 'info');
-      bgRun('手动').then(function (r) {
-        if (r && r.ok) toast('✓ 已推 ' + r.n + ' 人' + (r.pushed ? '（拦下 ' + r.pushed + ' 处瞬移）' : ''), 'success');
-        else if (r && r.skipped) toast('没推：' + r.skipped, 'warning');
-        else if (r && r.why) toast('推演失败：' + r.why, 'error', 6000);
-      });
-    });
+    /* ★★★ v577：后台推演下架 —— 开关与「现在推一次」按钮的事件绑定一起撤掉。
+       为什么事件也要删、不能只删 HTML：`on()` / `chk()` 都是**取不到元素就静默跳过**，
+       所以留下来的话不会报错，但也不会有人按到；而一旦哪天有人把开关加回来却忘了
+       接线，就变成「点不动的开关」。两边一起删、复活时一起加，反而不会错。
+       ⚠ `chk`/`on` 的 id 若不存在，这里不执行 —— 但别因此以为"删了 HTML 就够了"：
+         总闸在 `bgTick` 第一行，那才是真正拦住老存档的那道。 */
     /* ★ v567：wantAnalysis 只为兼容老存档保留，脚本恒输出 <Analysis>，别再加 UI。 */
     chk('xz-varc-c-dev', 'devMode', function () {
       if (S.settings.devMode) buildPreview();   /* 自动摊开提示词，不用点按钮 */
@@ -5692,19 +5729,10 @@
           [], '自动补算：按正文重写最新一楼的 <UpdateVariable>');
         s.SlashCommandParser.addCommand('xz补全', function () { runComplete('rewrite'); return '已按正文重写更新内容'; },
           [], '补格式并按正文重新写一次更新内容（丢弃 AI 原更新内容，带 6 楼上下文）');
-        /* ★ v576：后台推演的手动入口。
-           为什么不并进上面三条：补全修的是「这一楼的变量」，推演算的是「场外的人在干嘛」，
-           混在一起会让玩家以为「补全之后人就会动」—— 它们互相不触发。 */
-        s.SlashCommandParser.addCommand('xz推演', function () {
-          bgRun('手动');
-          return '后台推演已触发（结果用 /xz场外 看）';
-        }, [], '立刻推一次场外人物的动向（写他们在哪儿、在做什么）');
-        s.SlashCommandParser.addCommand('xz场外', function () {
-          if (!S.bg) S.bg = bgLoad();
-          var L = S.bg.lines || [];
-          if (!L.length) return '还没有推演结果（先 /xz推演，或把面板里的「后台推演」开关打开）';
-          return L.map(function (x) { return x.name + '：' + x.place + (x.doing ? ' · ' + x.doing : ''); }).join('\n');
-        }, [], '看上一次后台推演的结果：谁在哪儿、在做什么');
+        /* ★ v577：后台推演的 /xz推演 /xz场外 两条指令**撤掉**（整块暂时下架）。
+           留着的坏处很具体：玩家敲 /xz推演 会看到「已触发」，而 bgRun 里没有总闸，
+           它真的会发一次请求 —— 一条"已经下架了却还能点火"的指令。
+           ⇒ 下架期间指令一起撤；复活时把这两条整段加回来。 */
       }
     } catch (eC) {}
   }
@@ -5739,11 +5767,18 @@
       resetSniff: resetSniffState,
       /* ★ v576：后台推演抛出去 —— 斜杠指令与状态栏要能叫到它。
          只抛三个口子（run / state / inject），不抛内部函数：
-         抛多了等于把实现细节变成外部契约，改一次要追着改。 */
+         抛多了等于把实现细节变成外部契约，改一次要追着改。
+      ★ v577 下架：口子**留着**（删掉会让别的脚本取不到而报错），
+         但三个都过总闸 —— `bgRun` 在函数体内拦，这两个在这里拦。
+         留口子不拦是最坏的一种：看起来下架了，console 一行就能点着。 */
       bgRun: bgRun,
       bgState: function () { if (!S.bg) S.bg = bgLoad(); return S.bg; },
-      bgInjectNow: function () { if (!S.bg) S.bg = bgLoad(); return bgInject(S.bg.lines || []); },
+      bgInjectNow: function () {
+        if (BG_OFF) { bgOffSweep(); return false; }
+        if (!S.bg) S.bg = bgLoad(); return bgInject(S.bg.lines || []);
+      },
       bgReset: bgResetForNewChat,
+      bgOff: function () { return BG_OFF; },   /* 只读，给闸和面板判断用 */
       state: function () { return S; },
       chatId: chatId,
       resetForNewChat: resetForNewChat,
