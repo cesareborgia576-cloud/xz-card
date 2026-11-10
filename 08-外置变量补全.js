@@ -63,6 +63,11 @@
          这个设置项只为兼容老存档保留（界面上的开关 v566 已删，运行时也没人读它），
          自动触发那段已经整段删掉，存着 true 也不会自己跑。 */
     tickerAuto: false,
+    /* ★ v576：后台推演（场外人物动向）—— 默认**关**。
+       理由不是省 token（虽然它确实费）：它会在后台改「别人在干什么」这件事的表现，
+       而玩家第一次见到时应该自己决定要不要。开一次之后值会落盘，不必每次开。
+       ⚠ 与 autoRepair 是两件事：那个修变量块，这个推场外的人。别混成一个开关。 */
+    bgDeduce: false,
     apiMode: 'main',          /* main = 走酒馆自己的模型（不用填 key）；custom = 另填接口 */
     temperature: 0.2,         /* 变量计算要稳，温度压低 */
     maxTokens: 1600,
@@ -104,6 +109,7 @@
     panel: null,
     chatKey: null,
     wbCache: null,             /* {at, rules, format, rosterIndex} */
+    bg: null,                  /* ★ v576：后台推演状态（见 bgLoad；按存档隔离，不进 MVU） */
     pendingTimer: null
   };
 
@@ -275,6 +281,8 @@
     try { if (typeof uninjectPrompts === 'function') uninjectPrompts([INJECT_NAME]); } catch (e6) {}
     try { var s = st(); if (s && s.extensionPrompts) delete s.extensionPrompts[INJECT_NAME]; } catch (e7) {}
     try { resetSniffState(); } catch (e8) {}
+    /* ★ v576：换档后推演也要重读（它按存档键存，读到的是新存档自己那份） */
+    try { bgResetForNewChat(); } catch (e8b) {}
     /* ★ v565：换档后也要自动武装 —— 否则切到另一个存档，最新 AI 楼坏了同样不报 */
     try { armSniffSoon(4000); } catch (e9) {}
     notifyStatus();
@@ -961,9 +969,18 @@
     return { mode: 'main' };
   }
 
-  function executeApiCall(messages, maxTokens) {
+  /* ★ v576：第三个参数 `tempOverride` —— 后台推演要「活」，变量补算要「稳」。
+     同一个 executeApiCall 被两件事共用，而它们的温度需求是相反的：
+       · 变量补算：0.2，写错一个字就是一楼的变量全歪；
+       · 后台推演：0.75，温度低了六个人会写出六句一模一样的话。
+     ⇒ 只在这个入口允许调用方覆盖，**绝不改 S.settings.temperature** ——
+       改了会把补算一起调飘（那是玩家在面板上亲手设的值）。
+     ⚠ 参数缺省时行为与原来逐字相同，老调用点一个都不用改。 */
+  function executeApiCall(messages, maxTokens, tempOverride) {
     var cfg = apiConfig();
-    var temp = clamp((S.settings || {}).temperature, 0, 1);
+    var temp = (typeof tempOverride === 'number' && isFinite(tempOverride))
+      ? clamp(tempOverride, 0, 1)
+      : clamp((S.settings || {}).temperature, 0, 1);
     if (cfg.mode === 'custom' && (!cfg.key || !/^https?:/.test(cfg.endpoint))) {
       return Promise.reject(new Error('还没配置接口：请在「⚙ API 设置」里填地址与 Key，或把通道切回「酒馆主模型」'));
     }
@@ -4318,6 +4335,628 @@
     return !hasMissing;
   }
 
+  /* ══════════════════ 十二·a 后台推演（场外人物动向）══════════════════
+     ★★★ v576：移植《春日狂想曲》的「后台推演外置 AI」，按天元录的尺度重做 ★★★
+
+     ── 它解决什么 ──────────────────────────────────────────────────────
+       不激活的条目，人是死的：姜绾绾在玩家离开三剑宗之后就一直停在
+       「在场状态: true」那一刻，再也不会动。玩家跑回雪域三个月，
+       她的状态栏还是老样子 —— 因为没人推她。
+       后台推演就是那个「没人看着的时候，他们自己在干什么」的引擎。
+
+     ── 与春日狂想曲的差别（照搬会出事，这里说清）─────────────────────
+       · 它的地点是「客厅/厨房/浴室」这种房间级，天元录是 `州·域·城` + 小位置；
+         它的 DOINGS 是「洗衣/做饭/看店」，天元录没有这些职业。
+         ⇒ 只搬**骨架**（谁不推 / 怎么防瞬移 / 怎么注入），内容全部重写。
+       · 它写「心里话」。作者明确：「心里话就不要了」。
+         ⇒ 本引擎一个心理字都不写，三栏只有 地点 / 正在做 / 具体正在做。
+            （`人物列表/心里话` 那个字段仍在，归正文 AI 用，这里不碰。）
+
+     ── 三条硬规矩（作者原话逐条落成判据）─────────────────────────────
+       ① 「移动方向默认靠近玩家」—— 但**不是必须移动**。
+          所以这里只给「会不会凑近」的判法，**绝不让脚本指定他去找玩家**。
+          脚本一旦强制靠近，二十个人会同时往玩家身上贴，一眼假。
+       ② 「不能一下子瞬移」—— 用**距离分级**卡住：一轮最多走一段。
+          超了就退回原地、正在做写「赶路」。判断交模型，限制在引擎（见 bgDist）。
+       ③ 「不能在一个破烂酒馆里遇到那些仙子女角色」——
+          根因不是模型爱乱写，是**它不知道这个人本在哪**。
+          ⇒ 第一次推某人时，从人设/总览里把「他老家在哪座城」抽出来当锚点
+            （bgHomeOf）。有了锚点，模型才可能写出「她本就在这座城」，
+            而不是把一个霜霄仙宫的圣女随手丢进路边酒馆。
+
+     ── 状态存哪（作者：「不用改变量结构」）───────────────────────────
+       一律 localStorage，按存档键隔离（`xzBgDeduce::<chatId>`）。
+       **一个字节都不进 MVU**：不进 `变量表.yaml`、不进 `21`、
+       不会让《变量列表》每楼多序列化一份，也不会盖玩家存档。
+       代价（认）：换设备不同步；清浏览器缓存会丢一次锚点（丢了就重新抽，不报错）。
+     ══════════════════════════════════════════════════════════════════════ */
+  var KEY_BG = 'xzBgDeduce::';
+  var INJECT_BG = 'script_inject_xz_bg_deduce';
+  var BG_MAX_NPC = 6;          /* 一轮最多推几个人（人物列表上限 20，全推等于每轮烧两倍 token） */
+  var BG_EVERY = 3;            /* 每几楼推一次（作者选的） */
+
+  /* 动作词表：**只用于提示词约束**，不进任何判据、不进世界观。
+     ⚠ 这里不许出现「心里话 / 神情 / 想着」这类词 —— 本引擎不写心理，
+       写进词表等于给了模型一个合法出口。 */
+  var BG_DOINGS = [
+    '赶路', '修炼', '打坐', '闭关', '出关', '采药', '炼药', '炼器', '守山', '巡逻',
+    '值守', '用饭', '饮茶', '饮酒', '歇息', '睡觉', '议事', '待客', '授课', '学艺',
+    '抄经', '采买', '叫卖', '追查', '疗伤', '祭仪', '歌舞', '对弈', '读书', '观星',
+    '洒扫', '喂兽', '洗衣', '推演', '养伤', '铸剑'
+  ];
+
+  function bgStoreGet(k) { try { return store(k); } catch (e) { return null; } }
+  function bgStoreSet(k, v) { try { store(k, v); } catch (e) {} }
+
+  function bgKey() { return KEY_BG + String(chatId() || 'anon'); }
+
+  function bgBlank() {
+    return {
+      at: 0,
+      lines: [],        /* [{ name, place, small, doing }] —— 上一轮的推演结果（也是下一轮的锚点） */
+      lastKey: '',      /* 这一楼已经判过（不管推没推），防同楼反复判 */
+      lastFloor: -99,   /* 上一次真推的楼层号 */
+      lastPlace: '',    /* 上一次真推时玩家的大位置（用来判「换地方了立刻推」） */
+      prompt: '', raw: '',
+      status: 'idle', statusText: '待机',
+      tries: 0, lastErr: ''
+    };
+  }
+
+  function bgLoad() {
+    var base = bgBlank();
+    var raw = bgStoreGet(bgKey());
+    if (!raw) return base;
+    try {
+      var got = JSON.parse(raw);
+      if (got && typeof got === 'object') {
+        for (var k in base) if (got[k] !== undefined) base[k] = got[k];
+      }
+    } catch (e) {}
+    return base;
+  }
+  function bgSave() {
+    if (!S.bg) return;
+    try { bgStoreSet(bgKey(), JSON.stringify(S.bg)); } catch (e) {}
+  }
+
+  /* ── 舆图：州 → 域 → 城。05 是唯一真源，这里只读，绝不另抄一份表 ──
+     ⚠ 必须跨窗口扫：08 与 05 不一定在同一个 iframe。
+     取不到就返回 null，由调用方降级（不猜、不编地名）。 */
+  function bgPlaceTree() {
+    var cands = windows();
+    for (var i = 0; i < cands.length; i++) {
+      try {
+        var x = cands[i].__XZ05__;
+        if (x && typeof x.xzMapPlaceTree === 'function') {
+          var t = x.xzMapPlaceTree();
+          if (t && t.length) return t;
+        }
+      } catch (e) {}
+    }
+    return null;
+  }
+
+  /* `州·域·城` 拆三段。模型偶尔写 `・` 或 `.`，都认（与 07 的 splitBig 同口径）。 */
+  function bgSplit(s) {
+    var seg = String(s || '').split(/[·・•.]/).map(function (x) { return String(x).trim(); });
+    return { st: seg[0] || '', ar: seg[1] || '', ct: seg[2] || '' };
+  }
+
+  /* ★ 距离分级（作者选的口径：不建 45×45 邻接表）
+       同城 → 1（换个院子、换条街）
+       同域换城 → 2（走半天）
+       跨域同州 → 3（走一两天，路上要过夜）
+       跨州 → 9（没有陆路，只能经司天监的商道 —— 等于「这一轮根本走不到」）
+     ⚠ 只判**粗粒度**：因为**没有真实邻接关系**，判不了「三剑宗到青木药宗是不是隔一条山」。
+       所以这个数字只用来「挡住明显瞬移」，不用来算路程天数。
+       宁可放宽（让人能动），不可收紧（把人锁死在一个城里）—— 后者更假。 */
+  function bgDist(a, b) {
+    var x = bgSplit(a), y = bgSplit(b);
+    if (!x.st || !y.st) return 0;            /* 有一边读不出：不判（交给模型） */
+    if (x.st !== y.st) return 9;
+    if (x.ar !== y.ar) return 3;
+    if (x.ct !== y.ct) return 2;
+    return 1;
+  }
+  /* 同一个地方吗 —— 只给 `bgTick` 判「玩家是不是真换了城」用。
+     为什么不用逐字比较：模型写大位置时 `·` / `・` / `.` 三种分隔符都用过，
+     逐字比会把「同一个三剑宗」判成换了地方 ⇒ 每楼都触发一次推演，token 翻倍。
+     ⚠ 有一边读不出三段就返回 false（＝「不敢说同一个地方」），
+       调用方要自己决定这时算不算换地方；`bgTick` 那边按「算」处理，
+       因为推错一次只是多烧一轮，漏推会让所有人停在旧城。 */
+  function bgSamePlace(a, b) {
+    var x = bgSplit(a), y = bgSplit(b);
+    return !!x.st && x.st === y.st && x.ar === y.ar && x.ct === y.ct;
+  }
+
+  /* ── 锚点：这个人本来在哪座城 ──
+     来源优先级：① 名字本身含城名 ② 上一轮推演结果 ③ 《人物总览》原文里的「在哪」
+     全查不到就返回空 —— **不猜**。空的人由模型按玩家所在州就近写，
+     但提示词会明说「没有锚点的人不许跨州」。 */
+  /* ★★ v576 修正（第一版这里是**失效**的，实测抓出来的）★★
+     第一版写的是 `bgHomeOf(name, tree, rosterMap)`，但 `bgPick` 调它时传的是 `null`
+     ⇒ ③ 那条**从来没跑过**，所有人都被判成「无锚点」。
+     而「无锚点」意味着模型可以随便把人往任何州放 ——
+     这正是作者要拦的「破烂酒馆里遇到仙子女角色」。
+     ⇒ 改成自己从 `S.wbCache.roster`（《人物总览》**原文**）里抽，不再要求调用方传表。
+       为什么不复用 `parseRoster`：它切的是「姓名｜性别｜境界｜身份」这种四段行，
+       而总览是「| 名字 | 在哪 | 身份 |」的**表格** —— 两种形状不同，
+       拿 parseRoster 去切表格，第三列才是「在哪」，它却从第 2 列开始找州名，
+       会把「性别」当地点。两条路各读各的，别互相借。 */
+  var _bgHomeCache = null;      /* { key, map } —— key 用 roster 原文的哈希级别（长度+首尾），换书就重抽 */
+  /* 一个人可能抽到**两个**候选地点（见下面 ②）：行内写的宗门 / 该段标题上的地点。
+     存数组而不是单值，是因为行内那个常常不是城 ——
+     `- 锦绣阁 · 罗衣｜女｜绸缎庄主人` 里「锦绣阁」舆图上没有，
+     但它是挂在 `**千机坊市**` 这一段底下的，坊市才是真地点。
+     只存一个就会把「锦绣阁」当城，然后判成「不在舆图上 ⇒ 无锚点」。 */
+  function bgHomeIndex() {
+    var raw = String((S.wbCache && S.wbCache.roster) || '');
+    var key = raw.length + '#' + raw.slice(0, 40) + '#' + raw.slice(-40);
+    if (_bgHomeCache && _bgHomeCache.key === key) return _bgHomeCache.map;
+    var map = {};
+    if (raw) {
+      /* ① 表格行：`| 白长雪 | 人州·雪域·天云雪山 | 剑仙·... |` —— 三段俱全，最准的一档 */
+      var reT = /^\|\s*([^|\n]{2,12}?)\s*\|\s*([^|\n]*?[州域][·・•.][^|\n]*?)\s*\|/gm;
+      var m;
+      while ((m = reT.exec(raw))) {
+        var nm = String(m[1]).replace(/[*`]/g, '').trim();
+        var pl = String(m[2]).replace(/[*`]/g, '').trim();
+        if (nm && pl && !map[nm] && !/^(谁|名字|人物)$/.test(nm)) map[nm] = [pl];
+      }
+      /* ② 其余段落逐行扫。为什么不能只用一个正则：总览里同一批人有三种写法 ——
+           · `- 三剑宗 · 姜绾绾｜女｜弟子`      → 行内带宗门
+           · `- 陆玄机｜男｜宗主`               → 只有名字，地点在**段标题**上（`**太一门**（…）`）
+           · `- 玄京：雪域皇朝的帝都…`           → 冒号前是地点，且是后续几段的上下文
+         只认第一种，第二种人（太一门三位）就永远无锚点 —— 实测漏了 3 个。 */
+      var lines = raw.split(/\r?\n/);
+      var ctx = '';
+      for (var li = 0; li < lines.length; li++) {
+        var ln = String(lines[li] || '');
+        /* 大标题（`## 三、人州·雪域`）＝换段，上下文清空 ——
+           不清会把上一段的 `月牙泉城` 带到妖州去，那是错锚点，比无锚点更坏。 */
+        if (/^\s*#{1,6}\s/.test(ln)) { ctx = ''; continue; }
+        /* 段标题：`**太一门**（人州第一大宗门）` —— 加粗的才是地点，括号里是说明，丢掉 */
+        var mh = ln.match(/^\s*\*\*\s*([^*]{1,20}?)\s*\*\*/);
+        if (mh) { ctx = String(mh[1]).replace(/[（(][^）)]*[）)]/g, '').trim(); continue; }
+        /* `- 玄京：雪域皇朝的帝都…` —— 冒号前是地点，同时成为后续的上下文 */
+        var mc = ln.match(/^\s*[-*]\s*([^：:｜|（(]{2,20})\s*[：:]/);
+        if (mc) { ctx = String(mc[1]).trim(); continue; }
+        /* 名单行 */
+        var mb = ln.match(/^\s*[-*]\s*([^｜|\n]{2,40}?)[｜|]/);
+        if (!mb) continue;
+        /* 括号里是注释（`盎然之林（幽篁域）` / `罗衣（真身噬心魔蛛…）`），全剥掉再切 */
+        var seg = String(mb[1]).replace(/[（(][^）)]*[）)]/g, '')
+          .split(/[·・•]/).map(function (x) { return String(x).trim(); }).filter(Boolean);
+        if (seg.length < 2) {
+          /* 行内没写地点 ⇒ 这个人属于段标题那块地方 */
+          var who0 = seg[0];
+          if (who0 && ctx && !map[who0]) map[who0] = [ctx];
+          continue;
+        }
+        var who = seg[seg.length - 1];
+        var org = seg.slice(0, -1).join('');
+        if (!who) continue;
+        if (!map[who]) map[who] = ctx && ctx !== org ? [org, ctx] : [org];
+      }
+    }
+    _bgHomeCache = { key: key, map: map };
+    return map;
+  }
+
+  /* 把一个候选串落到舆图的某个城上。
+     `盎然之林最深处` / `盎然之林东缘` 这种带方位后缀的，剥掉后缀再比；
+     剥完还不是城就返回空 —— **不许拿「域」当城**（会让模型把整个域写成一座城）。 */
+  function bgAnchorCity(got, tree) {
+    var parts = String(got || '').split(/[·・•.]/).map(function (x) {
+      return String(x).trim().replace(/[（(][^）)]*[）)]/g, '');
+    }).filter(Boolean);
+    var tail = parts.length ? parts[parts.length - 1].replace(/(最深处|最里头|东缘|西缘|南缘|北缘|边上|一带|附近)$/, '') : '';
+    if (!tail || !tree) return '';
+    for (var i = 0; i < tree.length; i++) {
+      var st = tree[i] || {};
+      for (var j = 0; j < (st.areas || []).length; j++) {
+        var ar = st.areas[j] || {};
+        for (var k = 0; k < (ar.cities || []).length; k++) {
+          if (ar.cities[k] === tail) return st.n + '·' + ar.n + '·' + tail;
+        }
+      }
+    }
+    return '';
+  }
+
+  function bgHomeOf(name, tree) {
+    var i, j, k;
+    /* ① 名字本身含城名（`三剑宗·姜绾绾` 这种复合键，或玩家自己拿城名当键） */
+    if (tree) {
+      for (i = 0; i < tree.length; i++) {
+        var st = tree[i] || {};
+        for (j = 0; j < (st.areas || []).length; j++) {
+          var ar = st.areas[j] || {};
+          for (k = 0; k < (ar.cities || []).length; k++) {
+            var city = ar.cities[k];
+            if (city && String(name).indexOf(city) >= 0) {
+              return st.n + '·' + ar.n + '·' + city;
+            }
+          }
+        }
+      }
+    }
+    /* ② 上一轮结果（同一个人的旧位置）—— 这是最可信的锚点，优先于总览表：
+       总览写的是「常驻」，而推演写的是「此刻」，此刻比常驻更该被接着用。 */
+    if (S.bg && S.bg.lines) {
+      for (i = 0; i < S.bg.lines.length; i++) {
+        var L = S.bg.lines[i];
+        if (L && L.name === name && L.place) return L.place;
+      }
+    }
+    /* ③ 《人物总览》原文：候选逐个试，第一个能落到舆图城上的就是锚点。
+       全落不上 ⇒ 返回空（「无锚点」），由提示词里「没锚点不许跨州」那条兜。
+       空着比给错强：错锚点会让模型一路把这个人锁在错的那个州。 */
+    var cands = (bgHomeIndex() || {})[name] || [];
+    for (i = 0; i < cands.length; i++) {
+      var got = bgAnchorCity(cands[i], tree);
+      if (got) return got;
+    }
+    if (!tree) return cands.length ? String(cands[0]) : '';
+    return '';
+  }
+
+  /* ── 该推谁 ──
+     · `在场状态 = true` 的人**不推**：他们此刻就在玩家眼前，状态由正文与变量负责
+       （v477 定的语义：在场 ≠ 必须出场，但既然在眼前，场外推演就不该再编他）。
+     · 其余的人按「离玩家近 → 好感度高」排序，最多 BG_MAX_NPC 个。
+       这么排不是为了让他们来，是为了**先把最近的人写活**（远端的人写了也没人看见）。 */
+  function bgPick(sd, tree) {
+    var people = (sd && sd.人物列表) || {};
+    var heroPlace = String(((sd || {}).地理 || {}).大位置 || '');
+    var out = [];
+    Object.keys(people).forEach(function (n) {
+      var r = people[n] || {};
+      var on = (r.在场状态 === true || r.在场状态 === 'true' || r.在场状态 === 1);
+      if (on) return;                     /* 在眼前的人不归后台管 */
+      if (!n || n === '主角') return;
+      var home = bgHomeOf(n, tree);
+      out.push({ name: n, row: r, home: home, dist: heroPlace && home ? bgDist(heroPlace, home) : 99 });
+    });
+    out.sort(function (a, b) {
+      if (a.dist !== b.dist) return a.dist - b.dist;
+      var fa = Number(a.row && a.row.好感度); if (!isFinite(fa)) fa = 50;
+      var fb = Number(b.row && b.row.好感度); if (!isFinite(fb)) fb = 50;
+      return fb - fa;
+    });
+    return out.slice(0, BG_MAX_NPC);
+  }
+
+  /* ── 舆图压缩成提示词里那份（每州一行，域后跟城名）──
+     为什么不把 45 个城展开成清单：清单太长会挤掉人设与规则，
+     模型会抓最近的一段照抄，反而更容易乱写。 */
+  function bgMapText(tree) {
+    if (!tree || !tree.length) return '（舆图没读到：地点一律写「州·域·城」，不许自己编地名，不许跨州。）';
+    var lines = [];
+    tree.forEach(function (st) {
+      lines.push('- ' + st.n);
+      (st.areas || []).forEach(function (ar) {
+        lines.push('  · ' + ar.n + '：' + (ar.cities || []).join('、'));
+      });
+    });
+    return lines.join('\n');
+  }
+
+  /* ── 提示词 ── */
+  function bgBuildPrompt(sd, picks, tree, rosterMap) {
+    var t = (sd && sd.时间) || {};
+    var hero = (sd && sd.主角信息) || {};
+    var geo = (sd && sd.地理) || {};
+    var heroPlace = String(geo.大位置 || '');
+    var heroSmall = String(geo.小位置 || '');
+    var L = [];
+
+    L.push('你是《天元录》修仙世界的「场外推演」AI。');
+    L.push('你不写正文，不写对话，不写心理。你只回答一件事：名单上这些人，此刻在哪儿、在做什么。');
+    L.push('');
+
+    /* ① 输出形状（先说，免得它写小说） */
+    L.push('【输出格式 · 只写这一段，别的什么都不要】');
+    L.push('<后台推演>');
+    L.push('1.姓名:');
+    L.push('地点:');
+    L.push('正在做:');
+    L.push('具体正在做:');
+    L.push('</后台推演>');
+    L.push('姓名与序号已经替你排好，你只填后三栏。不要写思考过程、不要解释、不要复述这份提示词。');
+    L.push('');
+
+    /* ② 三栏的定义 —— 这是全篇最要紧的一段 */
+    L.push('【三栏怎么写】');
+    L.push('- 地点：`州·域·城` 三段，**逐段从下面《舆图》里抄**，一个字都不许改、不许自己编。');
+    L.push('  只写这座城/宗门本身，不写城里的某个房间（房间写进「具体正在做」）。');
+    L.push('- 正在做：只能从这 ' + BG_DOINGS.length + ' 个词里挑一个，逐字照抄：' + BG_DOINGS.join(' / ') + '。');
+    L.push('- 具体正在做：一句话，不少于 10 字，把「在哪儿、手上是什么、身边有什么」写出来。');
+    L.push('  例：「蹲在丹房外的石阶上翻晒药材，袖子挽到手肘，脚边一只翻倒的竹匾」。');
+    L.push('  不许和「正在做」重复，不许写心情、不许写他心里怎么想、不许写「似乎」「仿佛」。');
+    L.push('');
+
+    /* ③ 不写心理 —— 作者点名的 */
+    L.push('【绝对不写的三样】');
+    L.push('1. 心里话 / 心声 / 内心独白 / 「他想」「她暗自」—— 一个字都不要。');
+    L.push('2. 对玩家的感情、好感、想念、醋意 —— 不归你管。');
+    L.push('3. 正文、对话、旁白、景物描写 —— 那是正文 AI 的事。');
+    L.push('');
+
+    /* ④ 移动规矩 —— 「不能瞬移」落成可判的句子 */
+    L.push('【怎么动（一轮最多走一段）】');
+    L.push('- 同城换个地方（山门 → 后山）＝ 一段。');
+    L.push('- 同域换一座城 ＝ 一段，走半天，这一轮可以到位。');
+    L.push('- 跨域换州内另一域 ＝ 一段，要走一两天：**这一轮只能写到「在官道上」，不许写到目的地**。');
+    L.push('- 跨州（人州 ↔ 妖州 ↔ 魔州）＝ 没有陆路，只有司天监那条商道。**这一轮根本走不到**，不许写。');
+    L.push('- 上一轮在城里，这一轮不许突然出现在另一个域。要走就分轮走：先「官道」，再目的地。');
+    L.push('- **没理由就别动。** 他昨天在药庐抓药，今天多半还在抓药。不是每个名单上的人都要换地方。');
+    L.push('- 移动不是任务。名单上六个人里，通常有一两个在动、其余都在原地做自己的事 —— 这才像活的。');
+    L.push('');
+
+    /* ⑤ 靠近玩家 —— 作者要的「默认靠近」，但必须自然 */
+    L.push('【会不会往玩家那边去】');
+    L.push('- 没有谁命令他去找玩家。他动不动，按他的身份、手头的事、和玩家眼下是什么关系判。');
+    L.push('- 真要往玩家那边去，也必须一格一格挪：这一轮只走到半路（地点写官道或邻城），下一轮才到。');
+    L.push('- 玩家在荒郊野岭、深山、密室里，他「正好路过」得说得通：本来就在附近、顺路、被事情带来的。');
+    L.push('- 一座荒村野店、破烂酒馆里，不会坐着仙子女修。');
+    L.push('  她若真出现在那种地方，必须是因为她本就在这座城、或是为某件事来的 ——');
+    L.push('  而这种时候，地点栏照写她真正所在的城，具体正在做里写清她为什么在这儿。');
+    L.push('- 身份高、驻地远的人（宗主、圣女、长老），不会为了闲事跑几百里。');
+    L.push('');
+
+    /* ⑥ 当前局面 */
+    L.push('【当前局面】');
+    L.push('- 第 ' + (t.日期 || '1年1月1日') + ' ' + (t.精确时间 || '06:00'));
+    L.push('- 玩家（' + (hero.姓名 || '无名') + '，' + (hero.境界 || '引气') + '）现在在：' + (heroPlace || '（未记录）') + (heroSmall ? ' · ' + heroSmall : ''));
+    L.push('');
+
+    /* ⑦ 名单 + 每个人的已知信息 */
+    L.push('【这一轮要你推的人（共 ' + picks.length + ' 个，一个都不能少）】');
+    picks.forEach(function (p, i) {
+      var r = p.row || {};
+      var seg = [];
+      seg.push((i + 1) + '.' + p.name);
+      if (r.境界) seg.push('境界 ' + r.境界);
+      if (r.势力 && r.势力 !== '散修') seg.push('势力 ' + r.势力);
+      if (r.性格 && r.性格 !== '未知') seg.push('性格 ' + String(r.性格).slice(0, 40));
+      var last = null;
+      (S.bg && S.bg.lines || []).forEach(function (x) { if (x && x.name === p.name) last = x; });
+      if (last && last.place) {
+        seg.push('上一轮在 ' + last.place + (last.small ? '（' + last.small + '）' : '') + '，正在' + (last.doing || '做事'));
+      } else if (p.home) {
+        seg.push('常驻在 ' + p.home);
+      } else {
+        seg.push('**没有锚点**：这一轮只许把他放在玩家所在的州内，不许跨州');
+      }
+      L.push('  ' + seg.join('｜'));
+    });
+    L.push('');
+
+    /* ⑧ 舆图 */
+    L.push('【舆图（地点只能从这里面抄）】');
+    L.push(bgMapText(tree));
+    L.push('');
+    L.push('名单上这 ' + picks.length + ' 个人**全部要填完**。');
+    L.push('就算某人这一轮什么都没干，也要写：地点写他还待着的地方、正在做写他原本在做的事、具体正在做照旧写清楚 —— 让人看出「他没动，但他活着」。');
+    return L.join('\n');
+  }
+
+  /* ── 解析 ──
+     与春日狂想曲同口径：先认严格闭合，再认只有开标签，最后按内容兜底。
+     ⚠ 兜底那一步**必须同时看到「地点:」和「正在做:」**才算 ——
+       只看「地点:」会把模型抄回来的提示词当成答案（它复述过这一段）。 */
+  function bgParse(text) {
+    var raw = String(text || '');
+    raw = raw.replace(/[`]{3}[a-zA-Z]*\n?/g, '').replace(/[`]{3}/g, '');
+    var m = raw.match(/<\s*后台推演[^>]*>([\s\S]*?)<\s*\/\s*后台推演\s*>/i);
+    var body = '';
+    if (m && m[1] && m[1].trim()) body = m[1].trim();
+    else {
+      var o = raw.match(/<\s*后台推演[^>]*>([\s\S]*)$/i);
+      if (o && o[1] && /地点\s*[:：]/.test(o[1]) && /正在做\s*[:：]/.test(o[1])) body = o[1].trim();
+      else if (/地点\s*[:：]/.test(raw) && /正在做\s*[:：]/.test(raw) && /\d+\s*[.、]\s*[^\n:：]{1,12}\s*[:：]/.test(raw)) body = raw.trim();
+    }
+    if (!body) return null;
+
+    var lines = [];
+    var cur = null;
+    String(body).split(/\r?\n/).forEach(function (ln) {
+      var s = String(ln || '').trim();
+      if (!s) return;
+      var head = s.match(/^(\d+)\s*[.、)]\s*([^\s:：]{1,16})\s*[:：]\s*$/);
+      if (head) { cur = { name: head[2], place: '', small: '', doing: '' }; lines.push(cur); return; }
+      var kv = s.match(/^(地点|正在做|具体正在做)\s*[:：]\s*(.*)$/);
+      if (kv && cur) {
+        var v = String(kv[2] || '').trim();
+        if (kv[1] === '地点') cur.place = v;
+        else if (kv[1] === '正在做') cur.doing = v;
+        else cur.small = v;
+      }
+    });
+    lines = lines.filter(function (x) { return x.name && (x.place || x.doing || x.small); });
+    if (!lines.length) return null;
+    return { lines: lines, body: body };
+  }
+
+  /* ── 把结果注入正文 AI ──
+     自解释：这段文字本身说明「他们不在你眼前，不必让他们出场」，
+     不依赖世界书条目 —— 加条目要重导卡，而这条约束只在这一处生效。 */
+  function bgInject(lines) {
+    if (!lines || !lines.length) return false;
+    var t = (readState() || {}).时间 || {};
+    var body = [];
+    body.push('<后台推演>');
+    body.push('【场外动向】第 ' + (t.日期 || '') + ' ' + (t.精确时间 || '') + ' —— 下面这些人此刻**不在主角眼前**，各有各的事。写正文时知道他们在哪儿、在做什么就够了，**不必让他们出场**，也不要替他们说话。');
+    lines.forEach(function (x) {
+      body.push('- ' + x.name + '：' + x.place + (x.small ? '（' + x.small + '）' : '') + (x.doing ? ' · ' + x.doing : ''));
+    });
+    body.push('</后台推演>');
+    var payload = body.join('\n');
+    var ok = false;
+    try {
+      var s = st();
+      if (s && typeof s.setExtensionPrompt === 'function') {
+        s.setExtensionPrompt(INJECT_BG, payload, 1 /* IN_CHAT */, 0 /* depth */, false, 0 /* SYSTEM */);
+        ok = true;
+      }
+    } catch (e) {}
+    if (!ok) {
+      try {
+        var ctx = getContext();
+        if (ctx && typeof ctx.setExtensionPrompt === 'function') {
+          ctx.setExtensionPrompt(INJECT_BG, payload, 1, 0, false, 0); ok = true;
+        }
+      } catch (e2) {}
+    }
+    try {
+      var cx = getContext();
+      if (cx && typeof cx.setExtensionPrompt !== 'function') { /* 老版本：下面走全局 */ }
+      if (!ok && typeof setExtensionPrompt === 'function') {
+        setExtensionPrompt(INJECT_BG, payload, 1, 0, false, 0); ok = true;
+      }
+    } catch (e3) {}
+    if (!ok) console.warn('[后台推演] 注入失败：这个酒馆版本没有 setExtensionPrompt，正文 AI 看不到场外动向');
+    return ok;
+  }
+
+  /* ── 主流程 ── */
+  function bgRun(why) {
+    if (!S.bg) S.bg = bgLoad();
+    if (S.bg.status === 'running') return Promise.resolve({ skipped: 'running' });
+    if (!S.settings) loadSettings();
+    if (S.running) return Promise.resolve({ skipped: '补算中' });
+
+    var sd = readState();
+    if (!sd || !Object.keys(sd).length) return Promise.resolve({ skipped: '读不到变量' });
+    /* 战斗中不推：此刻所有人的位置都该冻结在战场，推了会把阵中人写走 */
+    if (sd.战斗状态 === true) { S.bg.statusText = '战斗中不推'; return Promise.resolve({ skipped: '战斗中' }); }
+
+    var tree = bgPlaceTree();
+    var picks = bgPick(sd, tree);
+    if (!picks.length) {
+      S.bg.status = 'idle'; S.bg.statusText = '没人要推（都在眼前）';
+      bgSave(); if (S.panel) renderPanel();
+      return Promise.resolve({ skipped: '没人' });
+    }
+
+    var prompt = bgBuildPrompt(sd, picks, tree, null);
+    S.bg.prompt = prompt;
+    S.bg.status = 'running'; S.bg.statusText = '推演中…（' + picks.length + ' 人）';
+    S.bg.tries = (S.bg.tries || 0) + 1;
+    bgSave();
+    if (S.panel) renderPanel();
+
+    var t0 = Date.now();
+    /* 温度抬高：推演要活，跟变量补算的 0.2 不是一回事。
+       ⚠ 只在这一处抬，不改 S.settings.temperature —— 那会连带把补算也调飘。 */
+    return executeApiCall([{ role: 'user', content: prompt }], 1400, 0.75).then(function (raw) {
+      S.bg.raw = String(raw || '');
+      var got = bgParse(S.bg.raw);
+      if (!got || !got.lines.length) throw new Error('返回里认不出 <后台推演> 段');
+
+      /* ★ 引擎侧的限制（作者：判断交模型，限制在引擎）：
+         模型写了跨段移动，这里**退回上一轮的位置**并把正在做改成「赶路」。
+         为什么不整条丢掉：那样这个人这一轮就消失了，比走错更糟。
+         ⚠ 只在「上一轮有位置」时判 —— 第一次推没有锚点，判不了，
+           硬判会把所有人都锁在空地。 */
+      var prev = {};
+      (S.bg.lines || []).forEach(function (x) { if (x && x.name) prev[x.name] = x; });
+      var fixed = [];
+      var pushed = 0;
+      got.lines.forEach(function (x) {
+        var old = prev[x.name];
+        var place = String(x.place || '').trim();
+        if (old && old.place && place) {
+          var d = bgDist(old.place, place);
+          /* 9 = 跨州（本轮不可能到）；3 = 跨域（本轮只能到官道）
+             ⚠ 3 不退回，只把「具体正在做」补一句在路上 —— 跨域走一两天是合理的，
+               直接退回等于把人钉死在原城，玩家会发现所有人永远不动。 */
+          if (d >= 9) {
+            pushed++;
+            fixed.push({ name: x.name, place: old.place, small: x.small || old.small || '', doing: '赶路' });
+            return;
+          }
+          if (d >= 3) {
+            pushed++;
+            fixed.push({ name: x.name, place: place, small: x.small, doing: x.doing || '赶路' });
+            return;
+          }
+        }
+        fixed.push({ name: x.name, place: place, small: x.small, doing: x.doing });
+      });
+
+      S.bg.lines = fixed;
+      S.bg.at = Date.now();
+      S.bg.status = 'ok';
+      S.bg.statusText = '已推 ' + fixed.length + ' 人' + (pushed ? '（拦下 ' + pushed + ' 处瞬移）' : '') + ' · ' + (Date.now() - t0) + 'ms';
+      S.bg.lastErr = '';
+      var inj = bgInject(fixed);
+      S.bg.statusText += inj ? ' · 已注入' : ' · 注入失败';
+      bgSave();
+      if (S.panel) renderPanel();
+      return { ok: true, n: fixed.length, pushed: pushed, injected: inj };
+    }).catch(function (err) {
+      S.bg.status = 'bad';
+      S.bg.lastErr = String((err && err.message) || err);
+      S.bg.statusText = '推演失败：' + S.bg.lastErr;
+      bgSave();
+      if (S.panel) renderPanel();
+      console.warn('[后台推演] 失败：', S.bg.lastErr);
+      return { ok: false, why: S.bg.lastErr };
+    });
+  }
+
+  /* ── 心跳里那一拍：判要不要推 ──
+     条件（全过才推）：
+       ① 开关开着        ② 不在补算中        ③ 末尾不是玩家楼（AI 还没回）
+       ④ 这一楼没判过    ⑤ 满足「每 3 楼」或「换了大位置」
+     ⚠ 第 ⑤ 条里的「换大位置」是作者要的「人去新地方立刻推」——
+       否则玩家跨州走了，场外的人还停在旧城，第一楼就会写错。 */
+  function bgTick() {
+    if (!S.settings) loadSettings();
+    if (S.settings.bgDeduce !== true) return;
+    if (!S.bg) S.bg = bgLoad();
+    if (S.bg.status === 'running') return;
+    if (S.running) return;
+    if (pendingUserTurn()) return;
+
+    var idx = latestAiIndex();
+    if (idx < 0) return;
+    var chat = chatArray();
+    var txt = msgText(chat[idx]);
+    if (!txt) return;
+
+    var key = idx + '#' + String(txt).length;
+    if (S.bg.lastKey === key) return;      /* 这一楼已经判过（推过 / 或没到点） */
+    S.bg.lastKey = key;
+
+    var sd = readState();
+    if (!sd || !Object.keys(sd).length) return;
+    if (sd.战斗状态 === true) return;
+
+    var placeNow = String(((sd.地理 || {}).大位置) || '');
+    /* 换地方判据走 bgSamePlace（不是逐字比）：分隔符不同不等于换了城。
+       只有两边都读得出三段、且真的不同，才算「换地方」。 */
+    var placeChanged = !!(placeNow && S.bg.lastPlace && !bgSamePlace(S.bg.lastPlace, placeNow));
+    var floorOk = (idx - (S.bg.lastFloor == null ? -99 : S.bg.lastFloor)) >= BG_EVERY;
+    if (!placeChanged && !floorOk) { bgSave(); return; }
+
+    /* 记在**推之前**：推演是异步的，等它回来再记会让这期间的同楼重复触发 */
+    S.bg.lastFloor = idx;
+    S.bg.lastPlace = placeNow || S.bg.lastPlace || '';
+    bgSave();
+    bgRun(placeChanged ? '换地方' : '推进');
+  }
+
+  /* 换档：推演缓存属于上一局，清掉 */
+  function bgResetForNewChat() {
+    S.bg = bgLoad();
+    try { if (typeof uninjectPrompts === 'function') uninjectPrompts([INJECT_BG]); } catch (e) {}
+    try { var s = st(); if (s && s.extensionPrompts) delete s.extensionPrompts[INJECT_BG]; } catch (e2) {}
+  }
+
   /* ══════════════════ 十二·b 心跳（嗅探的定时循环本体）══════════════════
      ★★★ v571：从 `setupEvents()` 里拆出来的独立函数 ★★★
      作者原话：「变量补全脚本的嗅探不是实时循环隔多少秒的，这是严重的bug」
@@ -4348,6 +4987,9 @@
          嗅探失败也不许让「换档后归零」这条永远不跑。 */
       try { watchChatSwitch(); } catch (e1) {}
       try { pollSniff(false); } catch (e2) {}
+      /* ★ v576：后台推演那一拍。放在嗅探之后 —— 补算是「修错」，推演是「加分」，
+         同一拍里补算优先，不让推演抢在前面把 token 花掉。 */
+      try { bgTick(); } catch (e3) {}
     }, 700);
     /* 自愈看门狗：宿主清掉定时器（某些酒馆版本重载 iframe 会）时自动重挂。
        ⚠ 判据用「上次 tick 距今多久」而不是「_hbTimer 是否为空」——
@@ -4678,6 +5320,16 @@
         + sw('xz-varc-c-autorepair', set.autoRepair, '嗅探到缺失就自动补（费 token，慎重）')
         + autoStatBox()
         + '</div>' +
+      /* ★★★ v576：后台推演（场外人物动向）★★★
+         作者要的是「不激活的条目，人也活着」：他们在动、在做自己的事、去了哪儿。
+         开关旁边那颗按钮是「现在就推一次」—— 玩家想立刻看到变化时不必等三楼的节拍。
+         ⚠ 那个红/灰小框沿用 autoStatBox 的做法：把状态写在按钮旁边，
+           否则玩家点完不知道推没推（后台的事本来就没有正文可看）。 */
+      '<div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">'
+        + sw('xz-varc-c-bg', set.bgDeduce, '后台推演：让不在场的人也活着（写他们在哪儿、在做什么）')
+        + bgStatBox()
+        + '<button type="button" id="xz-varc-bg-run" style="' + btn + 'font-size:11.5px;padding:2px 8px;margin-left:4px;' + (S.bg && S.bg.status === 'running' ? 'opacity:.55;cursor:default;' : '') + '">⚡ 现在推一次</button>'
+        + '</div>' +
       /* ★ v567：「要求 AI 输出 <Analysis>」开关已删 —— 本来就恒输出，多余。 */
       sw('xz-varc-c-dev', set.devMode, '开发者模式：摊开提示词与原始返回') +
       '</div>' +
@@ -4756,6 +5408,43 @@
       }
       return '<span style="' + base + 'background:rgba(100,116,139,.18);border:1px solid #475569;color:#94a3b8;"'
         + tip('还没触发过：嗅探没在这一楼发现异常，或者刚换档还没走到第一次轮询') + '>未触发</span>';
+    }
+
+    /* ★★★ v576：后台推演的状态小框（与 autoStatBox 同一种形状）★★★
+       四态，分开「没开」「还没推过」「推成了」「推失败」：
+         · 开关关着   → 灰：未开启
+         · 推演中     → 琥珀：推演中…
+         · 有过失败   → 红：失败-已尝试 N 轮
+         · 推成了     → 绿：已推 N 人
+       为什么必须画：后台推演**没有正文可看**，玩家唯一的反馈就是这小框。
+         什么都不显示时，玩家会以为"开了但没生效"，然后跑去关它。 */
+    function bgStatBox() {
+      var b = S.bg || {};
+      var on = !!(S.settings && S.settings.bgDeduce);
+      var base = 'display:inline-block;margin-left:8px;padding:1px 7px;border-radius:6px;'
+        + 'font-size:11.5px;font-weight:700;line-height:1.6;white-space:nowrap;vertical-align:middle;';
+      var tip = function (t) { return ' title="' + esc(String(t || '')) + '"'; };
+      if (!on) {
+        return '<span style="' + base + 'background:rgba(100,116,139,.18);border:1px solid #475569;color:#94a3b8;"'
+          + tip('后台推演是关的 —— 场外的人不会自己动，只有正文提到谁，谁才有动静') + '>未开启</span>';
+      }
+      if (b.status === 'running') {
+        return '<span style="' + base + 'background:rgba(245,158,11,.18);border:1px solid #f59e0b;color:#fcd34d;"'
+          + tip(b.statusText || '推演中') + '>推演中…</span>';
+      }
+      if (b.status === 'bad') {
+        return '<span style="' + base + 'background:rgba(220,38,38,.20);border:1px solid #ef4444;color:#fca5a5;"'
+          + tip('后台推演失败｜最后一次：' + (b.lastErr || '未知原因')
+            + '｜已尝试 ' + (b.tries || 0) + ' 轮') + '>失败-已尝试:' + (b.tries || 0) + '轮</span>';
+      }
+      if (b.status === 'ok' && b.lines && b.lines.length) {
+        var when = b.at ? new Date(b.at) : null;
+        var hhmm = when ? ('0' + when.getHours()).slice(-2) + ':' + ('0' + when.getMinutes()).slice(-2) : '';
+        return '<span style="' + base + 'background:rgba(16,185,129,.18);border:1px solid #10b981;color:#6ee7b7;"'
+          + tip('上一次推演 ' + hhmm + '｜' + (b.statusText || '')) + '>已推 ' + b.lines.length + ' 人</span>';
+      }
+      return '<span style="' + base + 'background:rgba(100,116,139,.18);border:1px solid #475569;color:#94a3b8;"'
+        + tip('还没推过：满 ' + BG_EVERY + ' 楼会自动推一次；换大位置会立刻推') + '>待触发</span>';
     }
 
     function on(id, ev, fn) {
@@ -4851,6 +5540,23 @@
     });
     chk('xz-varc-c-sniffer', 'sniffer', function () { sniff(); });
     chk('xz-varc-c-autorepair', 'autoRepair');
+    /* ★ v576：后台推演开关。打开时顺手把 S.bg 读回来并重绘一次 ——
+       否则小框还停在「未开启」上，玩家会以为勾选没生效。 */
+    chk('xz-varc-c-bg', 'bgDeduce', function () {
+      if (!S.bg) S.bg = bgLoad();
+      renderPanel();
+    });
+    on('xz-varc-bg-run', 'click', function () {
+      if (!S.bg) S.bg = bgLoad();
+      if (S.bg.status === 'running') { toast('正在推演，等它回来', 'info'); return; }
+      pullInputs(); saveSettings();
+      toast('后台推演：现在推一次…', 'info');
+      bgRun('手动').then(function (r) {
+        if (r && r.ok) toast('✓ 已推 ' + r.n + ' 人' + (r.pushed ? '（拦下 ' + r.pushed + ' 处瞬移）' : ''), 'success');
+        else if (r && r.skipped) toast('没推：' + r.skipped, 'warning');
+        else if (r && r.why) toast('推演失败：' + r.why, 'error', 6000);
+      });
+    });
     /* ★ v567：wantAnalysis 只为兼容老存档保留，脚本恒输出 <Analysis>，别再加 UI。 */
     chk('xz-varc-c-dev', 'devMode', function () {
       if (S.settings.devMode) buildPreview();   /* 自动摊开提示词，不用点按钮 */
@@ -4971,6 +5677,19 @@
           [], '自动补算：按正文重写最新一楼的 <UpdateVariable>');
         s.SlashCommandParser.addCommand('xz补全', function () { runComplete('rewrite'); return '已按正文重写更新内容'; },
           [], '补格式并按正文重新写一次更新内容（丢弃 AI 原更新内容，带 6 楼上下文）');
+        /* ★ v576：后台推演的手动入口。
+           为什么不并进上面三条：补全修的是「这一楼的变量」，推演算的是「场外的人在干嘛」，
+           混在一起会让玩家以为「补全之后人就会动」—— 它们互相不触发。 */
+        s.SlashCommandParser.addCommand('xz推演', function () {
+          bgRun('手动');
+          return '后台推演已触发（结果用 /xz场外 看）';
+        }, [], '立刻推一次场外人物的动向（写他们在哪儿、在做什么）');
+        s.SlashCommandParser.addCommand('xz场外', function () {
+          if (!S.bg) S.bg = bgLoad();
+          var L = S.bg.lines || [];
+          if (!L.length) return '还没有推演结果（先 /xz推演，或把面板里的「后台推演」开关打开）';
+          return L.map(function (x) { return x.name + '：' + x.place + (x.doing ? ' · ' + x.doing : ''); }).join('\n');
+        }, [], '看上一次后台推演的结果：谁在哪儿、在做什么');
       }
     } catch (eC) {}
   }
@@ -5003,6 +5722,13 @@
       sniff: sniff,
       pollSniff: pollSniff,
       resetSniff: resetSniffState,
+      /* ★ v576：后台推演抛出去 —— 斜杠指令与状态栏要能叫到它。
+         只抛三个口子（run / state / inject），不抛内部函数：
+         抛多了等于把实现细节变成外部契约，改一次要追着改。 */
+      bgRun: bgRun,
+      bgState: function () { if (!S.bg) S.bg = bgLoad(); return S.bg; },
+      bgInjectNow: function () { if (!S.bg) S.bg = bgLoad(); return bgInject(S.bg.lines || []); },
+      bgReset: bgResetForNewChat,
       state: function () { return S; },
       chatId: chatId,
       resetForNewChat: resetForNewChat,
