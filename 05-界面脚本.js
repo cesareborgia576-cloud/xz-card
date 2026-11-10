@@ -5838,8 +5838,17 @@ function xzTypeOf(name, fbT, fbA) {
     var PLOT_EJS_TAIL = [
         "var _rr = ['凡人', '练气初期', '练气中期', '练气后期', '筑基初期', '筑基中期', '筑基后期', '金丹初期', '金丹中期', '金丹后期', '元婴初期', '元婴中期', '元婴后期', '化神初期', '化神中期', '化神后期', '炼虚初期', '炼虚中期', '炼虚后期'];",
         "var _cur = '';",
-        "try { if (typeof getvar === 'function') { var _g = getvar('主角信息.境界'); if (_g) _cur = String(_g); } } catch (_e1) {}",
-        "if (!_cur) { try { if (typeof vars !== 'undefined' && vars && vars.主角信息) _cur = String(vars.主角信息.境界 || ''); } catch (_e2) {} }",
+        "function _rrPick(o) {",
+        "  try {",
+        "    if (!o || typeof o !== 'object') return '';",
+        "    var d = o.stat_data || o.sata_data || o;",
+        "    if (d && d.主角信息 && d.主角信息.境界) return String(d.主角信息.境界);",
+        "  } catch (_e0) {}",
+        "  return '';",
+        "}",
+        "try { if (typeof getvar === 'function') { _cur = String(getvar('stat_data.主角信息.境界') || ''); if (!_cur) _cur = String(getvar('主角信息.境界') || ''); } } catch (_e1) {}",
+        "if (!_cur) { try { if (typeof variables !== 'undefined' && variables) _cur = _rrPick(variables); } catch (_e2) {} }",
+        "if (!_cur) { try { if (typeof stat_data !== 'undefined' && stat_data) _cur = _rrPick(stat_data); } catch (_e3) {} }",
         "function _rk(v) {",
         "  var s = String(v || '');",
         "  var i = _rr.indexOf(s);",
@@ -5894,6 +5903,41 @@ function xzTypeOf(name, fbT, fbA) {
         L.push(PLOT_EJS_TAIL);
         return L.join('\n');
     }
+    /* ══════════════════════════════════════════════════════════════════════
+       ★★★ v575：条目自愈（开机一次）★★★
+       病根：老玩家的书里那条《设定-剧情生成》的渲染段可能是旧版 ——
+             读境界走扁平路径，线上恒 undefined ⇒ 境界判不出来 ⇒ 没到境界的事件照样出现。
+       ⚠ 为什么必须开机就跑、不能只在「点开剧情页」时修：
+         玩家一天到晚不看那个页，可模型每轮都在读这条。
+         只挂在 pagePlot 上等于「只有爱看后台的人才被修好」。
+       ⚠ 判据三件套，缺一不敢写：
+         ① 条目里没有当前标记 `_rrPick`（有就什么都不做，天然幂等）；
+         ② `var EV = [...]` 能被 JSON.parse 成数组（否则 plotParse 会把
+            「解析失败」和「本来就是空清单」混成一个 []，写下去就是抹掉玩家手写的剧情）；
+         ③ 世界书接口已就绪（没就绪就过几秒再试，不报错、不弹窗）。
+       ⚠ 不碰 state：这里不是读取流程，改 state 会让剧情页显示成「已经加载过」。
+       ══════════════════════════════════════════════════════════════════════ */
+    function plotHealOnce(nth) {
+        var fn = plotApi('xzWBEntry');
+        if (typeof fn !== 'function') {
+            if (nth < 6) { try { setTimeout(function () { plotHealOnce(nth + 1); }, 4000); } catch (eT) {} }
+            return;
+        }
+        Promise.resolve(fn(PLOT_ENTRY)).then(function (r) {
+            if (!r || !r.ok) return;
+            var txt = String(r.content || '');
+            if (txt.indexOf('_rrPick') >= 0) return;
+            var m = /var\s+EV\s*=\s*(\[[\s\S]*?\]);/.exec(txt);
+            if (!m) return;
+            var list = null;
+            try { list = JSON.parse(m[1]); } catch (eP) { return; }
+            if (!Array.isArray(list)) return;
+            var put = plotApi('xzWBEntry');
+            if (typeof put !== 'function') return;
+            Promise.resolve(put(PLOT_ENTRY, plotCompose(list))).then(function () {}, function () {});
+        }, function () {});
+    }
+    try { setTimeout(function () { plotHealOnce(0); }, 6000); } catch (eHeal) {}
     function plotLoad(force) {
         if (state.plotBusy) return;
         if (state.plotList && !force) return;
@@ -5910,6 +5954,28 @@ function xzTypeOf(name, fbT, fbA) {
                    ⇒ 把**真实结果**印在页上：读到几条、还是失败、失败原因是什么。
                    以前成功时 `plotNote = ''`，页面什么都不说，看起来就像“一直在读”。 */
                 state.plotLoadState = '已读 ' + state.plotList.length + ' 条';
+                /* ★★★ v575：条目自愈 ★★★
+                   老玩家书里那条《设定-剧情生成》的渲染段可能是旧版（读境界走的是
+                   扁平路径 `主角信息.境界`，线上恒为 undefined ⇒ 境界判不出来 ⇒
+                   没到境界的事件照样出现）。世界书条目**跟着卡走**，光热更 05 救不到
+                   已经开档的人 —— 所以在读成功时顺手把渲染段升级成当下的版本。
+                   ⚠ 只在「条目里没有当前标记 _rrPick」时才重写，且**必须**能解析出 EV，
+                     否则一次误判就把玩家手写的剧情清单清空。
+                   ⚠ 重写用的就是同一条 plotCompose（EV 原样 + 现行 TAIL），不额外造一份格式。 */
+                if (String(r.content || '').indexOf('_rrPick') < 0) {
+                    /* ⚠ 只认「EV 块存在 **且** 能被 JSON.parse 回读成数组」——
+                       `plotParse` 解析失败也返回 []，与「本来就是空清单」分不开。
+                       分不开就敢写，等于用一次误判抹掉玩家手写的全部剧情。 */
+                    var _evm = /var\s+EV\s*=\s*(\[[\s\S]*?\]);/.exec(String(r.content || ''));
+                    var _evOk = false;
+                    if (_evm) { try { _evOk = Array.isArray(JSON.parse(_evm[1])); } catch (eEv) { _evOk = false; } }
+                    if (_evOk) {
+                        plotSave(state.plotList, null, true);
+                        state.plotLoadState = '已读 ' + state.plotList.length + ' 条（条目已升级）';
+                    } else {
+                        state.plotNote = '⚠ 条目里的 EV 数据块读不出来，未自动升级（先手工看一眼再存一次）';
+                    }
+                }
             } else {
                 state.plotList = state.plotList || [];
                 var _m = '⚠ 读《设定-剧情生成》失败：' + ((r && r.msg) || '未知原因');
@@ -5924,17 +5990,22 @@ function xzTypeOf(name, fbT, fbA) {
             try { render(true); } catch (e2) {}
         });
     }
-    function plotSave(list, after) {
+    /* quiet=true：条目自愈用 —— 成功后不改 plotList / 不触发 after（调用方是读取流程本身，
+       再走一遍只会把自己刚读到的清单又覆盖一次），失败则把原因写进 plotNote。 */
+    function plotSave(list, after, quiet) {
         var fn = plotApi('xzWBEntry');
         if (typeof fn !== 'function') { state.plotNote = '⚠ 写不了：《设定-剧情生成》接口没就绪'; try { render(true); } catch (e) {} return; }
         state.plotBusy = true;
         Promise.resolve(fn(PLOT_ENTRY, plotCompose(list))).then(function (r) {
             state.plotBusy = false;
             if (r && r.ok) {
-                state.plotList = list.slice();
-                state.plotNote = '';
-                state.plotLoadState = '已读 ' + list.length + ' 条';
-                if (typeof after === 'function') { try { after(); } catch (eA) {} }
+                if (!quiet) {
+                    state.plotList = list.slice();
+                    state.plotNote = '';
+                    state.plotLoadState = '已读 ' + list.length + ' 条';
+                    if (typeof after === 'function') { try { after(); } catch (eA) {} }
+                }
+                /* quiet 只做一件事：第④项自愈成功时不覆盖读取流程刚写好的状态 */
             } else {
                 state.plotNote = '⚠ 写入《设定-剧情生成》失败：' + ((r && r.msg) || '未知原因');
             }
