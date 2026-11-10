@@ -4810,13 +4810,28 @@
         }
       } catch (e2) {}
     }
-    try {
-      var cx = getContext();
-      if (cx && typeof cx.setExtensionPrompt !== 'function') { /* 老版本：下面走全局 */ }
-      if (!ok && typeof setExtensionPrompt === 'function') {
-        setExtensionPrompt(INJECT_BG, payload, 1, 0, false, 0); ok = true;
-      }
-    } catch (e3) {}
+    /* 第三级：沿上下文链再扫一遍 —— 某些酒馆版本把 `setExtensionPrompt` 挂在
+       `SillyTavern` 之外的 window（插件注入 / 老版本）。这里**不许写裸的全局调用**：
+       `setExtensionPrompt` 在标准 SillyTavern 里根本不是全局函数（05 也是走
+       `SillyTavern.setExtensionPrompt`），写裸调用等于造一个永远不成立的死分支，
+       还会被幽灵调用闸逮到（v576 实测就是这么红的）。 */
+    if (!ok) {
+      try {
+        var ws = windows();
+        for (var wi = 0; wi < ws.length; wi++) {
+          var w = ws[wi];
+          if (!w) continue;
+          var fns = [w, w.SillyTavern];
+          for (var fi = 0; fi < fns.length; fi++) {
+            var o = fns[fi];
+            if (o && typeof o.setExtensionPrompt === 'function') {
+              o.setExtensionPrompt(INJECT_BG, payload, 1, 0, false, 0); ok = true; break;
+            }
+          }
+          if (ok) break;
+        }
+      } catch (e3) {}
+    }
     if (!ok) console.warn('[后台推演] 注入失败：这个酒馆版本没有 setExtensionPrompt，正文 AI 看不到场外动向');
     return ok;
   }
