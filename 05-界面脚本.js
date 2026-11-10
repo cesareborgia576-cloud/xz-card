@@ -1173,6 +1173,12 @@
            ⚠ 三个都要进签名（渲染路径读它们），否则点完不重绘 —— _v398_memsig 会抓。 */
         plotList: null, plotForm: null, plotEdit: -1, plotBusy: false, plotNote: '',
         plotPend: null, plotLoadState: '未读',
+        /* ★ v577：主线剧情。
+           `mainForm` = 基调 / 大纲 / 一次生几条 / 自动续生 那张表；
+           `mainPend` = 模型刚返回、**还没写进条目**的那一批（arc + items[]）；
+           `mainNote` = 页面上那一行提示（读不到 / 生少了 / 已续生）。
+           ⚠ 三个都参与渲染 ⇒ **必须进签名**，否则点了不重绘（_v398_memsig 会抓）。 */
+        mainForm: null, mainPend: null, mainNote: '',
         /* ★ v357：斗罗 DLC 按钮的三个态。**都不是缓存** ——
            `dlcSt` 只存"最近一次从世界书读回来的结果"，`dlcRead` 会在切页/点按钮时覆盖它；
            `dlcReading` / `dlcBusy` 只是防重入，防止玩家连点把状态读串。 */
@@ -6115,6 +6121,423 @@ function xzTypeOf(name, fbT, fbA) {
             } catch (eB) { finish('', '拿不到酒馆主模型，也没有后端接口：' + ((eB && eB.message) || eB)); }
         }
     }
+    /* ══════════════════════════════════════════════════════════════════════
+       ★★★ v577：主线剧情（大纲 → 五条同源事件）★★★
+       作者 2026-11-10：「剧情分页新增一个功能，叫主线剧情，和单个剧情生成不一样，
+       单个生成的是单个事件，主线剧情是大纲，可填基调和主线大纲后，调动 ai，
+       根据玩家填的，生成五个相关类似事件，先别写入，而是玩家过目后选择全部重生
+       或单个事件重生，或者手动修改某个事件，确定后才写入。」
+       ── 与「单个生成」的分界 ──────────────────────────────────────────
+        · 单个：一条事件，字段逐项填，可勾 AI 润色（润色的是**这一段描写**）。
+        · 主线：**一次产五条**，玩家只给「基调 + 大纲」，五条由模型按同一个大纲衍生。
+          五条之间要互相咬得住（同一条线的前后阶段），不能是五件不相干的事。
+       ── 存在哪（已拍板：并入现有条目，不新开）─────────────────────────
+        仍旧写进《设定-剧情生成》的 `var EV`，靠两个字段认出来：
+          · `arc`  = 批次 id（`MAIN-<时间戳>`），同一个大纲生出来的五条共用；
+          · `seq`  = 1~5，这一批里的第几条。
+        为什么这样最省：不新开条目 ⇒ **不用重导卡**（新条目只有重导卡才进老玩家的书）；
+        模型每轮读的还是同一份 `EV`，主线事件天然出现在它的视野里。
+        ⚠ 不给主线单独一份清单：分两处存，写入要写两遍，早晚漂。
+          分页里靠 `arc` 过滤成一组显示，条目里就是平铺的 —— 模型不需要知道"这是主线"。
+       ── 五条写完再写（作者明确：「先别写入」）─────────────────────────
+        模型返回后先进 `state.mainPend`，**一个字节都不落库**；
+        玩家可以：全部重生 / 单条重生 / 就地改某条 / 删掉某条，最后点「确定写入」才落库。
+        这条不是体验问题而是安全问题：一次错五条，直接写进去就是五条脏数据进提示词。
+       ── 自动续生 ────────────────────────────────────────────────────
+        判据（已拍板）：**这一批五条全部标成「已结束」**，才生成下一批。
+        只在「点改状态」这条路上判 —— 不挂定时器：定时器会在玩家挂机时连续烧 token。
+        数量可调（玩家自填一次生几个），默认 5。
+       ══════════════════════════════════════════════════════════════════════ */
+    var MAIN_DEFAULT_N = 5;
+    /* 基调：与单个生成的 PLOT_MOODS 同一套词，另加几个适合长线的。
+       ⚠ 不许在这里写"已下架/旧写法"这类沿革话 —— 这张表会被写进提示词。 */
+    var MAIN_TONES = ['压抑', '肃杀', '温情', '诡异', '荒凉', '紧张', '欢腾', '悲凉',
+        '热血', '悬疑', '苍凉', '肃穆'];
+
+    function mainEmptyForm() {
+        return { tone: '', toneOther: '', outline: '', n: MAIN_DEFAULT_N, auto: false };
+    }
+    /* ★ v577：表单（大纲 / 基调 / 条数 / 自动续生）记在**浏览器本地**。
+       理由：大纲是玩家自己一个字一个字敲的，刷新一下就没了他会直接骂。
+       为什么不用变量表：这张表单是「操作者的草稿」，不是角色状态，
+       写进 stat_data 会跟着存档、跟着开局重置、还会进模型提示词 —— 三样都不该。
+       ⚠ 自动续生**出厂必须是关的**（作者拍板），所以缺键时按 false，不是按 true。
+       ⚠ 读写全包 try：localStorage 可能被宿主策略挡掉，挡掉就当没记住，不能因此报错。 */
+    var MAIN_FORM_KEY = 'xzMainPlotForm';
+    function mainSaveForm(f) {
+        try {
+            var o = f || {};
+            localStorage.setItem(MAIN_FORM_KEY, JSON.stringify({
+                tone: String(o.tone || ''), toneOther: !!o.toneOther,
+                outline: String(o.outline || ''), n: Number(o.n) || MAIN_DEFAULT_N,
+                auto: !!o.auto
+            }));
+        } catch (e) {}
+    }
+    function mainLoadForm() {
+        var f = mainEmptyForm();
+        try {
+            var raw = localStorage.getItem(MAIN_FORM_KEY);
+            if (!raw) return f;
+            var o = JSON.parse(raw);
+            if (!o || typeof o !== 'object') return f;
+            f.tone = String(o.tone || '');
+            f.toneOther = !!o.toneOther;
+            f.outline = String(o.outline || '');
+            var _n = parseInt(o.n, 10);
+            /* 老存档/手改过的键可能是 0 或 999 —— 夹回 1~10，别让提示词按 999 条拼 */
+            f.n = (isFinite(_n) && _n >= 1 && _n <= 10) ? _n : MAIN_DEFAULT_N;
+            f.auto = o.auto === true;
+        } catch (eL) {}
+        return f;
+    }
+    /* 一批 = 同一个 arc 的那几条，按 seq 排好 */
+    function mainGroups(list) {
+        var by = {};
+        (list || []).forEach(function (e, i) {
+            var a = String((e && e.arc) || '');
+            if (!a) return;
+            if (!by[a]) by[a] = [];
+            by[a].push({ e: e, i: i });
+        });
+        Object.keys(by).forEach(function (a) {
+            by[a].sort(function (x, y) { return (Number(x.e.seq) || 0) - (Number(y.e.seq) || 0); });
+        });
+        return by;
+    }
+    /* 五条生完了没有 —— 判据只看 state 标签（那是分页内存里的，模型看不到）。
+       ⚠ 「生完了」不是「生成了」：生成完但玩家还没打完这五条，就该继续等着。
+         所以判据必须是**全部标成已结束**，不是"已经写进条目"。 */
+    function mainBatchDone(list, arc) {
+        var g = mainGroups(list)[arc] || [];
+        if (!g.length) return false;
+        return g.every(function (x) { return (x.e.state || PLOT_STATES[0]) === '已结束'; });
+    }
+
+    /* 提示词：把玩家给的大纲拆成 N 条同源事件。
+       写法上刻意跟 plotPolishPrompt 拉开：那个要"扩写一段描写"，这个要"拆成一张表"。 */
+    function mainBuildPrompt(f, here) {
+        var L = [];
+        L.push('你是《天元录》修仙世界的「主线大纲拆分器」。');
+        L.push('玩家给你一段主线大纲和一种基调。你要把它拆成 ' + f.n + ' 个**前后相连**的剧情事件。');
+        L.push('');
+        L.push('【最要紧的三条】');
+        L.push('1. 这 ' + f.n + ' 个事件是**同一条线的不同阶段**，不是 ' + f.n + ' 件不相干的事。');
+        L.push('   第一个是起因，最后一个是收束；中间几条要能看出事情在往哪个方向走。');
+        L.push('2. 事件名称各写各的，**不许 ' + f.n + ' 条都叫一个名字**，也不许写成「起因」「经过」「结果」这种占位。');
+        L.push('   名字要短（≤10 字），像玩家自己会起的那种。');
+        L.push('3. 只输出下面这个格式，别的话一句都不要：');
+        L.push('');
+        L.push('<主线>');
+        L.push('1.');
+        L.push('名称：');
+        L.push('梗概：');
+        L.push('相关人物：');
+        L.push('相关地点：');
+        L.push('</主线>');
+        L.push('');
+        L.push('【每一栏怎么写】');
+        L.push('- 梗概：一到两句，说清这件事怎么起、赌注是什么、可能怎么收。**不许写结果**（玩家还没玩到）。');
+        L.push('  不许写「他心想」「她暗自」这类心理，不许替玩家做决定。');
+        L.push('- 相关人物：从下面《人物》里挑，用顿号分隔，2~4 个。允许留空写「不限」。');
+        L.push('- 相关地点：`州·域·城` 三段，**逐段照抄《地点》**，不许自己编地名。');
+        L.push('');
+        L.push('【基调】' + (f.tone || '（未指定，按大纲本身的走向定）'));
+        L.push('');
+        L.push('【主线大纲】');
+        L.push(String(f.outline || '').trim());
+        L.push('');
+        if (here && here.people) { L.push('【人物】'); L.push(here.people); L.push(''); }
+        if (here && here.places) { L.push('【地点】'); L.push(here.places); L.push(''); }
+        L.push('现在按上面的格式输出 ' + f.n + ' 条。');
+        return L.join(String.fromCharCode(10));
+    }
+
+    /* 解析：模型爱裹代码块、爱加解释。只认 `<主线>` 段；认不到就按「名称：」兜底切。
+       ⚠ 兜底那一步必须**同时看到名称和梗概**，否则会把抄回来的提示词当答案
+         （plotParse 那一处踩过同样的坑，这里不重犯）。 */
+    function mainParse(text, wantN) {
+        var raw = String(text || '');
+        raw = raw.replace(/```[a-zA-Z]*\n?/g, '').replace(/```/g, '');
+        var m = raw.match(/<\s*主线[^>]*>([\s\S]*?)<\s*\/\s*主线\s*>/i);
+        var body = '';
+        if (m && m[1] && m[1].trim()) body = m[1];
+        else if (/名称\s*[:：]/.test(raw) && /梗概\s*[:：]/.test(raw)) body = raw;
+        if (!body) return null;
+
+        var out = [];
+        var cur = null;
+        String(body).split(/\r?\n/).forEach(function (ln) {
+            var s = String(ln || '').trim();
+            if (!s) return;
+            /* ★ 先把行首序号剥掉，再判字段 —— 模型三种写法都爱用：
+                 `1.`              序号单独一行（正常）
+                 `1.月牙泉断水`     序号后面直接跟名字
+                 `2.名称：X`        序号后面跟字段
+               ⚠ 第三种最容易被静默吃掉：它既过不了「纯序号行」（后面有字），
+                 又被字段正则拒掉（行首是 `2.` 不是 `名称`）。
+               ⚠ 更坏的是「只剥离不换条」：剥完当普通字段行处理的话，
+                 `2.名称：X` 会写进**上一条**的 name（被 `if (!cur.name)` 挡掉 ⇒ 名字丢），
+                 它的「梗概」会覆盖上一条的 desc（⇒ 内容被串改成另一件事）。
+                 所以只要这一行是字段行、而当前这条已经有名字了，就**另开一条**。 */
+            var _mk = s.match(/^(\d+)\s*[.、)]\s*(.*)$/);
+            var _numLine = !!_mk;
+            if (_mk) {
+                var _tail = String(_mk[2] || '').trim();
+                if (!_tail) { cur = { name: '', desc: '', cast: [], place: '' }; out.push(cur); return; }
+                if (!/^(名称|梗概|相关人物|相关地点)\s*[:：]/.test(_tail)) {
+                    cur = { name: _tail, desc: '', cast: [], place: '' }; out.push(cur); return;
+                }
+                s = _tail;          /* 序号 + 字段 ⇒ 当普通字段行往下走 */
+            }
+            var kv = s.match(/^(名称|梗概|相关人物|相关地点)\s*[:：]\s*(.*)$/);
+            if (kv) {
+                /* 该不该另开一条：① 还没开过；② 带序号的字段行 + 当前这条已经有名字 ⇒
+                   这是下一条的开头（`2.名称：X` 紧跟在 `1.…` 后面）。 */
+                if (!cur || (_numLine && cur.name)) { cur = { name: '', desc: '', cast: [], place: '' }; out.push(cur); }
+                var v = String(kv[2] || '').trim();
+                if (kv[1] === '名称') { if (!cur.name) cur.name = v; }
+                else if (kv[1] === '梗概') cur.desc = v;
+                else if (kv[1] === '相关人物') {
+                    cur.cast = v.split(/[、,，\/]/).map(function (x) { return String(x).trim(); })
+                        .filter(function (x) { return x && x !== '不限' && x !== '无'; });
+                } else cur.place = v;
+            }
+        });
+        out = out.filter(function (x) { return (x.name || x.desc) && x.desc; });
+        /* 名称空着的（模型偶尔只写梗概）：用梗概头 8 字补一个，别让它变成「未命名」 */
+        out.forEach(function (x, i) {
+            if (!x.name) x.name = String(x.desc).slice(0, 8) + '…';
+            if (!x.seq) x.seq = i + 1;
+        });
+        if (!out.length) return null;
+        return out.slice(0, Math.max(1, Number(wantN) || MAIN_DEFAULT_N));
+    }
+
+    /* 调模型：与 plotCallAI 同一个宿主入口（TavernHelper.generateRaw → 后端兜底），
+       但**提示词与温度不同**：这个要发散（0.9），润色那条要收敛（0.8）。
+       ⚠ 不直接复用 plotCallAI：它的提示词是写死给「润色一段」的，复用就得改它的语义，
+         而那条路已经上线了，动它会牵到单个生成的每一次润色。 */
+    function mainCallAI(prompt, done) {
+        var TH = plotFindTH();
+        var finish = function (txt, err) { try { done(txt || '', err || ''); } catch (eF) {} };
+        function pick(out) {
+            return String((out && (out.content || out.text)) || out || '')
+                .replace(/^\s*```[a-z]*\s*/i, '').replace(/```\s*$/, '').trim();
+        }
+        if (TH) {
+            var shapes = [
+                function () { return TH.generateRaw({ ordered_prompts: [{ role: 'user', content: prompt }] }); },
+                function () { return TH.generateRaw({ user_input: prompt }); },
+                function () { return TH.generateRaw(prompt); }
+            ];
+            var idx = 0;
+            var next = function () {
+                if (idx >= shapes.length) return backend();
+                Promise.resolve().then(shapes[idx++]).then(function (out) {
+                    var txt = pick(out);
+                    if (txt) { finish(txt, ''); return; }
+                    return next();
+                }, function () { return next(); });
+            };
+            return next();
+        }
+        return backend();
+        function backend() {
+            try {
+                return fetch('/api/backends/chat-completions/generate', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: [{ role: 'user', content: prompt }], max_tokens: 1600, temperature: 0.9 })
+                }).then(function (res) {
+                    return res.text().then(function (raw) {
+                        if (!res.ok) throw new Error('HTTP ' + res.status + '：' + raw.slice(0, 100));
+                        var j = null; try { j = JSON.parse(raw); } catch (eJ) {}
+                        var txt = pick(function () {
+                            if (!j) return raw;
+                            return (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content)
+                                || j.content || j.text || raw;
+                        });
+                        finish(txt, txt ? '' : '模型没有返回内容');
+                    });
+                }, function (e) { finish('', '酒馆后端调用失败：' + ((e && e.message) || e)); });
+            } catch (eB) { finish('', '拿不到酒馆主模型，也没有后端接口：' + ((eB && eB.message) || eB)); }
+        }
+    }
+
+    /* 「现在局面」那几行：模型得有真实的人物与地名可用，否则会自己编。
+       地点从 05 自己的舆图出口取（唯一真源），取不到就明说"没读到"而不编。 */
+    function mainHere() {
+        var out = { people: '', places: '' };
+        try {
+            var pl = (getVariables() || {}).人物列表 || {};
+            var ns = Object.keys(pl).slice(0, 12);
+            if (ns.length) out.people = ns.join('、');
+        } catch (eP) {}
+        try {
+            var tree = null;
+            var r = globalThis.__XZ05__;
+            if (r && typeof r.xzMapPlaceTree === 'function') tree = r.xzMapPlaceTree();
+            if (tree && tree.length) {
+                var L = [];
+                tree.forEach(function (st) {
+                    (st.areas || []).forEach(function (ar) {
+                        L.push(st.n + '·' + ar.n + '·' + ((ar.cities || [])[0] || ''));
+                    });
+                });
+                out.places = L.slice(0, 14).join('\n');
+            }
+        } catch (eT) {}
+        return out;
+    }
+    /* 生成一批：先挂到 mainPend（**不写条目**），玩家确定才落库。
+       参数 why：'manual' 由按钮触发，'auto' 由「上一批全打完」触发。
+       ⚠ `wantN` 允许玩家自填（作者：「或者根据玩家自填，一次性生几个」）。 */
+    function mainGen(why, wantN) {
+        var f = state.mainForm || (state.mainForm = mainLoadForm());
+        var n = Math.max(1, Math.min(10, Number(wantN || f.n || MAIN_DEFAULT_N)));
+        /* 夹过的数字要写回表单并落盘：否则玩家填了 99、这一次按 10 跑，
+           但输入框里还留着 99、刷新后也是 99 —— 下次他还以为能生 99 条。 */
+        if (f.n !== n) { f.n = n; mainSaveForm(f); }
+        if (!String(f.outline || '').trim()) {
+            state.mainNote = '⚠ 先写主线大纲 —— 没有大纲，模型只会给你五条不相干的事。';
+            try { render(true); } catch (e) {}
+            return;
+        }
+        var arc = 'MAIN-' + Date.now();
+        state.mainPend = {
+            arc: arc, busy: true, err: '', n: n,
+            tone: f.tone || '', outline: String(f.outline || '').trim(),
+            items: [], prompt: '', raw: '', why: why || 'manual'
+        };
+        state.mainNote = '';
+        try { render(true); } catch (e0) {}
+        var prompt = mainBuildPrompt({ tone: f.tone || '', outline: f.outline, n: n }, mainHere());
+        state.mainPend.prompt = prompt;
+        /* ★ v577：超时兜底。
+           为什么主线必须有、单条那次没有：主线的 `busy` 会锁住**四颗**按钮
+           （重生这条 / 删掉 / 确定写入 / 全部重生都是 `if (busy) return`），
+           而它一次跑的是五条的 token。模型那头卡住不回（换模型、断流、
+           深度思考挂住）玩家只能刷新页面重来 —— 大纲已经存了，但草稿丢了。
+           到点就把 busy 放下、写一句"没等到"，让按钮重新可点。
+           ⚠ 只判 arc 是否还是这一批：玩家中途「撤下」或「全部重生」之后，
+             旧的计时器不能再动新的一批。 */
+        var _TO = 120000;
+        var _toTimer = setTimeout(function () {
+            var p = state.mainPend;
+            if (!p || p.arc !== arc || !p.busy) return;
+            p.busy = false;
+            if (!p.items.length) p.err = '等了 2 分钟模型没回来（可能断流或模型太久没响应）。可以点「全部重生」再试一次。';
+            try { render(true); } catch (eT) {}
+        }, _TO);
+        mainCallAI(prompt, function (txt, err) {
+            try { clearTimeout(_toTimer); } catch (eC) {}
+            var p = state.mainPend;
+            if (!p || p.arc !== arc) return;     /* 玩家已经重来 / 撤回 */
+            p.busy = false;
+            p.raw = txt || '';
+            if (err) { p.err = err; try { render(true); } catch (e1) {} return; }
+            var got = mainParse(txt, n);
+            if (!got || !got.length) {
+                p.err = '返回里认不出 <主线> 段（可点「全部重生」再来一次）';
+                try { render(true); } catch (e2) {}
+                return;
+            }
+            p.items = got.map(function (x, i) { return mainToRec(x, arc, i + 1); });
+            p.err = '';
+            /* 生够没生够要说出来：模型少给两条时，玩家得知道是它没写完，而不是自己看漏 */
+            if (p.items.length < n) p.err = '只生成了 ' + p.items.length + ' 条（要 ' + n + ' 条），可以点「全部重生」';
+            try { render(true); } catch (e3) {}
+        });
+    }
+    /* 把模型给的形状转成条目里的记录形状 —— **与单条事件同一个 schema**，
+       多出来的只有 arc / seq 两个字段（靠它们认出一批）。 */
+    function mainToRec(x, arc, seq) {
+        var d = new Date();
+        return {
+            name: String(x.name || '').slice(0, 20),
+            trigger: '境界：未定',        /* 主线默认不设门槛；玩家可在「修改」里自己填 */
+            scale: '域级',
+            span: '短期',
+            mood: String((state.mainPend && state.mainPend.tone) || '').slice(0, 20),
+            cast: (x.cast || []).slice(0, 4),
+            place: String(x.place || '').slice(0, 40),
+            desc: String(x.desc || '').trim(),
+            at: d.toISOString().slice(0, 10),
+            arc: arc,
+            seq: seq
+        };
+    }
+    /* 落库：一批一次性写进条目（一次 plotSave，不写 N 次 —— 写 N 次会触发 N 次重绘与 N 次世界书写入） */
+    function mainCommit(arc) {
+        var p = state.mainPend;
+        /* ⚠ 只判「忙」和「有没有东西可写」，**不判 p.err** ——
+           err 里既有致命错（认不出 <主线> 段），也有非致命提示
+           （「只生成了 3 条（要 5 条）」）。按 err 一刀切 return 的话，
+           界面照常摆着「确定写入」按钮，玩家点了纹丝不动、零报错 ——
+           这正是本项目最贵的那类静默 bug。能不能写只看 items。 */
+        if (!p || p.arc !== arc || p.busy || !p.items.length) return;
+        var cur = (state.plotList || []).slice();
+        p.items.forEach(function (rec) {
+            var hit = -1;
+            for (var i = 0; i < cur.length; i++) {
+                if (cur[i] && cur[i].arc === p.arc && Number(cur[i].seq) === Number(rec.seq)) { hit = i; break; }
+            }
+            if (hit >= 0) cur[hit] = Object.assign({}, cur[hit], rec);
+            else cur.push(rec);
+        });
+        /* ⚠ 清 mainPend 必须放在**写入成功之后**（after 里），不能放前面：
+             接口没就绪 / 写入抛错 / 后端 500 —— 只要没写进条目，
+             前面清掉就等于把玩家手改过的那五条当场蒸发。
+           写失败时 mainPend 原样挂着，玩家再点一次「确定写入」就行。
+           ⚠ 这里**不挂 mainMaybeAuto**：刚写进来的这一批全是「未开始」，
+             而 mainMaybeAuto 只看最近一批（就是它）⇒ 恒 false，白挂一次。
+             真正该判的那一拍在 plot-state（玩家把最后一条标成已结束）。 */
+        plotSave(cur, function () {
+            if (state.mainPend && state.mainPend.arc === arc) {
+                var _n = state.mainPend.items.length;
+                state.mainPend = null;
+                /* 写完必须说一声「写成几条、去哪看」——
+                   以前这里清成空串，页面一下子变干净，玩家分不清是成功还是被吞了。 */
+                state.mainNote = '已写入 ' + _n + ' 条主线事件，在下面「已生成」列表里（状态默认「未开始」，点「改状态」推进）。';
+            }
+        });
+    }
+
+    /* 自动续生：只在**这一批全部标成已结束**且开关打开时触发。
+       ⚠ 不挂定时器：定时器会在玩家挂机时一轮一轮烧 token。
+         只在「改状态」这条路上判 —— 那是玩家主动把最后一条标成已结束的那一刻。 */
+    function mainMaybeAuto() {
+        var f = state.mainForm || {};
+        if (f.auto !== true) return false;
+        if (state.mainPend) return false;      /* 已经有一批挂着没确定，别叠 */
+        var list = state.plotList || [];
+        var groups = mainGroups(list);
+        var arcs = Object.keys(groups);
+        if (!arcs.length) return false;
+        /* 取**最近一批**判 —— 旧批次打完了不该一直续生。
+           ⚠ 不能按字符串排序取最后一个：arc 是 `MAIN-` + Date.now()，
+             位数一样时字典序碰巧等于时间序，但这属于**巧合**而不是保证
+             （改前缀、加序号、换成别的命名方式那天就静默失效）。
+             按 arc 里的数字部分比大小，取不到数字的按 0 排在最前。 */
+        var _arcNum = function (a) {
+            var m = String(a).match(/(\d{6,})/);       /* 时间戳至少 13 位，取 ≥6 位避免误吃前缀里的数字 */
+            return m ? Number(m[1]) : 0;
+        };
+        arcs.sort(function (x, y) { return _arcNum(x) - _arcNum(y); });
+        var last = arcs[arcs.length - 1];
+        if (!mainBatchDone(list, last)) return false;
+        /* 续生用同一份大纲（作者要的是「五个生完了就又生五个」，接着同一条线走） */
+        var g = groups[last] || [];
+        if (!g.length) return false;
+        if (!String(f.outline || '').trim()) return false;
+        mainGen('auto', Number(f.n) || MAIN_DEFAULT_N);
+        /* 说明里必须点出「还是要过目」：自动续生只省了「敲大纲」这一步，
+           **不省**「确定写入」—— 否则玩家会以为它偷偷往条目里塞了五条。 */
+        state.mainNote = '上一批 ' + g.length + ' 条全打完了，已按同一份大纲续生下一批。'
+            + '新的一批同样只是草稿，在下面过目后点「确定写入」才进条目。';
+        try { render(true); } catch (e) {}
+        return true;
+    }
     /* ★ 2026-11-04（作者原话）：「所有注释和解释只能改为感叹号图标加"说明"这两个汉字」。
        ⇒ 折叠标题**一律**是「说明」两个字，图标由 CSS `::before` 画（圆圈 + 感叹号）。
        参数 `title` 只用来做 aria-label，不上屏。
@@ -6214,6 +6637,7 @@ function xzTypeOf(name, fbT, fbA) {
 
     function pagePlot() {
         if (!state.plotForm) state.plotForm = plotEmptyForm();
+        if (!state.mainForm) state.mainForm = mainLoadForm();
         if (state.plotList === null && !state.plotBusy) { try { plotLoad(false); } catch (e0) {} }
         var f = state.plotForm;
         var editing = (state.plotEdit >= 0);
@@ -6270,6 +6694,120 @@ function xzTypeOf(name, fbT, fbA) {
                 + '<div class="xz-plot-ctl">' + plotCtl(key, opts, ph, narrow) + '</div></div>';
         }
 
+        h += '<div class="xz-plot-form">';
+        /* ═══ v577：主线剧情（大纲 → 一次 N 条，先过目再写）═══
+           位置在单条生成**之前**：它是"先想清楚整条线"，再一条条补细节；
+           反过来摆会让玩家的操作路径变成"先填一条、再发现还有个主线"。
+           ⚠ 这一段里**所有**输入框都用 `data-main-field`，不用 `data-plot-field` ——
+             两者共用 `_plotTake` 会互相覆盖，而且 plot 那边的 self 标记是 `_o_` 前缀。 */
+        var mf = state.mainForm || mainLoadForm();
+        h += '<div class="xz-sub-head" style="margin-top:4px;">✦ 主线剧情</div>';
+        h += '<div class="xz-rpg-desc" style="font-size:11.5px;margin-bottom:6px;">'
+            + '给一段大纲和一种基调，让 AI 拆成几条前后相连的事件。'
+            + '<b style="color:var(--xz-gold-bright);">先摆出来给你看，点「确定写入」才进条目。</b></div>';
+
+        /* 基调：chip 选择 + 其他自填（与相关人物同一种长相，不再另造一套控件） */
+        h += '<div class="xz-plot-row" style="align-items:flex-start;">'
+            + '<span class="xz-plot-lab" style="padding-top:5px;">基调</span>'
+            + '<div class="xz-plot-ctl" style="flex-wrap:wrap;">';
+        MAIN_TONES.forEach(function (tn) {
+            var on = (!mf.toneOther && mf.tone === tn);
+            h += '<button type="button" class="xz-plot-chip' + (on ? ' on' : '') + '" data-xz-act="main-tone" data-tone="' + esc(tn) + '">' + esc(tn) + '</button>';
+        });
+        h += '<button type="button" class="xz-plot-chip' + (mf.toneOther ? ' on' : '') + '" data-xz-act="main-tone-other">其他…</button>';
+        /* 自填态：手写的那个词本身也要能看见、能改 —— 否则选了「其他」却无处输入 */
+        if (mf.toneOther) {
+            h += '<input class="xz-plot-input" type="text" data-main-field="tone" value="' + esc(mf.tone) + '" maxlength="16" placeholder="例：压抑里带一点暖" style="flex:1 1 100%;margin-top:4px;">';
+        }
+        h += '</div></div>';
+
+        h += '<div class="xz-plot-row" style="align-items:flex-start;">'
+            + '<span class="xz-plot-lab" style="padding-top:5px;">主线大纲</span>'
+            + '<div class="xz-plot-ctl"><textarea class="xz-plot-ta" data-main-field="outline" rows="5" maxlength="1200" '
+            + 'placeholder="这一段主线想讲什么：起因是什么、谁在推、赌注是什么、最后要收在哪。'
+            + '写得越具体，拆出来的几条越咬得住。">' + esc(mf.outline) + '</textarea></div></div>';
+
+        h += '<div class="xz-plot-row"><span class="xz-plot-lab">一次生几条</span><div class="xz-plot-ctl">'
+            + '<input class="xz-plot-input w62" type="text" inputmode="numeric" data-main-field="n" value="' + esc(mf.n || MAIN_DEFAULT_N) + '" maxlength="2" placeholder="5">'
+            + '<span style="font-size:11px;color:var(--xz-muted);">条（1~10，默认 ' + MAIN_DEFAULT_N + '）</span>'
+            + '</div></div>';
+
+        /* 自动续生：开关 + 一句状态。作者问的是「五个生完了就又生五个」，
+           判据是**这一批全部标成已结束**（见 mainBatchDone），不是"写进条目就算"。
+           ⚠ 开着但大纲是空的 ⇒ 续生永远不会发生（mainMaybeAuto 里那条守卫）。
+             必须把这件事说在脸上，否则玩家开了开关、打完五条、什么都没发生，
+             会以为是坏了。 */
+        var _autoDead = mf.auto && !String(mf.outline || '').trim();
+        h += '<div class="xz-plot-row"><span class="xz-plot-lab">自动续生</span><div class="xz-plot-ctl" style="flex-wrap:wrap;">'
+            + '<button type="button" class="xz-plot-chip' + (mf.auto ? ' on' : '') + '" data-xz-act="main-auto">'
+            + (mf.auto ? '已开' : '关着') + '</button>'
+            + '<span style="font-size:11px;color:var(--xz-muted);">这一批全部标成「已结束」时，按同一份大纲再生成一批'
+            + (_autoDead ? '（<span style="color:#fbbf24;">大纲还空着，续生不会发生</span>）' : '')
+            + '</span>'
+            + '</div></div>';
+
+        h += '<div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">'
+            + '<button type="button" class="xz-plot-btn xz-plot-btn-main" data-xz-act="main-gen">'
+            + '调 AI 生成 ' + (Number(mf.n) || MAIN_DEFAULT_N) + ' 条</button>'
+            + '</div>';
+
+        /* ── 待确认的那一批（**还没写进条目**）── */
+        var mp = state.mainPend;
+        if (mp) {
+            h += '<div class="xz-plot-card" style="margin-top:10px;border-color:var(--xz-gold-dim);">';
+            h += '<div class="xz-plot-card-top">'
+                + '<span class="xz-plot-card-name" style="color:var(--xz-gold-bright);">✦ 主线草稿（待确认）</span>'
+                + '<span class="xz-plot-card-st" style="color:var(--xz-muted);">还没写进条目</span></div>';
+            /* 自动续生来的那一批要说出来：玩家打完上一批之后页面自己冒出一批，
+               不说清来源的话他会以为是别的东西（或者以为上一批被替换了）。 */
+            if (mp.why === 'auto') {
+                h += '<div class="xz-plot-card-desc" style="color:var(--xz-muted);font-size:10.5px;">'
+                    + '这批是「自动续生」按同一份大纲生成的，同样要过目后点「确定写入」。</div>';
+            }
+            if (mp.busy) {
+                h += '<div class="xz-plot-card-desc" style="color:var(--xz-muted);">正在调模型拆大纲…</div>';
+            } else if (mp.err && !(mp.items || []).length) {
+                h += '<div class="xz-plot-card-desc" style="color:#fbbf24;">⚠ ' + esc(mp.err) + '</div>';
+            } else {
+                if (mp.err) h += '<div class="xz-plot-card-desc" style="color:#fbbf24;">⚠ ' + esc(mp.err) + '</div>';
+                (mp.items || []).forEach(function (it, i) {
+                    h += '<div style="border-top:1px dashed rgba(212,175,55,.22);margin-top:8px;padding-top:8px;">';
+                    h += '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">'
+                        + '<span style="font-size:11px;color:var(--xz-muted);">' + (i + 1) + '.</span>'
+                        + '<input class="xz-plot-input" type="text" data-main-field="' + 'item_name_' + i + '" value="' + esc(it.name) + '" maxlength="20" style="flex:1 1 120px;">'
+                        + '</div>';
+                    h += '<textarea class="xz-plot-ta" data-main-field="item_desc_' + i + '" rows="3" maxlength="400" style="margin-top:6px;">' + esc(it.desc) + '</textarea>';
+                    if (it.place || (it.cast && it.cast.length)) {
+                        h += '<div style="font-size:10.5px;color:var(--xz-muted);margin-top:4px;">'
+                            + (it.place ? ('地点 ' + esc(it.place)) : '')
+                            + (it.cast && it.cast.length ? ('｜' + esc(it.cast.join('、'))) : '')
+                            + '</div>';
+                    }
+                    h += '<div class="xz-plot-card-acts">'
+                        + '<button type="button" class="xz-plot-btn" data-xz-act="main-regen-one" data-i="' + i + '">重生这条</button>'
+                        + '<button type="button" class="xz-plot-btn xz-plot-btn-del" data-xz-act="main-drop-one" data-i="' + i + '">删掉</button>'
+                        + '</div>';
+                    h += '</div>';
+                });
+            }
+            h += '<div class="xz-plot-card-acts" style="margin-top:10px;">'
+                /* 「这一批会被写成几条」必须写在按钮旁边：
+                   玩家删掉两条之后点确定，写进去的就是三条 ——
+                   而下一批续生仍然按「全部已结束」判，条数少了会让他以为漏写。
+                   把真实条数摆在眼前，比事后再解释便宜。 */
+                + (mp.busy ? '' : (mp.err && !(mp.items || []).length ? ''
+                    : '<span style="font-size:11px;color:var(--xz-muted);margin-right:auto;">将写入 '
+                      + (mp.items || []).length + ' 条</span>'
+                      + '<button type="button" class="xz-plot-btn xz-plot-btn-main" data-xz-act="main-commit">确定写入</button>'))
+                + (mp.busy ? '' : '<button type="button" class="xz-plot-btn" data-xz-act="main-regen-all">全部重生</button>')
+                + '<button type="button" class="xz-plot-btn" data-xz-act="main-discard">撤下</button>'
+                + '</div></div>';
+        }
+        if (state.mainNote) h += '<div class="xz-plot-note">' + esc(state.mainNote) + '</div>';
+        h += '</div>';
+
+        /* ═══ 单条生成 ═══ */
+        h += '<div class="xz-sub-head" style="margin-top:16px;">✦ 单条剧情</div>';
         h += '<div class="xz-plot-form">';
         h += plotRow('事件名称', 'name', PLOT_NAME_TIPS, '例：月牙泉城断水');
 
@@ -6379,9 +6917,14 @@ function xzTypeOf(name, fbT, fbA) {
         list.forEach(function (e, i) {
             var st = e.state || '未开始';   /* 只给玩家看的标签，条目里没有、AI 不知道 */
             var stCol = st === '进行中' ? '#7ddc9a' : (st === '已结束' ? 'var(--xz-muted)' : 'var(--xz-gold-bright)');
+            /* ★ v577：主线批次标出来。
+               主线事件的 trigger 一律是「境界：未定」，不加标记的话
+               玩家在列表里看不出「这五条是一条线上的」。只在有 arc 时才标 ——
+               单条事件没有 arc（那是主线的批次号），不能被误标成主线。 */
+            var _arcSeq = (e.arc && Number(e.seq)) ? ('　<span style="font-size:10px;color:var(--xz-muted);">主线·第 ' + Number(e.seq) + ' 段</span>') : '';
             h += '<div class="xz-plot-card">'
                 + '<div class="xz-plot-card-top">'
-                + '<span class="xz-plot-card-name">' + esc(e.name) + '</span>'
+                + '<span class="xz-plot-card-name">' + esc(e.name) + _arcSeq + '</span>'
                 + '<span class="xz-plot-card-st" style="color:' + stCol + ';">● ' + esc(st) + '</span></div>'
                 + '<div class="xz-plot-card-meta">'
                 + esc(e.trigger) + '｜' + esc(e.scale) + '｜' + esc(e.span)
@@ -10791,6 +11334,26 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             state.plotPend
                 ? ((state.plotPend.busy ? 1 : 0) + '|' + (state.plotPend.err || '') + '|' + (state.plotPend.text ? 1 : 0))
                 : 'n',
+            /* ★ v577：主线三态进签名。
+               同 plotPend 的口径：`mainPend.items` 里是**模型给的内容**，
+               玩家会就地改某条的梗概（textarea），所以**不能**把 items 的全文塞进签名
+               —— 那会让「改一个字就失焦」在老坑上再犯一次（v543）。
+               只留结构性的三态：挂没挂着一批 / 正在生成 / 有没有报错 / 几条。 */
+            state.mainPend
+                ? ((state.mainPend.busy ? 1 : 0) + '|' + (state.mainPend.err || '') + '|' + (state.mainPend.items || []).length + '|' + (state.mainPend.arc || ''))
+                : 'n',
+            /* mainForm 同理：tone/outline 是输入框里的文本，不进签名；
+               只有会改**结构**的三样进去 —— 基调是否自填态（决定输入框在不在）、
+               自动续生开关（决定那颗开关长什么样）、n（决定「一次生几条」的数字显示）。 */
+            (function () {
+                var mf = state.mainForm || {};
+                return [
+                    mf.toneOther ? 1 : 0,
+                    mf.auto ? 1 : 0,
+                    Number(mf.n) || 0
+                ].join(',');
+            })(),
+            state.mainNote || '',
             /* ★★★ v464（第九次踩同一个坑，这次是 `dlcBar`）★★★
                DLC 那一整块的**折叠态**同样只活在内存里，同样由点击改完调 `render(true)`。
                我一开始在 7804 写了「`dlcBar` 不进签名 —— 它对要不要重画没有发言权，
@@ -11062,6 +11625,49 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 };
                 doc.addEventListener('input', _plotTake, true);
                 doc.addEventListener('change', _plotTake, true);
+
+                /* ★ v577：主线的输入同样**只进内存、不重绘**。
+                   与前一段分开写而不是合并：两边的目标对象不同（plotForm / mainForm），
+                   合并就得在里面按前缀分叉，以后改一处会牵到另一处。
+                   ⚠ 主线的「一次生几条」只收数字，且夹在 1~10：
+                     模型那边是按条数拼提示词的，给它 200 会直接把这轮 token 烧穿。
+                   ⚠ 草稿里那两条输入（字段名 item_ 加 name 或 desc 加下划线与序号）
+                     走**另一条路**：它们改的是草稿里那一条，不是表单
+                     ⇒ 必须直接落到 state.mainPend.items 里那一格。
+                     写进 mainForm 会变成一堆没人读的键（名字看着对、改完没反应）。 */
+                var _mainTake = function (e) {
+                    var t = e && e.target;
+                    if (!t || !t.getAttribute) return;
+                    var k = t.getAttribute('data-main-field');
+                    if (!k) return;
+                    var _mi = k.match(/^item_(name|desc)_(\d+)$/);
+                    if (_mi) {
+                        var _p = state.mainPend;
+                        if (!_p || _p.busy) return;
+                        var _it = (_p.items || [])[Number(_mi[2])];
+                        if (!_it) return;
+                        if (_mi[1] === 'name') _it.name = String(t.value || '').slice(0, 20);
+                        else _it.desc = String(t.value || '').slice(0, 400);
+                        return;
+                    }
+                    if (!state.mainForm) state.mainForm = mainLoadForm();
+                    if (k === 'n') {
+                        /* ⚠ 先把小数点之后切掉再剔非数字：直接剔的话 `3.7` 会变成 `37`，
+                           再夹成 10 —— 玩家填了 3.7，界面上莫名其妙变成 10。 */
+                        var _c = String(t.value || '').split(/[.．]/)[0].replace(/[^0-9]/g, '');
+                        if (_c !== t.value) t.value = _c;
+                        var _n = parseInt(_c, 10);
+                        if (!isFinite(_n) || _n < 1) _n = 1;
+                        if (_n > 10) _n = 10;
+                        state.mainForm.n = _n;
+                        mainSaveForm(state.mainForm);
+                        return;
+                    }
+                    state.mainForm[k] = (t.type === 'checkbox') ? !!t.checked : t.value;
+                    mainSaveForm(state.mainForm);
+                };
+                doc.addEventListener('input', _mainTake, true);
+                doc.addEventListener('change', _mainTake, true);
 
                 /* ★ 2026-11-04：剧情页的「下拉拉取」。选「其他…」时给字段打上自填标记 ⇒
                    重绘后旁边多一个输入框；选普通项则清掉标记 ⇒ 输入框收回。
@@ -11651,6 +12257,113 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                     state.plotNote = '';
                     plotSave(cur);
                 }
+                /* ═══ v577：主线剧情的那几颗按钮 ═══
+                   全部只改内存，不碰条目 —— 只有 `main-commit` 那一条会落库。
+                   ⚠ 这几条必须放在 plot-* 之前判：`main-*` 与 `plot-*` 前缀不同，
+                     顺序其实无所谓，但放前面能避免以后有人加通配分支时把它们吃掉。 */
+                if (act === 'main-tone') {
+                    var _tv = String(el.getAttribute('data-tone') || '');
+                    if (!state.mainForm) state.mainForm = mainLoadForm();
+                    state.mainForm.tone = _tv;
+                    state.mainForm.toneOther = false;
+                    state.mainNote = '';
+                    mainSaveForm(state.mainForm);
+                    render(true);
+                    return;
+                }
+                if (act === 'main-tone-other') {
+                    if (!state.mainForm) state.mainForm = mainLoadForm();
+                    state.mainForm.toneOther = true;
+                    state.mainForm.tone = '';
+                    mainSaveForm(state.mainForm);
+                    render(true);
+                    return;
+                }
+                if (act === 'main-gen') { mainGen('manual'); return; }
+                if (act === 'main-regen-all') {
+                    /* 全部重生：把挂着那批整批丢掉，按同一份大纲重来一次。
+                       大纲从 `state.mainForm` 现取（玩家可能在等结果时改了它）。
+                       为什么先判 busy：正在调模型时再点一次，会把上一批的 callback
+                       变成孤儿（它 arc 对不上就自己退出了），多发一次请求白烧 token。 */
+                    var _p0 = state.mainPend;
+                    if (_p0 && _p0.busy) return;
+                    mainGen('manual');
+                    return;
+                }
+                if (act === 'main-regen-one') {
+                    /* 单条重生：只重生成第 data-i 条。
+                       为什么不重来整批：玩家可能已经改了另外四条，重来整批等于把他改的全抹掉。 */
+                    var _p1 = state.mainPend;
+                    if (!_p1 || _p1.busy) return;
+                    var _ri = parseInt(el.getAttribute('data-i'), 10);
+                    var _old = (_p1.items || [])[_ri];
+                    if (!_old) return;
+                    /* 把「只想要这一条」写进提示词：临时压到 1 条，且要求别跟其他几条撞名 */
+                    var _others = (_p1.items || []).filter(function (x, k) { return k !== _ri; })
+                        .map(function (x) { return x.name; }).filter(Boolean);
+                    /* 提示词按「这批当初用的基调/大纲」重建，不是按表单现填的 ——
+                       表单可能已经被玩家改了，用现填的会让这一条跑出这批之外。 */
+                    var _pr = mainBuildPrompt({ tone: _p1.tone, outline: _p1.outline, n: 1 }, mainHere());
+                    if (_others.length) _pr += String.fromCharCode(10) + '⚠ 别和这些已有事件重名：' + _others.join('、');
+                    _p1.busy = true; _p1.err = '';
+                    render(true);
+                    mainCallAI(_pr, function (txt, err) {
+                        var p = state.mainPend;
+                        if (!p || p.arc !== _p1.arc) return;
+                        p.busy = false;
+                        if (err) { p.err = err; try { render(true); } catch (e) {} return; }
+                        var got = mainParse(txt, 1);
+                        if (!got || !got.length) {
+                            p.err = '单条重生失败：模型没给出可用的一条';
+                            try { render(true); } catch (e2) {}
+                            return;
+                        }
+                        var rec = mainToRec(got[0], p.arc, _ri + 1);
+                        /* 保留玩家可能已经改过的名字（他不满意的是内容，不是名字） */
+                        if (_old.name) rec.name = _old.name;
+                        p.items[_ri] = rec;
+                        p.err = '';
+                        try { render(true); } catch (e3) {}
+                    });
+                    return;
+                }
+                if (act === 'main-drop-one') {
+                    var _p2 = state.mainPend;
+                    if (!_p2 || _p2.busy) return;
+                    var _di2 = parseInt(el.getAttribute('data-i'), 10);
+                    if (!(_p2.items || [])[_di2]) return;
+                    _p2.items.splice(_di2, 1);
+                    /* seq 跟着重排：seq 是「这批里第几条」，中间空一个会在写入时留洞 */
+                    _p2.items.forEach(function (x, k) { x.seq = k + 1; });
+                    render(true);
+                    return;
+                }                if (act === 'main-discard') {
+                    state.mainPend = null;
+                    state.mainNote = '';
+                    render(true);
+                    return;
+                }
+                if (act === 'main-commit') {
+                    var _p3 = state.mainPend;
+                    if (!_p3) return;
+                    if (_p3.busy) { state.mainNote = '⚠ 还在生成，等它回来再确定。'; render(true); return; }
+                    if (_p3.err && !(_p3.items || []).length) { state.mainNote = '⚠ 这一批是失败的，没有可写入的内容。'; render(true); return; }
+                    if (!(_p3.items || []).length) { state.mainNote = '⚠ 一条都没有，没法写入。'; render(true); return; }
+                    mainCommit(_p3.arc);
+                    return;
+                }
+                if (act === 'main-auto') {
+                    if (!state.mainForm) state.mainForm = mainLoadForm();
+                    state.mainForm.auto = !state.mainForm.auto;
+                    state.mainNote = state.mainForm.auto
+                        ? '自动续生已开：这一批 ' + (Number(state.mainForm.n) || MAIN_DEFAULT_N) + ' 条全部标成「已结束」时，会按同一份大纲再生成一批。'
+                        : '';
+                    mainSaveForm(state.mainForm);
+                    render(true);
+                    /* 刚打开时先判一次：如果他手上那批早就打完了，立刻续（不用再点一次改状态） */
+                    if (state.mainForm.auto) { try { mainMaybeAuto(); } catch (eMA) {} }
+                    return;
+                }
                 if (act === 'plot-submit') {
                     var _f = state.plotForm || plotEmptyForm();
                     if (!String(_f.name || '').trim()) { state.plotNote = '⚠ 事件名称不能空。'; render(true); return; }
@@ -11743,7 +12456,12 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                     var _k = PLOT_STATES.indexOf(_curSt);
                     if (_k < 0) _k = 0;
                     _sl[_si] = Object.assign({}, _sl[_si], { state: PLOT_STATES[(_k + 1) % PLOT_STATES.length] });
-                    plotSave(_sl);
+                    /* ★ v577：自动续生**只挂在这一条路**上（写进条目成功之后判）。
+                       为什么是这里而不是定时器：玩家把最后一条标成「已结束」的**那一刻**
+                       正好经过这里 —— 定时器会在挂机时一轮一轮烧 token，而这条路上
+                       不点就永远不会触发，代价是零。
+                       ⚠ 必须传 after：不传的话 plotSave 写完就结束，续生判据永远等不到这一拍。 */
+                    plotSave(_sl, function () { try { mainMaybeAuto(); } catch (eMA2) {} });
                     return;
                 }
                 if (act === 'plot-del') {
