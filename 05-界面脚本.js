@@ -5899,7 +5899,8 @@ function xzTypeOf(name, fbT, fbA) {
         L.push('<剧情生成>');
         L.push('<%');
         L.push('/* 数据块：由「状态栏 → 剧情」页写入。手改也能生效，下次生成会覆盖。');
-        L.push('   结构：[{ name, trigger, scale, span, mood, cast:[], place, desc, at }] */');
+        L.push('   结构：[{ name, trigger, scale, span, mood, cast:[], place, desc, at, arc, seq }]');
+        L.push('   arc/seq 是主线那批的批次号与批内序号，只用来给分页分组；单条事件没有这两个键。 */');
         var _clean = (list || []).map(function (e) {
             var o = {};
             Object.keys(e || {}).forEach(function (k) { if (k !== 'state' && k !== 'on') o[k] = e[k]; });
@@ -6149,10 +6150,15 @@ function xzTypeOf(name, fbT, fbA) {
         数量可调（玩家自填一次生几个），默认 5。
        ══════════════════════════════════════════════════════════════════════ */
     var MAIN_DEFAULT_N = 5;
-    /* 基调：与单个生成的 PLOT_MOODS 同一套词，另加几个适合长线的。
+    /* 基调：氛围词 + 几个「路线取向」词。
+       为什么后半段是另一类：主线玩家填的是"我想走哪种命"，
+       而「屈辱」「憋屈」「被人看扁」「家道中落」不是氛围，是**这条路的味道**——
+       他要的就是"走到哪儿都有人拿这个刺我"。只给氛围词的话，
+       模型会把它当滤镜（写成"压抑的气氛中发生了一件事"），而不是当处境。
        ⚠ 不许在这里写"已下架/旧写法"这类沿革话 —— 这张表会被写进提示词。 */
     var MAIN_TONES = ['压抑', '肃杀', '温情', '诡异', '荒凉', '紧张', '欢腾', '悲凉',
-        '热血', '悬疑', '苍凉', '肃穆'];
+        '热血', '悬疑', '苍凉', '肃穆',
+        '屈辱', '憋屈', '被人看扁', '家道中落', '众叛亲离', '步步紧逼'];
 
     function mainEmptyForm() {
         return { tone: '', toneOther: '', outline: '', n: MAIN_DEFAULT_N, auto: false };
@@ -6214,19 +6220,53 @@ function xzTypeOf(name, fbT, fbA) {
         return g.every(function (x) { return (x.e.state || PLOT_STATES[0]) === '已结束'; });
     }
 
-    /* 提示词：把玩家给的大纲拆成 N 条同源事件。
-       写法上刻意跟 plotPolishPrompt 拉开：那个要"扩写一段描写"，这个要"拆成一张表"。 */
+    /* 提示词：按玩家想走的**路线**排一串遭遇（不是把大纲拆成阶段）。
+       ── 为什么口径是这个（作者原话）──────────────────────────────────────
+         「比如说，玩家想体验一次类似于斗破苍穹主角萧炎的路线，那就会安排一些
+           对主角的迫害和挑战，比如说，某个事件就是有人瞧不起主角，招惹主角，
+           这给了主角装逼的机会。如果玩家想玩那种落魄家族的少爷，被看不起，那也可以。」
+       ⇒ 玩家填的大纲是**「我想当哪种人、想走哪条路」**，不是"这段剧情讲什么"。
+         所以模型要产出的是一串**遭遇**：谁来找麻烦、怎么踩、踩到什么程度、
+         主角在哪一步翻回来。每一条都要能挂到主角身上、都留给他出手的余地。
+       ⚠ 这一条绝不能写成"拆成前后相连的 N 个阶段"：那样出来的是
+         「起因/发展/高潮」三段式作文，全是旁人的事，跟主角该受什么气无关。
+       ⚠ 也绝不能写"写清楚结局"：玩家还没玩到，写死结果等于替他通关。
+       ────────────────────────────────────────────────────────────────── */
     function mainBuildPrompt(f, here) {
         var L = [];
-        L.push('你是《天元录》修仙世界的「主线大纲拆分器」。');
-        L.push('玩家给你一段主线大纲和一种基调。你要把它拆成 ' + f.n + ' 个**前后相连**的剧情事件。');
+        L.push('你是《天元录》修仙世界的「主线事件导演」。');
+        L.push('玩家告诉你他想走一条什么样的路。你要围绕**主角**安排 ' + f.n + ' 件事，让他在这条路上有气受、有场子找回来。');
         L.push('');
-        L.push('【最要紧的三条】');
-        L.push('1. 这 ' + f.n + ' 个事件是**同一条线的不同阶段**，不是 ' + f.n + ' 件不相干的事。');
-        L.push('   第一个是起因，最后一个是收束；中间几条要能看出事情在往哪个方向走。');
-        L.push('2. 事件名称各写各的，**不许 ' + f.n + ' 条都叫一个名字**，也不许写成「起因」「经过」「结果」这种占位。');
-        L.push('   名字要短（≤10 字），像玩家自己会起的那种。');
-        L.push('3. 只输出下面这个格式，别的话一句都不要：');
+        L.push('【这是什么活儿】');
+        L.push('玩家给的不是"一段剧情的梗概"，是**他想体验的那种命**。');
+        L.push('比如他说「想走萧炎那条路」，意思是：他要被看扁、被踩、被逼到墙角，然后一步步挣回来；');
+        L.push('他说「落魄家族的少爷」，意思是：他背着家道中落的壳，走到哪儿都有人拿这个刺他。');
+        L.push('你要做的不是把这句话拆成"起因经过结果"，而是**给这条命安排具体的遭遇**。');
+        L.push('');
+        L.push('【每条必须满足的四件事】');
+        L.push('1. **冲着主角来**。每件事里都得有人针对他、轻视他、占他便宜、逼他表态，或者把他架到不得不动手的位置。');
+        L.push('   不许写成"某地发生了某事"这种跟他无关的旁闻 —— 那和主角的路线没关系。');
+        L.push('2. **有代价**。要让人看得出他为什么难受：丢脸、丢东西、丢人、被夺、被逐、被误会、被人当众看不起。');
+        L.push('   代价要具体（退了婚、被逐出宗门、丹被抢走、名字被人当笑话讲），不要写"受到打击"这种空话。');
+        L.push('3. **留出翻盘的余地**。事件的结尾要停在他**可以出手**的那一刻：对方还在、赌注还摆着、话还没说完。');
+        L.push('   **绝对不许写结果**。不许写他终于扬眉吐气、不许写对方跪下认错、不许写他赢了 —— 那是玩家自己要打的。');
+        L.push('4. **一条比一条重**。第 1 条是试探性的小瞧（嘴上刺两句、当众叫错名字、故意漏掉他的份）；');
+        L.push('   中间几条升级（抢他的东西、断他的路、拿他的出身做文章、逼他当众立誓）；');
+        L.push('   最后一条要大到**他非动手不可**（当众折辱、夺他所爱、牵连他护着的人）。');
+        L.push('   但这 ' + f.n + ' 条之间**不是**同一件事的四个步骤 —— 是四拨人、四个场合、四种踩法。');
+        L.push('');
+        L.push('【名称怎么写】');
+        L.push('名字要短（≤10 字）、像玩家自己会起的、**一眼能看出这条是来给他添堵的**。');
+        L.push('好的例子：`当众叫错的名字`、`少算的一份`、`不该递出去的那杯茶`、`旧账重提`、`他家的招牌`。');
+        L.push('坏的例子：`冲突`、`挑战`、`起因`、`转折`、`家族纷争` —— 这种看不出是谁在踩他、踩哪儿。');
+        L.push('这 ' + f.n + ' 条**不许重名**，也不许换汤不换药（别四条都是"某人当众嘲笑他"）。');
+        L.push('');
+        L.push('【梗概怎么写】');
+        L.push('一到两句。要说清三样：谁来找事、拿什么当由头、把他逼到什么份上。');
+        L.push('只写到他被架住为止 —— 后面那一手留白。');
+        L.push('不许写「他心想」「她暗自」这类心理，不许替玩家做决定，不许替他说话。');
+        L.push('');
+        L.push('【硬格式】只输出下面这个，别的话一句都不要：');
         L.push('');
         L.push('<主线>');
         L.push('1.');
@@ -6234,17 +6274,22 @@ function xzTypeOf(name, fbT, fbA) {
         L.push('梗概：');
         L.push('相关人物：');
         L.push('相关地点：');
+        L.push('2.');
+        L.push('名称：');
+        L.push('梗概：');
+        L.push('相关人物：');
+        L.push('相关地点：');
         L.push('</主线>');
         L.push('');
-        L.push('【每一栏怎么写】');
-        L.push('- 梗概：一到两句，说清这件事怎么起、赌注是什么、可能怎么收。**不许写结果**（玩家还没玩到）。');
-        L.push('  不许写「他心想」「她暗自」这类心理，不许替玩家做决定。');
-        L.push('- 相关人物：从下面《人物》里挑，用顿号分隔，2~4 个。允许留空写「不限」。');
+        L.push('上面只是**形状**（写了 2 组示意）。实际要连着写 ' + f.n + ' 组，序号 1 到 ' + f.n + '，一组都不能少。');
+        L.push('');
+        L.push('【每一栏】');
+        L.push('- 相关人物：从下面《人物》里挑，用顿号分隔，2~4 个。**至少一个要是来找事的那个**。允许留空写「不限」。');
         L.push('- 相关地点：`州·域·城` 三段，**逐段照抄《地点》**，不许自己编地名。');
         L.push('');
-        L.push('【基调】' + (f.tone || '（未指定，按大纲本身的走向定）'));
+        L.push('【基调】' + (f.tone || '（未指定，按这条路线本身的走向定）'));
         L.push('');
-        L.push('【主线大纲】');
+        L.push('【玩家想走的路线】');
         L.push(String(f.outline || '').trim());
         L.push('');
         if (here && here.people) { L.push('【人物】'); L.push(here.people); L.push(''); }
@@ -6365,13 +6410,32 @@ function xzTypeOf(name, fbT, fbA) {
     }
 
     /* 「现在局面」那几行：模型得有真实的人物与地名可用，否则会自己编。
-       地点从 05 自己的舆图出口取（唯一真源），取不到就明说"没读到"而不编。 */
+       地点从 05 自己的舆图出口取（唯一真源），取不到就明说"没读到"而不编。
+       ── 为什么主线要多喂两样（境界 / 好感度）───────────────────────────
+         主线的活儿是「谁来找他的麻烦」。只给一串光名字，模型只能瞎点一个，
+         出来的事跟那个人对不上（找个元婴长辈去干街头小混混的活）。
+         给了境界就能分出「被长辈压」还是「同辈相争」；
+         给了好感度就能认出「谁本来就看他不顺眼」——那是踩他最合理的那个。
+       ⚠ 不带心里话：那是角色没说出口的话，写进提示词等于替模型把底牌掀了。
+       ⚠ 上限 20（变量表人物列表的硬顶），不全抓也不漏抓。 */
     function mainHere() {
         var out = { people: '', places: '' };
         try {
             var pl = (getVariables() || {}).人物列表 || {};
-            var ns = Object.keys(pl).slice(0, 12);
-            if (ns.length) out.people = ns.join('、');
+            var ns = Object.keys(pl).slice(0, 20);
+            if (ns.length) {
+                out.people = ns.map(function (nm) {
+                    var o = pl[nm] || {};
+                    var bits = [];
+                    var rj = String(o.境界 || '').trim();
+                    if (rj && rj !== '未知') bits.push(rj);
+                    var hao = Number(o.好感度);
+                    /* 好感度只在「明显不对付」时才标出来：50 是出厂默认，
+                       标一堆「好感度 50」等于没说，还把提示词撑长。 */
+                    if (isFinite(hao) && hao <= 30) bits.push('对主角' + (hao <= 10 ? '极不友善' : '生分'));
+                    return bits.length ? (nm + '（' + bits.join('，') + '）') : nm;
+                }).join('、');
+            }
         } catch (eP) {}
         try {
             var tree = null;
@@ -6399,7 +6463,7 @@ function xzTypeOf(name, fbT, fbA) {
            但输入框里还留着 99、刷新后也是 99 —— 下次他还以为能生 99 条。 */
         if (f.n !== n) { f.n = n; mainSaveForm(f); }
         if (!String(f.outline || '').trim()) {
-            state.mainNote = '⚠ 先写主线大纲 —— 没有大纲，模型只会给你五条不相干的事。';
+            state.mainNote = '⚠ 先说你想走哪条路 —— 没这句，模型不知道要给你安排哪种遭遇。';
             try { render(true); } catch (e) {}
             return;
         }
@@ -6445,7 +6509,7 @@ function xzTypeOf(name, fbT, fbA) {
             p.items = got.map(function (x, i) { return mainToRec(x, arc, i + 1); });
             p.err = '';
             /* 生够没生够要说出来：模型少给两条时，玩家得知道是它没写完，而不是自己看漏 */
-            if (p.items.length < n) p.err = '只生成了 ' + p.items.length + ' 条（要 ' + n + ' 条），可以点「全部重生」';
+            if (p.items.length < n) p.err = '这次模型只回了 ' + p.items.length + ' 条（要 ' + n + ' 条），可以点「全部重生」';
             try { render(true); } catch (e3) {}
         });
     }
@@ -6703,7 +6767,7 @@ function xzTypeOf(name, fbT, fbA) {
         var mf = state.mainForm || mainLoadForm();
         h += '<div class="xz-sub-head" style="margin-top:4px;">✦ 主线剧情</div>';
         h += '<div class="xz-rpg-desc" style="font-size:11.5px;margin-bottom:6px;">'
-            + '给一段大纲和一种基调，让 AI 拆成几条前后相连的事件。'
+            + '说一下你想走哪条路（想当哪种人、受哪种气），AI 就给你排几条冲着你来的遭遇。'
             + '<b style="color:var(--xz-gold-bright);">先摆出来给你看，点「确定写入」才进条目。</b></div>';
 
         /* 基调：chip 选择 + 其他自填（与相关人物同一种长相，不再另造一套控件） */
@@ -6724,8 +6788,7 @@ function xzTypeOf(name, fbT, fbA) {
         h += '<div class="xz-plot-row" style="align-items:flex-start;">'
             + '<span class="xz-plot-lab" style="padding-top:5px;">主线大纲</span>'
             + '<div class="xz-plot-ctl"><textarea class="xz-plot-ta" data-main-field="outline" rows="5" maxlength="1200" '
-            + 'placeholder="这一段主线想讲什么：起因是什么、谁在推、赌注是什么、最后要收在哪。'
-            + '写得越具体，拆出来的几条越咬得住。">' + esc(mf.outline) + '</textarea></div></div>';
+            + 'placeholder="你想走一条什么样的路，比如：&#10;· 像萧炎那样 —— 被人看扁、被退婚、被当废物，一步步打回去&#10;· 落魄家族的少爷 —— 走到哪儿都有人拿家道中落刺他&#10;写得越像「我想当哪种人、想受哪种气」，排出来的遭遇越咬得住。">' + esc(mf.outline) + '</textarea></div></div>';
 
         h += '<div class="xz-plot-row"><span class="xz-plot-lab">一次生几条</span><div class="xz-plot-ctl">'
             + '<input class="xz-plot-input w62" type="text" inputmode="numeric" data-main-field="n" value="' + esc(mf.n || MAIN_DEFAULT_N) + '" maxlength="2" placeholder="5">'
@@ -6765,7 +6828,7 @@ function xzTypeOf(name, fbT, fbA) {
                     + '这批是「自动续生」按同一份大纲生成的，同样要过目后点「确定写入」。</div>';
             }
             if (mp.busy) {
-                h += '<div class="xz-plot-card-desc" style="color:var(--xz-muted);">正在调模型拆大纲…</div>';
+                h += '<div class="xz-plot-card-desc" style="color:var(--xz-muted);">正在按你这条路线排遭遇…</div>';
             } else if (mp.err && !(mp.items || []).length) {
                 h += '<div class="xz-plot-card-desc" style="color:#fbbf24;">⚠ ' + esc(mp.err) + '</div>';
             } else {
@@ -6777,12 +6840,14 @@ function xzTypeOf(name, fbT, fbA) {
                         + '<input class="xz-plot-input" type="text" data-main-field="' + 'item_name_' + i + '" value="' + esc(it.name) + '" maxlength="20" style="flex:1 1 120px;">'
                         + '</div>';
                     h += '<textarea class="xz-plot-ta" data-main-field="item_desc_' + i + '" rows="3" maxlength="400" style="margin-top:6px;">' + esc(it.desc) + '</textarea>';
-                    if (it.place || (it.cast && it.cast.length)) {
-                        h += '<div style="font-size:10.5px;color:var(--xz-muted);margin-top:4px;">'
-                            + (it.place ? ('地点 ' + esc(it.place)) : '')
-                            + (it.cast && it.cast.length ? ('｜' + esc(it.cast.join('、'))) : '')
-                            + '</div>';
-                    }
+                    /* ★ 人物与地点也要能就地改。
+                       不补这两个框的话，玩家觉得「来挑事的人不对」，只能反复点「重生这条」
+                       碰运气 —— 一次五条就是一次真模型调用，纯烧 token。
+                       人物用顿号分隔（与 mainParse 的拆法一致），地点三段照抄《地点》。 */
+                    h += '<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">'
+                        + '<input class="xz-plot-input" type="text" data-main-field="item_cast_' + i + '" value="' + esc((it.cast || []).join('、')) + '" maxlength="60" placeholder="相关人物，顿号分隔" style="flex:1 1 130px;">'
+                        + '<input class="xz-plot-input" type="text" data-main-field="item_place_' + i + '" value="' + esc(it.place || '') + '" maxlength="40" placeholder="州·域·城" style="flex:1 1 110px;">'
+                        + '</div>';
                     h += '<div class="xz-plot-card-acts">'
                         + '<button type="button" class="xz-plot-btn" data-xz-act="main-regen-one" data-i="' + i + '">重生这条</button>'
                         + '<button type="button" class="xz-plot-btn xz-plot-btn-del" data-xz-act="main-drop-one" data-i="' + i + '">删掉</button>'
@@ -11631,8 +11696,8 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                    合并就得在里面按前缀分叉，以后改一处会牵到另一处。
                    ⚠ 主线的「一次生几条」只收数字，且夹在 1~10：
                      模型那边是按条数拼提示词的，给它 200 会直接把这轮 token 烧穿。
-                   ⚠ 草稿里那两条输入（字段名 item_ 加 name 或 desc 加下划线与序号）
-                     走**另一条路**：它们改的是草稿里那一条，不是表单
+                   ⚠ 草稿里那四栏输入（字段名 item_ 加 name / desc / cast / place，
+                     再接下划线与序号）走**另一条路**：它们改的是草稿里那一条，不是表单
                      ⇒ 必须直接落到 state.mainPend.items 里那一格。
                      写进 mainForm 会变成一堆没人读的键（名字看着对、改完没反应）。 */
                 var _mainTake = function (e) {
@@ -11640,14 +11705,24 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                     if (!t || !t.getAttribute) return;
                     var k = t.getAttribute('data-main-field');
                     if (!k) return;
-                    var _mi = k.match(/^item_(name|desc)_(\d+)$/);
+                    var _mi = k.match(/^item_(name|desc|cast|place)_(\d+)$/);
                     if (_mi) {
                         var _p = state.mainPend;
                         if (!_p || _p.busy) return;
                         var _it = (_p.items || [])[Number(_mi[2])];
                         if (!_it) return;
-                        if (_mi[1] === 'name') _it.name = String(t.value || '').slice(0, 20);
-                        else _it.desc = String(t.value || '').slice(0, 400);
+                        var _v = String(t.value || '');
+                        if (_mi[1] === 'name') _it.name = _v.slice(0, 20);
+                        else if (_mi[1] === 'desc') _it.desc = _v.slice(0, 400);
+                        /* 人物拆法与 mainParse 保持一致（顿号/逗号/斜杠都认）；
+                           「不限」「无」当空 —— 与 mainParse 那边同一个口径。 */
+                        else if (_mi[1] === 'cast') {
+                            _it.cast = _v.split(/[、,，\/]/).map(function (x) { return String(x).trim(); })
+                                .filter(function (x) { return x && x !== '不限' && x !== '无'; }).slice(0, 4);
+                            /* ⚠ 这里**不回写 t.value**：玩家输到「白长雪、」时最后一个还没打完，
+                               一回写就把顿号擦掉，顿号打不出来。 */
+                        }
+                        else _it.place = _v.slice(0, 40);
                         return;
                     }
                     if (!state.mainForm) state.mainForm = mainLoadForm();
@@ -12337,7 +12412,8 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                     _p2.items.forEach(function (x, k) { x.seq = k + 1; });
                     render(true);
                     return;
-                }                if (act === 'main-discard') {
+                }
+                if (act === 'main-discard') {
                     state.mainPend = null;
                     state.mainNote = '';
                     render(true);
