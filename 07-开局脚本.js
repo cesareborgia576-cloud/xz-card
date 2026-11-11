@@ -7438,8 +7438,15 @@ d.attrs[a] = v;
             '<button type="button" class="xz-st-cem-b" data-xz-startact="open-cem">人物条目查看管理器</button>' +
             '</div>';
 
+        /* ★★★ v582：写入期间必须给可见反馈 ★★★
+           旧版 `state.busy` 一进 finally 就被同步清掉，而写入是异步链 ——
+           链还在跑（甚至永不返回）时按钮照旧写着「确认开局」、面板一个字不变。
+           真浏览器实测（`工具/_v582_submit_hang.mjs` 的 hang 档）就是这个形状：
+           玩家点了像死了一样，只能反复点。⇒ 按钮跟着 busy 变「写入中…」且禁点。 */
         h += '<div class="xz-st-actions">' +
-            '<button type="button" class="xz-st-main" data-xz-act="submit">确认开局</button>' +
+            '<button type="button" class="xz-st-main" data-xz-act="submit"'
+            + (state.busy ? ' disabled' : '') + '>'
+            + (state.busy ? '写入中…' : '确认开局') + '</button>' +
             '<button type="button" class="xz-st-main xz-st-ghost" data-xz-act="reset">重置</button></div>';
         return h;
     }
@@ -9162,8 +9169,25 @@ host.__xzGuard = true;
     function submit() {
         if (state.busy) return;
         var d = state.draft;
+        /* ★★★ v582：作者报「点确认开局会卡死」——真浏览器复现结论 ★★★
+           真宿主里 `applyVars` 走 MVU 的 replaceMvuData（Promise）。当它**永不 settle**
+           （01-MVU 没启用 / 切开场白时宿主重解析 / 消息作用域不存在），旧版：
+             · state.busy 在 finally 里同步复位 ⇒ 按钮还能点、还能重复提交
+             · 写入链后面的填输入框 / state.done / toast 一个都不跑
+             · 面板上没有任何「正在写入」字样
+           ⇒ 玩家按下去界面纹丝不动，反复点就反复挂新链，看起来就是「卡死」。
+           三条一起修，缺一条就复发：
+             ① busy 改成**整条写入链的生命周期**，不再同步复位；
+             ② 按下立刻给可见反馈（按钮「写入中…」 + note）；
+             ③ 8 秒 watchdog：最坏一档必须出声，绝不静默等待。
+           ⚠ 失败分支也补 toast（旧版只有成功弹 toast，两边不对称）。 */
         state.busy = true;
+        /* ⚠ 不拿 state.note 承载「正在写入」：DLC / 亲缘的异步 append 会把它
+           拼成「正在写入变量… ⚠ 人物关系没能开启…」，失败后还留着「正在写入」
+           ⇒ 又一处歧义。按下即时反馈由按钮文案 + disabled 独立承担。 */
         state.errText = ''; state.note = '';
+        var __writeSettled = false, __timedOut = false;
+        try { render(true); } catch (eR0) {}
         try {
             validate(d);
             var built = buildVars(d);
@@ -9192,6 +9216,24 @@ host.__xzGuard = true;
             var __writeChain = applyVars(built.changes).then(function () {
                 verifyVars(built.changes);   // 抛错 = 直接 reject，外层 catch 接住
             });
+
+            /* ★ v582：busy 只在链落定（或超时）时复位，三个出口一个都不能漏 */
+            function __finishWrite() {
+                __writeSettled = true;
+                state.busy = false;
+                clearTimeout(__writeTimer);
+            }
+            __writeChain.then(__finishWrite, __finishWrite);
+            var __writeTimer = setTimeout(function () {
+                if (__writeSettled) return;
+                __writeSettled = true; __timedOut = true;
+                state.busy = false;
+                state.note = '⚠ 写入变量超过 8 秒没返回：通常是 01-MVU 没启用，或酒馆正忙。'
+                    + '请确认插件已启用后，再点一次「确认开局」；刚才填的内容都还在。';
+                state.errText = '';
+                try { if (typeof toastr !== 'undefined' && toastr) toastr.error(state.note, '开局写入超时'); } catch (eT) {}
+                try { render(true); } catch (eRw) {}
+            }, 8000);
 
             /* ★★★ v352 起：DLC 条目开关；v376 改成**按包逐个开关** ★★★
                必须在写变量之后、报文案之前跑完，这样 notes 里能说清"到底开没开成"。
@@ -9426,6 +9468,9 @@ host.__xzGuard = true;
                  「变量写完 + 校验通过」之后才跑（上面那条 ⚠ 说的就是这个顺序），
                  只是以前靠"同步执行顺序"隐式保证，现在写入变异步了，必须显式挂。 */
             __writeChain.then(function () {
+                /* ★ v582：已经报过「写入超时」就别再补一条成功文案 ——
+                   两条互相矛盾的提示比没有提示更糟。玩家按提示重试点一次即可（幂等）。 */
+                if (__timedOut) return;
                 var fillResult = 'none';
                 if (built.place.custom) {
                     try { fillResult = fillComposer(customOpeningText(d)); }
@@ -9481,6 +9526,15 @@ host.__xzGuard = true;
                     state.errText = stackOf(e2);
                     warn('提交失败（写入链）', e2);
                 }
+                /* ★ v582：失败也要出声。旧版只有成功分支弹 toast，
+                   失败只把字写在面板最底部 ⇒ 玩家点完不滚动就以为「卡死」。 */
+                __writeSettled = true;
+                state.busy = false;
+                clearTimeout(__writeTimer);
+                var _failMsg = (e2 && e2.__xzPlayerMsg) ? e2.message
+                    : ((e2 && e2.message) ? String(e2.message).slice(0, 120)
+                       : '开局配置没能写入变量，请看下方面板里的具体原因。');
+                try { if (typeof toastr !== 'undefined' && toastr) toastr.error(_failMsg, '开局未完成'); } catch (eT2) {}
                 render(true);
             });
         } catch (e) {
@@ -9490,10 +9544,20 @@ host.__xzGuard = true;
                 state.errText = stackOf(e);
                 warn('提交失败', e);
             }
-            render(true);
-        } finally {
+            /* ★ v582：校验失败（姓名没填 / 没学玄技 / 落点非法…）同样必须弹 toast。
+               真浏览器实测：note 确实写进了面板底部，但按钮在顶部，
+               玩家点完看不到任何变化 —— 这正是「点确认开局卡死」最常见的那一档。 */
+            var _syncMsg = (e && e.__xzPlayerMsg) ? e.message
+                : ((e && e.message) ? String(e.message).slice(0, 120)
+                   : '开局配置没能提交，请看下方面板里的报错。');
+            try { if (typeof toastr !== 'undefined' && toastr) toastr.error(_syncMsg, '开局未完成'); } catch (eT3) {}
+            __writeSettled = true;
             state.busy = false;
+            render(true);
         }
+        /* ★ v582：finally 里**不再**复位 busy —— 它现在是整条写入链的生命周期，
+           由 __finishWrite（成功/失败）、两个 catch、8 秒 watchdog 四个出口统一负责。
+           同步复位会把异步链还在跑的这段窗口伪装成「按钮没反应」。 */
     }
 
     /* ============================ 启动与生命周期 ============================ */
