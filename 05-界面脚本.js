@@ -9953,6 +9953,45 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         xzOverlaySize(XZ_OVL_HOST || window, box.parentNode, box);
         xzGalleryOverlayBar();
     }
+    /* ★★★ v591：**按名字**打开大图（跨块唯一入口）★★★
+       ── 为什么不能在调用方自己算下标 ──────────────────────────────────
+         正文立绘框在 IIFE⑦，`state` / `xzPresentPeople` 都在 IIFE②。
+         v526 那次改成"走 `__XZ05__`"，但通道上**只挂了 `xzOpenPortrait`**，
+         没挂 `state` 也没挂 `xzPresentPeople` ⇒ 调用方那段
+         `if (nm && _ppl && _q5p.state)` **恒假**，一次都没执行过。
+         表现：点正文里的立绘，浮层按**上一次的 portraitIdx** 打开别人
+         （玩家看到的像"点错了"，其实是对准逻辑从来没跑）。
+       ── 做法 ────────────────────────────────────────────────────────
+         把"按名字找下标并打开"整个搬回 IIFE②：它这里三样东西都现成。
+         外面只传一个名字，匹配规则用本文件的 `xzLookupPortrait` 同款口径
+         （精确 → 取尾段 → 最长键包含）—— 因为框上记的是**图库键**，
+         而名单里是**变量里的写法**，两边必须先归一。
+       ⚠ 归一必须走 `xzLookupPortrait`／`xzCustomHas` 那两个既有入口，
+         不许在这里另写一套 `indexOf`（v406「古月 配成 古月娜」就是这么来的）。 */
+    function xzOpenPortraitByName(nm) {
+        var n = String(nm == null ? '' : nm).trim();
+        if (!n) { xzOpenPortrait(); return; }
+        var ps = xzPresentPeople(), i, hit = -1;
+        for (i = 0; i < ps.length; i++) {
+            if (ps[i] && String(ps[i].name) === n) { hit = i; break; }   /* 精确同名优先 */
+        }
+        if (hit < 0) {
+            /* 归一：谁"认得出这张图"就算谁。两边都问同一对入口，判据同源。 */
+            for (i = 0; i < ps.length; i++) {
+                if (!ps[i] || !ps[i].name) continue;
+                var pn = String(ps[i].name);
+                var a = ''; try { a = xzLookupPortrait(pn, false) || ''; } catch (e1) { a = ''; }
+                var b = ''; try { b = xzLookupPortrait(n, false) || ''; } catch (e2) { b = ''; }
+                var ha = false, hb = false;
+                try { ha = xzCustomHas(pn); } catch (e3) { ha = false; }
+                try { hb = xzCustomHas(n); } catch (e4) { hb = false; }
+                /* 同一张图（或同一个自定义图归属）⇒ 认为指的是同一个人 */
+                if ((a && a === b) || (ha && hb)) { hit = i; break; }
+            }
+        }
+        if (hit >= 0) state.portraitIdx = hit;
+        xzOpenPortrait();
+    }
     /* ★ v429：浮层底栏的「自动/固定 + 下一张」是按当前这位**动态**加的。
        不塞进上面那段 HTML 里的原因：那里只在打开时构建一次，
        切人（portrait-prev/next）也会重建，逻辑会散在三处。这里统一补。 */
@@ -13315,6 +13354,11 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         if (typeof globalThis !== 'undefined') {
             if (typeof globalThis.__XZ05__ !== 'object' || globalThis.__XZ05__ === null) globalThis.__XZ05__ = {};
             globalThis.__XZ05__.xzOpenPortrait = xzOpenPortrait;
+            /* ★ v591：按名字开大图（正文立绘框走这条）。
+               ⚠ 必须挂这个**而不是** `state`：`state` 是 IIFE② 的可变对象，
+                 挂出去等于把内部状态交出去，谁都能改 portraitIdx 而没人知道。
+                 对外只暴露"给我一个人名，我开到那个人"这一个动作。 */
+            globalThis.__XZ05__.xzOpenPortraitByName = xzOpenPortraitByName;
             globalThis.__XZ05__.xzImgObserve = xzImgObserve;
             globalThis.__XZ05__.HOST_ID = HOST_ID;
             /* ⚠ v1.06：这里**不许**再加 `xzWbVerState`。
@@ -18293,6 +18337,30 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                     else out[k2] = [u];
                 }
             } catch (e4) {}
+            /* ④ ★★★ v591：玩家上传的自定义立绘 ★★★
+               —— 病根：这张总表只并了上面三张**出厂**表，玩家的自定义图不在里面。
+                 而 `xzPicPresentSet` 的判据是「图库里真有图才进在场名单」⇒
+                 一个**只有自定义图**的角色（出厂没给他配图，玩家自己传了一张）
+                 会被判成"没图"，于是正文 `<人物立绘>` 里永远画不出他。
+               —— 取名范围：只需遍历图库已有的键。自定义图的上传入口在管理器
+                 「所有立绘」视图，那个视图本来就是从这三张表铺出来的 ⇒
+                 玩家能上传的名字必然已是图库键，不用另外枚举。
+               —— 语义照 v503：「自定义即唯一」⇒ 命中就把该键的数组换成那一张，
+                 不参与多图轮播（改 `XZ_GALLERY` 之外的第四处覆盖点）。
+               ⚠ 每次调用都现查，不许缓存：上传/还原是运行期动作，
+                 缓存住就会出现「传完了、正文还是旧图」这种最气人的静默错。 */
+            try {
+                var _q5t = (typeof globalThis !== 'undefined') ? globalThis.__XZ05__ : null;
+                var _cuOf = (_q5t && typeof _q5t.xzCustomPicOf === 'function') ? _q5t.xzCustomPicOf : null;
+                if (_cuOf) {
+                    for (var k4 in out) {
+                        if (!Object.prototype.hasOwnProperty.call(out, k4)) continue;
+                        var _cu4 = '';
+                        try { _cu4 = String(_cuOf(k4) || ''); } catch (eCu4) { _cu4 = ''; }
+                        if (_cu4) out[k4] = [_cu4];
+                    }
+                }
+            } catch (e4b) {}
             return out;
         }
 
@@ -18362,12 +18430,31 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             return bestKey;
         }
 
-        /* 在场且有图的人 → `{name:1}`；**读不到人物列表时返回 null**。
+        /* 在场且有图的人 → `{图库键:1}`；**读不到人物列表时返回 null**。
            三处共用（xzPicNear / xzPicScene / 以后别的取人处），口径只写一遍。
            ── 为什么返回 null 而不是 `{}` ────────────────────────────────
              `{}` 表示"读到了、但在场一个都没有" ⇒ 那一框必须不画；
              null 表示"变量还没就绪" ⇒ 只能退回旧兜底，不然刷新一瞬全是空洞。
-             这两种状态**绝不能合并**：合并那天就会变成"变量还没加载 ⇒ 图乱跳"。 */
+             这两种状态**绝不能合并**：合并那天就会变成"变量还没加载 ⇒ 图乱跳"。
+
+           ★★★ v591（玩家 2026-11-11 反馈，作者转述：「不显示在场状态为 true 的角色，
+             而是乱显示」）★★★
+           ── 病根：名单里存的是**变量里的写法**，下游却拿它当**图库键**用 ─────────
+             v579 把"谁该画"改成只认在场状态之后，这里仍是 `table[nm]` **精确键匹配**。
+             而变量里的名字经常带后缀/括注（`古月娜·银龙王`、`言清漪（药王谷）`、
+             `角色-古月娜`），图库的键是干净名字（`古月娜`、`言清漪`）——
+             精确匹配落空 ⇒ 这个人**根本不进在场名单** ⇒ 两种表现都很难看：
+               · 只有他一个在场 ⇒ 名单为空 ⇒ **整框不画**（"在场的人没图"）；
+               · 另有名字写得干净的人在场 ⇒ 画出的是**别人**（"乱显示"）。
+             ⚠ 同一个文件里 `xzPicResolve` 早就有三层归一（精确 → 取 `·` 尾段 →
+               最长键包含），说明"名字要归一"这事本项目早就知道；
+               这里是新函数没照做 —— 又一处"同一口径写两遍，改一处漏一处"。
+           ── 改法 ──────────────────────────────────────────────────────
+             ① 名字先过 `xzPicResolve` 归一到**图库键**；
+             ② 存进名单的键必须是归一后的键 —— `xzPicNear` 是
+                `for (k in table) if (here[k])` 逐键比对的，存变量写法永远对不上。
+             ⚠ 归一函数只有一个出口（`xzPicResolve`），这里不再自己写第二套匹配，
+               否则"古月 vs 古月娜"那类前缀串味会换个地方复现（v406 踩过）。 */
         function xzPicPresentSet(table) {
             var ok = false, out = {};
             try {
@@ -18380,10 +18467,30 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                         var o = pl[kk] || {};
                         if (!(o.在场状态 === true || o.在场状态 === 'true' || o.在场状态 === '是')) continue;
                         var nm = String(o.姓名 || kk).replace(/^角色[-—·]?/, '').trim();
-                        /* ⚠ 只收**图库里真有图**的名字。在场但没图的人放进来会让
+                        /* ★ v591：归一到图库键。归不出来 ⇒ 他确实没图，跳过。 */
+                        var key = nm ? xzPicResolve(table, nm) : '';
+                        /* ★★★ v591：**只有自定义图**的人（出厂三张表里没有他）★★★
+                           `xzPicTable` 只能遍历"三张出厂表已有的键"，出厂没配图的人
+                           压根不在表里 —— 玩家给他传了一张自定义图，正文里仍然永远画不出他。
+                           ⇒ 归一失败时再问一次自定义图；有就**就地补进这张临时表**
+                             （`table` 是每次 `fixOne` 现建的，改它不外泄）。
+                           ⚠ 键用变量里的写法（他是这张表里唯一属于他的名字），
+                             `data-xz-pic-name` 也会是它 —— 点大图那边按名字归一，
+                             两边都问同一对入口（`xzCustomHas`），对得上。 */
+                        if (!key && nm) {
+                            var _cu5 = '';
+                            try {
+                                var _q5c = (typeof globalThis !== 'undefined') ? globalThis.__XZ05__ : null;
+                                if (_q5c && typeof _q5c.xzCustomPicOf === 'function') {
+                                    _cu5 = String(_q5c.xzCustomPicOf(nm) || '');
+                                }
+                            } catch (eCu5) { _cu5 = ''; }
+                            if (_cu5) { try { table[nm] = [_cu5]; } catch (eTb) {} key = nm; }
+                        }
+                        /* ⚠ 只收**图库里真有图**的键。在场但没图的人放进来会让
                            `xzPicNear` 挑到一个 `table[...]` 为空的键 ⇒ 那一框静默不出图。
                            （没图的人本来就画不了，跟"不在场"是两件事，但都不该进候选集。） */
-                        if (nm && table && table[nm] && table[nm].length) out[nm] = 1;
+                        if (key && table && table[key] && table[key].length) out[key] = 1;
                     }
                 }
             } catch (eP) { ok = false; }
@@ -18867,21 +18974,18 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                                 正文点立绘直接 ReferenceError，玩家看到的就是「点了没反应」。
                            ⇒ 一律走 `__XZ05__`；任一环取不到就把原因写进 console，
                              并且**不做 preventDefault**（让正文里的链接照常工作）。 */
-                        try {
-                            var _q5p = (typeof globalThis !== 'undefined') ? globalThis.__XZ05__ : null;
-                            var _ppl = (_q5p && typeof _q5p.xzPresentPeople === 'function') ? _q5p.xzPresentPeople : null;
-                            if (nm && _ppl && _q5p.state) {
-                                var ps = _ppl() || [];
-                                for (var pi = 0; pi < ps.length; pi++) {
-                                    if (ps[pi] && ps[pi].name === nm) { _q5p.state.portraitIdx = pi; break; }
-                                }
-                            }
-                        } catch (eIdx) {}
-                        /* ★ v526：裸调 → 走通道。取不到就**不出声地放行**（不 preventDefault），
-                           因为下面那个 preventDefault 是为了阻止"点图触发正文链接"，
-                           而浮层根本没开的时候拦掉点击只会让玩家更困惑（点了没反应、链接也点不了）。 */
+                        /* ★ v591：对准下标这件事**搬回 IIFE②** 了。
+                           原来这里自己算：`_ppl()` + `_q5p.state.portraitIdx = pi` ——
+                           而通道上**只挂了 `xzOpenPortrait`**，没挂 `state`、
+                           也没挂 `xzPresentPeople` ⇒ 整个 `if` 恒假，从没执行过。
+                           结果就是"点谁开谁"失效、浮层按上次下标开别人。
+                           ⇒ 现在只传一个名字，匹配与落下标都在 IIFE② 里做。
+                           ⚠ 取不到新入口就退回老入口（老楼层/半更新状态下别点了没反应）。 */
                         var _q5o = (typeof globalThis !== 'undefined') ? globalThis.__XZ05__ : null;
-                        var _open = (_q5o && typeof _q5o.xzOpenPortrait === 'function') ? _q5o.xzOpenPortrait : null;
+                        var _openByName = (_q5o && typeof _q5o.xzOpenPortraitByName === 'function')
+                            ? _q5o.xzOpenPortraitByName : null;
+                        var _open = _openByName
+                            || ((_q5o && typeof _q5o.xzOpenPortrait === 'function') ? _q5o.xzOpenPortrait : null);
                         if (!_open) {
                             if (!globalThis.__xzPicOpenWarned) {
                                 globalThis.__xzPicOpenWarned = 1;
@@ -18890,7 +18994,16 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                             return;
                         }
                         try { ev.preventDefault(); } catch (ePv) {}
-                        _open();
+                        /* 有按名字的入口就传名字（能对准人）；只有老入口就只能开当前那位 */
+                        try {
+                            if (_openByName) _openByName(nm);
+                            else _open();
+                        } catch (eOp) {
+                            if (!globalThis.__xzPicOpenWarned2) {
+                                globalThis.__xzPicOpenWarned2 = 1;
+                                try { console.warn('[天元录] 正文点立绘打开失败：' + ((eOp && eOp.message) || eOp)); } catch (eW4) {}
+                            }
+                        }
                     }, false);
                 }
                 /* 每楼渲染完跑一次；滑动/编辑走 MESSAGE_UPDATED
