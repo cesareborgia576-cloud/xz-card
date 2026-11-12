@@ -11632,11 +11632,19 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
               + (HOTV.latest ? '<b style="color:var(--xz-gold-bright);">' + esc(HOTV.latest) + '</b> · ' : '')
               + esc(_note) + '</div>'
             : '';
+        /* ★ v592：更新记录入口。作者要「弹层式 + 滑轮式 + 无限内容」，
+           版本页这一格装不下历史，所以只放一枚入口，内容全在弹层里滚。
+           点击走 document 捕获阶段委托（见下方 xzChangelogBoot），
+           版本页被 render() 重建后按钮换了节点也照样能点。 */
+        var _logBtn = '<div style="margin-top:6px;text-align:center;">'
+            + '<span data-xz-act="xz-changelog" title="打开可滚动的更新记录" style="display:inline-block;padding:3px 12px;'
+            + 'border:1px solid rgba(212,175,55,.45);border-radius:9px;font-size:10.5px;'
+            + 'color:var(--xz-gold-bright);cursor:pointer;user-select:none;">📜 更新记录</span></div>';
         return '<div>'
             + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-top:4px;">'
             + '<span style="flex:0 0 auto;font-size:10.5px;color:var(--xz-muted);letter-spacing:.04em;padding-top:9px;">卡版本</span>'
             + '<span' + attrs + '>' + esc(txt) + '</span></div>'
-            + _noteHtml + '</div>';
+            + _noteHtml + _logBtn + '</div>';
     }
     function xzHotCheck() {
         try {
@@ -11721,6 +11729,160 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 }, false);
             }
         } catch (eVi) {}
+    })();
+
+    /* ══════════════════════════════════════════════════════════════════════
+       ★★★ v592：更新记录弹层（弹层式 + 滑轮式 + 无限内容）★★★
+       作者 2026-11-12：「更新记录采用弹层式，这样子能显示更多，还能采用
+       滑轮式，展示无限内容」。
+       ── 为什么不能塞进版本页那一行 ──────────────────────────────────────
+         版本页是状态栏里的一格，高度受外框约束，写死几行就装不下历史。
+         弹层是独立 fixed 容器，内容区单独滚动，条目数量不受限制。
+       ── 为什么用捕获阶段委托、不往按钮上挂 click ────────────────────────
+         版本页会被 render() 整体重建（变量更新、切页、版本嗅探回来都重画），
+         挂在按钮上的监听会随旧节点消失 ⇒「点了没反应」且控制台一句不报。
+         挂 top document 捕获阶段、按 data-xz-act 分流，天然抗重建。
+       ── 数据从远端拉 ────────────────────────────────────────────────────
+         changelog.json 与版本清单一同推送，改记录不用重发卡；
+         走 raw + /refs/heads/main/，不吃 jsdelivr 的 12 小时分支缓存。
+       ══════════════════════════════════════════════════════════════════════ */
+    (function xzChangelogBoot() {
+        var W = null, D = null;
+        try { W = window.top || window; } catch (eW) { W = window; }
+        try { D = W.document || document; } catch (eD) { D = document; }
+        if (!D || W.__XZ_CHANGELOG_BOOT__) return;
+        try { W.__XZ_CHANGELOG_BOOT__ = 1; } catch (eFlag) {}
+        var LOG_URL = 'https://raw.githubusercontent.com/cesareborgia576-cloud/xz-card/refs/heads/main/changelog.json';
+        var BOX_ID = 'xz-changelog-box';
+
+        function escL(s) {
+            return String(s == null ? '' : s)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+        function closeBox() {
+            try {
+                var o = D.getElementById(BOX_ID);
+                if (o && o.parentNode) o.parentNode.removeChild(o);
+            } catch (eC) {}
+        }
+        function itemHtml(arr) {
+            if (!arr || !arr.length) return '';
+            var h = '<ul style="margin:6px 0 0;padding-left:18px;line-height:1.75;">';
+            for (var i = 0; i < arr.length; i++) {
+                h += '<li style="margin:3px 0;">' + escL(arr[i]) + '</li>';
+            }
+            return h + '</ul>';
+        }
+        /* ★ 全量渲染：entries 有多少条就画多少条，**不切片、不截断**。 */
+        function entriesHtml(j) {
+            var list = (j && j.entries) || [];
+            if (!list.length) return '<div style="padding:24px;text-align:center;color:#9aa0a6;">远端没有更新记录</div>';
+            var h = '';
+            for (var i = 0; i < list.length; i++) {
+                var e = list[i] || {};
+                h += '<section style="margin:0 0 12px;padding:12px 14px;border:1px solid rgba(212,175,55,.22);'
+                  + 'border-radius:10px;background:rgba(255,255,255,.025);">'
+                  + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
+                  + '<b style="color:#e6bd76;font-size:12.5px;">' + escL(e.ver || '') + '</b>'
+                  + (e.tag ? '<span style="font-size:10px;padding:1px 7px;border-radius:8px;border:1px solid rgba(230,189,118,.4);color:#c9b183;">' + escL(e.tag) + '</span>' : '')
+                  + '<span style="flex:1 1 auto;"></span>'
+                  + '<span style="font-size:10.5px;color:#8a8478;">' + escL(e.date || '') + '</span>'
+                  + '</div>'
+                  + '<div style="margin-top:5px;font-size:12.5px;font-weight:600;color:#e8e8e8;">' + escL(e.title || '') + '</div>'
+                  + itemHtml(e.items)
+                  + '</section>';
+            }
+            return h;
+        }
+        function openBox() {
+            closeBox();
+            var wrap = D.createElement('div');
+            wrap.id = BOX_ID;
+            wrap.setAttribute('style', [
+                'position:fixed', 'inset:0', 'z-index:2147483647',
+                'display:flex', 'align-items:center', 'justify-content:center',
+                'padding:16px', 'box-sizing:border-box',
+                'background:rgba(0,0,0,.72)', 'backdrop-filter:blur(3px)'
+            ].join(';'));
+            var panel = D.createElement('div');
+            panel.setAttribute('style', [
+                'width:min(720px,94vw)', 'max-height:min(78vh,760px)',
+                'display:flex', 'flex-direction:column', 'min-height:0',
+                'border:1px solid rgba(212,175,55,.5)', 'border-radius:14px',
+                'background:#14110d', 'color:#e8e8e8', 'box-shadow:0 18px 60px rgba(0,0,0,.7)',
+                'font-family:var(--xz-font,"Noto Sans SC",system-ui,sans-serif)',
+                'overflow:hidden'
+            ].join(';'));
+            var head = D.createElement('div');
+            head.setAttribute('style', 'flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid rgba(212,175,55,.28);');
+            head.innerHTML = '<b style="flex:1 1 auto;font-size:14px;color:#e6bd76;">📜 天元录 · 更新记录</b>'
+                + '<span id="xz-log-count" style="font-size:10.5px;color:#8a8478;"></span>'
+                + '<button type="button" data-xz-log="close" style="flex:0 0 auto;width:30px;height:30px;border:1px solid rgba(225,29,72,.5);border-radius:8px;background:rgba(225,29,72,.14);color:#fca5a5;font-size:16px;cursor:pointer;">✕</button>';
+            var body = D.createElement('div');
+            /* ★ 滑轮式：内容区独立滚动，条目再长也不撑破弹层 */
+            body.setAttribute('style', [
+                'flex:1 1 auto', 'min-height:0', 'overflow-y:auto', 'overflow-x:hidden',
+                'overscroll-behavior:contain', '-webkit-overflow-scrolling:touch',
+                'padding:14px 16px', 'scrollbar-width:thin'
+            ].join(';'));
+            body.innerHTML = '<div style="padding:24px;text-align:center;color:#9aa0a6;">读取更新记录…</div>';
+            var foot = D.createElement('div');
+            foot.setAttribute('style', 'flex:0 0 auto;padding:8px 16px;border-top:1px solid rgba(212,175,55,.18);font-size:10.5px;color:#8a8478;text-align:center;');
+            foot.textContent = '内容来自线上，作者追加记录不需要重发卡';
+            panel.appendChild(head); panel.appendChild(body); panel.appendChild(foot);
+            wrap.appendChild(panel);
+            try { (D.body || D.documentElement).appendChild(wrap); } catch (eA) { return; }
+
+            /* 点遮罩 / 关闭键 / ESC 都关得掉 */
+            wrap.addEventListener('click', function (ev) {
+                var t = ev.target;
+                if (t === wrap || (t && t.getAttribute && t.getAttribute('data-xz-log') === 'close')) closeBox();
+            }, false);
+            try {
+                D.addEventListener('keydown', function (ev) {
+                    if (ev && ev.key === 'Escape') closeBox();
+                }, false);
+            } catch (eK) {}
+
+            try {
+                var x = new XMLHttpRequest();
+                x.open('GET', LOG_URL + '?t=' + Date.now(), true);
+                x.timeout = 12000;
+                x.onload = function () {
+                    var j = null;
+                    try { j = JSON.parse(x.responseText); } catch (eJ) { j = null; }
+                    if (!D.getElementById(BOX_ID)) return;   /* 已关掉就别往旧节点写 */
+                    if (x.status !== 200 || !j || !j.entries) {
+                        body.innerHTML = '<div style="padding:24px;text-align:center;color:#fca5a5;">读不到更新记录（网络或远端文件暂不可用）</div>';
+                        return;
+                    }
+                    body.innerHTML = entriesHtml(j);
+                    var cnt = D.getElementById('xz-log-count');
+                    if (cnt) cnt.textContent = '共 ' + (j.entries.length || 0) + ' 条 · 可滚动';
+                };
+                x.onerror = x.ontimeout = function () {
+                    if (!D.getElementById(BOX_ID)) return;
+                    body.innerHTML = '<div style="padding:24px;text-align:center;color:#fca5a5;">读不到更新记录（网络或远端文件暂不可用）</div>';
+                };
+                x.send();
+            } catch (eX) {}
+        }
+
+        /* 捕获阶段委托，挂 top document 一次，抗版本页重建 */
+        try {
+            D.addEventListener('click', function (ev) {
+                var t = ev.target;
+                while (t && t !== D && t.getAttribute) {
+                    if (t.getAttribute('data-xz-act') === 'xz-changelog') {
+                        try { ev.preventDefault(); ev.stopPropagation(); } catch (eP) {}
+                        openBox();
+                        return;
+                    }
+                    t = t.parentElement;
+                }
+            }, true);
+        } catch (eB) {}
     })();
 
     /* ★★★ v543：重建时把「正在打字的那一格」原地接回去 ★★★
