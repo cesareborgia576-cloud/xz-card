@@ -12091,6 +12091,31 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
     }
     function xzHotCheck() {
         try {
+            /* ★★★ v607：loader 已经探到最新 tag 时，版本页**直接用它** ★★★
+               病根：version.json 在 CDN 节点上是 12h 缓存，四个节点各停在各的年月
+               （实测：仓库真身 v1.27，四个节点全给 v1.2，玩家机器上甚至命中更早的 v1.191）。
+               于是版本页显示的"线上最新"永远是旧号，看起来像「推了 v1.191」。
+               loader 现在直接探 tag（新 tag = 新 URL，不吃缓存），它探到的就是真相。
+               ⇒ 有 tag 就用 tag，没有才回落清单。 */
+            var _hotTag = '';
+            try {
+                var _tw = window.top || window;
+                _hotTag = String(_tw.__XZ_HOT_TAG__ || '');
+            } catch (eHT) { _hotTag = ''; }
+            if (/^v[\d.]+$/.test(_hotTag)) {
+                try {
+                    var _before = [HOTV.latest, HOTV.err, HOTV.first, HOTV.note].join('|');
+                    HOTV.first = false;
+                    HOTV.at = Date.now();
+                    HOTV.err = false;
+                    HOTV.latest = _hotTag;
+                    HOTV.note = '已按最新版本加载';
+                    if ([HOTV.latest, HOTV.err, HOTV.first, HOTV.note].join('|') !== _before) {
+                        try { render(true); } catch (eR0) {}
+                    }
+                } catch (eHV0) {}
+                return;
+            }
             /* ★★★ v541：页面不可见时**不发请求** ★★★
                这条按 20 秒一次跑、永不停止（作者口径：v1.051「20 秒一次」）。
                玩家挂机不看屏幕时它照样每 20 秒打一次 GitHub raw：
