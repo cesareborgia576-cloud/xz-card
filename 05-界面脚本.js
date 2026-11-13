@@ -12022,6 +12022,10 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             var _hvHosts = ['https://cdn.jsdelivr.net', 'https://fastly.jsdelivr.net',
                             'https://testingcf.jsdelivr.net', 'https://gcore.jsdelivr.net'];
             var _hvUrls = [], _hvi;
+            /* ① GitHub API 实时（国内可达，每 IP 60 次/时够用）
+               ② jsDelivr 四镜像（国内可达，但分支 12h 缓存）
+               ③ raw（海外实时，国内基本不通） */
+            _hvUrls.push('https://api.github.com/repos/cesareborgia576-cloud/xz-card/contents/version.json?ref=main&t=' + Date.now());
             for (_hvi = 0; _hvi < _hvHosts.length; _hvi++) {
                 _hvUrls.push(_hvHosts[_hvi] + '/gh/cesareborgia576-cloud/xz-card@main/version.json');
             }
@@ -12037,9 +12041,18 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                     try { render(true); } catch (e) {}
                 }
             };
+            function hvB64(s) {
+                try {
+                    var b = atob(String(s || '').replace(/\s+/g, ''));
+                    var u8 = new Uint8Array(b.length), i;
+                    for (i = 0; i < b.length; i++) u8[i] = b.charCodeAt(i) & 255;
+                    return JSON.parse(new TextDecoder('utf-8').decode(u8));
+                } catch (e) { return null; }
+            }
             function hvParse(cur) {
                 var j = null;
                 try { j = JSON.parse(cur.responseText); } catch (e) { j = null; }
+                if (j && j.content && j.encoding === 'base64') j = hvB64(j.content);
                 /* ★ v1.056：开发卡读 `dev`、玩家卡读 `stable` ——
                    `stable` 只会在**真的打了 tag**时前进，开发推永远不碰它。
                    否则玩家会看到"开发中有新版"并被引去拉一个不存在的 tag。 */
@@ -12214,6 +12227,8 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 var _lgHosts = ['https://cdn.jsdelivr.net', 'https://fastly.jsdelivr.net',
                                 'https://testingcf.jsdelivr.net', 'https://gcore.jsdelivr.net'];
                 var _lgUrls = [], _lgi;
+                /* ① GitHub API 实时 ② jsDelivr 四镜像（12h 缓存） ③ raw（国内不通） */
+                _lgUrls.push('https://api.github.com/repos/cesareborgia576-cloud/xz-card/contents/changelog.json?ref=main&t=' + Date.now());
                 for (_lgi = 0; _lgi < _lgHosts.length; _lgi++) {
                     _lgUrls.push(_lgHosts[_lgi] + '/gh/cesareborgia576-cloud/xz-card@main/changelog.json');
                 }
@@ -12223,9 +12238,18 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                     if (!D.getElementById(BOX_ID)) return;
                     body.innerHTML = '<div style="padding:24px;text-align:center;color:#fca5a5;">读不到更新记录（网络或远端文件暂不可用）</div>';
                 };
+                var lgB64 = function (s) {
+                    try {
+                        var b = atob(String(s || '').replace(/\s+/g, ''));
+                        var u8 = new Uint8Array(b.length), i;
+                        for (i = 0; i < b.length; i++) u8[i] = b.charCodeAt(i) & 255;
+                        return JSON.parse(new TextDecoder('utf-8').decode(u8));
+                    } catch (e) { return null; }
+                };
                 var lgShow = function (cur) {
                     var j = null;
                     try { j = JSON.parse(cur.responseText); } catch (eJ) { j = null; }
+                    if (j && j.content && j.encoding === 'base64') j = lgB64(j.content);
                     if (!D.getElementById(BOX_ID)) return;   /* 已关掉就别往旧节点写 */
                     if (cur.status !== 200 || !j || !j.entries) { lgFail(); return; }
                     body.innerHTML = entriesHtml(j);
