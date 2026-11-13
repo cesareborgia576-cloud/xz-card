@@ -4502,7 +4502,12 @@ d.attrs[a] = v;
                  `--xz-num-font` 必须同样声明，不许靠别处注入。
                ⚠ 两处（05 的 `.xz-root`、07 的 `:root`）**值必须逐字相同** ——
                  有闸在查（`_v470_font.mjs`），改一处忘另一处会红。 */
-            + '--xz-num-font:"Noto Sans SC","Noto Sans","Bahnschrift","DIN Alternate","Segoe UI","Helvetica Neue",Arial,sans-serif;}',
+            /* ★ v597：这里必须自带 `:root{` —— 它原来是接在**上面基础 `:root` 的
+               未闭合串**后面当续行用的（靠它的 `}` 收尾）。v596 给基础块补了 `}`
+               之后，这段就变成"块外的裸声明 + 多余右括号"，浏览器整条丢弃 ⇒
+               `--xz-num-font` 实际没挂上，只剩 05 的值在兜。
+               ⇒ 自成一块（两个 `:root` 会正常级联合并），别再改回续行写法。 */
+            + ':root{--xz-num-font:"Noto Sans SC","Noto Sans","Bahnschrift","DIN Alternate","Segoe UI","Helvetica Neue",Arial,sans-serif;}',
             /* ★★★ v470：`<button>` / 表单控件**不继承 font-family**，必须显式兜 ★★★
                07 里散着 14 条 `button.xxx` 规则没写 font-family（`_v470_audit05.mjs` 同款扫法）。
                单条补不牢（下次加按钮又漏），所以这里一条兜底覆盖整棵树。
