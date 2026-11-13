@@ -10896,13 +10896,9 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         return { state: seg[0] || '', area: seg[1] || '', city: seg[2] || small, raw: big };
     }
 
-    /* 一个 Voronoi 单元的包围盒（只给城市点排布定步长用） */
-    function xzMapCellBox(pts) {
-        var xs = pts.map(function (p) { return p[0]; }), ys = pts.map(function (p) { return p[1]; });
-        var mnX = Math.min.apply(null, xs), mxX = Math.max.apply(null, xs);
-        var mnY = Math.min.apply(null, ys), mxY = Math.max.apply(null, ys);
-        return { x: mnX, y: mnY, w: Math.max(1, mxX - mnX), h: Math.max(1, mxY - mnY) };
-    }
+    /* ★ v598：xzMapCellBox（Voronoi 单元包围盒）已删——城市点改成「州 bbox 逐点选位」后
+       它零读了。⚠ 别照旧注释把它加回来：域单元的 bbox 在 Voronoi 外框（[-600,2500]²）上
+       比州还大，拿它采样会采到图外（v598 踩过，金点城名一起消失）。 */
 
     /* 州的地盘（bbox）：全图撒点，落在陆内且离本州种子最近的点都算本州。
        ⚠ 采样范围必须是整张图：v293 原型里写的是 x 120..1000 / y 60..600，
