@@ -4256,9 +4256,11 @@ function xzTypeOf(name, fbT, fbA) {
        ══════════════════════════════════════════════════════════════════════ */
     var XZ_THEME_KEY = 'xzTheme';
     function xzThemeGet() {
-        /* ★ v593：默认改为日光（作者 2026-11-12 拍板「这次采用日光模式」）。
-           玩家手动切到 night 过的，localStorage 里存着 'night'，这里照旧尊重。 */
-        try { return localStorage.getItem(XZ_THEME_KEY) === 'night' ? 'night' : 'day'; } catch (e) { return 'day'; }
+        /* ★ v596：默认夜墨（作者 2026-11-13 拍板「都要改成默认深色」）。
+           ⚠ 判据方向只能这么写：**明确存了 'day' 才给日光**。
+           写成 `!== 'night' ? 'night' : 'day'` 看着一样，实则把「读不到 / 抛异常 /
+           旧键值是脏数据」全判成日光 —— 与 07 的默认逻辑必须同向，否则一边深一边浅。 */
+        try { return localStorage.getItem(XZ_THEME_KEY) === 'day' ? 'day' : 'night'; } catch (e) { return 'night'; }
     }
     function xzThemeApply(t) {
         var day = (t === 'day');
@@ -11347,12 +11349,21 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 });
                 h += '</div>';
                 h += '<div class="xz-map-info-actions">';
-                h += '<button type="button" class="xz-map-info-btn" data-xz-act="map-enter" data-map-region="' + esc(info.s.n) + '">进入此州 ▸</button>';
+                /* ★ v597：已经在州内（从「进入此州」进来的）就不再给「进入此州」——
+                   那颗按钮此刻是空操作，却又把 mapPick/mapAreaPick 清一遍，
+                   玩家点了会以为「退回去了」。留在州内时唯一的出口是「回全图」。 */
+                if (!inState) {
+                    h += '<button type="button" class="xz-map-info-btn" data-xz-act="map-enter" data-map-region="' + esc(info.s.n) + '">进入此州 ▸</button>';
+                }
                 /* ★ v330：这里改成「一步回全图」，与标题栏那颗「◀ 上一层」分工明确：
                      上一层 = 退一格（人物→地点→域→州）；回全图 = 一次清空。
                    旧标签「缩回全图」在州内层读起来像"缩回上一级"，实际却不清州 ——
                    名不副实比没有更坑。 */
-                if (zoomed) h += '<button type="button" class="xz-map-info-btn is-ghost" data-xz-act="map-zoomout">⤢ 回全图</button>';
+                /* ★ v597：`zoomed` 只表示「选中放大了某一个」，**不表示人在州内**。
+                   从「进入此州」进来时 mapPick/mapAreaPick 都是空的 ⇒ zoomed=false，
+                   于是这里原来不给「回全图」，整屏没有一颗能出去的按钮。
+                   口径：只要在州内（inState）或图被放大过，就必须有回全图。 */
+                if (zoomed || inState) h += '<button type="button" class="xz-map-info-btn is-ghost" data-xz-act="map-zoomout">⤢ 回全图</button>';
                 h += '</div>';
             } else if (info.kind === 'area') {
                 /* ★ v535：卡头那颗「极寒　·　人州」的药丸**删掉**（作者：「这个绿绿的字的显示删掉」）。
@@ -11441,7 +11452,14 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         var wantA = state.mapAreaPick || here.area;
         var pa = null;
         reg.areas.forEach(function (a) { if (a.n === wantA) pa = a; });
-        if (!pa) return null;
+        /* ★ v597（作者 2026-11-13：「点一下魔州就退不回大图，也没按钮」）：
+           进了某个州、**没点域**、玩家本人又不在这个州（`here.area` 是别的州的域）⇒
+           原来这里返回 null，页面落到 `is-empty` 空卡，**一颗按钮都不给**：
+           舆图已经缩到这一州，玩家除了猜「点空白处」没有任何出口。
+           现在退回「州卡」：页面上有该州的域可点，也有 `⤢ 回全图`。
+           ⚠ 别改成「默认选中该州第一个域」—— 那会让玩家以为自己在第一个域，
+             而且域卡会把「◀ 上一层」顶上来，层级看着像多跳了一层。 */
+        if (!pa) return { kind: 'state', s: reg };
         /* 再往下一层：点中的地点 */
         if (state.mapPlace) {
             var pc = null;
