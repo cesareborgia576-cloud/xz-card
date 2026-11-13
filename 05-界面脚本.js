@@ -12329,13 +12329,10 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 if (_c0) _c0.textContent = '共 ' + (LOG_CACHE.entries.length || 0) + ' 条 · 可滚动';
             } else {
             try {
-                /* ★ v1.22：raw 国内不通 ⇒ GitHub API 优先（点击才读、低频），
-                   jsDelivr 四镜像次之，raw 兜底。 */
+                /* ★ v602：热更机制退回「参考春日狂想曲」那套 —— jsDelivr 四镜像优先、raw 兜底。 */
                 var _lgHosts = ['https://cdn.jsdelivr.net', 'https://fastly.jsdelivr.net',
                                 'https://testingcf.jsdelivr.net', 'https://gcore.jsdelivr.net'];
                 var _lgUrls = [], _lgi;
-                /* ① GitHub API 实时 ② jsDelivr 四镜像（12h 缓存） ③ raw（国内不通） */
-                _lgUrls.push('https://api.github.com/repos/cesareborgia576-cloud/xz-card/contents/changelog.json?ref=main&t=' + Date.now());
                 for (_lgi = 0; _lgi < _lgHosts.length; _lgi++) {
                     _lgUrls.push(_lgHosts[_lgi] + '/gh/cesareborgia576-cloud/xz-card@main/changelog.json');
                 }
