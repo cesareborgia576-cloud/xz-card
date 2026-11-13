@@ -12124,6 +12124,11 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                版本页从此恒显「检查失败」。
                ⇒ 轮询走 jsDelivr 四镜像（12h 缓存，版本号本来就不常变），raw 兜底。
                需要「推完立刻可见」的是 loader 的 latest.json 与更新记录弹层，那两处才用 API。 */
+            /* ★ v604：先问 @latest（最新 tag，节点无旧缓存），再问 @main（可变引用，各节点 12h 缓存
+               且 purge 不保证生效 —— 实测 fastly/testingcf/gcore 停十小时前的值），raw 兜底。 */
+            for (_hvi = 0; _hvi < _hvHosts.length; _hvi++) {
+                _hvUrls.push(_hvHosts[_hvi] + '/gh/cesareborgia576-cloud/xz-card@latest/version.json');
+            }
             for (_hvi = 0; _hvi < _hvHosts.length; _hvi++) {
                 _hvUrls.push(_hvHosts[_hvi] + '/gh/cesareborgia576-cloud/xz-card@main/version.json');
             }
@@ -12363,6 +12368,10 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 var _lgHosts = ['https://cdn.jsdelivr.net', 'https://fastly.jsdelivr.net',
                                 'https://testingcf.jsdelivr.net', 'https://gcore.jsdelivr.net'];
                 var _lgUrls = [], _lgi;
+                /* ★ v604：@latest 优先（tag = 新 URL，节点不会命中十小时前的旧缓存）。 */
+                for (_lgi = 0; _lgi < _lgHosts.length; _lgi++) {
+                    _lgUrls.push(_lgHosts[_lgi] + '/gh/cesareborgia576-cloud/xz-card@latest/changelog.json');
+                }
                 for (_lgi = 0; _lgi < _lgHosts.length; _lgi++) {
                     _lgUrls.push(_lgHosts[_lgi] + '/gh/cesareborgia576-cloud/xz-card@main/changelog.json');
                 }
