@@ -87,6 +87,13 @@
     var TAG = '[天元录·开局创角]';
     var HOST_ID = 'xz-start-host';
     var STYLE_ID = 'xz-start-style';
+    /* ★ v593：开局面板是独立文档，05 的 data-xz-theme 传不进来，得自己挂一份。
+       默认日光（作者 2026-11-12）；玩家在 05 切到夜墨过，localStorage 里有 'night'，照旧尊重。 */
+    try {
+        if (localStorage.getItem('xzTheme') !== 'night') {
+            document.documentElement.setAttribute('data-xz-theme', 'day');
+        }
+    } catch (eTh) {}
     var UNIT_ID = 'xz-start-unit';
     /* ★★★ v470：版本号改成**卡版本**，不再是开局脚本自己的 6.0 ★★★
        用户原话：「版本号卡的版本，比如 v470 这样子，不是开局脚本的版本。」
@@ -4458,6 +4465,15 @@ d.attrs[a] = v;
     function injectStyle() {
         var doc = getDoc();
         if (doc.getElementById(STYLE_ID)) return;
+        /* ★ v593：主题属性必须在**样式注入这一步**挂，不能只在脚本顶部挂一次 ——
+           07 是独立文档，样式与文档节点都可能在顶部那段代码之后才就绪。
+           默认日光；localStorage 读不到（沙箱/隐私模式）也按日光，绝不留深色。 */
+        try {
+            var _night = false;
+            try { _night = (localStorage.getItem('xzTheme') === 'night'); } catch (e1) {}
+            if (_night) doc.documentElement.removeAttribute('data-xz-theme');
+            else doc.documentElement.setAttribute('data-xz-theme', 'day');
+        } catch (e0) {}
         var s = doc.createElement('style');
         s.id = STYLE_ID;
         s.textContent = [
@@ -4472,7 +4488,8 @@ d.attrs[a] = v;
                  变量没定义 ⇒ 解析失败 ⇒ 字重回落到继承的 400 ⇒
                  `_v468_opill` 当场报「DOT 字重 ≥700 → 实际 400」。
                  这也是"声明必须挂在界面在就一定的祖先上"的又一例。 */
-            ':root{--xz-fw:400;--xz-fw-med:500;--xz-fw-bold:600;--xz-font:"Noto Sans SC","Noto Sans","Noto Sans CJK SC","Source Han Sans SC","PingFang SC","Microsoft YaHei UI","Microsoft YaHei","Hiragino Sans GB","WenQuanYi Micro Hei",sans-serif;--xz-void:#030d14;--xz-bg:#071720;--xz-card:linear-gradient(145deg, rgba(16, 37, 45, 0.96) 0%, rgba(10, 26, 33, 0.94) 100%);--xz-card-hover:linear-gradient(145deg, rgba(22, 50, 60, 0.98) 0%, rgba(14, 34, 42, 0.96) 100%);--xz-border:rgba(213,180,121,0.28);--xz-border-strong:rgba(242,194,111,0.72);--xz-gold:#e6bd76;--xz-gold-bright:#f2c26f;--xz-gold-glow:rgba(227,185,111,0.28);--xz-jade:#68c5b2;--xz-cyan:#7fd2c1;--xz-crimson:#aa5960;--xz-text:#f3eee5;--xz-text-2:#b7b8b3;--xz-muted:#8a9496;--dhl-stage:radial-gradient(circle at 91% 18%, rgba(255, 177, 73, 0.16), transparent 18%), radial-gradient(circle at 8% 76%, rgba(244, 157, 58, 0.10), transparent 22%), linear-gradient(180deg, #071720 0%, #030d14 100%);--dhl-reading:radial-gradient(circle at 93% 14%, rgba(255, 178, 72, 0.14), transparent 14%), radial-gradient(circle at 88% 42%, rgba(255, 157, 52, 0.08), transparent 12%), linear-gradient(180deg, rgba(7, 25, 34, 0.94), rgba(3, 14, 21, 0.97));--dhl-header:linear-gradient(90deg, rgba(4, 18, 27, 0.985), rgba(16, 35, 43, 0.965) 50%, rgba(37, 27, 25, 0.985));--dhl-button-active:linear-gradient(180deg, rgba(126, 78, 42, 0.45), rgba(14, 27, 32, 0.3));'
+            ':root{--xz-fw:400;--xz-fw-med:500;--xz-fw-bold:600;--xz-font:"Noto Sans SC","Noto Sans","Noto Sans CJK SC","Source Han Sans SC","PingFang SC","Microsoft YaHei UI","Microsoft YaHei","Hiragino Sans GB","WenQuanYi Micro Hei",sans-serif;--xz-void:#efe9dc;--xz-bg:#f7f4ec;--xz-card:#fffdf8;--xz-card-hover:#fffaf0;--xz-border:rgba(138,95,20,.24);--xz-border-strong:rgba(138,95,20,.56);--xz-gold:#7a5510;--xz-gold-bright:#8a5f14;--xz-gold-glow:rgba(160,111,18,.16);--xz-jade:#1a6d5c;--xz-cyan:#14695c;--xz-crimson:#9b1c33;--xz-text:#1a1408;--xz-text-2:#2e2415;--xz-muted:#4a4133;--dhl-stage:linear-gradient(180deg,#f9f6ee 0%,#f2ecdd 100%);--dhl-reading:linear-gradient(180deg,#fffdf8,#f8f3e7);--dhl-header:linear-gradient(90deg,#f4efe2,#fbf8f0 50%,#f6eee1);--dhl-button-active:linear-gradient(180deg,rgba(160,111,18,.15),rgba(255,255,255,.55));'
+            + ':root[data-xz-theme="day"]{--xz-void:#efe9dc;--xz-bg:#f7f4ec;--xz-card:#fffdf8;--xz-card-hover:#fffaf0;--xz-border:rgba(138,95,20,.24);--xz-border-strong:rgba(138,95,20,.56);--xz-gold:#7a5510;--xz-gold-bright:#8a5f14;--xz-gold-glow:rgba(160,111,18,.16);--xz-jade:#1a6d5c;--xz-cyan:#14695c;--xz-crimson:#9b1c33;--xz-text:#1a1408;--xz-text-2:#2e2415;--xz-muted:#4a4133;--xz-dhl-stage:none;--dhl-stage:linear-gradient(180deg,#f9f6ee 0%,#f2ecdd 100%);--dhl-reading:linear-gradient(180deg,#fffdf8,#f8f3e7);--dhl-header:linear-gradient(90deg,#f4efe2,#fbf8f0 50%,#f6eee1);--dhl-button-active:linear-gradient(180deg,rgba(160,111,18,.15),rgba(255,255,255,.55));}'
             /* ★★★ v470：`:root` 上补一份 `--xz-num-font` ★★★
                本文件第 4196 行（「当前版本号」那个读数）用了
                `font-family:var(--xz-num-font,var(--xz-font))` —— 带兜底，但：
@@ -4659,7 +4676,7 @@ d.attrs[a] = v;
                5px 后 ≈ 27px，是"能点、能读、不臃肿"的平衡点。
                ⚠ 别回到 6：那是 v466 之前的原始值，配上新行距会显得松垮；
                  5 是这一档（行高 1.72）下的实测值。 */
-            '.xz-st-body input[type=text],.xz-st-body input[type=number],.xz-st-body select,.xz-st-body textarea{flex:1;min-width:0;background:rgba(2,12,18,0.85);border:1px solid var(--xz-border);border-radius:6px;color:var(--xz-text);font-size:12px;padding:5px 9px;line-height:1.35;font-family:inherit;outline:none;box-shadow:inset 0 1px 3px rgba(0,0,0,0.5);transition:border-color 0.2s;}',
+            '.xz-st-body input[type=text],.xz-st-body input[type=number],.xz-st-body select,.xz-st-body textarea{flex:1;min-width:0;background:#fffdf8;border:1px solid rgba(138,95,20,.32);border-radius:3px;color:#1a1408;font-size:12px;padding:5px 9px;line-height:1.35;font-family:inherit;outline:none;box-shadow:inset 0 1px 2px rgba(120,86,32,.10);transition:border-color 0.2s;}',
             '.xz-st-body input:focus,.xz-st-body select:focus,.xz-st-body textarea:focus{border-color:rgba(230,189,118,.75);box-shadow:0 0 0 2px rgba(230,189,118,.12);}',
             '.xz-st-body input[type=number]{flex:0 0 58px;text-align:center;}',
             '.xz-st-body textarea{min-height:42px;resize:vertical;}',
@@ -4826,7 +4843,7 @@ d.attrs[a] = v;
                 + 'font-size:8.5px;font-weight:var(--xz-fw-bold);line-height:1;}',
             '.xz-st-mini:hover:not(:disabled),button.xz-st-mini:hover:not(:disabled){border-color:var(--xz-gold);background:rgba(230,189,118,.14);color:var(--xz-gold-bright);}',
             '.xz-st-mini.del:hover:not(:disabled),button.xz-st-mini.del:hover:not(:disabled){border-color:#c0392b;color:#f0a6a0;background:rgba(192,57,43,.12);}',
-            '.xz-st-ovl-box input[type=text],.xz-st-ovl-box input[type=number],.xz-st-ovl-box select,.xz-st-ovl-box textarea{font-family:inherit;background:#06101e;border:1px solid rgba(230,189,118,.3);border-radius:6px;padding:6px 9px;color:var(--xz-text);font-size:12.5px;}',
+            '.xz-st-ovl-box input[type=text],.xz-st-ovl-box input[type=number],.xz-st-ovl-box select,.xz-st-ovl-box textarea{font-family:inherit;background:#fffdf8;border:1px solid rgba(138,95,20,.32);border-radius:3px;padding:6px 9px;color:#1a1408;font-size:12.5px;}',
             '.xz-st-ovl-box input:focus,.xz-st-ovl-box select:focus,.xz-st-ovl-box textarea:focus{border-color:var(--xz-gold);outline:none;}',
             '.xz-st-note{margin-top:8px;font-size:11px;color:#7fb69b;}',
             '.xz-st-note.warn{color:var(--xz-gold);}',
