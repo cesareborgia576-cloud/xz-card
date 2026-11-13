@@ -87,10 +87,11 @@
     var TAG = '[天元录·开局创角]';
     var HOST_ID = 'xz-start-host';
     var STYLE_ID = 'xz-start-style';
-    /* ★ v593：开局面板是独立文档，05 的 data-xz-theme 传不进来，得自己挂一份。
-       默认日光（作者 2026-11-12）；玩家在 05 切到夜墨过，localStorage 里有 'night'，照旧尊重。 */
+    /* ★ v595（作者 2026-11-13）：「开局脚本默认深色，能切日光」。
+       所以只有 localStorage 里**明确存了 'day'** 才挂日光；
+       没设过（null）或存的是 'night' ⇒ 基础深色。 */
     try {
-        if (localStorage.getItem('xzTheme') !== 'night') {
+        if (localStorage.getItem('xzTheme') === 'day') {
             document.documentElement.setAttribute('data-xz-theme', 'day');
         }
     } catch (eTh) {}
@@ -4469,10 +4470,10 @@ d.attrs[a] = v;
            07 是独立文档，样式与文档节点都可能在顶部那段代码之后才就绪。
            默认日光；localStorage 读不到（沙箱/隐私模式）也按日光，绝不留深色。 */
         try {
-            var _night = false;
-            try { _night = (localStorage.getItem('xzTheme') === 'night'); } catch (e1) {}
-            if (_night) doc.documentElement.removeAttribute('data-xz-theme');
-            else doc.documentElement.setAttribute('data-xz-theme', 'day');
+            var _day = false;
+            try { _day = (localStorage.getItem('xzTheme') === 'day'); } catch (e1) {}
+            if (_day) doc.documentElement.setAttribute('data-xz-theme', 'day');
+            else doc.documentElement.removeAttribute('data-xz-theme');
         } catch (e0) {}
         var s = doc.createElement('style');
         s.id = STYLE_ID;
@@ -4608,6 +4609,12 @@ d.attrs[a] = v;
                  → 改这里 → 再跑 `_v471_overflow.mjs` 确认手机/桌面两档都等高。 */
             '.xz-st-card.xz-st-fixh{min-height:926px;}',   /* ★ v587：第 4 页「剧本选择」换成六颗矩形按钮（3 列×2 行、每颗 44px + 7px 间距），比原来那颗单行开关高了 25px。`node 工具/_v471_maxh.mjs` 现取：全宽度最大实高 925.41px（390 宽那一档）⇒ 基准抬到 926。★ v1.053 的旧值 897（当时实测 901.69）已作废 */
             '.xz-st-head{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--xz-border);background:var(--dhl-header);box-shadow:0 4px 15px rgba(0,0,0,0.45);}',
+            /* ★ v595：开局面板的主题开关（与 05 顶栏那颗同款：图标 + 两字） */
+            '.xz-st-theme{display:inline-flex;align-items:center;gap:3px;flex:none;padding:3px 8px;'
+                + 'border:1px solid var(--xz-border-strong);border-radius:8px;background:var(--xz-card);'
+                + 'color:var(--xz-text-2);font:inherit;font-size:11px;line-height:1.5;cursor:pointer;}',
+            '.xz-st-theme:hover{border-color:var(--xz-gold);color:var(--xz-gold-bright);}',
+            '.xz-st-theme svg{width:12px;height:12px;flex:none;display:block;}',
             '.xz-st-seal{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border:1px solid rgba(230,189,118,.55);border-radius:4px;color:var(--xz-gold);font-size:12px;}',
             '.xz-st-title{flex:1;font-size:13px;letter-spacing:.06em;color:var(--xz-text);}',
             /* ★★★ v468：顶栏标题「开局创角」→「开局设置」，并套一个小金框 ★★★
@@ -7860,6 +7867,38 @@ d.attrs[a] = v;
         return h;
     }
 
+    /* ★ v595（作者 2026-11-13）：「开局脚本默认深色，能切日光」。
+       默认深色见文件顶部与 injectStyle；这里只负责那颗按钮与切换。 */
+    function xzStartThemeBtnHtml() {
+        var day = false;
+        try { day = localStorage.getItem('xzTheme') === 'day'; } catch (e) {}
+        /* 图标语义是"点它会变成什么"：白天显示月亮、夜里显示太阳 */
+        var ico = day
+            ? '<path d="M20.2 14.4A8.4 8.4 0 0 1 9.6 3.8a8.4 8.4 0 1 0 10.6 10.6z"/>'
+            : '<circle cx="12" cy="12" r="4.1"/><path d="M12 2.6v2.6"/><path d="M12 18.8v2.6"/>'
+              + '<path d="M2.6 12h2.6"/><path d="M18.8 12h2.6"/><path d="M5.4 5.4l1.8 1.8"/>'
+              + '<path d="M16.8 16.8l1.8 1.8"/><path d="M18.6 5.4l-1.8 1.8"/><path d="M7.2 16.8l-1.8 1.8"/>';
+        return '<button type="button" class="xz-st-theme" data-xz-act="theme"'
+             + ' title="' + (day ? '切到夜墨模式' : '切到日光模式') + '"'
+             + ' aria-label="' + (day ? '切到夜墨模式' : '切到日光模式') + '">'
+             + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"'
+             + ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'
+             + ico + '</svg><span>' + (day ? '夜墨' : '日光') + '</span></button>';
+    }
+    function xzStartThemeToggle() {
+        var cur = 'night';
+        try { cur = localStorage.getItem('xzTheme') === 'day' ? 'day' : 'night'; } catch (e) {}
+        var next = (cur === 'day') ? 'night' : 'day';
+        try { localStorage.setItem('xzTheme', next); } catch (e2) {}
+        /* 即时生效：属性挂在**本面板所在文档**的 html 上（05 的 xzThemeApply 挂的是它自己那份） */
+        try {
+            var doc = getDoc();
+            if (next === 'day') doc.documentElement.setAttribute('data-xz-theme', 'day');
+            else doc.documentElement.removeAttribute('data-xz-theme');
+        } catch (e3) {}
+        render(true);   /* 重绘只为换按钮上的图标与文字；色值已经即时切了 */
+    }
+
     function formHtml(d) {
         var page = Number(state.page) || 0;
         if (page < 0) page = 0;
@@ -7870,7 +7909,7 @@ d.attrs[a] = v;
         h += cardOpen('');
         h += '<div class="xz-st-head"><span class="xz-st-seal">开</span>'
             + '<span class="xz-st-title"><span class="xz-st-titlebox"><span>开局设置</span></span></span>'
-            + wbVerLabelHtml() + '</div>';
+            + xzStartThemeBtnHtml() + wbVerLabelHtml() + '</div>';
         h += '<div class="xz-st-body">';
         h += wizBarHtml();
 
@@ -8906,6 +8945,7 @@ host.__xzGuard = true;
                  ⇒ 直接落到"管理器没加载起来"那句提示。
                  ⇒ 改走 `XZ05(name)`（本文件顶部，和 `XZ_SHARED` 同构：自身→parent→top→同源 iframe）。
                  **不要再写回 `globalThis.__XZ05__`** —— 它在本机探针里恒成立，探针会全绿。 */
+            if (act === 'theme') { xzStartThemeToggle(); return; }
             if (act === 'open-cem' || act === 'open-gallery') {
                 var _fn = XZ05(act === 'open-cem' ? 'xzCemOpen' : 'xzCemGallery');
                 if (typeof _fn !== 'function') {
