@@ -3405,8 +3405,26 @@ function xzTypeOf(name, fbT, fbA) {
         + ':root[data-xz-theme="day"] .xz-npc-sect'
         + '{border-color:rgba(138,95,20,0.30);background:rgba(160,111,18,0.05);}',
         '.xz-root .xz-npc-mind{display:none;}',
-        '.xz-root .xz-npc-section{background:rgba(0,0,0,0.3);border-radius:4px;padding:6px 8px;margin-top:4px;}',
+        '.xz-root .xz-npc-section{background:rgba(0,0,0,0.3);border-radius:4px;padding:6px 8px;margin-top:4px;'
+        + 'grid-column:1 / -1;}',   /* ★ v597：实测它现在挂在 flex 列里（382/382 满宽），这条是保险：
+                                       万一以后被挪进两列网格，不跨行就会缩成半屏 */
         ' .xz-root .xz-npc-sec-title{font-size:10.5px;font-weight:var(--xz-fw);color:var(--xz-text-2);margin-bottom:4px;}',
+        /* ★★★ v597：NPC「已学本领」的一条一张卡 ★★★
+           作者 2026-11-13：「npc 界面丑的，别的都有格子美化，就这个没有，好难看」。
+           原来这一块是 `.xz-npc-section` 里的一串裸 div，跟上面那排 `.xz-box` 格子
+           完全不是一个视觉体系。现在每条招式/兵器各占一张小卡：头行（招名 + 品质 /
+           目标 / 消耗）+ 效果段。
+           ⚠ 底色与边框必须用 --dhl-reading / --dhl-border：日光那套在 2647 行改的
+             就是这两个变量，写死 rgba 会变成"夜墨下正常、日光下脏灰块"。
+           ⚠ 不打 !important、也不碰布局属性（宽度由父级 flex 决定）。 */
+        '.xz-root .xz-sk{background:var(--dhl-reading);border:1px solid var(--dhl-border);'
+        + 'border-radius:6px;padding:7px 9px;margin:0 0 5px;}',
+        '.xz-root .xz-sk:last-child{margin-bottom:0;}',
+        '.xz-root .xz-sk-h{display:flex;flex-wrap:wrap;align-items:center;gap:4px;'
+        + 'font-size:11px;line-height:1.55;color:var(--xz-text-2);}',
+        '.xz-root .xz-sk-h b{color:var(--xz-text);font-weight:var(--xz-fw-med);}',
+        '.xz-root .xz-sk-b{margin-top:3px;font-size:10.5px;line-height:1.55;'
+        + 'color:var(--xz-muted);word-break:break-word;}',
         '.xz-root .xz-npc-grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;font-size:10px;text-align:center;}',
         '.xz-root .xz-npc-grid4 div{background:rgba(255,255,255,0.03);padding:3px;border-radius:2px;border:1px solid rgba(255,255,255,0.05);}',
 
@@ -5587,7 +5605,12 @@ function xzTypeOf(name, fbT, fbA) {
                         var target = String(o.目标 || '').trim();
                         var cost = (o.消耗 === undefined || o.消耗 === null
                             || String(o.消耗).trim() === '') ? null : Number(o.消耗);
-                        var h = '<div style="font-size:11px;margin-bottom:4px;color:var(--xz-text-2);line-height:1.6;">';
+                        /* ★ v597（作者 2026-11-13：「npc 界面丑的，别的都有格子美化，就这个没有」）
+                           一条招式 = 一张小卡：头行放《招名》+ 品质/目标/消耗，效果另起一段。
+                           原来是一串裸 div 靠换行分隔，跟上面那排 `.xz-box` 格子完全不是一个东西。
+                           ⚠ 底色/边框全走 --dhl-* 变量：日光与夜墨共用一份，别写死颜色。 */
+                        var h = '<div class="xz-sk">'
+                            + '<div class="xz-sk-h">';
                         h += '<b>《' + esc(nm) + '》</b> <span class="xz-chip-sm" style="color:' + qc
                             + ';border-color:' + qc + ';">' + esc(q) + '</span>';
                         /* 类型：玄技区里「主动」、玄诀区里「被动」都是默认值，
@@ -5609,6 +5632,7 @@ function xzTypeOf(name, fbT, fbA) {
                         if (typeof o.描述 === 'string' && o.描述) {
                             h += ' <span style="color:var(--xz-muted);font-size:10px;">' + esc(o.描述) + '</span>';
                         }
+                        h += '</div>';   /* ← .xz-sk-h 收尾（效果另起一段，不挤在头行里） */
                         /* 效果：机制名:值｜描写 —— 与主角页同一出口 */
                         var eff = '';
                         if (o.效果 && typeof o.效果 === 'object') {
@@ -5617,10 +5641,9 @@ function xzTypeOf(name, fbT, fbA) {
                             eff = '<div>' + esc(o.效果) + '</div>';
                         }
                         if (eff) {
-                            h += '<div style="font-size:10.5px;color:var(--xz-muted);line-height:1.55;'
-                                + 'margin-top:1px;word-break:break-word;">' + eff + '</div>';
+                            h += '<div class="xz-sk-b">' + eff + '</div>';
                         }
-                        h += '</div>';
+                        h += '</div>';   /* ← .xz-sk 收尾 */
                         return h;
                     };
                     /* 玄技：schema 里是 `$r` 记录表（键＝招名）；单门对象是老档形态，一并接住 */
@@ -5651,9 +5674,14 @@ function xzTypeOf(name, fbT, fbA) {
 
                     // 装备武器
                     if (npcArtName && npcArtName !== '无') {
-                        s += '<div style="font-size:11px;margin-bottom:3px;color:var(--xz-text-2);">';
+                        /* ★ v597：兵器也套同一张卡（原来是一条裸文字，和上面招式卡的视觉重量对不上） */
+                        s += '<div class="xz-sk">';
+                        s += '<div class="xz-sk-h"><b>[兵器·' + esc(npcArtName) + ']</b>'
+                            + '<span class="xz-chip-sm">本命宝器</span></div>';
                         /* ★ v222：武器「描述」已删，只显示效果（同一句话不许显示两遍） */
-                        s += '<b>[兵器·' + esc(npcArtName) + ']</b>' + (npc.装备武器.效果 ? (' <span style="color:var(--xz-cyan);font-size:10px;">— ' + esc(npc.装备武器.效果) + '</span>') : '');
+                        if (npc.装备武器.效果) {
+                            s += '<div class="xz-sk-b">' + esc(npc.装备武器.效果) + '</div>';
+                        }
                         s += '</div>';
                     }
                     s += '</div>';
