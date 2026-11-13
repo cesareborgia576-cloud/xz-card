@@ -12128,7 +12128,32 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 _hvUrls.push(_hvHosts[_hvi] + '/gh/cesareborgia576-cloud/xz-card@main/version.json');
             }
             _hvUrls.push(HOTV_URL);
-            var _hvAt = 0;
+            /* ★ v603：四个节点**同时问，取版本号最高的答案**。
+               实测（2026-11-14 03:05）同一次推送后：cdn=v1.23，fastly/testingcf/gcore 还是
+               十小时前的 v1.21。旧写法「谁先回就用谁」⇒ 玩家连到慢/旧节点时，
+               版本页永远显示旧号，玩家只会认为热更坏了。 */
+            var _hvBest = null, _hvLeft = _hvUrls.length, _hvFired = false;
+            function hvNum(s) {
+                var m = /(\d+(?:\.\d+)*)/.exec(String(s || ''));
+                return m ? m[1].split('.').map(Number) : null;
+            }
+            function hvCmp(a, b) {
+                var x = hvNum(a), y = hvNum(b), i, n, p, q;
+                if (!x) return -1;
+                if (!y) return 1;
+                n = Math.max(x.length, y.length);
+                for (i = 0; i < n; i++) {
+                    p = x[i] || 0; q = y[i] || 0;
+                    if (p !== q) return p > q ? 1 : -1;
+                }
+                return 0;
+            }
+            function hvSettle() {
+                if (_hvFired) return;
+                _hvFired = true;
+                if (_hvBest) done(true, _hvBest.st, _hvBest.nt); else done(false);
+            }
+            setTimeout(hvSettle, 3200);
             var done = function (ok, latest, note) {
                 /* ★ v564：note 也进签名 —— 说明换了要重绘版本页，别等版本号变才刷 */
                 var before = [HOTV.latest, HOTV.err, HOTV.first, HOTV.note].join('|');
@@ -12165,20 +12190,25 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                     ? ((j && j.devNote) ? String(j.devNote) : ((j && j.note) ? String(j.note) : ''))
                     : ((j && j.note) ? String(j.note) : '');
                 _nt = String(_nt || '').replace(/\s+/g, ' ').trim().slice(0, 40);
-                if (cur.status !== 200 || !/^v[\d.]+$/.test(st)) hvNext();
-                else done(true, st, _nt);
+                if (cur.status !== 200 || !/^v[\d.]+$/.test(st)) {
+                    if (--_hvLeft <= 0) hvSettle();
+                    return;
+                }
+                if (!_hvBest || hvCmp(st, _hvBest.st) > 0) _hvBest = { st: st, nt: _nt };
+                if (--_hvLeft <= 0) hvSettle();
             }
             function hvNext() {
-                if (_hvAt >= _hvUrls.length) { done(false); return; }
-                var _u = _hvUrls[_hvAt++];
-                try {
-                    var _x = new XMLHttpRequest();
-                    _x.open('GET', _u + (_u.indexOf('raw.githubusercontent') >= 0 ? '?t=' + Date.now() : ''), true);
-                    _x.timeout = 4000;
-                    _x.onload = function () { hvParse(_x); };
-                    _x.onerror = _x.ontimeout = function () { hvNext(); };
-                    _x.send();
-                } catch (eHv) { hvNext(); }
+                /* v603：改成**四路并发**（原先是串行取第一个成功的） */
+                _hvUrls.forEach(function (_u) {
+                    try {
+                        var _x = new XMLHttpRequest();
+                        _x.open('GET', _u + (_u.indexOf('raw.githubusercontent') >= 0 ? '?t=' + Date.now() : ''), true);
+                        _x.timeout = 3000;
+                        _x.onload = function () { hvParse(_x); };
+                        _x.onerror = _x.ontimeout = function () { if (--_hvLeft <= 0) hvSettle(); };
+                        _x.send();
+                    } catch (eHv) { if (--_hvLeft <= 0) hvSettle(); }
+                });
             }
             hvNext();
         } catch (e) { }
