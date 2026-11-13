@@ -4488,7 +4488,7 @@ d.attrs[a] = v;
                  变量没定义 ⇒ 解析失败 ⇒ 字重回落到继承的 400 ⇒
                  `_v468_opill` 当场报「DOT 字重 ≥700 → 实际 400」。
                  这也是"声明必须挂在界面在就一定的祖先上"的又一例。 */
-            ':root{--xz-fw:400;--xz-fw-med:500;--xz-fw-bold:600;--xz-font:"Noto Sans SC","Noto Sans","Noto Sans CJK SC","Source Han Sans SC","PingFang SC","Microsoft YaHei UI","Microsoft YaHei","Hiragino Sans GB","WenQuanYi Micro Hei",sans-serif;--xz-void:#efe9dc;--xz-bg:#f7f4ec;--xz-card:#fffdf8;--xz-card-hover:#fffaf0;--xz-border:rgba(138,95,20,.24);--xz-border-strong:rgba(138,95,20,.56);--xz-gold:#7a5510;--xz-gold-bright:#8a5f14;--xz-gold-glow:rgba(160,111,18,.16);--xz-jade:#1a6d5c;--xz-cyan:#14695c;--xz-crimson:#9b1c33;--xz-text:#1a1408;--xz-text-2:#2e2415;--xz-muted:#4a4133;--dhl-stage:linear-gradient(180deg,#f9f6ee 0%,#f2ecdd 100%);--dhl-reading:linear-gradient(180deg,#fffdf8,#f8f3e7);--dhl-header:linear-gradient(90deg,#f4efe2,#fbf8f0 50%,#f6eee1);--dhl-button-active:linear-gradient(180deg,rgba(160,111,18,.15),rgba(255,255,255,.55));'
+            ':root{--xz-fw:400;--xz-fw-med:500;--xz-fw-bold:600;--xz-font:"Noto Sans SC","Noto Sans","Noto Sans CJK SC","Source Han Sans SC","PingFang SC","Microsoft YaHei UI","Microsoft YaHei","Hiragino Sans GB","WenQuanYi Micro Hei",sans-serif;--xz-void:#090b10;--xz-bg:#0e1219;--xz-card:#151a24;--xz-card-hover:#1c2331;--xz-border:rgba(255,255,255,.10);--xz-border-strong:rgba(255,255,255,.20);--xz-gold:#cecece;--xz-gold-bright:#f1f1f1;--xz-gold-glow:rgba(255,255,255,.12);--xz-jade:#c9ced7;--xz-cyan:#7fd2c1;--xz-crimson:#e11d48;--xz-text:#f5f5f5;--xz-text-2:#c7c7c7;--xz-muted:#929292;--dhl-stage:linear-gradient(180deg,#121722 0%,#0c1017 100%);--dhl-reading:linear-gradient(180deg,#151a24,#111620);--dhl-header:linear-gradient(90deg,#141a24,#1a2230 50%,#141a24);--dhl-button-active:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.03));}'
             + ':root[data-xz-theme="day"]{--xz-void:#efe9dc;--xz-bg:#f7f4ec;--xz-card:#fffdf8;--xz-card-hover:#fffaf0;--xz-border:rgba(138,95,20,.24);--xz-border-strong:rgba(138,95,20,.56);--xz-gold:#7a5510;--xz-gold-bright:#8a5f14;--xz-gold-glow:rgba(160,111,18,.16);--xz-jade:#1a6d5c;--xz-cyan:#14695c;--xz-crimson:#9b1c33;--xz-text:#1a1408;--xz-text-2:#2e2415;--xz-muted:#4a4133;--xz-dhl-stage:none;--dhl-stage:linear-gradient(180deg,#f9f6ee 0%,#f2ecdd 100%);--dhl-reading:linear-gradient(180deg,#fffdf8,#f8f3e7);--dhl-header:linear-gradient(90deg,#f4efe2,#fbf8f0 50%,#f6eee1);--dhl-button-active:linear-gradient(180deg,rgba(160,111,18,.15),rgba(255,255,255,.55));}'
             /* ★★★ v470：`:root` 上补一份 `--xz-num-font` ★★★
                本文件第 4196 行（「当前版本号」那个读数）用了
@@ -4676,7 +4676,7 @@ d.attrs[a] = v;
                5px 后 ≈ 27px，是"能点、能读、不臃肿"的平衡点。
                ⚠ 别回到 6：那是 v466 之前的原始值，配上新行距会显得松垮；
                  5 是这一档（行高 1.72）下的实测值。 */
-            '.xz-st-body input[type=text],.xz-st-body input[type=number],.xz-st-body select,.xz-st-body textarea{flex:1;min-width:0;background:#fffdf8;border:1px solid rgba(138,95,20,.32);border-radius:3px;color:#1a1408;font-size:12px;padding:5px 9px;line-height:1.35;font-family:inherit;outline:none;box-shadow:inset 0 1px 2px rgba(120,86,32,.10);transition:border-color 0.2s;}',
+            '.xz-st-body input[type=text],.xz-st-body input[type=number],.xz-st-body select,.xz-st-body textarea{flex:1;min-width:0;background:var(--xz-card,#151a24);border:1px solid rgba(138,95,20,.32);border-radius:3px;color:#1a1408;font-size:12px;padding:5px 9px;line-height:1.35;font-family:inherit;outline:none;box-shadow:inset 0 1px 2px rgba(120,86,32,.10);transition:border-color 0.2s;}',
             '.xz-st-body input:focus,.xz-st-body select:focus,.xz-st-body textarea:focus{border-color:rgba(230,189,118,.75);box-shadow:0 0 0 2px rgba(230,189,118,.12);}',
             '.xz-st-body input[type=number]{flex:0 0 58px;text-align:center;}',
             '.xz-st-body textarea{min-height:42px;resize:vertical;}',
@@ -4843,7 +4843,7 @@ d.attrs[a] = v;
                 + 'font-size:8.5px;font-weight:var(--xz-fw-bold);line-height:1;}',
             '.xz-st-mini:hover:not(:disabled),button.xz-st-mini:hover:not(:disabled){border-color:var(--xz-gold);background:rgba(230,189,118,.14);color:var(--xz-gold-bright);}',
             '.xz-st-mini.del:hover:not(:disabled),button.xz-st-mini.del:hover:not(:disabled){border-color:#c0392b;color:#f0a6a0;background:rgba(192,57,43,.12);}',
-            '.xz-st-ovl-box input[type=text],.xz-st-ovl-box input[type=number],.xz-st-ovl-box select,.xz-st-ovl-box textarea{font-family:inherit;background:#fffdf8;border:1px solid rgba(138,95,20,.32);border-radius:3px;padding:6px 9px;color:#1a1408;font-size:12.5px;}',
+            '.xz-st-ovl-box input[type=text],.xz-st-ovl-box input[type=number],.xz-st-ovl-box select,.xz-st-ovl-box textarea{font-family:inherit;background:var(--xz-card,#151a24);border:1px solid rgba(138,95,20,.32);border-radius:3px;padding:6px 9px;color:#1a1408;font-size:12.5px;}',
             '.xz-st-ovl-box input:focus,.xz-st-ovl-box select:focus,.xz-st-ovl-box textarea:focus{border-color:var(--xz-gold);outline:none;}',
             '.xz-st-note{margin-top:8px;font-size:11px;color:#7fb69b;}',
             '.xz-st-note.warn{color:var(--xz-gold);}',
@@ -4922,7 +4922,7 @@ d.attrs[a] = v;
                  桌面端要看得见「查看全书原创与 DLC 人物条目…」这句。 */
             '.xz-st-cem{display:flex;align-items:center;gap:6px;flex-wrap:wrap;'
                 + 'padding:3px 7px;margin:6px 0 0;border-radius:8px;'
-                + 'background:#151a24;border:1px solid rgba(201,168,106,.34);}',
+                + 'background:var(--xz-card,#151a24);border:1px solid rgba(201,168,106,.34);}',
             '.xz-st-cem-t{flex:none;font-size:11px;color:var(--xz-text-2);}',
             '.xz-st-cem-d{flex:1 1 120px;min-width:0;font-size:10px;color:var(--xz-muted);line-height:1.4;}',
             '.xz-st-cem-b{flex:none;padding:2px 9px;font-size:11px;cursor:pointer;border-radius:6px;'
@@ -6507,7 +6507,7 @@ d.attrs[a] = v;
                    但存进变量时机制名**只留在键上**（`{ 增伤: "8:3｜气势渐长" }`）。
                    textToSet 负责这条剥离，setToText 负责补回来 —— 两个方向都走
                    effLineOf（唯一实现在 04），玩家来回改都不会把机制名写成两遍。 */
-                '<textarea data-xz-tpl="效果" rows="2" placeholder="' + (isHeartTpl ? '增伤:15:0｜气势渐长\n减伤:10:0｜护体渐厚' : '伤害:240｜火焰席卷前方\n灼烧:8:2｜衣角沾上一星不灭的火') + '" style="flex:1;min-width:0;box-sizing:border-box;background:#06101e;border:1px solid rgba(230,189,118,.3);border-radius:6px;padding:4px 8px;color:var(--xz-text);font-size:12px;line-height:1.4;resize:vertical;font-family:inherit;">' +
+                '<textarea data-xz-tpl="效果" rows="2" placeholder="' + (isHeartTpl ? '增伤:15:0｜气势渐长\n减伤:10:0｜护体渐厚' : '伤害:240｜火焰席卷前方\n灼烧:8:2｜衣角沾上一星不灭的火') + '" style="flex:1;min-width:0;box-sizing:border-box;background:var(--xz-card,#151a24);border:1px solid rgba(230,189,118,.3);border-radius:6px;padding:4px 8px;color:var(--xz-text);font-size:12px;line-height:1.4;resize:vertical;font-family:inherit;">' +
                 text(setToText(it.效果)) + '</textarea>' +
                 /* ★ v1.053：效果骰子（按品质 + 目标类型随机） */
                 '<button type="button" class="xz-st-dice" data-xz-act="roll-eff-tpl" style="align-self:flex-start;">🎲</button>' +
@@ -6567,7 +6567,7 @@ d.attrs[a] = v;
             var _ph = '60 字内写下这件兵器的效果（可带一句样子，如「寒气森然，增伤 15%」）';
             h += '<div class="xz-st-row" style="align-items:flex-start"><label>效果</label>' +
                 '<div style="flex:1;min-width:0;display:flex;gap:6px;align-items:flex-start;">' +
-                '<textarea data-xz-tpl="效果" maxlength="80" placeholder="' + esc(_ph) + '" style="flex:1;min-width:0;box-sizing:border-box;background:#06101e;border:1px solid rgba(230,189,118,.3);border-radius:6px;padding:7px 9px;color:var(--xz-text);font-size:12.5px;line-height:1.5;resize:vertical;font-family:inherit;">' +
+                '<textarea data-xz-tpl="效果" maxlength="80" placeholder="' + esc(_ph) + '" style="flex:1;min-width:0;box-sizing:border-box;background:var(--xz-card,#151a24);border:1px solid rgba(230,189,118,.3);border-radius:6px;padding:7px 9px;color:var(--xz-text);font-size:12.5px;line-height:1.5;resize:vertical;font-family:inherit;">' +
                 text(it.效果 || it.描述) + '</textarea>' +
                 '<button type="button" class="xz-st-mini" data-xz-act="roll-desc" title="随机一条效果" style="flex:none;padding:6px 9px;">🎲</button>' +
                 '</div></div>';
