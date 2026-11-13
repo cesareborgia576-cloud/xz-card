@@ -1187,6 +1187,11 @@
            `mainNote` = 页面上那一行提示（读不到 / 生少了 / 已续生）。
            ⚠ 三个都参与渲染 ⇒ **必须进签名**，否则点了不重绘（_v398_memsig 会抓）。 */
         mainForm: null, mainPend: null, mainNote: '',
+        /* ★★★ v595：暗线。`darkForm` = 正在填的那张表；`darkPend` = AI 给了、
+           **还没采用**的草稿；`darkNote` = 这一行提示。
+           三个都参与渲染 ⇒ 必须进签名（_v398_memsig 抓的就是漏登记的内存态）。
+           暗线数据本身不另开一份清单，就住在 `plotList` 里靠 `line:'暗线'` 认。 */
+        darkForm: null, darkPend: null, darkNote: '',
         /* ★ v357：斗罗 DLC 按钮的三个态。**都不是缓存** ——
            `dlcSt` 只存"最近一次从世界书读回来的结果"，`dlcRead` 会在切页/点按钮时覆盖它；
            `dlcReading` / `dlcBusy` 只是防重入，防止玩家连点把状态读串。 */
@@ -4251,7 +4256,9 @@ function xzTypeOf(name, fbT, fbA) {
        ══════════════════════════════════════════════════════════════════════ */
     var XZ_THEME_KEY = 'xzTheme';
     function xzThemeGet() {
-        try { return localStorage.getItem(XZ_THEME_KEY) === 'day' ? 'day' : 'night'; } catch (e) { return 'night'; }
+        /* ★ v593：默认改为日光（作者 2026-11-12 拍板「这次采用日光模式」）。
+           玩家手动切到 night 过的，localStorage 里存着 'night'，这里照旧尊重。 */
+        try { return localStorage.getItem(XZ_THEME_KEY) === 'night' ? 'night' : 'day'; } catch (e) { return 'day'; }
     }
     function xzThemeApply(t) {
         var day = (t === 'day');
@@ -6125,6 +6132,39 @@ function xzTypeOf(name, fbT, fbA) {
         "}",
         "var LIVE = [];",
         "for (var _i = 0; _i < EV.length; _i++) { if (_hit(EV[_i] && EV[_i].trigger)) LIVE.push(EV[_i]); }",
+        /* ★★★ v595 暗线的**声明必须在这个 `<% %>` 数据块内** ★★★
+           EJS 只在代码块里执行 JS，块外的裸文本是输出内容。第一版把
+           `var DARK` 写在 `%>` 之后 ⇒ 那是纯文本，`<% if (DARK.length) %>`
+           里读到的 DARK 根本没定义，整条条目当场渲染崩溃（v547 闸抓到）。
+           ⚠ 这行 `for (... LIVE.push ...)` 是 v547 反向自证的锚点，不许动。 */
+        "var DARK = [];",
+        "for (var _d = 0; _d < EV.length; _d++) { if (EV[_d] && EV[_d].line === '暗线') DARK.push(EV[_d]); }",
+        "function _varGet(k) {",
+        "  var v = '';",
+        "  try { if (typeof getvar === 'function') { v = getvar('stat_data.' + k) || getvar(k) || ''; } } catch (_e4) {}",
+        "  if (!v) { try {",
+        "    var _o = (typeof variables !== 'undefined' && variables) ? (variables.stat_data || variables)",
+        "           : ((typeof stat_data !== 'undefined' && stat_data) ? stat_data : null);",
+        "    if (_o) { var _x = k.split('.').reduce(function (a, b) { return a == null ? undefined : a[b]; }, _o); if (_x != null) v = _x; }",
+        "  } catch (_e5) {} }",
+        "  return String(v == null ? '' : (typeof v === 'object' ? JSON.stringify(v) : v));",
+        "}",
+        "function _darkHit(e) {",
+        "  if (e.unlock === 1 || e.unlock === '1') return true;",
+        "  var r = String(e.reveal || '');",
+        /* ★ 暗线不能用明面事件的 `_hit`：那玩意儿在取不到当前境界（cr<0）
+           或门槛写歪（lo<0）时 **放行**（明面剧情宁可多显示也不凭空消失）。
+           暗线反过来：读不到变量 / 认不出门槛 ⇒ 继续藏着，绝不误揭。 */
+        "  if (r.indexOf('境界：') === 0) {",
+        "    if (_rk(_cur) < 0) return false;",
+        "    var _dlo = _rk(String(r.slice(3)).split(' ~ ')[0]);",
+        "    if (_dlo < 0) return false;",
+        "    return _hit(r);",
+        "  }",
+        "  if (r.indexOf('地点：') === 0) { var w = r.slice(3).trim(); return !!w && (_varGet('地理.大位置') + _varGet('地理.小位置')).indexOf(w) >= 0; }",
+        "  if (r.indexOf('人物：') === 0) { var w2 = r.slice(3).trim(); return !!w2 && _varGet('人物列表').indexOf(w2) >= 0; }",
+        "  return false;",
+        "}",
         "%>",
         "<% if (!LIVE.length) { %>【剧情生成】当前境界没有可触发的剧情事件。",
         "<% } else { %>",
@@ -6139,6 +6179,21 @@ function xzTypeOf(name, fbT, fbA) {
         "　梗概：<%= e.desc %>",
         "<% }); %>",
         "<% } %>",
+        /* ── v595 暗线输出段：声明在上面的数据块里，这里只判「放不放行」。
+           未揭露只给 veil，揭露才给 truth —— 模型读到的永远只有其中一种。 */
+        "<% if (DARK.length) { %>",
+        "【暗线 · 共 <%= DARK.length %> 条】",
+        "<% DARK.forEach(function (e) { %>",
+        "<% if (_darkHit(e)) { %>",
+        "◆ 暗线｜<%= e.name %>",
+        "　幕后：<%= e.truth %>",
+        "　关联事件：<%= (e.links && e.links.length) ? e.links.join('、') : '不限' %>",
+        "<% } else { %>",
+        "◆ 暗线｜<%= e.name %>",
+        "　线索：<%= e.veil %>",
+        "　（真相未揭露，只按线索埋伏笔，不许写出幕后之人与最终目的）",
+        "<% } }); %>",
+        "<% } %>",
         "</剧情生成>"
     ].join('\n');
     function plotCompose(list) {
@@ -6147,7 +6202,8 @@ function xzTypeOf(name, fbT, fbA) {
         L.push('<%');
         L.push('/* 数据块：由「状态栏 → 剧情」页写入。手改也能生效，下次生成会覆盖。');
         L.push('   结构：[{ name, trigger, scale, span, mood, cast:[], place, desc, at, arc, seq }]');
-        L.push('   arc/seq 是主线那批的批次号与批内序号，只用来给分页分组；单条事件没有这两个键。 */');
+        L.push('   arc/seq 是主线那批的批次号与批内序号，只用来给分页分组；单条事件没有这两个键。');
+        L.push('   暗线：{ name, line:"暗线", veil, truth, reveal, links:[], unlock, at }；truth 只在渲染时按条件放行。 */');
         var _clean = (list || []).map(function (e) {
             var o = {};
             Object.keys(e || {}).forEach(function (k) { if (k !== 'state' && k !== 'on') o[k] = e[k]; });
@@ -6165,7 +6221,8 @@ function xzTypeOf(name, fbT, fbA) {
          玩家一天到晚不看那个页，可模型每轮都在读这条。
          只挂在 pagePlot 上等于「只有爱看后台的人才被修好」。
        ⚠ 判据三件套，缺一不敢写：
-         ① 条目里没有当前标记 `_rrPick`（有就什么都不做，天然幂等）；
+         ① 条目缺当前标记（v595 起要 `_rrPick` 与 `var DARK = []` 两个都有才算最新；
+            缺任一个就重写；两个都有就什么都不做，天然幂等）；
          ② `var EV = [...]` 能被 JSON.parse 成数组（否则 plotParse 会把
             「解析失败」和「本来就是空清单」混成一个 []，写下去就是抹掉玩家手写的剧情）；
          ③ 世界书接口已就绪（没就绪就过几秒再试，不报错、不弹窗）。
@@ -6180,7 +6237,10 @@ function xzTypeOf(name, fbT, fbA) {
         Promise.resolve(fn(PLOT_ENTRY)).then(function (r) {
             if (!r || !r.ok) return;
             var txt = String(r.content || '');
-            if (txt.indexOf('_rrPick') >= 0) return;
+            /* ★ v595：只认 `_rrPick` 已经不够 —— v575 之后升级过的老条目有它，
+               却没有暗线渲染段，会被当成「已最新」而永远吃不到暗线。
+               ⚠ 重写走 plotCompose(list)，EV 是 JSON.parse 出来原样回写，不抹玩家剧情。 */
+            if (txt.indexOf('_rrPick') >= 0 && txt.indexOf('var DARK = []') >= 0) return;
             var m = /var\s+EV\s*=\s*(\[[\s\S]*?\]);/.exec(txt);
             if (!m) return;
             var list = null;
@@ -6213,10 +6273,10 @@ function xzTypeOf(name, fbT, fbA) {
                    扁平路径 `主角信息.境界`，线上恒为 undefined ⇒ 境界判不出来 ⇒
                    没到境界的事件照样出现）。世界书条目**跟着卡走**，光热更 05 救不到
                    已经开档的人 —— 所以在读成功时顺手把渲染段升级成当下的版本。
-                   ⚠ 只在「条目里没有当前标记 _rrPick」时才重写，且**必须**能解析出 EV，
-                     否则一次误判就把玩家手写的剧情清单清空。
+                   ⚠ 只在「条目缺当前标记（_rrPick 或 var DARK = []）」时才重写，
+                     且**必须**能解析出 EV，否则一次误判就把玩家手写的剧情清单清空。
                    ⚠ 重写用的就是同一条 plotCompose（EV 原样 + 现行 TAIL），不额外造一份格式。 */
-                if (String(r.content || '').indexOf('_rrPick') < 0) {
+                if (String(r.content || '').indexOf('_rrPick') < 0 || String(r.content || '').indexOf('var DARK = []') < 0) {
                     /* ⚠ 只认「EV 块存在 **且** 能被 JSON.parse 回读成数组」——
                        `plotParse` 解析失败也返回 []，与「本来就是空清单」分不开。
                        分不开就敢写，等于用一次误判抹掉玩家手写的全部剧情。 */
@@ -7145,6 +7205,230 @@ function xzTypeOf(name, fbT, fbA) {
         return head + (a || b);
     }
 
+    /* ══════════════════════════════════════════════════════════════════════
+       ★★★ v595：暗线（幕后因果链）★★★
+       作者：「剧情功能设计一个暗线功能，你来负责设计，要有用，要真实。」
+
+       ── 设计定论（三条，缺一条这功能就是装饰）──────────────────────────
+       ① **真相物理上不进提示词**：所有数据都在《设定-剧情生成》的
+          `var EV`（`<% %>` 数据块）里，只有 `<%= %>` 输出的才进模型视野。
+          未揭露时只输出 `veil`，`truth` 一个字都不给。靠叮嘱模型
+          「别剧透」是没用的，靠不给才是真的。
+       ② **未揭露也有痕迹**：表层线索照常输出，模型能埋伏笔；
+          否则真相揭开那天，明面事件会显得凭空冒出来。
+       ③ **条件渲染期现算**：境界 / 地点 / 在册人物 / 玩家手动解锁，
+          读的是当下变量，跨刷新跨存档自动生效，不另存一份状态就不会漂。
+          与明面剧情的「取不到变量宁可多显示」相反，暗线取不到就继续藏着。
+
+       ── 不新开条目 ──────────────────────────────────────────────────────
+          暗线数据并进同一份 `var EV`，靠 `line:'暗线'` 认。新条目只有重导卡
+          才进老玩家的书，并进 EV 则热更即达。`unlock` 只存 0/1，不含真相文本。
+       ══════════════════════════════════════════════════════════════════════ */
+    var DARK_RKS = ['境界', '地点', '人物', '手动'];
+    function darkEmptyForm() {
+        return { name: '', veil: '', truth: '', rk: '境界', rv: '', links: '' };
+    }
+    /* 条件串的语法必须与条目里 `_darkHit` 认的四种前缀逐字一致。
+       改这里不改 TAIL（或反过来）＝玩家设了条件、模型永远不揭露。 */
+    function darkRevealStr(f) {
+        var k = String(f.rk || '境界');
+        if (k === '手动') return '手动';
+        return k + '：' + String(f.rv || '').trim();
+    }
+    function darkToRec(f) {
+        return {
+            name: String(f.name || '').trim().slice(0, 24),
+            line: '暗线',
+            veil: String(f.veil || '').trim().slice(0, 240),
+            truth: String(f.truth || '').trim().slice(0, 400),
+            reveal: darkRevealStr(f),
+            links: String(f.links || '').split(/[、,，\/]/).map(function (x) { return String(x).trim(); })
+                .filter(function (x) { return x && x !== '不限' && x !== '无'; }).slice(0, 8),
+            unlock: 0,
+            at: new Date().toISOString().slice(0, 10)
+        };
+    }
+    function darkPrompt(f, evs) {
+        var L = [];
+        L.push('你是《天元录》修仙世界的「暗线设计者」。暗线是藏在明面事件背后的因果：谁在推动、为了什么、什么时候才该被看出来。');
+        L.push('只输出一个 <暗线> 段，段内五行、行首标签逐字照写，不要解释、不要代码块、不要写任何状态词：');
+        L.push('名称：（给这条暗线起个名，八个字以内）');
+        L.push('线索：（未揭露时读者能看见的表层异象或传闻，一句，不许写出幕后之人）');
+        L.push('真相：（幕后之人与其真正目的，一到两句）');
+        L.push('关联：（挂在哪些明面事件背后，顿号分隔；没有就写不限）');
+        L.push('条件：（只准这三种之一：境界：X ／ 地点：X ／ 人物：X）');
+        L.push('');
+        L.push('境界档名只准从这些里取：' + plotRealms().join('、'));
+        L.push('明面事件：' + (evs.length ? evs.map(function (x) { return x.name; }).join('、') : '（暂无）'));
+        if (String(f.name || '').trim()) L.push('玩家给的名字：' + f.name);
+        if (String(f.veil || '').trim()) L.push('玩家给的表层线索：' + f.veil);
+        if (String(f.truth || '').trim()) L.push('玩家给的幕后真相：' + f.truth);
+        if (String(f.links || '').trim()) L.push('玩家指定关联：' + f.links);
+        L.push('条件类型请用：' + (f.rk || '境界'));
+        return L.join(String.fromCharCode(10));
+    }
+    function darkParse(raw) {
+        var txt = String(raw || '');
+        var m = txt.match(/<\s*暗线[^>]*>([\s\S]*?)<\s*\/\s*暗线\s*>/i);
+        var s = m ? m[1] : txt;
+        var g = function (tag) {
+            var r = new RegExp('^\\s*' + tag + '\\s*[：:]\\s*(.+)$', 'm');
+            var x = r.exec(s); return x ? x[1].trim() : '';
+        };
+        return {
+            name: g('名称').slice(0, 24), veil: g('线索').slice(0, 240),
+            truth: g('真相').slice(0, 400),
+            links: g('关联').split(/[、,，\/]/).map(function (x) { return String(x).trim(); })
+                .filter(function (x) { return x && x !== '不限' && x !== '无'; }).slice(0, 8),
+            reveal: g('条件') || '境界：未定',
+            line: '暗线', unlock: 0
+        };
+    }
+    /* 调模型：形状与 plotCallAI 同一套（酒馆主模型 → 后端兜底），
+       结果先摆进 darkPend，玩家「采用写入」才落条目。 */
+    function darkCallAI(P, done) {
+        var TH = plotFindTH();
+        var finish = function (txt, err) { try { done(txt || '', err || ''); } catch (eF) {} };
+        if (TH) {
+            var shapes = [
+                function () { return TH.generateRaw({ ordered_prompts: [{ role: 'user', content: P }] }); },
+                function () { return TH.generateRaw({ user_input: P }); },
+                function () { return TH.generateRaw({ ordered_prompts: [P] }); },
+                function () { return TH.generateRaw(P); }
+            ];
+            var idx = 0;
+            var next = function () {
+                if (idx >= shapes.length) return darkBackend();
+                var f = shapes[idx++];
+                Promise.resolve().then(f).then(function (out) {
+                    var txt = plotPolishOne(function () { return String((out && (out.content || out.text)) || out || ''); });
+                    if (txt) { finish(txt, ''); return; }
+                    return next();
+                }, function () { return next(); });
+            };
+            return next();
+        }
+        return darkBackend();
+        function darkBackend() {
+            try {
+                return fetch('/api/backends/chat-completions/generate', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: [{ role: 'user', content: P }], max_tokens: 700, temperature: 0.8 })
+                }).then(function (res) {
+                    return res.text().then(function (raw) {
+                        if (!res.ok) throw new Error('HTTP ' + res.status + '：' + raw.slice(0, 100));
+                        var j = null; try { j = JSON.parse(raw); } catch (eJ) {}
+                        var txt = plotPolishOne(function () {
+                            if (!j) return raw;
+                            return (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content)
+                                || j.content || j.text || raw;
+                        });
+                        finish(txt, txt ? '' : '模型没有返回内容');
+                    });
+                }, function (e) { finish('', '酒馆后端调用失败：' + ((e && e.message) || e)); });
+            } catch (eB) { finish('', '拿不到酒馆主模型，也没有后端接口：' + ((eB && eB.message) || eB)); }
+        }
+    }
+    /* ── 暗线区（独立成段，pagePlot 只加一行调用）──
+       ⚠ 已生成的明面列表**不能换成过滤后的数组**：按钮的 data-i 是 plotList 的真实
+         下标，过滤后再传会「点这条改到那条」。这里按真实下标取，明面那边跳过即可。 */
+    function darkSectionHtml() {
+        var h = '';
+        if (!state.darkForm) state.darkForm = darkEmptyForm();
+        var df = state.darkForm;
+        var all = state.plotList || [];
+        var darks = [], idxs = [];
+        all.forEach(function (e, i) { if (e && e.line === '暗线') { darks.push(e); idxs.push(i); } });
+
+        h += '<div class="xz-sub-head" style="margin-top:16px;">✦ 暗线（' + darks.length + '）</div>';
+        h += '<div class="xz-rpg-desc" style="font-size:11.5px;margin-bottom:6px;">'
+            + '明面事件背后「谁在推、为什么」。真相存在这里，但<b style="color:var(--xz-gold-bright);">模型只在条件达成后才读得到</b>；'
+            + '没达成时只给表层线索，好让伏笔埋得住。条件每轮按当前境界、地点、在册人物现算。</div>';
+
+        h += '<div class="xz-plot-row"><span class="xz-plot-lab">名称</span><div class="xz-plot-ctl">'
+            + '<input class="xz-plot-input" type="text" data-dark-field="name" value="' + esc(df.name) + '" maxlength="24" placeholder="例：烛阴氏换茧"></div></div>';
+        h += '<div class="xz-plot-row" style="align-items:flex-start;"><span class="xz-plot-lab" style="padding-top:5px;">表层线索</span><div class="xz-plot-ctl">'
+            + '<textarea class="xz-plot-ta" data-dark-field="veil" rows="2" maxlength="240" placeholder="没揭露时读者能看见的异象或传闻，不许写出幕后之人">' + esc(df.veil) + '</textarea></div></div>';
+        h += '<div class="xz-plot-row" style="align-items:flex-start;"><span class="xz-plot-lab" style="padding-top:5px;">幕后真相</span><div class="xz-plot-ctl">'
+            + '<textarea class="xz-plot-ta" data-dark-field="truth" rows="3" maxlength="400" placeholder="谁在推、为了什么">' + esc(df.truth) + '</textarea></div></div>';
+        h += '<div class="xz-plot-row"><span class="xz-plot-lab">揭露条件</span><div class="xz-plot-ctl" style="flex-wrap:wrap;">';
+        DARK_RKS.forEach(function (rk) {
+            h += '<button type="button" class="xz-plot-chip' + (df.rk === rk ? ' on' : '') + '" data-xz-act="dark-rk" data-rk="' + esc(rk) + '">' + esc(rk) + '</button>';
+        });
+        h += '</div></div>';
+        if (df.rk === '境界') {
+            var opts = plotRealms();
+            h += '<div class="xz-plot-row"><span class="xz-plot-lab">到哪一境</span><div class="xz-plot-ctl">'
+                + '<select class="xz-plot-select" data-dark-field="rv" style="flex:1 1 120px;font-size:11px;">'
+                + '<option value="">（未选，不自动揭露）</option>';
+            opts.forEach(function (o) {
+                h += '<option value="' + esc(o) + '"' + (df.rv === o ? ' selected' : '') + '>' + esc(o) + '</option>';
+            });
+            h += '</select></div></div>';
+        } else if (df.rk === '手动') {
+            h += '<div class="xz-rpg-desc" style="font-size:11px;">只由你在下面点「提前揭露」放行。</div>';
+        } else {
+            h += '<div class="xz-plot-row"><span class="xz-plot-lab">' + esc(df.rk === '地点' ? '地名含' : '人物名') + '</span><div class="xz-plot-ctl">'
+                + '<input class="xz-plot-input" type="text" data-dark-field="rv" value="' + esc(df.rv) + '" maxlength="30" placeholder="'
+                + (df.rk === '地点' ? '例：冥渊关' : '例：烛阴稚牙') + '"></div></div>';
+        }
+        h += '<div class="xz-plot-row"><span class="xz-plot-lab">关联事件</span><div class="xz-plot-ctl">'
+            + '<input class="xz-plot-input" type="text" data-dark-field="links" value="' + esc(df.links) + '" maxlength="120" placeholder="明面事件名，顿号分隔，可空"></div></div>';
+        h += '<div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">'
+            + '<button type="button" class="xz-plot-btn xz-plot-btn-main" data-xz-act="dark-add">加入暗线</button>'
+            + '<button type="button" class="xz-plot-btn" data-xz-act="dark-gen">调 AI 生一条</button>'
+            + '</div>';
+
+        var dp = state.darkPend;
+        if (dp) {
+            h += '<div class="xz-plot-card" style="margin-top:10px;border-color:var(--xz-gold-dim);">';
+            h += '<div class="xz-plot-card-top"><span class="xz-plot-card-name" style="color:var(--xz-gold-bright);">✦ 暗线草稿（待采用）</span>'
+                + '<span class="xz-plot-card-st" style="color:var(--xz-muted);">还没写进条目</span></div>';
+            if (dp.busy) {
+                h += '<div class="xz-plot-card-desc" style="color:var(--xz-muted);">正在按这些明面事件想一条背后的因果…</div>';
+            } else if (dp.err) {
+                h += '<div class="xz-plot-card-desc" style="color:#fbbf24;">⚠ ' + esc(dp.err) + '</div>';
+            } else if (dp.item) {
+                var it = dp.item;
+                h += '<input class="xz-plot-input" type="text" data-dark-field="pend_name" value="' + esc(it.name) + '" maxlength="24" style="margin-top:6px;">';
+                h += '<textarea class="xz-plot-ta" data-dark-field="pend_veil" rows="2" maxlength="240" placeholder="表层线索">' + esc(it.veil) + '</textarea>';
+                h += '<textarea class="xz-plot-ta" data-dark-field="pend_truth" rows="3" maxlength="400" placeholder="幕后真相" style="margin-top:6px;">' + esc(it.truth) + '</textarea>';
+                h += '<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">'
+                    + '<input class="xz-plot-input" type="text" data-dark-field="pend_reveal" value="' + esc(it.reveal) + '" maxlength="40" placeholder="境界：X" style="flex:1 1 120px;">'
+                    + '<input class="xz-plot-input" type="text" data-dark-field="pend_links" value="'
+                    + esc(Array.isArray(it.links) ? it.links.join('、') : (it.links || '')) + '" maxlength="120" placeholder="关联事件" style="flex:1 1 120px;">'
+                    + '</div>';
+                h += '<div class="xz-plot-card-acts">'
+                    + '<button type="button" class="xz-plot-btn xz-plot-btn-main" data-xz-act="dark-adopt">采用写入</button>'
+                    + '<button type="button" class="xz-plot-btn" data-xz-act="dark-discard">丢弃</button>'
+                    + '</div>';
+            }
+            h += '</div>';
+        }
+        if (state.darkNote) h += '<div class="xz-plot-note">' + esc(state.darkNote) + '</div>';
+
+        darks.forEach(function (e, k) {
+            var i = idxs[k];
+            var open = Number(e.unlock) === 1;
+            h += '<div class="xz-plot-card">'
+                + '<div class="xz-plot-card-top"><span class="xz-plot-card-name">✦ ' + esc(e.name) + '</span>'
+                + '<span class="xz-plot-card-st" style="color:' + (open ? '#7ddc9a' : 'var(--xz-gold-bright)') + ';">'
+                + (open ? '● 已手动揭露' : '● 按条件自动放行') + '</span></div>'
+                + '<div class="xz-plot-card-meta">条件：' + esc(e.reveal || '手动')
+                + (e.links && e.links.length ? ('｜关联：' + esc(Array.isArray(e.links) ? e.links.join('、') : String(e.links))) : '')
+                + '</div>'
+                + '<div class="xz-plot-card-desc" style="color:var(--xz-muted);">线索：' + esc(e.veil || '') + '</div>'
+                + '<div class="xz-plot-card-desc">真相：' + esc(e.truth || '') + '</div>'
+                + '<div class="xz-plot-card-acts">'
+                + (open
+                    ? '<button type="button" class="xz-plot-btn" data-xz-act="dark-relock" data-i="' + i + '">收回揭露</button>'
+                    : '<button type="button" class="xz-plot-btn" data-xz-act="dark-unlock" data-i="' + i + '">提前揭露</button>')
+                + '<button type="button" class="xz-plot-btn xz-plot-btn-del" data-xz-act="dark-del" data-i="' + i + '">删除</button>'
+                + '</div></div>';
+        });
+        return h;
+    }
+
     function pagePlot() {
         if (!state.plotForm) state.plotForm = plotEmptyForm();
         if (!state.mainForm) state.mainForm = mainLoadForm();
@@ -7447,13 +7731,18 @@ function xzTypeOf(name, fbT, fbA) {
 
         /* ── 已生成 ── */
         var list = state.plotList || [];
-        h += '<div class="xz-sub-head" style="margin-top:16px;">✦ 已生成（' + list.length + '）</div>';
+        /* ★ v595：暗线也住在 plotList 里，但它在下面自己的区里列。
+           ⚠ 这里**不许换成过滤后的数组**：按钮 data-i 是 plotList 的真实下标，
+             过滤后再传就会「点这条改到那条」。只跳过渲染、不动下标。 */
+        var _plainN = list.filter(function (e) { return !e || e.line !== '暗线'; }).length;
+        h += '<div class="xz-sub-head" style="margin-top:16px;">✦ 已生成（' + _plainN + '）</div>';
         if (state.plotBusy && !list.length) {
             h += '<div class="xz-rpg-desc" style="font-size:11.5px;">正在读《设定-剧情生成》…</div>';
         } else if (!list.length) {
             h += '<div class="xz-rpg-desc" style="font-size:11.5px;">还没有。上面填一条，点「确定生成」。</div>';
         }
         list.forEach(function (e, i) {
+            if (e && e.line === '暗线') return;   /* ★ v595：暗线有自己那一区，别在这儿摆第二遍 */
             var st = e.state || '未开始';   /* 只给玩家看的标签，条目里没有、AI 不知道 */
             var stCol = st === '进行中' ? '#7ddc9a' : (st === '已结束' ? 'var(--xz-muted)' : 'var(--xz-gold-bright)');
             /* ★ v577：主线批次标出来。
@@ -7477,6 +7766,8 @@ function xzTypeOf(name, fbT, fbA) {
                 + '<button type="button" class="xz-plot-btn xz-plot-btn-del" data-xz-act="plot-del" data-i="' + i + '">删除</button>'
                 + '</div></div>';
         });
+        /* ═══ v595：暗线区（表单 / 草稿 / 已写入），独立成段 ═══ */
+        h += darkSectionHtml();
         return h;
     }
 
@@ -8383,7 +8674,16 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         { name: '司幽怜', sex: '女', realm: '金丹初期', org: '幽月仙宫', desc: '宗主，黑发金瞳微蛇瞳，知性娇媚。' },
         { name: '云疏月', sex: '女', realm: '金丹初期', org: '幽月仙宫', desc: '首席客卿·月光仙子，淡紫长发，一心问道。' },
         { name: '陆昭华', sex: '女', realm: '金丹初期', org: '霜霄仙阙', desc: '昭华圣女，金发金纱，外貌二十二岁，高冷傲娇。' },
-        { name: '梵清仪', sex: '女', realm: '金丹初期', org: '霜霄仙阙', desc: '素心尊者·前任圣女，外貌三十五岁，熟美丰胴、三无面瘦。' }
+        { name: '梵清仪', sex: '女', realm: '金丹初期', org: '霜霄仙阙', desc: '素心尊者·前任圣女，外貌三十五岁，熟美丰胴、三无面瘦。' },
+        /* ★ v595：魔州烛阴氏六代。名字纯中文连写，不带任何分隔符 ——
+           `·` 是「地理.大位置」拆州域城的分隔符，人名带点会被切段。
+           org 用族名或族地，不写称谓拼字符串，舆图人物卡直接显示它。 */
+        { name: '烛阴玄烬', sex: '男', realm: '炼虚后期', org: '烛阴氏', desc: '六代祖先，镇封茧沉在冥渊关地底，不醒人事。' },
+        { name: '烛阴苍冥', sex: '男', realm: '化神初期', org: '无日裂口', desc: '曾祖父，闭死关，族内真正拿主意的人。' },
+        { name: '烛阴裂罡', sex: '男', realm: '金丹后期', org: '灰骨城', desc: '爷爷，现任掌家，主张稳守封印。' },
+        { name: '烛阴雷阙', sex: '男', realm: '金丹中期', org: '引雷台', desc: '爸爸，焦雷域主事，管九劫神雷角与淬核。' },
+        { name: '烛阴照夜', sex: '男', realm: '金丹初期', org: '碎角市', desc: '儿子，常年伪装人形混在人州商道。' },
+        { name: '烛阴稚牙', sex: '男', realm: '筑基后期', org: '魔卒营', desc: '孙子，魔卒营统领，急着立功，额角稚角未褪。' }
     ];
 
     /* ==================== 状态栏内嵌：立绘条（模板样式，放在状态栏上方，默认展开） ====================
@@ -10255,16 +10555,24 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
               { n: '幽篁域', ax: 0.46, ay: 0.22, kind: '林海山岭', note: '万木参天，绿色瘴气弥漫；断脉大山横在域西，牛狼熊诸族各据一段。',
                 cities: [
                     { n: '盎然之林', t: '妖族地界', d: '灵植一族的祖地，正被外来的妖修往里挤。', f: ['苏小玲'] },
-                    { n: '断脉大山', t: '妖族地界', d: '牛、狼、熊诸族各据一段，山体本身就是屏障。', f: ['牛/狼/熊诸族'] }
+                    { n: '断脉大山', t: '妖族地界', d: '牛、狼、熊诸族各据一段，山体本身就是屏障。', f: ['牛/狼/熊诸族'] },
+                    { n: '幻木林', t: '狐族祖地', d: '幽篁域林心，路都通回原地；狐族化形最早的那一支住在里面。', f: [] },
+                    { n: '鹰喙崖', t: '鹏族巢崖', d: '断脉大山最高的一段，风把石壁削成刃；鹏族从不落地谈事。', f: [] },
+                    { n: '瘴骨沼', t: '瘴林深处', d: '绿瘴压到膝头，方向在此不可辨；走岔的人连脚印都留不下。', f: [] }
                 ] },
               { n: '荒原域', ax: 0.78, ay: 0.56, kind: '荒原', note: '无尽荒原，骨骸与风滚草一样多。',
                 cities: [
                     { n: '无尽荒原', t: '妖族地界', d: '妖族争猎的腹地，骨堆如山。', f: [] },
-                    { n: '鳞鱼族水泽', t: '妖族地界', d: '妖族唯一不靠玄脉、靠水活的地方。', f: ['鳞鱼诸族'] }
+                    { n: '鳞鱼族水泽', t: '妖族地界', d: '妖族唯一不靠玄脉、靠水活的地方。', f: ['鳞鱼诸族'] },
+                    { n: '裂蹄城', t: '牛族石城', d: '整块巨石垒的城，门按本体尺寸开，不化形进不去。', f: [] },
+                    { n: '万骨集', t: '互市集', d: '各族拿猎获与妖丹来换东西，摊位用骨堆标界。', f: [] },
+                    { n: '黑水渡', t: '海口渡口', d: '鳞鱼族通黑水海的渡口，船是骨做的，一趟要多绕三日。', f: [] }
                 ] },
               { n: '熔岩域', ax: 0.24, ay: 0.8, kind: '异象', note: '地火焦土，硫磺火雨。',
                 cities: [
-                    { n: '熔岩古地', t: '异象之地', d: '地火常年不熄，产太阳真火晶。', f: [] }
+                    { n: '熔岩古地', t: '异象之地', d: '地火常年不熄，产太阳真火晶。', f: [] },
+                    { n: '赤晶矿脉', t: '火晶矿', d: '太阳真火晶长在矿壁上，火雨落下来时全矿停工。', f: [] },
+                    { n: '硫火台', t: '淬技台', d: '妖族借地火淬本命玄技的石台，台面一年换三回。', f: [] }
                 ] }
           ] },
         { n: '魔州', own: '魔族 · 两域', tone: '#c25a42', fog: false, sx: 1104, sy: 897,
@@ -10272,13 +10580,21 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
           areas: [
               { n: '焦雷域', ax: 0.46, ay: 0.3, kind: '异象', note: '雷池罡风，雷火常年劈在谷底。',
                 cities: [
-                    { n: '焦雷之谷', t: '异象之地', d: '雷声整日不歇，产九劫神雷角。', f: ['魔族'] }
+                    { n: '焦雷之谷', t: '异象之地', d: '雷声整日不歇，产九劫神雷角。', f: ['魔族'] },
+                    { n: '九劫雷池', t: '雷池', d: '谷底积雷的水，九劫神雷角从池底长出来；下去捞角的十个上来六个。', f: [] },
+                    { n: '引雷台', t: '淬核台', d: '最桀骜的魔核绑上台面挨雷，熬过一夜的才配接炼。', f: ['烛阴雷阙'] },
+                    { n: '碎角市', t: '魔州市集', d: '只换雷角、魔核与活口，不收人族灵石。', f: ['烛阴照夜'] }
                 ] },
               { n: '烬灰域', ax: 0.62, ay: 0.74, kind: '裂口', note: '灰烬积到脚踝。魔族最北的一处关隘就在这儿。',
                 cities: [
                     { n: '裂口营地', t: '魔族', d: '两界的缝隙，魔气成日往外渗。', f: ['魔族'] },
                     { n: '焦土荒原', t: '魔族', d: '灰烬积到脚踝，今年撑不撑得过冬天没人敢说。', f: [] },
-                    { n: '冥渊关', t: '空营', d: '空了不知多少年，今年忽然有人从关里出来。', f: [] }
+                    { n: '冥渊关', t: '空营', d: '空了不知多少年，今年忽然有人从关里出来。', f: ['烛阴玄烬'] },
+                    { n: '无日裂口', t: '空间裂口', d: '三州境内最大的一道裂口，头顶没有日月；裂口营地就扎在外沿。', f: ['烛阴苍冥'] },
+                    { n: '灰骨城', t: '魔族城池', d: '墙是骨灰夯的，立住几百年没被拔掉过。', f: ['烛阴裂罡'] },
+                    { n: '魔卒营', t: '兵营', d: '新涌出的魔卒在这儿编队，只记编号不记名字。', f: ['烛阴稚牙'] },
+                    { n: '无灯关', t: '边关', d: '从不点灯，点了就招东西过来；战俘交换都在关外灰地上办。', f: [] },
+                    { n: '黑血泽', t: '魔元泽', d: '魔元渗进地下水积成的黑泽，喝一口先蚀玄元、再夺神智。', f: [] }
                 ] }
           ] }
     ];
@@ -10638,6 +10954,14 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             if (XZ_MAP_STATES[i].n === regS.n) clipD = xzMapPath(_stateCells[i], true, 22);
         }
         var _inState = function (p) { return xzMapInPoly(p, _stateCells[rIdx]); };
+        /* ★★★ v595：地点串州的正解 —— 域单元与州单元两道边界都要现算。
+           病根不是"点排得不够整齐"，而是 **点/标签根本不受裁剪**：
+             · 金点在 `<g class="xz-map-dots">` 里，那组没套 clipPath；
+             · 城名是 HTML 覆盖层（按百分比定位），SVG 的 clip 对它完全无效。
+           地点扩充后每域从 2~3 个涨到 4~6 个，标签避让的「更远」候选一路外推，
+           当场把名字送到邻州、邻域的地盘上 —— 用户说的「全跑别的州的区域去了」。
+           ⇒ 不靠 CSS 遮挡（会连有效标签一起盖掉），靠**坐标出界就不许落地**。 */
+        var _inArea = function (p, ai) { return xzMapInPoly(p, cells2[ai]); };
         var inner = [], dots = [], labels = [];
 
         /* ★ v408：城市名要上地图了，先备一套**标签占位**（坐标全是 viewBox 单位）：
@@ -10688,24 +11012,30 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             /* 占位已在上面那趟预扫里做完，这里不再重复登记。 */
             /* 城市点：间距按**域的实际大小**缩，不按固定值。
                固定 112 单位时，小域（边荒域那种细长条）的点会跑到州界外 ——
-               第一版实拍就有三个点落在海里。这里用单元包围盒定步长，再夹一层上下限。 */
+               第一版实拍就有三个点落在海里。这里用单元包围盒定步长，再夹一层上下限。
+               ★ v595：地点变多后行数增加，步长与行距必须一起收紧，且 `per` 跟着域宽走 ——
+                 一个域塞六个地点还硬排两列就是三行，第三行必然顶出域界。 */
             var _cb = xzMapCellBox(cells2[ai]);
-            var spread = Math.max(48, Math.min(112, _cb.w * 0.36));
-            var rowGap = Math.max(34, Math.min(64, _cb.h * 0.30));
-            var nC = a.cities.length, per = nC <= 2 ? nC : 2;
+            var spread = Math.max(40, Math.min(96, _cb.w * 0.30));
+            var rowGap = Math.max(26, Math.min(48, _cb.h * 0.22));
+            var nC = a.cities.length, per = nC <= 2 ? nC : (_cb.w > 240 ? 3 : 2);
             a.cities.forEach(function (c, ci) {
                 var row = Math.floor(ci / per), col = ci % per;
                 var inRow = Math.min(per, nC - row * per);
                 var px = cx0 + (col - (inRow - 1) / 2) * spread;
-                var py = cy0 + 26 + row * rowGap;
-                /* 还落在域外就整组往种子收 —— 宁可挤，也不要一个点孤零零飘在邻州 */
-                /* 两道都要过：域单元**本身**可能伸出州界（Voronoi 是在全图切的，
-                   靠 clipPath 在显示时裁掉），所以只看域单元不够 —— 第一版实拍
-                   就有三个点落在海里。 */
-                if (!xzMapInPoly([px, py], cells2[ai]) || !_inState([px, py])) {
-                    px = cx0 + (px - cx0) * 0.55;
-                    py = cy0 + (py - cy0) * 0.55;
+                var py = cy0 + 20 + row * rowGap;
+                /* ★★★ v595：从「收一次就算了」改成**收到合规为止**。
+                   旧写法只判一次、只收 0.55，收完不再复查 —— 地点一多，收回后的
+                   点仍可能落在另一个域里（甚至越过州界）；而且两道判据缺一不可：
+                   域单元本身可能伸出州界（Voronoi 在全图切的），只看域是不够的。
+                   最多收 8 次仍不合规就钳到域种子：宁可几个点挤在中心，
+                   也绝不让一个金点孤零零飘在别人家的地盘上。 */
+                for (var _sk = 0; _sk < 8; _sk++) {
+                    if (_inArea([px, py], ai) && _inState([px, py])) break;
+                    px = cx0 + (px - cx0) * 0.72;
+                    py = cy0 + (py - cy0) * 0.72;
                 }
+                if (!(_inArea([px, py], ai) && _inState([px, py]))) { px = cx0; py = cy0; }
                 dots.push('<circle cx="' + px.toFixed(1) + '" cy="' + py.toFixed(1) + '" r="4.4" fill="#f3d999"/>'
                     + '<circle cx="' + px.toFixed(1) + '" cy="' + py.toFixed(1) + '" r="10" fill="none" stroke="rgba(243,217,153,0.42)" stroke-width="1"/>');
                 /* ★★★ v408（用户 2026-10-27，附截图）：「第三级地点没有显示名字啊，就两个点，
@@ -10723,17 +11053,33 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                     var _lw = (c.n.length * 11 + 12) * _uPerPx;
                     var _lh = 20 * _uPerPx;
                     var _dy = _lh * 1.05, _dx = _lw * 0.78;
-                    var _cands = [[0, _dy], [0, -_dy], [_dx, 0], [-_dx, 0],
-                                  [0, _dy * 1.9], [0, -_dy * 1.9], [_dx, _dy], [-_dx, _dy]];
+                    var _cands = [[0, _dy], [0, -_dy], [_dx * 0.7, 0], [-_dx * 0.7, 0],
+                                  [_dx, 0], [-_dx, 0], [0, _dy * 1.6], [0, -_dy * 1.6],
+                                  [_dx * 0.7, _dy], [-_dx * 0.7, _dy], [_dx * 0.7, -_dy], [-_dx * 0.7, -_dy]];
                     var _lx = px, _ly = py + _dy, _k2, _ok = false;
                     for (_k2 = 0; _k2 < _cands.length; _k2++) {
                         var _tx = px + _cands[_k2][0], _ty = py + _cands[_k2][1];
-                        if (!_lbHit(_tx, _ty, _lw, _lh)) { _lx = _tx; _ly = _ty; _ok = true; break; }
+                        /* ★★★ v595：城名是 HTML 覆盖层，**SVG 的 clipPath 管不到它**。
+                           旧版只躲已占标签、不看边界，避让候选一路外推，
+                           地点一多就把名字送到邻域、邻州 —— 这就是「地点渲染串州」。
+                           ⇒ 候选位必须整块（四个角）都在**本域单元 + 本州单元**内。
+                             只判中心不够：标签宽约 60~80 单位，中心在域内、
+                             半截字压在别人家地上，玩家看到的仍然是串。 */
+                        var _cn = [[_tx - _lw / 2, _ty - _lh / 2], [_tx + _lw / 2, _ty - _lh / 2],
+                                   [_tx - _lw / 2, _ty + _lh / 2], [_tx + _lw / 2, _ty + _lh / 2]];
+                        var _safe = true;
+                        for (var _cq = 0; _cq < 4; _cq++) {
+                            if (!_inState(_cn[_cq]) || !_inArea(_cn[_cq], ai)) { _safe = false; break; }
+                        }
+                        if (!_safe) continue;
+                        /* 当前所在那条允许压着别人的标签（信息量最大），但同样不许越界 */
+                        if (_lbHit(_tx, _ty, _lw, _lh) && !_isHere) continue;
+                        _lx = _tx; _ly = _ty; _ok = true; break;
                     }
-                    /* 八个候选全撞 ⇒ **不画这个名字**（点还在）。
-                       宁可「密的地方只有点」（下面的域纪要卡片一条不落列着），
-                       也不要叠成一坨 —— 叠字比没字更难读。当前所在那一个例外：它最有信息量。 */
-                    if (_ok || _isHere) {
+                    /* 一个合规位都找不到 ⇒ **不画这个名字**：金点还在，
+                       下面的域资料卡里名字一条不落。宁可密处只有点，
+                       也不要把字送到别人家的地盘上去。 */
+                    if (_ok) {
                         _lbTake(_lx, _ly, _lw, _lh);
                         labels.push({ cls: 'is-city' + (_isHere ? ' is-here' : ''), txt: c.n, x: _lx, y: _ly });
                     }
@@ -11922,7 +12268,13 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         try {
             var a = doc && doc.activeElement;
             if (!a || !a.getAttribute) return false;
-            if (!a.getAttribute('data-plot-field')) return false;
+            /* ★ v595：三张表都算。原来只认 `data-plot-field`，于是主线与暗线
+               的输入框在 1.5 秒自动重绘时照样被换掉 —— 输入法收起、光标跳走。
+               这条守卫是「输入时让路」的唯一判据，漏一个前缀就漏一整张表。 */
+            var f = a.getAttribute('data-plot-field')
+                || a.getAttribute('data-main-field')
+                || a.getAttribute('data-dark-field');
+            if (!f) return false;
             var tg = String(a.tagName || '').toUpperCase();
             return (tg === 'INPUT' || tg === 'TEXTAREA');
         } catch (e) { return false; }
@@ -12094,6 +12446,15 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 ].join(',');
             })(),
             state.mainNote || '',
+            /* ★ v595：暗线三态进签名。口径同 plotPend / mainPend：
+               表单与草稿里的**文本**一律不许进签名（每敲一个字就失焦，v543 老坑），
+               只留「挂没挂草稿 / 忙不忙 / 报没报错」与「条件类型」（它决定值框在不在，
+               是结构变化）。提示文字要看得见，所以也进。 */
+            state.darkPend
+                ? ((state.darkPend.busy ? 1 : 0) + '|' + (state.darkPend.err || '') + '|' + (state.darkPend.item ? 1 : 0))
+                : 'n',
+            (state.darkForm && state.darkForm.rk) || '境界',
+            state.darkNote || '',
             /* ★ v578：「功能」页那两个开关值。
                它们是**渲染路径真的在读**的内存态（按钮上的 ●/○ 与色都是它算的），
                点一下 → `setOn` 写 localStorage → `render(true)`。
@@ -12438,6 +12799,29 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 };
                 doc.addEventListener('input', _mainTake, true);
                 doc.addEventListener('change', _mainTake, true);
+
+                /* ★★★ v595：暗线表单单独一条通道。
+                   与 plot / main 分开写：三张表各落各的 state，合并就得按前缀分叉，
+                   以后改一处会牵到另外两处。
+                   ⚠ 只进内存、绝不重绘 —— 输入时重绘会换掉 input 节点、丢焦点（v543）。
+                   ⚠ 草稿里那几个可改的框（pend_ 前缀）落的是 darkPend.item，
+                     写进 darkForm 会变成一堆没人读的键（看着对、改完没反应）。 */
+                var _darkTake = function (e) {
+                    var t = e && e.target;
+                    if (!t || !t.getAttribute) return;
+                    var k = t.getAttribute('data-dark-field');
+                    if (!k) return;
+                    if (!state.darkForm) state.darkForm = darkEmptyForm();
+                    var _dk = k.match(/^pend_(name|veil|truth|links|reveal)$/);
+                    if (_dk) {
+                        if (!state.darkPend || state.darkPend.busy || !state.darkPend.item) return;
+                        state.darkPend.item[_dk[1]] = t.value;
+                        return;
+                    }
+                    state.darkForm[k] = t.value;
+                };
+                doc.addEventListener('input', _darkTake, true);
+                doc.addEventListener('change', _darkTake, true);
 
                 /* ★ 2026-11-04：剧情页的「下拉拉取」。选「其他…」时给字段打上自填标记 ⇒
                    重绘后旁边多一个输入框；选普通项则清掉标记 ⇒ 输入框收回。
@@ -13165,6 +13549,102 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                     render(true);
                     /* 刚打开时先判一次：如果他手上那批早就打完了，立刻续（不用再点一次改状态） */
                     if (state.mainForm.auto) { try { mainMaybeAuto(); } catch (eMA) {} }
+                    return;
+                }
+                /* ═══ ★★★ v595：暗线的几颗按钮 ═══
+                   全部只改内存 / 走 plotSave，不直接碰 DOM，也不另开一份清单。
+                   ⚠ data-i 一律是 **plotList 的真实下标**：暗线与明面事件共住一份数组，
+                     动之前必须校验那一条确实是 line:'暗线'，否则会改错事件。 */
+                if (act === 'dark-rk') {
+                    var _rk = String(el.getAttribute('data-rk') || '境界');
+                    if (DARK_RKS.indexOf(_rk) < 0) return;
+                    if (!state.darkForm) state.darkForm = darkEmptyForm();
+                    state.darkForm.rk = _rk;
+                    state.darkForm.rv = '';   /* 换了类型，旧值不适用（境界档名 ≠ 地名） */
+                    state.darkNote = '';
+                    render(true);
+                    return;
+                }
+                if (act === 'dark-add') {
+                    var _df = state.darkForm || darkEmptyForm();
+                    if (!String(_df.name || '').trim()) { state.darkNote = '⚠ 暗线名称不能空。'; render(true); return; }
+                    if (!String(_df.veil || '').trim()) { state.darkNote = '⚠ 表层线索不能空，没揭露时模型要靠它埋伏笔。'; render(true); return; }
+                    if (!String(_df.truth || '').trim()) { state.darkNote = '⚠ 幕后真相不能空。'; render(true); return; }
+                    var _curD = (state.plotList || []).slice();
+                    _curD.push(darkToRec(_df));
+                    state.darkForm = darkEmptyForm();
+                    state.darkNote = '';
+                    plotSave(_curD);
+                    render(true);
+                    return;
+                }
+                if (act === 'dark-gen') {
+                    if (state.darkPend && state.darkPend.busy) return;
+                    var _fD = state.darkForm || darkEmptyForm();
+                    var _evs = (state.plotList || []).filter(function (e) { return e && e.line !== '暗线'; });
+                    state.darkPend = { busy: true, err: '', item: null };
+                    state.darkNote = '';
+                    render(true);
+                    darkCallAI(darkPrompt(_fD, _evs), function (txt, err) {
+                        if (!state.darkPend) return;   /* 玩家已经丢弃 */
+                        state.darkPend.busy = false;
+                        if (!txt) { state.darkPend.err = err || '模型没有返回内容'; render(true); return; }
+                        var _it = darkParse(txt);
+                        if (!_it.name || !_it.veil || !_it.truth) {
+                            state.darkPend.err = '返回里认不出「名称／线索／真相」三行，可再生成一次或自己填。';
+                            render(true); return;
+                        }
+                        /* 模型爱自创条件写法；认不出的一律回落成永不自动揭露，
+                           绝不能让一条格式错的条件把真相提前放出去。 */
+                        var _rv = String(_it.reveal || '');
+                        if (!/^(境界：|地点：|人物：|手动)/.test(_rv)) _it.reveal = '境界：未定';
+                        state.darkPend.item = _it;
+                        render(true);
+                    });
+                    return;
+                }
+                if (act === 'dark-adopt') {
+                    var _dp = state.darkPend;
+                    if (!_dp || _dp.busy || !_dp.item) return;
+                    var _itA = _dp.item;
+                    if (!String(_itA.name || '').trim() || !String(_itA.truth || '').trim() || !String(_itA.veil || '').trim()) {
+                        state.darkNote = '⚠ 名称／线索／真相都得有。'; render(true); return;
+                    }
+                    /* 草稿里的关联框是纯文本框，写回来是字符串 ⇒ 落库前归一成数组 */
+                    var _lk = _itA.links;
+                    if (!Array.isArray(_lk)) _lk = String(_lk || '').split(/[、,，\/]/).map(function (x) { return String(x).trim(); })
+                        .filter(function (x) { return x && x !== '不限' && x !== '无'; });
+                    var _recD = {
+                        name: String(_itA.name).trim().slice(0, 24), line: '暗线',
+                        veil: String(_itA.veil).trim().slice(0, 240),
+                        truth: String(_itA.truth).trim().slice(0, 400),
+                        reveal: String(_itA.reveal || '境界：未定').trim().slice(0, 40),
+                        links: _lk.slice(0, 8), unlock: 0,
+                        at: new Date().toISOString().slice(0, 10)
+                    };
+                    var _curA = (state.plotList || []).slice();
+                    _curA.push(_recD);
+                    state.darkPend = null;
+                    state.darkNote = '';
+                    plotSave(_curA);
+                    render(true);
+                    return;
+                }
+                if (act === 'dark-discard') {
+                    state.darkPend = null;
+                    state.darkNote = '';
+                    render(true);
+                    return;
+                }
+                if (act === 'dark-unlock' || act === 'dark-relock' || act === 'dark-del') {
+                    var _di = parseInt(el.getAttribute('data-i'), 10);
+                    var _curU = (state.plotList || []).slice();
+                    if (!(_curU[_di] && _curU[_di].line === '暗线')) return;  /* 越界或指错类型：不动作 */
+                    if (act === 'dark-del') _curU.splice(_di, 1);
+                    else _curU[_di] = Object.assign({}, _curU[_di], { unlock: act === 'dark-unlock' ? 1 : 0 });
+                    state.darkNote = '';
+                    plotSave(_curU);
+                    render(true);
                     return;
                 }
                 if (act === 'plot-submit') {
@@ -16298,7 +16778,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
          改 md → 在 ENTRIES 里登记（title 用**条目名**，不是文件名）→ 跑
          `node 工具/_v563_gen_wb_patch.mjs` → 推 CDN。
          补丁只登记**改过的**条目；没改的别往里加，越大加载越慢。 */
-    var XZ_WB_PATCH_VER = 'v590';
+    var XZ_WB_PATCH_VER = 'v595';
     var XZ_WB_PATCH = {
         "dlc-鸣潮-人物-清宵": "<清宵>\n# 三州角色设定档案：清宵\n\n## 一、 基础信息\n**姓名**：清宵\n**性别**：女\n**种族**：人族\n**年龄**：一百五十八岁（外貌二十四五岁）\n**修为境界**：元婴中期\n**玄元属性**：风\n**灵根**：素心剑血｜**四灵根**｜纯度 69｜效果：增伤:15，穿防:15｜不是什么显赫的血，胜在纯粹：剑意过血不走偏，一寸就是一寸\n**天骄**：非天骄（灵根定档）\n**身份**：雪域镇玄司挂名司骑（领俸不点卯）；隐世剑修，无门无派\n**绰号**：剑仙（雪域民间这么叫，她从不认也不驳）\n\n## 二、 面板要素（照此取用，不得掷骰重生成）\n- 四维：力量 4、敏捷 12、体质 6、智力 8\n- 玄技（4 门，照此取用，不得另拟）：\n  - 《心剑·天钧》｜神阶｜单体｜效果: {伤害: \"auto\", 易伤: \"auto:6\"}\n  - 《弦剑·入昙》｜天阶｜自身｜效果: { 增伤: \"auto:5\", 提速: \"auto\", 暴击: \"auto\" }\n  - 《剑阵·锁霜》｜天阶｜范围｜效果: {伤害: \"auto\", 减速: \"auto:5\", 流血: \"auto:5\"}\n  - 《清商·一曲》｜地阶｜单体｜效果: {伤害: \"auto\", 虚弱: \"auto:4\"}\n- 玄诀：《琴剑同修诀》｜神阶｜被动｜目标:自身｜效果: { 增伤: \"25\", 暴击: \"18\", 回蓝: \"10\", 气血上限: \"30\" }\n- 武器：《云琅》｜天阶（★★）｜效果: { 增伤: \"25\", 穿防: \"18\", 暴击: \"15\" }\n\n## 三、 外观特征\n\n**体态**：身高一米六八；身段清瘦挺拔，胸形是利落的 B+。一身素白长裙束得一丝不苟，领口压着金线云纹，袖口用一根素弦缠住——那是她的琴弦，也是她的兵器之一。肤色冷白，腕骨清细，虎口有刀茧、指尖有琴茧，两样茧在同一双手上并不打架。\n\n**冰蓝色的长发**不绾不束，一路垂到腰下，走动时像一道化不开的冷雾。发间立着一对**白玉似的龙角**，角身有极细的纹路，纹路一路连进头皮——**那是她自己长出来的骨头**。一双**蓝瞳**，颜色比发色更浅，像结了薄冰的潭水；看人时目光平静得近乎失礼，那份平静里没有半分傲慢，只是她真的没在想别的事。\n\n白衣，白丝过膝。腰间悬一柄玉质长剑，剑名不示人，刀名《云琅》。身上有雪水的凉气，和一缕若有似无的琴烟味。抚琴时那六柄飞剑就绕在身侧，谁也不碰谁。\n\n## 四、 性格与习惯\n清冷，话极少。问她事，答句不会比问句长；请她喝酒，她会替人把账结了然后走人。少有人知道她走人是因为接不上话——她一向不善言辞，寒暄到她嘴边就成了干巴巴的三五个字，索性省了。省得久了，旁人便当她是端着。\n\n**她看人从不居高临下。** 卖炭的老汉、扫阶的杂役、练气期的后辈，她待起来是一样的态度：平视，听完，把话说到点上。雪域人敬她却不怵她，因为求她办事从不被推，也从没被落过脸子——最多只会得到一句「知道了」，然后那件事就被办掉了。\n\n**「剑仙」两个字不是白叫的。** 雪域近二十年三桩大案，收尾的那一刀都来自同一个方向。她护一方山河的方式很安静，安静到被护着的人多半不知道有这一层。\n\n习惯有二：每逢初三，在观中抚一整夜琴，琴声传出三里，谁家老人听了说那是安魂的调子；以及**刀不离身，琴不离刀**——两样东西并排放着，睡卧都不分开。\n\n## 五、 背景与暗线\n> **她的「无情道」修到元婴才发现漏了一处。** 师门早年的教诲是把心冻住：情是剑上的锈，趁早刮干净。她修得极好——好到雪域人都说霜天观那位司骑没有心。只有她自己知道，每年初三那整夜的琴，弹的一直是一支私人的调子——一个人的名字拆出来的音。那人是谁、去了哪里，她没对任何人讲过，也没打算讲。\n>\n> **镇玄司的挂名是她唯一的人间债。** 当年雪域大乱，镇玄司前任司骑以身封隘，临终把印信塞给她，只说了四个字：「替我点卯。」她从此领俸、不点卯，但每逢司里调不出人的差事，收尾的那一刀总是及时——她管这叫还债，镇玄司管这叫香火情，两边都别扭，两边都认了。\n>\n> 见了她不必寒暄。有话直说，有事办事，她反而松一口气；若她的目光在谁的刀上多停了一瞬，那是剑修与剑修之间，最郑重的招呼。\n</清宵>\n",
         "dlc-绝区零-人物-维琳娜": "<维琳娜>\n# 三州角色设定档案：维琳娜\n\n## 一、 基础信息\n**姓名**：维琳娜·艾嘉德\n**性别**：女\n**种族**：人族\n**年龄**：一百四十三岁（外貌二十七八岁）\n**修为境界**：元婴中期\n**玄元属性**：风\n**灵根**：御风环血｜**三灵根**｜纯度 72｜效果：提速:18，闪避:12｜风从她的血里过一圈再出来，快而轻，衣角永远比人先动半拍\n**天骄**：非天骄（灵根定档）\n**身份**：天穹城·外务司总务官，城主座下处理一切「不体面之事」的那只手\n**绰号**：总务官大人（城里人的叫法，敬多于怕）\n\n## 二、 面板要素（照此取用，不得掷骰重生成）\n- 四维：力量 4、敏捷 10、体质 7、智力 9\n- 玄技（4 门，照此取用，不得另拟）：\n  - 《乱流·裂空》｜天阶｜范围｜效果: {伤害: \"auto\", 减速: \"auto:5\", 易伤: \"auto:5\"}\n  - 《仪剑·列仪》｜天阶｜单体｜效果: {伤害: \"auto\", 穿防: \"auto\", 虚弱: \"auto:5\"}\n  - 《礼数·缚风》｜地阶｜单体｜效果: {减速: \"auto:4\", 虚弱: \"auto:4\"}\n  - 《辞令·谢客》｜地阶｜自身｜效果: { 减伤: \"auto:4\", 抗暴: \"60\" }\n- 玄诀：《筹策玄章》｜天阶｜被动｜目标:自身｜效果: { 减伤: \"22\", 回蓝: \"8\", 灵力上限: \"30\", 气血上限: \"18\" }\n- 武器：《琳琅鎏心》｜地阶（★★）｜效果: { 增伤: \"18\", 暴击: \"12\", 回蓝: \"6\" }\n\n## 三、 外观特征\n\n**体态**：身高一米七二；身段高挑，胸形饱满，C 罩杯有余。一身**深蓝长裙**从领口一路收进腰线，裙面压着贵族纹样，裙摆过踝、走动时不见乱。领口开成深 V，一圈白色高领围脖压在上面，腰间束一条黑色皮质束腰，裙下是白色过膝袜与一双高跟玛丽珍。肤色是养尊处优的白，指节纤细，右手中指内侧有一点常年执笔的薄茧；身上是冷杉与茶汤的净气。\n\n**白发**，长而分叉，一路垂到腰下，不绾不盘；鬓角蓄得长，两侧不对等，发梢是平切的。额前一缕刘海半遮着眼，头顶翘着**两根不服管的呆毛**，压着一只**白色大蝴蝶结**，缎带长长垂在脑后。**尖耳**上挂着细碎金饰。一双**紫瞳**，笑起来先弯眼角——她的笑分两种，一种给客人，一种给要被她「妥善处理」的人，两种弧度一样，眼神不一样。**唇边一点美人痣**。\n\n随身带一只白瓷茶具匣与一柄以太折扇。谈事之前先请人喝茶，是她定下的规矩：喝完这盏还坐着的，才配听下一句。\n\n## 四、 性格与习惯\n优雅是她的工作服。天穹城上下没人见过她失态——所有可能让她失态的事，在发生之前就被她调走了。\n\n说话慢条斯理，用词考究，听起来样样好商量，可每一句都暗藏分寸。求她办事的人往往走出门才发现，自己答应下的东西比求到的多。\n\n办事能力极强，强到**离谱**：邦布似的守城傀儡年检拖了三年，她三天理清；三州使团在城里起了冲突，她一盏茶的工夫把责任、赔偿、说辞全拟好，各方还都觉得占了便宜。\n\n口头禅是那句「别担心，我会妥善处理」。城里人听着安心，欠了债的人听着头皮发麻——因为她的「妥善」，从来只对天穹城这一个方向妥善。\n\n**那份从容只在公事上成立。** 私底下她笨手笨脚得厉害：窗台上换过十七盆绿植，一盆没活；一沾酒就失态，所以从不喝第二杯；同僚诺姆闯了祸，她一边数落一边替人把残局收了。这类事她不许任何人往外说。\n\n唯一看得见的破绽是**茶**。她每逢朔日必开一席茶会，座上客只请一个人，年年落空，年年照开。\n\n## 五、 背景与暗线\n> **她是被上一任总务官亲手挑进外务司的**，挑她的理由至今写在名册里：「此人无不可告人之欲，故无可乘之隙。」她入司四十年，把这条评语守成了城中公论——直到有人发现，每年朔日那席落空的茶会，请柬上的名字从未换过。\n>\n> 那个名字的主人百年前离城赴死，城志上写着「殉职」。她不信，也不说。四十年来她替这座城挡下的一切不体面，说到底都是在替那一页城志擦掉 fingerprints——**总有一天那个人会顺着这些被擦干净的缝走回来**，而她要保证回来时，城里没有任何一盏灯会突然灭掉。\n>\n> 所以见了面就请喝茶吧。她替人斟茶的手很稳，稳得像这件事已经排练过四十年。\n</维琳娜>\n",
@@ -16310,6 +16790,10 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         "设定-效果表": "# 效果表\n\n字段：`玄技名｜品质｜类型｜目标｜效果｜消耗`。玄技主动（消耗 > 0），玄诀被动（消耗 0、目标自身）。\n\n## 名字\n\n剑系一律 **`剑系·` + 名字**（中点用 `·`，U+00B7）—— 这是战斗特效认剑系的唯一依据。\n不是剑系的**不许**加这个前缀。其余路数（刀、枪、拳、术、符…）照风格现编，不加前缀。\n\n## 效果\n\n**一行一条：`机制名:数值[:手数]｜描写`**\n\n```yaml\n效果:\n  伤害: 2400｜火焰席卷前方，热浪迫人\n  增伤: 20:3｜火势反卷，越烧越旺\n```\n\n- **键名就是机制名，值里不要再重复机制名。** `{ 增伤: \"增伤:20:3｜…\" }` 是错的 ——\n  第二个「增伤」会占掉数值位，读到的就成了「增伤」二字。\n- `｜` 之后是描写，只看竖线左边，右边随意写、也可以不写。\n- **量纲**：`伤害` `治疗` `护盾` `吸血` 写绝对值（点）；`提速` `减速` `拉条` `乱序` `换命` 写点数\n  （速度点／行动条刻度／最小百分点差）；其余写百分比，不写 `%`。\n- **量纲的三个例外**：`持续治疗` `持续回蓝` 写的是「每手回上限的百分比」；\n  叠层八条里 `叠层提速` 写点数，其余七条写百分比 —— **`叠层减速` 是每层削伤百分比**，\n  和 `减速` 的速度点数不是一回事；`拉条` `乱序` 写行动条刻度（条长 1000 上下）。\n- **效果条数按品质档位定**（见《设定-数值表》的「效果条数」列）：凡 1、黄 2、玄 3、地 4、天 5、神 6。\n  **这条只管 AI 生成的招式**：超出的按写入顺序保留前 N 条、其余列出来。\n  **玩家自填的写几条是几条，一个字都不裁** —— 不许帮玩家「精简」他自己的想法。\n- **开关型**：`免死` `破盾` `驱散` 写在**玄技**里只认名字，冒号后的数字是占位，\n  写 1 和写 9 结果一样；这三条写在**玄诀／兵器／灵根**里才吃数值（按《数值表》的封顶）。\n- `召唤` 不写数值，写整条子格式，用斜线分段（不能用竖线，竖线是描写的分界）：\n  `名称/手数/机制:数值:技能名`，例 `炎灵/3/伤害:200:焚天`。\n- `拉条:0` 里的 `0` 是**触发模式**（立刻前推），不是「拉 0 点」。想推多少写 `拉条:750`。\n- **一眼分「一次性」与「每手」**：`治疗`／`回复` 是当下一口（绝对值）；\n  `持续治疗`、`持续回蓝` 是每手回上限的百分比。别把 `治疗:10` 当成每手回 10%。\n- **同名两义不算错**：`增伤` `减伤` `暴击` `暴伤` `提速` `减速` `灼烧` `流血` `治疗`\n  既是招式机制名，也是叠层内部那一层的名字。带 `叠层` 前缀的一律是「每命中叠一层」，\n  不带前缀的一律是「挂上就生效」。\n- **`auto` 只在 13 个机制上有效**，其余写了不报错、也不生效（数值原样留着但不进战斗），\n  名单见下面「哪些能写 `auto`」。\n\n### 叠层一族的写法（八条）\n\n`叠层增伤` `叠层减伤` `叠层暴击` `叠层暴伤` `叠层提速` `叠层治疗` `叠层破甲` `叠层减速`\n\n写法与普通效果同形：`机制名:数值:手数`。\n\n- **数值 = 每层强度**。`叠层增伤:6.4:3` 是「三手内每命中一次叠一层，每层 +6.4%，满 5 层 +32%」；\n  写 `叠层增伤:20` 就是每层 +20%。`叠层提速` 的数值是**点数**（写 8 = 每层 +8 点速度），\n  其余七条都是百分比。八条的自选器默认值已经对齐各自的每层强度，照抄即可。\n- **满层要比同量纲的一次性写法高出一截**，这是叠层一族的立身之本：要打五次才攒满的东西，\n  攒满了还得跟一次就拿到的一样，那就没人愿意叠。所以每层强度按「满层 = 一次性写法 ×1.6」定：\n  `叠层增伤` 每层 6.4%（满 32%，一次性增伤是 20%）、`叠层减伤` 每层 8%（满 40%，一次性减伤 25%）、\n  `叠层暴伤` 每层 9.6%（满 48%，一次性暴伤 30%）、`叠层破甲` 每层 6.4%（满 32%，一次性易伤 20%）。\n  写别的数就按你写的算，这句只交代自选器默认值的来历。\n- **六条叠自己、两条叠对手**：前六条（增伤／减伤／暴击／暴伤／提速／治疗）叠在出手者自己身上；\n  `叠层破甲` 与 `叠层减速` 是减益，叠在**被打中的那个人**身上 —— 破甲令其承伤更高，\n  减速令其出手伤害更低、行动条后拉，攒满还会冰封。这两条不写给自己。\n- **只有真打中才叠**：被闪避、被护盾全额挡下、对手无敌的那一击不涨层；\n  一记范围招式扫中几个人也只算一次命中。手数照常按出手递减，落空不补层。\n- **层数上限一律 5 层**，八条全部一样。叠到 5 层就不再涨；手数只管「还能不能接着叠」，\n  不会叠到第 6 层。已叠的层数不随时间衰减，到期只是不再继续叠。\n- 攒满 5 层时触发这一档的质变（`增伤` 是「风驰」：行动条直接前拉满）。\n- `叠层增伤` / `叠层减伤` 的强度也进面板的增伤值 / 减伤值 —— 面板上看到的就是结算用的那个数。\n  其余六条各自算各自的（暴击率 / 暴击伤害 / 速度 / 治疗量 / 易伤），面板上不单列。\n- **增益栏怎么读**：八条一律写成「叠层增伤 ×5（满层）（来源：某某玄技）」。\n  `×5` 是**层数**，不是倍率；只有攒到 5 层才标「（满层）」；来源括号写挂上这条叠层的\n  玄技／玄诀名，战斗过程自己叠出来的层写「战斗叠层」。层数不满就只写层数与来源，\n  例如「叠层增伤 ×1（来源：某某玄技）」，不加（满层）；层数一律写 ×N。\n  条目末尾的「· 剩 N」是**还能叠几手**，不是还剩几层；层数已经写在名字后面了。\n\n## 机制名只能取下面这 51 个\n\n- 伤害：`伤害`\n- 增益：`治疗` `护盾` `吸血` `增伤` `减伤` `闪避` `提速` `暴击` `暴伤` `穿防` `持续治疗` `持续回蓝` `抗暴` `免死` `破盾` `反震` `拉条` `溅射` `换命`\n- 长驻／特殊：`气血上限` `灵力上限`（这两条玄技不能写，只能写在被动，见下）\n- 条件增益：`牺牲` `低血增伤` `高血增伤` `低血减伤` `高血减伤` `目标残血` `目标满血` `敌众增伤` `敌少增伤` `友多增伤` `友少增伤` `快攻增伤` `慢攻增伤` `敌快增伤` `敌慢增伤` `叠层增伤` `叠层减伤` `叠层暴击` `叠层暴伤` `叠层提速` `叠层治疗` `叠满换伤`\n- 减益（给对面挂）：`持续伤害` `虚弱` `易伤` `减速` `驱散` `乱序` `叠层破甲` `叠层减速`\n- 召唤：`召唤`\n\n⚠ 定身、禁锢、眩晕、封印、沉默、石化、麻痹 **全都不是机制名**，写了不生效。\n要控场就写 `减速`（拖行动）或 `虚弱`（削输出）。\n\n### 谁能写哪些\n\n玄技与「玄诀／兵器／灵根」**认的不是同一套词**：玄技按这一击结算，被动挂一整场。\n把玄技的词写进被动，一条都不生效（不报错、也没有任何变化）。\n\n**① 玄技（主动招式）—— 只能用这 51 个**\n\n`伤害` `治疗` `护盾` `吸血` `持续伤害` `增伤` `减伤` `闪避` `提速` `暴击` `暴伤` `穿防`\n`持续治疗` `持续回蓝` `抗暴` `免死` `破盾` `反震` `拉条` `溅射` `换命` `牺牲`\n`低血增伤` `高血增伤` `低血减伤` `高血减伤` `目标残血` `目标满血` `敌众增伤` `敌少增伤`\n`友多增伤` `友少增伤` `快攻增伤` `慢攻增伤` `敌快增伤` `敌慢增伤` `叠层增伤` `叠层减伤`\n`叠层暴击` `叠层暴伤` `叠层提速` `叠层治疗` `叠满换伤` `虚弱` `易伤` `减速` `驱散` `乱序`\n`叠层破甲` `叠层减速` `召唤`\n\n玄技**不许写**：`气血上限` `灵力上限` —— 想保命写 `护盾` 或 `减伤`。\n\n**哪些能写 `auto`**：上面这些里只有 13 个可以 ——\n`伤害` `治疗` `护盾` `增伤` `减伤` `闪避` `提速` `暴击` `暴伤` `穿防` `虚弱` `易伤` `减速`。\n`抗暴` `破盾` `免死` 写固定值：`抗暴:90` `破盾:50` `免死:1`。\n其余一律写数字 —— 写了 `auto` 不报错、也不生效，数值原样留着不进战斗。\n\n**② 玄诀／兵器／灵根（被动）—— 只能用这 16 个**\n\n| 分组 | 写法 |\n| --- | --- |\n| 攻伐 | `增伤` `穿防` `暴击率` `暴击伤害` `命中回复` |\n| 护体 | `减伤` `闪避` `抗暴` `受击回复` `护盾` `免死` |\n| 根基 | `气血上限` `灵力上限` `持续治疗` `持续回蓝` `提速` |\n\n被动这三处一律**不写手数**（写上去反而会让它中途散掉）。\n\n「每手回一次」的那两条，名字里都带「持续」：`持续治疗`（气血）、`持续回蓝`（灵力）。\n名字里没有「持续」的都是**一次性**结算 —— 例如 `治疗` 是瞬间回一口。\n\n⚠ 被动**与玄技不完全同名**：玄技写 `暴击`／`暴伤`／`吸血`，被动要写 `暴击率`／`暴击伤害`／`命中回复`。\n  上面这些是**正式名**。`暴伤`／`暴击` 也有**只读兜底**（写了能认），但兜底只是兜底，不是正确名字 —— 新写的一律用正式名。\n\n## 升级与效果条数\n\n升级只改数字：一次最多 ×1.25，上界见《设定-数值表》「升级区间」，到顶不许再涨。\n效果条数见上面「效果」那一节的第 5 条 —— 那里已写明「只管 AI 生成的招式，玩家自填不裁」。\n",
         "变量更新规则": "<变量更新规则>\nvariables_update_rules:\n  核心:\n    - 首次录入一次写全，不许写「未知」「无」\n    - 每楼只改发生变化的字段，其余原样不动\n\n  时间:\n    日期: {type: string, format: ${yyy}年${mm}月${dd}日}\n    精确时间: {type: string, format: ${hh}:${mm}, 24 小时制}\n    check:\n      - 剧情推进、闭关、赶路后更新\n\n  地理:\n    大位置: {type: string, format: 州·域·城}\n    check:\n      - 必须三段，用「·」连接\n      - 州只取：人州／妖州／魔州（只有这三个，别的州名一个都不许写）\n      - 域取《地点-三州地理总纲》域号表，封闭表，不许现编。人州只有：中域／雪域／沙洲\n      - 第三段写落脚的那座城／宗门／世家\n      - 不许只写州名；出了城/宗门就写 `官道`／`野外` 当第三段\n    小位置: {type: string, check: 大位置里面的具体地方，不重复州名}\n\n  全局:\n  主角信息:\n    姓名: {type: string}\n    年龄: {type: number, 10~2500}\n    境界: {type: string, 十八档写法，如 练气中期／炼虚后期}\n    经验值: {type: number, 0~2000}\n    check:\n      - 每月产出的基准是 **500**，再乘灵根品阶、资粮、地脉三样倍率（见《设定-境界体系》「修炼产出」）\n      - 圣灵根＋上品资粮 ≈ 1620／月；**不许**不写天数、也不许一次给超过 3 个月\n      - 「修炼了一月」这类叙述**必须**落到这个数字上，写成「略有精进」等于没结算\n      - 双修按境界差结算，**高者恒为 0**（玄气往低处流）：同境各得 17（一日）；差 1／2／3+ 档，低者 1500／5000／15000（基准 500/月 × 3／10／30）\n      - 15000 是单次天花板（经脉装不下更多）；一天只认第一次双修产出，境界差按开始那一刻算\n    气血|气血上限|灵力|灵力上限: {type: number}\n    玄元属性.属性: {七属性之一}\n    四维.{力量|敏捷|体质|智力}: {type: number, 0~20}\n    可用四维点: {type: number}\n    天骄: {非天骄|普通天骄|大天骄|天选之子}\n    灵根:\n      名称: {type: string}\n      品阶: {伪灵根|四灵根|三灵根|双灵根|天灵根|圣灵根}\n      纯度: {type: number, 0~100}\n      效果: {type: string, 一行「机制串｜描写」，见《设定-灵根规则》}\n      check:\n        - 只有这四个字段，没有「说明」\n        - 来历与觉醒光景写进效果「｜」之后\n        - 天骄只由灵根决定\n    灵宠.${名}: {名称|种族|境界|属性|品质|四维|技能(≤4)|性格|外貌|饱食度(0~100)|出战, ≤3 只}\n    已学本领.玄技|玄诀.${名}:\n      format: {名|品质|类型|目标|效果|消耗}\n      check:\n        - 只写六个字段\n        - 玄技类型恒 主动，玄诀恒 被动\n        - 六个字段写全；**不写来源字段**（剧情所得/玩家自填由引擎按默认值处理）\n        - 效果集 ≤12 键，一键一条\n        - 升级只改数字：一次最多 ×1.25，上界见《设定-数值表》升级区间，到顶不许再涨\n        - 持续与百分比不跟着变\n    装备武器: {武器名|品质|效果, 只执一把}\n\n  效果写法:\n    check:\n      - 适用于玄技／玄诀／武器／灵根／背包效果，全部同一套\n      - 每行一条：`机制名:数值[:手数]｜描写`\n      - 机制名只写在键上，值里不再重复\n      - 值的第一个词必须是数字\n      - 值是机器直读的：数值在前、描写在后，脚本直接读、不做翻译\n      - 玄技的非即时效果必带手数，最低 2\n      - 「｜」之后随便写画面与手感，脚本不读\n      - 机制名取《设定-效果表》那张表，那是唯一清单\n      - 一个键只放一条机制，要两条就开 `伤害`、`伤害2`\n      - 正例 { 伤害: \"2400｜火焰席卷前方\", 灼烧: \"8:3｜衣角沾上火\", 增伤: \"20:3｜火势反卷\" }\n\n  人物列表.${名}:\n    format: {姓名|势力|外貌|性格|好感度|心里话|种族|境界|气血|气血上限|灵力|灵力上限|玄元属性|四维|灵根|天骄|已学本领|装备武器|灵宠|部位|在场状态}\n    好感度: {type: number, 0~100}\n    关系: {type: string, 一行短词}（与主角的关系：娘／大姐／二姐／宿敌／陌生人…自由写，不做枚举）\n    心里话: {type: string, ≤30 字，第一人称，不加引号}\n    种族: {人族|妖族|魔族}（只有这三种；妖兽写 `妖族·兽种`）\n    部位.${私处|奶子|大腿|足部}: {type: string, 默认 正常}\n    check:\n      - 首次登场按人设条目的「初始好感度」落档，条目没写才用 50\n      - 首次登场必出 <人物面板>，缺的字段写「无」\n      - 出过面板的不再出\n      - 在场写 true，离场写 false，≤20 人\n      - 好感度只在施恩／救命／羞辱／背叛时动，一次最多 ±15\n      - 心里话只在角色出场或对话后改写\n\n  背包.${物品名}:\n    format: {物品名称|数量|品质|类型|效果|描述}\n    类型: {道具|玄技|玄诀|武器|材料}\n    效果: {type: string, 道具必填；写法同上「效果写法」}\n    描述: {type: string, 只写风味，不写数值}\n    check:\n      - 数量为 0 用 remove\n      - ≤50 条\n      - 丹药／符箓／毒粉这类能用的，效果必须写\n      - 名字不决定作用，只看效果栏\n\n  任务:\n    进行中.${任务名}:\n      format: {阶|来源|委托人|地点|目标|期限|酬劳}\n      阶: 凡阶 / 黄阶 / 玄阶 / 地阶 / 天阶 / 神阶（阶名与档序见《设定-数值表》品阶）\n      来源: {宗门|世家|官府|市井|私托|自定}\n      目标: {type: string, ≤30 字}\n      地点: {type: string, 与大位置同口径的三段}\n      check:\n        - ≤10 条，满了不许硬接第 11 条\n        - 任务名不得含斜杠 / 、波浪号 ~ 、井号 #，≤12 字\n        - 没有「进度」，只有「在办」与「了结」\n        - 了结必须整条 remove，不许 replace 成空\n        - 建条 ⇔ 正文出 <接取任务>；remove ⇔ 正文出 <完成任务>\n    已完成: {type: string[], ≤30, 只记「任务名（阶·来源）」}\n    check:\n      - 全局系统，不绑宗门\n      - 没有「功勋」字段；功勋是背包里的一条材料，按出处命名\n      - 功勋在交差结付时加，兑换时从对应那条扣\n      - 打怪、采药、赶路不直接给功勋\n      - 结付量级：凡 1~10／黄 10~50／玄 100~300／地 500~1500／天 5000 以上／神 万级以上\n\n  变量输出格式:\n    rule:\n      - 每楼末尾一次性给出推演与补丁，不许拆成两次写\n      - 补丁是 JSON Patch（RFC 6902）形状的数组，但**只认四个操作**：replace／delta／insert／remove\n      - ⚠ **没有 add 这个操作**。要往对象里加新条目（新人物、新物品、新玄技）一律用 `insert`。\n        写 `\"op\": \"add\"` 会直接被判成非法补丁、整条丢弃，玩家屏幕上还会弹一条报错。\n      - ⚠ **path 必须以 `/` 开头**。`\"/人物列表/阿依莎\"` 对，`\"人物列表/阿依莎\"` 错（少一个斜杠就整条失败）。\n        每一层之间都用 `/` 分隔，对象里带特殊符号的键要转义成 `~0`（`~`）和 `~1`（`/`），正常中文名不用转。\n      - ⚠⚠ **最要紧的一条：path 必须写到那一层「名字」**。\n        `/人物列表`、`/背包`、`/任务/进行中`、`/主角信息/已学本领/玄技`、`/灵宠` 这些是**容器**，不是条目。\n        往容器上 `insert` 一个条目对象，舒服是舒服，但字段会被摊在容器的根上：\n        `\"path\": \"/人物列表\", \"value\": {\"姓名\":\"至冬女王\",\"好感度\":50}` ⇒ 人物列表里多出一个**键名叫「姓名」**的假条目，\n        真正的「至冬女王」根本没被建出来。**它不报错、界面上什么都不缺，只是那个人永远不在名单里** ——\n        所以每次 insert 之前都问自己一句：**这个名字，我写进 path 了吗？**\n        对：`\"path\": \"/人物列表/至冬女王\"`；`\"path\": \"/背包/一品回春丹\"`；`\"path\": \"/任务/进行中/护送商队\"`。\n      - 唯一例外是**整组替换**：`replace /人物列表` 配一个「键就是人名」的 map（`{\"张三\":{…},\"李四\":{…}}`）是对的 ——\n        这种写法的名字在 value 的键上；而 `replace /人物列表/张三` 配 `{\"好感度\":60}` 也对。判断标准只有一条：\n        **名字要么在 path 的最后一段，要么是 value 的键；两处都没有，就是错的。**\n      - replace：改写已有路径的值\n      - delta：把已有的数字按增量加减，增量必须是数字、不许带引号\n      - insert：往对象或数组里加新条目，数组下标写「-」表示追加到末尾\n      - remove：删掉已有路径（删人写成 `/人物列表/某某`，别删整个列表）\n      - 某个字段需要「空」的状态，也必须给一个具体的空值（空串／0／空数组），绝不许写 null\n      - 更新时已有的每一条信息都要原样保住，不许顺手改写或精简\n    format: |-\n      <UpdateVariable>\n      <Analysis>\n      （中文，不少于 150 字）\n      - 通则：严格照原数据结构做局部更新，只动这一楼真变了的字段\n      - 世界状态：算清这一楼过了多久（跨年记得长岁数），核对大位置／小位置有没有换地方\n      - 剧情推进：核对任务与事件，了结的整条 remove 并追加进已完成；近期大事件与三州热议只在真发生时改写\n      - 主角状态：算经验值进度（满额晋级与四维点发放，一律照《设定-境界体系》的年数与经验口径），核对姓名与年龄\n      - 实力增长：新得的玄技／玄诀／装备武器／灵根／灵宠／背包物品，一次性整条写全\n      - 人物在场与外貌：在场的更新在场状态，走了的写 false；新人一次性写全所有字段\n      - ★★★「在场状态」唯一口径：它表示**这个人此刻与 {{user}} 处在同一个场景里**。\n        **只认一件事：这一楼正文里，他和 {{user}} 站在同一个场景里。**\n        · 每楼都要复核一遍：{{user}} 这一楼**换了大位置或小位置**（出城、离宗、跨州、闭关、\n          进秘境、赶完一段官道、睡一觉到第二天在别处）⇒ **上一楼还 ★ 的人全部改 false**，\n          一个都不许带过去 —— 除非这一楼正文里他确实跟 {{user}} 一起走了（写明\"同行\"）。\n        · {{user}} 停下不动、只是过了一夜/说了几句话 ⇒ 没走的**保持 true**，别乱清，\n          清了会让对白里的对话者从名单里消失。\n        · 判据一句话：**这一楼正文里，他是不是真的站在 {{user}} 看得到的地方？**\n          是 ⇒ true；不在场（回自己宗门了、在别的州、在闭关、根本没提）⇒ false。\n        · ⚠ **不许为了让某人登场而把他的在场状态改成 true**。要登场必须正文里\n          {{user}} 真的走到他那里、或他自己真的找上门——不许为了推剧情硬把人塞进来。\n      - 好感度：只在施恩／救命／羞辱／背叛时动，一次最多 ±15，同时改写心里话\n      - 亲密：私处／奶子／大腿／足部按这一楼实际遭遇照实写，客观、不抒怀\n      - 新增人物：当登场的角色在人物变量里不存在时，必须新增该人物变量。\n      </Analysis>\n      <JSONPatch>\n      [\n      { \"op\": \"replace\", \"path\": \"/时间/精确时间\", \"value\": \"07:20\" },\n      { \"op\": \"delta\", \"path\": \"/主角信息/气血\", \"value\": -15 },\n      { \"op\": \"insert\", \"path\": \"/人物列表/柳三娘\", \"value\": { \"姓名\": \"柳三娘\", \"势力\": \"散修\", \"种族\": \"人族\", \"好感度\": 50, \"在场状态\": true } },\n      { \"op\": \"remove\", \"path\": \"/背包/一品回春丹\" }\n      ]\n      </JSONPatch>\n      </UpdateVariable>\n</变量更新规则>\n",
         "设定-正文格式": "## 正文格式 · 铁律\n\n**一句话**：只有「叙事」写在 `<content>` 里；**所有功能标签一律写在 `</content>` 之后**。写错地方 → 状态栏与各功能面板全部失效。\n\n### 一、`<content>` 里只能有\n\n叙事正文（第二人称、小说笔触）、对白、场景与斗法描写，以及本楼真实发生的战果与获取（用第四节的功能标签承载）。\n\n### 对白写法（**照这个写，不照就是格式错**）\n\n**每一句对白都写成 `{说话的人}「他说的字」`。** 三件事照着做：\n\n1. **说话的人写在花括号里**，写**名字**（本名、称号、代称都行，不超过 20 字）。\n2. **说话的字夹在一对「」里**，紧跟在花括号后面。花括号和引号之间**不要插形容词、动作、标点**。\n3. **一句话一对花括号**。一句说完，下一个说话的人重新起一对，不要连着写。\n\n```\n{白长雪}「你也配？」\n\n他抬头看了一眼山门，没再说话。\n\n{#}「我配。」\n```\n\n- **玩家自己的台词一律写 `{#}`。** 不写玩家名字、不写「你」——`{#}` 就是玩家本人，系统会认。\n- **没有说话人的叙述不写花括号。** 旁白、动作、环境照常写，一个字都别加。\n- 说话的人**当楼在场**才写。不在场的人不要替他说话。\n- **一句话里不要出现花括号**；花括号只在开头那一次。\n\n**这一条不是排版偏好。** 界面会把每一对 `{名}「话」` 排成「头像 + 姓名气泡」，读起来像对话。\n认不出来的对白只会和旁白混在一起，玩家分不清谁在说话。\n\n\n### 二、`<content>` 里不许出现的东西\n\n**变量与各功能标签一律放在 `</content>` 之后，不许夹在叙事里。** 写了就是本楼格式错误。\n\n### 四、功能标签一览（**一律成对闭合**；缺尾部标签按格式错误处理）\n\n| 必须这样写 |\n| --- |\n| `<人物面板>…</人物面板>` ｜ `<躯体判定>…</躯体判定>` |\n| `<玄技学习>…</玄技学习>` ｜ `<玄诀学习>…</玄诀学习>` |\n| `<武器获取>…</武器获取>` ｜ `<道具获取>…</道具获取>` ｜ `<材料获取>…</材料获取>` |\n| `<接取任务>…</接取任务>` ｜ `<完成任务>…</完成任务>` |\n\n各标签内部字段与取值见《设定-全局生成规则》。\n\n**遇到新 NPC 必出 `<人物面板>`。** 说的是**任何**第一次登场的具名角色 —— 路人、妖兽、魔族一样要出，不因为它只是「顺嘴提一句」就省掉。出过一次之后不再出（只更新境界）。**只在变量里建档、正文不出面板 = 玩家看不到这个人是谁**，等于没登场。**`<人物>`／`<地点>` 单标签一律不写。**\n\n**但 `<人物立绘>` 必须写，每一楼都要写。**\n\n**格式就四个字加一对尖括号：`<人物立绘>`。里面不写角色名，也不写闭合标签。** 独占一行，放在这一楼最该出图的那一段之后。\n\n```\n（叙事正文……）\n\n<人物立绘>\n\n（叙事正文接着写……）\n```\n\n- **一楼只写一个**。写两个就出两个框，纯属重复。\n- 这一框画谁，由**框前面最近提到的那位具名角色**决定 —— 所以要把标签放在那个人**第一次出场、或情绪最重的那一段**后面。\n- 框里默认自动轮播这个人的其他立绘；玩家可以自己按「换人」去看同一场里别的人。**这件事你不用管，标签里也别写名字。**\n- 有立绘的人是**图库里的那批**；还没配图的新角色写了也不出图，那就把笔墨写足，别硬写标签。\n- 这个标签只负责出图，**不替代 `<人物面板>`**：新角色登场仍然要出面板。\n\n**动作插图是另一套标签：`<插图>人物名｜动作</插图>` —— 名单里的人要写，名单外的一个都不要写。**\n\n两套图的分工，别搞混：\n\n| 标签 | 画什么 | 现在 |\n| --- | --- | --- |\n| `<人物立绘>` | 这一楼在场的**某个人**（长什么样） | **要写**，每楼一个 |\n| `<插图>人物｜动作</插图>` | 这一楼**正在发生的那个动作**（一组图轮播） | **名单里的人要写**，动作词照抄《设定-插图系统》 |\n\n- 谁有图、能写哪几个动作词，**一律以《设定-插图系统》那张名单为准**，这里不重复列（两份名单必然漂移）。\n- 名单外的人、名单上没有的动作词，写了只有一个\"暂无图\"的空框，比不写更难看。\n- 动作持续时**每轮都再写一次**；同一个动作一轮只写一次，图会自己一张张往下轮播。\n\n地点不走正文标签：`<地图>` 已经把位置写进变量，玩家在**舆图**页看得到，正文里正常写地名就行。\n\n**战利品不写清单**，直接落成对应的获取标签（见《设定-战利品机制》）。\n\n**任务的接与交，必须当场说出来。** 只在变量里建条、不写标签，玩家根本不知道自己接没接、了没了——这两件事必须是「看得见」的：\n\n```\n<接取任务>\n任务名: 清查西岭瘴兽\n阶位: 黄阶\n发布人: 太一门 · 执事堂\n地点: 云州·西岭·瘴林口\n目标: 三日内清掉西岭瘴兽巢穴，带回兽核三枚\n描述: 执事堂挂了半个月没人接，山脚已经死了七个采药人\n奖励: 灵石四十 · 功勋三十\n</接取任务>\n```\n\n```\n<完成任务>\n任务名: 清查西岭瘴兽\n阶位: 黄阶\n发布人: 太一门 · 执事堂\n目标: 三日内清掉西岭瘴兽巢穴，带回兽核三枚\n结果: 兽核足数，巢穴已焚，一名重伤药农救回\n奖励: 灵石四十 · 功勋三十\n</完成任务>\n```\n\n三条硬规矩：\n\n1. **接就出 `<接取任务>`，交差或判失败就出 `<完成任务>`**，同一楼内与本楼叙事说的是同一件事。变量那一侧同步动作（`进行中` 建条／整条 remove 后 `已完成` 追一行）见《变量更新规则》的「任务」节，两边必须同一楼发生。\n2. **`阶位` 写「黄阶」这种带阶字的说法**（对齐变量里的 `阶`），不要写「黄」。`发布人` 与 `地点` 有就写、没有就整行不写，别留空冒号。`奖励` 用宗门里最自然的那种说法（灵石／功勋／现钱／以物代酬），总而言之**写了就要真发**，发的东西照样走 `背包`。\n3. **`<完成任务>` 的 `结果`** 一行说清「做到了什么」——是差事办成了，还是办砸了判失败（判失败也出这个标签，别写成功）。\n\n标签本身由界面渲染成卡片，玩家看到的是「◈ 接取任务 / ✓ 任务了结」，所以**标签里的字是给人看的，要写清、写全**，别图省事只写个任务名。\n\n### 五、标准骨架（照抄结构）\n\n内容块（**根元素只能有一个**，整块叙事与功能标签都包在 `<content>` 里）：\n\n```示例输出\n<content>\n（叙事正文）\n\n<道具获取>\n目标: 主角名\n道具名称: 一品回春丹\n品质: 凡阶\n类型: 道具\n数量: 2\n描述: 疗伤圣品，服之气血翻涌\n</道具获取>\n</content>\n```\n\n### 六、其它硬要求\n\n- 正文不写 HTML、链接、图片、代码围栏、章节号、出处、变量路径与规则解释。\n",
+        "地点-总览": "<地点总览>\n## 三州 · 地点总览\n\n> 帝都另有专条：雪域皇朝·玄京（人州唯一的大都市）。\n\n> 域号见《地点-三州地理总纲》第四节，那是封闭表。\n> ★ 这世上人烟不少，但没连成一片：城与城之间是山野，靠**官道**串着。出了城，就是妖兽与魔修的地界。\n\n**一、人州·中域（玄脉最盛，人最多）**\n- **太一门**：依山傍水，白墙青瓦，气象森严；主峰云海间长悬一尊悲悯白玉神像。人州第一大宗门，占着中域最好的一条大脉。\n- **司天监·天枢台**：凭空悬在断崖外的环形石台，台面刻满三千星位，四时银河流光自转；台心那口星井底下压着神石。星官不持兵器。\n- **千机坊市**：中域与边荒交界的灰色长廊，不问来历只认灵石；核心千宝楼掌控暗道密网。\n- **太虚古地入口**：紫霄裂痕横贯天幕；道则压制年龄两百年以上与筑基及以上强人；内分幽玄外原、太虚古殿、造化仙池三层。\n- **幽月仙宫**：全女宗门，藏在万花迷沼的沼心。迷沼本身就是天然屏障，外人在沼里转三天也摸不到宫门。宫北极高处另有**冷月峰**，是首席客卿云疏月长年闭关之所。\n\n**二、人州·中域 · 边荒小宗门（玄元稀薄，离矿脉最近）**\n- **三剑宗**：破败清贫，名有三剑实非纯剑修；门人佛系护短、安贫乐道。护宗大阵年久失修，只护得住主殿与后山泉眼；清贫却不搬走，因为出山往北半日就是采玄晶的老矿口。\n- **铁剑门**：与三剑宗比邻的势利小宗，自诩名门剑修正统，门风刻薄功利，常登门寻衅。抢的是那条去矿脉的道。\n- **青木药宗**：边荒药谷，采药炼丹供奉大宗以求喘息，藏有上古残方。养着一支\"外出采药队\"，十去七回。\n- **煞血门**：边寨，修血煞魔功劫道杀人，充当大宗脏活工具。最贵的活是\"外出找人\"。\n- **苍岚宗**：演武台悬在半山孤崖平顶上，台下就是云海。\n\n**三、人州·雪域（极寒，矿脉最富）**\n- **霜霄仙阙**：全女宗门，悬在终年不化的雪原之上，整座天阙建在一道天然冰脊上，四面断崖罡风，寻常人上不来。圣女是宗门门面，也是下一任宗主的候选。\n- **天云雪山**：雪域最北的一段断脊，终年铅云压顶。峰巅有一座雪庐，只盖住几间屋子。\n- **断霜崖**：天云雪山外围的孤峰，崖顶一块平石地。一个人住。\n- **玄冰卫城**（拓跋氏）、百里氏、闻人氏、上官氏、蒲氏：雪域诸世家，各有各的矿脉与商路。\n\n**四、人州·沙洲（干旱，商道穿行，最富也最乱）**\n- **月牙泉城**：沙洲最大的绿洲城邦，泉眼被城压在正中、湖面弯成月牙；半是商栈半是赌坊，夜里灯火能照到十里外。灵石流通量人州第一。\n- **沙铃别院**：城中供奉仙姬的居所，地下埋着一条三百年老水道——黑市消息与禁物的中转处。\n- **白牙堡**（轩辕氏）、**赤金之山**（锋刃矿岭，产太乙玄冰髓）：沙洲的矿与刀。\n\n**五、妖州（三域：幽篁、荒原、熔岩）**\n- **盎然之林**：万木参天的林海，绿色瘴气弥漫、巨藤噬血；灵植一族世代居于林中。\n- **断脉大山**：牛、狼、熊诸族的地界，山体本身就是一道天然屏障。\n- **无尽荒原**、**鳞鱼族水泽**：荒原域的两处；水泽是妖族唯一不靠玄脉、靠水活的地方。\n- **熔岩古地**：地火焦土，岩浆奔流、硫磺火雨；产太阳真火晶。\n- **幻木林**：幽篁域林心，狐族祖地。幻术不障眼，障的是路——走进去的每一条道都通回原地。\n- **鹰喙崖**：断脉大山最高的一段，风把石壁削成刃；鹏族在崖上筑巢，从不落地谈事。\n- **瘴骨沼**：幽篁域深处的瘴林，绿瘴压到膝头，方向在此不可辨；走岔的人连脚印都留不下。\n- **裂蹄城**：牛族拿整块巨石垒的城，城门按本体尺寸开，不化形进不去；互市时人族商队得在城外卸货。\n- **万骨集**：各族换猎获与妖丹的集，摊位用骨堆标界，堆得高的先挑。人族的货也在这儿，只是不许过夜。\n- **黑水渡**：鳞鱼族通黑水海的渡口，船是骨做的；海路天象失序，一趟要多绕三日。\n- **赤晶矿脉**：太阳真火晶长在矿壁上，火雨落下来时全矿停工；采晶的按筐计命，不按日计工。\n- **硫火台**：妖族借地火淬本命玄技的石台，台面一年换三回。鳞鱼族上不来，鹏族不下来。\n\n**六、魔州（两域：焦雷、烬灰）**\n- **焦雷之谷**：雷霆雷池，永恒雷云贯顶、电弧轰鸣；产九劫神雷角。\n- **裂口营地**、**焦土荒原**：烬灰域的两处，城池比人州少，可一旦立住就很难拔掉。\n- **冥渊关**：魔州最北的关隘，如今是空营。**没人知道那里现在是什么。**\n- **九劫雷池**：焦雷之谷底下那片积雷的水，九劫神雷角从池底长出来；下去捞角的魔卒，十个上来六个。\n- **引雷台**：魔族把最桀骜的魔核绑上台面挨雷，熬过一夜的才配接炼；台面被劈得一年比一年低。\n- **碎角市**：魔州少有能谈价的地方，只换雷角、魔核与活口，不收人族灵石——要的是能撑过冬天的东西。\n- **无日裂口**：三州境内最大的一道空间裂口，头顶没有日月，只有灰；裂口营地就扎在它外沿。\n- **灰骨城**：魔州少数立住就没被拔掉的城，墙是骨灰夯的。人族将领在图上把它画成一颗钉子，画了几百年。\n- **魔卒营**：裂口外一排营盘，新涌出的魔卒在这儿编队，只记编号不记名字；营里没有灶，也不种地。\n- **无灯关**：烬灰域南边一道关，从不点灯，点了就招东西过来；战俘交换都在关外灰地上办，两边不进同一道门。\n- **黑血泽**：魔元渗进地下水积成的黑泽，喝一口先蚀玄元、再夺神智。魔族自己也不喝。\n\n> 宗门与城池各凭本事立住：山门高的压得住一方，山门矮的只能给人做附庸。**丢了矿脉，就丢了一域的喉咙。**\n</地点总览>\n",
+        "地点-三州地理总纲": "<三州地理总纲>\r\n## 一、九州是旧称\r\n\r\n- \"九州\"是旧称。今人提起九州，指的是**旧图上那九块地**；如今走得到的只有三州。\r\n- 六州**失联**。商路在一百多年前断了；里面的人没出来，外面的人也不敢进。至今没人说得清那边发生了什么。\r\n- 外面的人多半猜那六州**已经没人了**——但那只是猜。没有人确认过，因为没有一个活人从里面走出来。\r\n- 现存的只有三州，各由一族守着。\r\n\r\n## 二、现存三州\r\n\r\n- **人州**——人族所居，位于旧九州腹地。分三域：**雪域（北）、沙洲（西）、中域（中）**。详见《设定-人族三域》。\r\n- **妖州**——妖族所居，在人州以东，隔着一片大海。妖族与人族**明面上通商通使**，边城互市、礼数周全，底下暗流涌动（三族关系见《设定-剧本-正常时代》）。\r\n- **魔州**——魔族所居，在人州以西，隔着更宽的一片荒原。魔族与人、妖两族都是**敌对**：见面就打，没有使节常驻，也没有正式的宣战与停战（同上）。\r\n- 三州之间不通陆路。三族之间的一切往来只有一条路：结伴走商道（传送规矩见《司天监》）。\r\n- ⚠ 以上是**正常时代**的格局。其余剧本里三州的位置不变，但谁跟谁在打、商道还通不通，一律以当前选中那条剧本为准（见《设定-剧本-正常时代》与其余剧本条目）。\r\n\r\n## 三、旧州名（只作历史与忌讳）\r\n\r\n- 青岚州、西瀚州、北宸州、中州、苍荒州、冥渊州等，都是**失联旧地**的名字。\r\n- 老人说起会压低声音；年轻人多半只当成故事。\r\n- ⚠ 若有人自称\"来自青岚州\"，要么是**一百多年前的遗民**，要么是**骗子**。\r\n\r\n## 四、域号表（写「大位置」只能从这张表里取）\r\n\r\n州之下再分**域**。域是舆图上的第二层，也是「大位置」中间那一段；第三段才是城/宗门/世家。\r\n**表里没有的域号不许现编** —— 编了就与舆图对不上坐标，玩家走到哪儿都显示不出来。\r\n\r\n| 州 | 域 | 域内有什么（举例，不限于此） |\r\n|---|---|---|\r\n| 人州 | 中域 | 太一门、司天监（天枢台）、千机坊市、千宝楼、黑市擂台、太虚古地、幽月仙宫（万花迷沼）、铁剑门、青木药宗、煞血门、苍岚宗 |\r\n| 人州 | 雪域 | 霜霄仙阙、天云雪山、玄冰卫城（拓跋氏）、百里氏、闻人氏、上官氏、蒲氏 |\r\n| 人州 | 沙洲 | 月牙泉城、沙铃别院、白牙堡（轩辕氏）、赤金之山（锋刃矿岭） |\r\n| 妖州 | 幽篁域 | 盎然之林（灵植一族）、断脉大山（牛、狼、熊诸族）、幻木林（狐族）、鹰喙崖（鹏族）、瘴骨沼 |\r\n| 妖州 | 荒原域 | 无尽荒原、鳞鱼族水泽、裂蹄城（牛族）、万骨集、黑水渡 |\r\n| 妖州 | 熔岩域 | 熔岩古地、赤晶矿脉、硫火台 |\r\n| 魔州 | 焦雷域 | 焦雷之谷、九劫雷池、引雷台、碎角市 |\r\n| 魔州 | 烬灰域 | 裂口营地、焦土荒原、冥渊关、无日裂口、灰骨城、魔卒营、无灯关、黑血泽 |\r\n\r\n- 写成一句话就是：`大位置 = 州·域·城/势力`，例：`人州·中域·太一门`、`人州·雪域·玄冰卫城`、`人州·沙洲·月牙泉城`。\r\n- `小位置` 再往下写一处：`外门演武场`／`主峰云海`／`丹房`／`后山禁地`／`坊市东街`／`客栈二楼`。\r\n- 出了城/山门就是野外：第三段写最近的地标（`天云雪山`）或 `官道`／`野外`，别空着。\r\n- **一切都以地标论**：写 `野外`／`官道` 可以；写\"某州某域\"却横跨两州不行。\r\n\r\n## 五、舆图\r\n\r\n- 现图上画的是三州的山水、官道与城郭：城是一点，宗门是一点，官道是连线。\r\n- 没有连线的地方，图上不给名字；走的人多了，才补一条。\r\n- 每年秋末重画一次：新立的宗门补上，废掉的城涂暗。\r\n\r\n## 六、失联之域（不可前往）\r\n\r\n以下旧域名只出现在老人口中与残卷里。**没有人从那里回来过，也没有人确认过那里变成了什么**：\r\n\r\n青岚州、西瀚州、北宸州、中州、苍荒州、冥渊州、烬魔界，以及旧图上那些没有归进现三州的域名。\r\n\r\n⚠ 若剧情需要\"从旧地来的人\"，只能是遗民、拾荒者或骗子，且必须解释他如何活着出来。\r\n</三州地理总纲>\r\n",
+        "人物-总览": "<人物总览>\n## 一、人州主要人物（常驻口径）\n\n以下是人州常驻人物，按所在域分列。\n\n| 谁 | 在哪 | 身份 |\n|---|---|---|\n| 白长雪 | 人州·雪域·天云雪山 | 剑仙·化神中期·一百八十 |\n| 梵清仪 | 人州·雪域·霜霄仙阙 | 前任圣女·尊长·元婴初期·一百三十二 |\n| 阿依莎 | 人州·沙洲·月牙泉城 | 供奉仙姬·金丹后期·一百三十六 |\n| 云疏月 | 人州·中域·幽月仙宫 | 首席客卿·元婴后期·一百一十二·修太上忘情 |\n| 司幽怜 | 人州·中域·幽月仙宫 | 宗主·元婴中期·九十六·死也不肯改姓 |\n| 陆昭华 | 人州·雪域·霜霄仙阙 | 现任圣女·金丹中期·七十六 |\n| 沈清颜 | 人州·雪域·断霜崖 | 散修·金丹后期·刀修·六十二 |\n| 言清漪 | 人州·中域·司天监 | 掌星弟子·尊长·金丹初期·四十六·白布遮目靠脚步认人 |\n| 鸾媚 | 人州·雪域·玄京 | 醉霄楼楼主·九尾天狐·元婴中期·二百一十二·卖消息标价 |\n\n## 二、人州·中域\n\n**太一门**（人州第一大宗门）\n- 陆玄机｜男｜宗主\n- 叶凌天｜男｜首席真传大天骄（天潢贵胄，傲骨守正）\n- 洛无尘｜女｜圣女（长居白玉殿主持仪轨）\n\n**边荒小宗门**（都在中域边上，离矿脉近，靠采玄晶活）\n- 三剑宗 · 姜绾绾｜女｜弟子（背负三十年前灭门血仇；宗门缺人手，她在拉人入门）\n- 青木药宗 · 药仙儿｜女｜药童（小药仙，怀揣上古残方；缺的两味主药在深山）\n- 铁剑门、煞血门（专做脏活；最贵的活是进山里找人）\n\n**千机坊市**\n- 沈千金｜女｜千宝楼楼主（掌控黑市暗道与特产）\n- 锦绣阁 · 罗衣｜女｜绸缎庄主人（真身噬心魔蛛·蛛母，玩弄人心的地下网主，化神中期·用户特批越女角上限）\n\n**云游散修**\n- 姜清柚｜女｜云游剑修（三剑宗姜绾绾之胞姐，互不知对方活着；追查三十年前姜家灭门仇家）\n\n## 三、人州·雪域\n\n- 玄京：雪域皇朝的帝都，人州唯一的大都市（律法森严，进京验籍，城里禁私斗）；醉霄楼的鸾媚（楼主·九尾天狐，明卖酒暗卖消息）\n- 霜霄仙阙：陆昭华（圣女）、梵清仪（尊长）\n- 天云雪山：白长雪（剑仙）\n- 断霜崖：沈清颜（散修刀修）\n\n## 四、人州·沙洲\n\n- 月牙泉城：阿依莎（供奉仙姬·商道定价人）\n\n## 五、妖州\n\n- 盎然之林（幽篁域）· 苏小玲｜女｜灵植妖修（血线刀草化形，族人正遭外来妖族侵蚀）\n- 盎然之林最深处 · 清蘅元母｜女｜古树化形的守护神母（古泉圣地正上方那株参天古树的本相，炼虚初期·用户特批越女角上限）\n- 盎然之林东缘 · 青璃｜女｜黑煞血鳞蟒之主（蛇妖·碧鳞夫人，蚕食灵植猎场的幕后主事，化神中期·用户特批越女角上限）\n- 沉璧湖 · 敖凝霜｜女｜青龙真裔龙女（湖底旧邸独居，清冷高傲，元婴后期）\n\n## 六、隐世势力\n\n- 幽月仙宫（中域·万花迷沼）：司幽怜（宗主）、云疏月（首席客卿）\n- 司天监（中域·天枢台）：言清漪（掌星弟子·星官，不持兵器，白布遮目）\n\n## 七、魔州\n\n**烛阴氏**：魔族六代世家，族地在烬灰域，世代看守冥渊关地底的镇封茧。\n\n| 辈分 | 谁 | 境界 | 在哪 | 做什么 |\n|---|---|---|---|---|\n| 祖先 | 烛阴玄烬 | 炼虚后期 | 冥渊关地底 | 镇封茧里沉眠，不醒人事 |\n| 曾祖父 | 烛阴苍冥 | 化神初期 | 无日裂口 | 闭死关，族内真正拿主意的人 |\n| 爷爷 | 烛阴裂罡 | 金丹后期 | 灰骨城 | 现任掌家，主张稳守 |\n| 爸爸 | 烛阴雷阙 | 金丹中期 | 引雷台 | 淬核执事，管九劫神雷角 |\n| 儿子 | 烛阴照夜 | 金丹初期 | 碎角市 | 对外窗口，伪装人形混在人州商道 |\n| 孙子 | 烛阴稚牙 | 筑基后期 | 魔卒营 | 统领魔卒，急着立功 |\n\n六代之中只有四代在明面走动；越老的一代越不出世，故三州明面上见到的魔族极致仍是魔帅。家族来由与分歧见《设定-魔族设定》。\n\n> 上面名录之外的人，出场时按《设定-全局生成规则》掷骰构面。\n\n> 名录另有三批客卿：斗罗宗、火域、云岚宗。他们只在开局勾选对应阵容时到场；名单见《人物总览·DLC名单》。\n</人物总览>\n",
+        "设定-魔族设定": "<魔族设定>\n# 魔族设定\n\n## 一、来处\n魔族并非三州土著。**魔域**是一个与人所在世界**相邻却不相通**的异位面，靠**空间裂口**往来。三州境内最大的裂口在**魔州·烬灰域**——那里天无日月、地无活土，只有灰烬与魔气，裂口外的营地日日夜夜往外渗魔气。\n\n## 二、层级\n魔族以实力与魔气浓淡分等，自上而下：**魔领主 → 魔帅 → 魔将 → 魔卒**。\n- **魔卒**：相当于人族**练气～筑基**，数量最大、炮灰与兵源，成群结队地涌出裂口；\n- **魔将**：相当于人族**筑基～金丹**，已能役使成建制的魔卒，懂军阵；\n- **魔帅**：相当于**金丹**，一帅可镇一州战线，是当世明面上能见到的魔族极致；\n- **魔领主**：**金丹之上**的存在，只在历史与传说里出现过——上一任魔领主被封印在冥渊关地底，封力正在衰弱。\n\n## 三、魔元\n魔族吸纳的是**魔元**。魔元与人族、妖族的玄元**天然互斥**：\n- 魔元侵体时，先蚀玄元、再夺神智。低阶玄修若被魔元长时间侵染，会**成魔**——意识尚存，却已认魔为主；\n- 反过来，**雷属性**与**火属性**的玄元对魔元克制最烈（克制环见《设定-玄元属性规则》），这也是前线玄修多修雷火的缘故；\n- 魔族的**魔核**极难炼制，可一旦炼成，便是道兵级别的材料。\n\n## 四、性情\n魔族**好征伐**，不事农耕，缺的东西靠**掠夺**补：掠玄元、掠血肉、掠活物回去充作魔卒。城池修得少，但一旦立住就极难拔掉——这一点连人族将领都认。\n- 对人、妖两族都是**敌对**：见面就打，没有使节常驻，也没有正式的宣战与停战。其中与妖族那一笔旧账更早，早到两边都说不出是哪一年结下的（族间关系总纲见《设定-剧本-正常时代》）。\n- 高阶魔族（魔帅及以上）能**伪装人形**，气息遮掩极佳，混进人族城中也分辨不出。血煞教一类邪教，正是被这种伪装渗透、蛊惑之后成形的（参考《势力-隐秘邪教·血煞教》）。\n## 五、烛阴氏（六代世家）\n魔州唯一把六代血脉守全的世家，族地在烬灰域，世代看守冥渊关地底。\n\n- **长不现世**：越老的一代越不外出，力量封在族地沉眠或闭死关里。三州明面上能见到的魔族极致仍是魔帅，与此并不相悖。\n- **镇封茧**：开基老祖烛阴玄烬（炼虚后期）两千年前把自身魔核结成茧，沉进冥渊关地底，用魔元一寸寸抵住上一任魔领主的封力。茧里的魔元快烧尽了，封力因此一年弱过一年。\n- **六代**：曾祖父 烛阴苍冥（化神初期）、爷爷 烛阴裂罡（金丹后期）、爸爸 烛阴雷阙（金丹中期）、儿子 烛阴照夜（金丹初期）、孙子 烛阴稚牙（筑基后期）。掌家是裂罡，拿主意的是苍冥。\n- **族内分歧**：换茧要拿血脉最纯的一代填进去。裂罡守着老祖入关前那句「我去压着，族里守着」不肯动；苍冥算完这笔账仍选拖着；照夜在外替这条路找人；稚牙还不知道血脉册上最纯的那一格写的是自己。\n- **对外**：照夜长年伪装人形混在人州商道，玄晶流向、宗门嫌隙、谁欠了谁的债，比一支魔卒营管用。血煞教一类组织背后有他递出去的话，但没人拿得到实证。\n</魔族设定>\n",
     };
     (function () {
         var FLAG = '__xzWbPatch_' + XZ_WB_PATCH_VER;
