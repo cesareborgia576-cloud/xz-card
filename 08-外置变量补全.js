@@ -650,7 +650,10 @@
        `</think>` 与中间正文统统被剥掉 ⇒ writeBack 再把新块拼到末尾 ⇒ 思维链没了。
      正解：先把思维链整段**遮住**，在遮罩上找标签、抠块，抠完把思维链**原样贴回**。
        遮罩用不可打印的 \u0001 包住序号，正常正文绝不可能出现。 */
-  var XZ_REASON_TAGS = 'think|thinking|reasoning|thought|reflection|commentary';
+  /* ★ v599：`xz_chain` 是卡内思维链（正文格式第〇节），与 <think> 同等对待 ——
+     v308 的教训就是「没把思维链当外人」：链里只要提到标签名，剥离正则就会
+     从链内开始匹配。遮罩清单必须把卡内思维链也算上。 */
+  var XZ_REASON_TAGS = 'think|thinking|reasoning|thought|reflection|commentary|xz_chain';
   function maskReasoning(s) {
     var src = String(s || '');
     var chunks = [];
