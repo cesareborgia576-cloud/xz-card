@@ -12022,10 +12022,11 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             var _hvHosts = ['https://cdn.jsdelivr.net', 'https://fastly.jsdelivr.net',
                             'https://testingcf.jsdelivr.net', 'https://gcore.jsdelivr.net'];
             var _hvUrls = [], _hvi;
-            /* ① GitHub API 实时（国内可达，每 IP 60 次/时够用）
-               ② jsDelivr 四镜像（国内可达，但分支 12h 缓存）
-               ③ raw（海外实时，国内基本不通） */
-            _hvUrls.push('https://api.github.com/repos/cesareborgia576-cloud/xz-card/contents/version.json?ref=main&t=' + Date.now());
+            /* ⚠ 这一处**不能**走 GitHub API：xzHotCheck 是 20 秒轮询，
+               API 匿名限流只有 60 次/小时/IP ⇒ 三个小时就把玩家自己的额度打光，
+               版本页从此恒显「检查失败」。
+               ⇒ 轮询走 jsDelivr 四镜像（12h 缓存，版本号本来就不常变），raw 兜底。
+               需要「推完立刻可见」的是 loader 的 latest.json 与更新记录弹层，那两处才用 API。 */
             for (_hvi = 0; _hvi < _hvHosts.length; _hvi++) {
                 _hvUrls.push(_hvHosts[_hvi] + '/gh/cesareborgia576-cloud/xz-card@main/version.json');
             }
@@ -12130,6 +12131,9 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         try { W.__XZ_CHANGELOG_BOOT__ = 1; } catch (eFlag) {}
         var LOG_URL = 'https://raw.githubusercontent.com/cesareborgia576-cloud/xz-card/refs/heads/main/changelog.json';
         var BOX_ID = 'xz-changelog-box';
+        /* ★ v1.22：同一次页面生命周期只拉一次。更新记录弹层会走 GitHub API（实时），
+           而 API 匿名限流是 60 次/小时/IP —— 反复开关弹层会把自己的额度打光。 */
+        var LOG_CACHE = null;
 
         function escL(s) {
             return String(s == null ? '' : s)
@@ -12221,9 +12225,15 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 }, false);
             } catch (eK) {}
 
+            if (LOG_CACHE && LOG_CACHE.entries) {
+                /* 本次页面已经拉过：直接画，不再打网络（省 API 额度、弹层也是秒开） */
+                body.innerHTML = entriesHtml(LOG_CACHE);
+                var _c0 = D.getElementById('xz-log-count');
+                if (_c0) _c0.textContent = '共 ' + (LOG_CACHE.entries.length || 0) + ' 条 · 可滚动';
+            } else {
             try {
-                /* ★ v1.22：raw 国内不通 ⇒ jsDelivr 四镜像优先、raw 兜底。
-                   推送脚本每次推完都 purge 分支缓存，弹层随时开都能拿到最新记录。 */
+                /* ★ v1.22：raw 国内不通 ⇒ GitHub API 优先（点击才读、低频），
+                   jsDelivr 四镜像次之，raw 兜底。 */
                 var _lgHosts = ['https://cdn.jsdelivr.net', 'https://fastly.jsdelivr.net',
                                 'https://testingcf.jsdelivr.net', 'https://gcore.jsdelivr.net'];
                 var _lgUrls = [], _lgi;
@@ -12252,6 +12262,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                     if (j && j.content && j.encoding === 'base64') j = lgB64(j.content);
                     if (!D.getElementById(BOX_ID)) return;   /* 已关掉就别往旧节点写 */
                     if (cur.status !== 200 || !j || !j.entries) { lgFail(); return; }
+                    LOG_CACHE = j;
                     body.innerHTML = entriesHtml(j);
                     var cnt = D.getElementById('xz-log-count');
                     if (cnt) cnt.textContent = '共 ' + (j.entries.length || 0) + ' 条 · 可滚动';
@@ -12270,6 +12281,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 };
                 lgNext();
             } catch (eX) {}
+            }
         }
 
         /* 捕获阶段委托，挂 top document 一次，抗版本页重建 */
