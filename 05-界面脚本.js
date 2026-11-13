@@ -12017,9 +12017,16 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                HOTV.latest / err 保持上一次的值，玩家切回来看到的还是上次检查的结论，
                而不是闪一下「…」。 */
             if (!_vis) return;
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', HOTV_URL + '?t=' + Date.now(), true);
-            xhr.timeout = 12000;
+            /* ★ v1.22：raw 在国内连 SSL 握手都过不去 ⇒ jsDelivr 四镜像优先、raw 兜底。
+               每换一路都重建 XHR，回调用闭包捕获的那一只，避免竞态读到上一条响应。 */
+            var _hvHosts = ['https://cdn.jsdelivr.net', 'https://fastly.jsdelivr.net',
+                            'https://testingcf.jsdelivr.net', 'https://gcore.jsdelivr.net'];
+            var _hvUrls = [], _hvi;
+            for (_hvi = 0; _hvi < _hvHosts.length; _hvi++) {
+                _hvUrls.push(_hvHosts[_hvi] + '/gh/cesareborgia576-cloud/xz-card@main/version.json');
+            }
+            _hvUrls.push(HOTV_URL);
+            var _hvAt = 0;
             var done = function (ok, latest, note) {
                 /* ★ v564：note 也进签名 —— 说明换了要重绘版本页，别等版本号变才刷 */
                 var before = [HOTV.latest, HOTV.err, HOTV.first, HOTV.note].join('|');
@@ -12030,9 +12037,9 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                     try { render(true); } catch (e) {}
                 }
             };
-            xhr.onload = function () {
+            function hvParse(cur) {
                 var j = null;
-                try { j = JSON.parse(xhr.responseText); } catch (e) { j = null; }
+                try { j = JSON.parse(cur.responseText); } catch (e) { j = null; }
                 /* ★ v1.056：开发卡读 `dev`、玩家卡读 `stable` ——
                    `stable` 只会在**真的打了 tag**时前进，开发推永远不碰它。
                    否则玩家会看到"开发中有新版"并被引去拉一个不存在的 tag。 */
@@ -12047,12 +12054,22 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                     ? ((j && j.devNote) ? String(j.devNote) : ((j && j.note) ? String(j.note) : ''))
                     : ((j && j.note) ? String(j.note) : '');
                 _nt = String(_nt || '').replace(/\s+/g, ' ').trim().slice(0, 40);
-                if (xhr.status !== 200 || !/^v[\d.]+$/.test(st)) done(false);
+                if (cur.status !== 200 || !/^v[\d.]+$/.test(st)) hvNext();
                 else done(true, st, _nt);
-            };
-            xhr.onerror = function () { done(false); };
-            xhr.ontimeout = function () { done(false); };
-            xhr.send();
+            }
+            function hvNext() {
+                if (_hvAt >= _hvUrls.length) { done(false); return; }
+                var _u = _hvUrls[_hvAt++];
+                try {
+                    var _x = new XMLHttpRequest();
+                    _x.open('GET', _u + (_u.indexOf('raw.githubusercontent') >= 0 ? '?t=' + Date.now() : ''), true);
+                    _x.timeout = 4000;
+                    _x.onload = function () { hvParse(_x); };
+                    _x.onerror = _x.ontimeout = function () { hvNext(); };
+                    _x.send();
+                } catch (eHv) { hvNext(); }
+            }
+            hvNext();
         } catch (e) { }
     }
     (function bootHotVer() {
@@ -12192,26 +12209,42 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
             } catch (eK) {}
 
             try {
-                var x = new XMLHttpRequest();
-                x.open('GET', LOG_URL + '?t=' + Date.now(), true);
-                x.timeout = 12000;
-                x.onload = function () {
+                /* ★ v1.22：raw 国内不通 ⇒ jsDelivr 四镜像优先、raw 兜底。
+                   推送脚本每次推完都 purge 分支缓存，弹层随时开都能拿到最新记录。 */
+                var _lgHosts = ['https://cdn.jsdelivr.net', 'https://fastly.jsdelivr.net',
+                                'https://testingcf.jsdelivr.net', 'https://gcore.jsdelivr.net'];
+                var _lgUrls = [], _lgi;
+                for (_lgi = 0; _lgi < _lgHosts.length; _lgi++) {
+                    _lgUrls.push(_lgHosts[_lgi] + '/gh/cesareborgia576-cloud/xz-card@main/changelog.json');
+                }
+                _lgUrls.push(LOG_URL);
+                var _lgAt = 0;
+                var lgFail = function () {
+                    if (!D.getElementById(BOX_ID)) return;
+                    body.innerHTML = '<div style="padding:24px;text-align:center;color:#fca5a5;">读不到更新记录（网络或远端文件暂不可用）</div>';
+                };
+                var lgShow = function (cur) {
                     var j = null;
-                    try { j = JSON.parse(x.responseText); } catch (eJ) { j = null; }
+                    try { j = JSON.parse(cur.responseText); } catch (eJ) { j = null; }
                     if (!D.getElementById(BOX_ID)) return;   /* 已关掉就别往旧节点写 */
-                    if (x.status !== 200 || !j || !j.entries) {
-                        body.innerHTML = '<div style="padding:24px;text-align:center;color:#fca5a5;">读不到更新记录（网络或远端文件暂不可用）</div>';
-                        return;
-                    }
+                    if (cur.status !== 200 || !j || !j.entries) { lgFail(); return; }
                     body.innerHTML = entriesHtml(j);
                     var cnt = D.getElementById('xz-log-count');
                     if (cnt) cnt.textContent = '共 ' + (j.entries.length || 0) + ' 条 · 可滚动';
                 };
-                x.onerror = x.ontimeout = function () {
-                    if (!D.getElementById(BOX_ID)) return;
-                    body.innerHTML = '<div style="padding:24px;text-align:center;color:#fca5a5;">读不到更新记录（网络或远端文件暂不可用）</div>';
+                var lgNext = function () {
+                    if (_lgAt >= _lgUrls.length) { lgFail(); return; }
+                    var _u = _lgUrls[_lgAt++];
+                    try {
+                        var _x = new XMLHttpRequest();
+                        _x.open('GET', _u + (_u.indexOf('raw.githubusercontent') >= 0 ? '?t=' + Date.now() : ''), true);
+                        _x.timeout = 6000;
+                        _x.onload = function () { lgShow(_x); };
+                        _x.onerror = _x.ontimeout = function () { lgNext(); };
+                        _x.send();
+                    } catch (eLg) { lgNext(); }
                 };
-                x.send();
+                lgNext();
             } catch (eX) {}
         }
 
