@@ -1,3 +1,372 @@
+/* >>> XZ_V611_BEGIN >>> 本段由 工具/_v611_build_engine.mjs 生成，勿手改 <<< */
+/* ══════════════════════════════════════════════════════════════════════
+   ★★★ v611 主题 / 视口统一引擎（生成器 工具/_v611_build_engine.mjs 产出）★★★
+   05 与 07 各注入一份、**逐字相同**；top 上已有实例则共用（幂等）。
+
+   作者 2026-11-14：「我原本的深色模式呢，找回来，现在的深色模式和日光模式
+     就是一坨大便，字体颜色不会随之更改，深色模式字都看不到，全身黑的，
+     因为日光模式的字体就是黑的，诸如此类大量的美化问题，和适配问题。」
+
+   四个真因（真浏览器量出来的，不是猜）：
+     ① 原本夜墨是「暖金修仙」（--xz-gold:#d4af37 + 金边 rgba(212,175,55,.22)
+        + 暖白字 #f1ede4），现在 .xz-root 被换成冷灰银 #cecece + 白边；
+        而 :root 那份仍留着暖金 #e6bd76 ⇒ 同一界面两套色板打架。
+     ② 05 有 322 处写死文字色，日光靠 v473 的 63 条 !important 逐条压深；
+        这批处理不全（新弹层全漏），且 6 条逗号后半截**没带 day 限定** ⇒
+        夜墨下照样生效 ⇒ 深底黑字。作者原话即「日光模式的字体就是黑的」。
+     ③ 主题属性只挂在裸 document.documentElement，但 CSS 注入在 getDoc()
+        （顶层窗口那份文档）。iframe 里两者不是同一份 ⇒ :root[day] 永不匹配，
+        或切回夜墨后属性残留在别的文档 ⇒ 整屏黑字、字体不随切换变。
+     ④ 弹层尺寸写死 80vh / 560px / 540px / padding:75px，矮屏与横屏直接溢出。
+     ⑤ 内联 style="color:#f87171" 是 HTML 字符串，patchStyles 只改 <style> 表、
+        管不到它 ⇒ 日光下「火系」等属性标签还是亮红浮在纸白底上。
+     ⑥ 经验条 expPct=0 时整条露的是轨道：日光把轨道覆成浅灰，
+        _barLabel 的白字就压在浅灰上 ⇒「几乎看不见」（夜墨轨道是深的，没事）。
+     ⑦ 弹层写死 80vh / 74vh / 82vh / min(76vh,500px)：iframe 里 vh 参照的是
+        iframe 自己那个被撑到 1680px 的视口，不是屏幕 ⇒ 矮屏上弹层整块出屏。
+        vh 一律收编到 --xz-vh（visualViewport + frameElement 现取）。
+     ⑧ 金底黑字：日光把 --xz-gold 压成深金 #7a5510，而那 5+1 处按钮的文字是
+        极暗色（#0a0c10/#0b0f17，生成器刻意不收编）⇒ 黑压深金 1.09:1 全糊。
+        底色改走 --xz-gold-fill：夜墨同值、日光保持亮金 ⇒ 黑字始终可读。
+
+   本引擎的做法（**一处切换、全体联动，不逐个微调**）：
+     · 基础 CSS 规则里的写死文字色 → var(--xz-tN, 原值)。夜墨不定义令牌值 ⇒
+       落回原值＝原本暖金深色一个字节不动；日光整表换成同色相压深值。
+     · v473 那批 [data-xz-theme="day"] 覆写**跳过不收编**：它们已逐条照顾了
+       「深底白字」等语义例外，继续当日光下的最终裁决者。
+     · 令牌带 fallback + !important：裁决层永远置底，绝不出现隐形字。
+     · 主题属性同步到 self / parent / top 每一份文档的 html + body + .xz-root。
+     · 视口令牌 --xz-vw/--xz-vh 由一处按 visualViewport 现取（含 iframe 偏移）；
+       所有弹层统一吃它，新建弹层由 MutationObserver 自动纳入。
+   ══════════════════════════════════════════════════════════════════════ */
+(function () {
+    'use strict';
+    if (typeof window === 'undefined') return;
+    var KEY = '__XZ_V611__';
+    try { if (window.top && window.top !== window && window.top[KEY]) { window[KEY] = window.top[KEY]; return; } } catch (e0) {}
+
+    var TONE_MAP = {"#10b981":"xz-t0","#22c55e":"xz-t1","#2dd4bf":"xz-t2","#4ade80":"xz-t3","#60a5fa":"xz-t4","#63c08c":"xz-t5","#68c5b2":"xz-t6","#6ee7b7":"xz-t7","#7dd3a0":"xz-t8","#7ddc9a":"xz-t9","#7f9db0":"xz-t10","#7fa593":"xz-t11","#7fb69b":"xz-t12","#7fd2c1":"xz-t13","#7fd4e8":"xz-t14","#7fe0b0":"xz-t15","#8a8478":"xz-t16","#8a8578":"xz-t17","#8a9496":"xz-t18","#8a949e":"xz-t19","#8b8674":"xz-t20","#8b9199":"xz-t21","#8e8778":"xz-t22","#8fa2c0":"xz-t23","#8fae7a":"xz-t24","#929292":"xz-t25","#93c5fd":"xz-t26","#94a3b8":"xz-t27","#9a9a9a":"xz-t28","#9aa0a6":"xz-t29","#9c9686":"xz-t30","#9c968c":"xz-t31","#9ec9e8":"xz-t32","#9fb3c8":"xz-t33","#9fb6c4":"xz-t34","#9fd4a0":"xz-t35","#9fd8c4":"xz-t36","#9fd8f7":"xz-t37","#a5b4fc":"xz-t38","#a78bfa":"xz-t39","#a855f7":"xz-t40","#a9a390":"xz-t41","#b7b1a4":"xz-t42","#b7b8b3":"xz-t43","#b8b0a0":"xz-t44","#b9cde8":"xz-t45","#c084fc":"xz-t46","#c0a97a":"xz-t47","#c4b5fd":"xz-t48","#c7c7c7":"xz-t49","#c8b06a":"xz-t50","#c8b1a8":"xz-t51","#c8c1b2":"xz-t52","#c9a05a":"xz-t53","#c9a86a":"xz-t54","#c9b183":"xz-t55","#c9bfae":"xz-t56","#c9c2b2":"xz-t57","#c9c2b4":"xz-t58","#c9c3b6":"xz-t59","#c9ced7":"xz-t60","#c9f5e4":"xz-t61","#cbd5e1":"xz-t62","#cecece":"xz-t63","#d35400":"xz-t64","#d4af37":"xz-t65","#d8899d":"xz-t66","#d8c48f":"xz-t67","#d98ca8":"xz-t68","#d9b76d":"xz-t69","#dcdcdc":"xz-t70","#df7468":"xz-t71","#e0b96a":"xz-t72","#e2bd63":"xz-t73","#e2decb":"xz-t74","#e2e8f0":"xz-t75","#e3c98a":"xz-t76","#e6bd76":"xz-t77","#e6dcc4":"xz-t78","#e74c3c":"xz-t79","#e8cb92":"xz-t80","#e8e3d3":"xz-t81","#e8e8e8":"xz-t82","#e9e5dc":"xz-t83","#ef4444":"xz-t84","#efe9dc":"xz-t85","#f08a84":"xz-t86","#f0a6a0":"xz-t87","#f0b090":"xz-t88","#f0b45a":"xz-t89","#f0b46a":"xz-t90","#f0d49a":"xz-t91","#f0d98a":"xz-t92","#f0d9a4":"xz-t93","#f0e2b0":"xz-t94","#f1ede4":"xz-t95","#f1f1f1":"xz-t96","#f2c26f":"xz-t97","#f2ecdd":"xz-t98","#f39c12":"xz-t99","#f3d999":"xz-t100","#f3eee5":"xz-t101","#f43f5e":"xz-t102","#f4ece0":"xz-t103","#f4efe2":"xz-t104","#f4f1e8":"xz-t105","#f59e0b":"xz-t106","#f5efe2":"xz-t107","#f5f5f5":"xz-t108","#f6dc9c":"xz-t109","#f6eee1":"xz-t110","#f6f1e6":"xz-t111","#f7d7d4":"xz-t112","#f7e6b6":"xz-t113","#f7f4ec":"xz-t114","#f87171":"xz-t115","#f8f3e7":"xz-t116","#f9f6ee":"xz-t117","#fbbf24":"xz-t118","#fbf8f0":"xz-t119","#fca5a5":"xz-t120","#fcd34d":"xz-t121","#fde68a":"xz-t122","#ff5252":"xz-t123","#ff6b6b":"xz-t124","#ff8a8a":"xz-t125","#ffd700":"xz-t126","#ffd88a":"xz-t127","#ffeec2":"xz-t128","#fff":"xz-t129","#fff6dc":"xz-t130","#fff6e2":"xz-t131","#fff8e6":"xz-t132","#fffaf0":"xz-t133","#fffdf6":"xz-t134","#fffdf8":"xz-t135","#ffffff":"xz-t136","rgba(150,158,168,.8)":"xz-t137","rgba(230,189,118,.95)":"xz-t138","rgba(240,234,216,0.66)":"xz-t139","rgba(255,255,255,.72)":"xz-t140"};
+    var DAY_DECL = "--xz-t0:#0a7552!important;--xz-t1:#147136!important;--xz-t2:#177065!important;--xz-t3:#157438!important;--xz-t4:#0762d2!important;--xz-t5:#2e734d!important;--xz-t6:#2b7062!important;--xz-t7:#13754e!important;--xz-t8:#277446!important;--xz-t9:#20753a!important;--xz-t10:#4c687a!important;--xz-t11:#4d6d5e!important;--xz-t12:#3f6e57!important;--xz-t13:#276e60!important;--xz-t14:#186f83!important;--xz-t15:#1c7348!important;--xz-t16:#6c6659!important;--xz-t17:#696456!important;--xz-t18:#566669!important;--xz-t19:#5c6670!important;--xz-t20:#6b6657!important;--xz-t21:#5c6570!important;--xz-t22:#6b6558!important;--xz-t23:#4e658a!important;--xz-t24:#536c42!important;--xz-t25:#776161!important;--xz-t26:#0463ce!important;--xz-t27:#54667e!important;--xz-t28:#776161!important;--xz-t29:#5c6670!important;--xz-t30:#696456!important;--xz-t31:#6d6559!important;--xz-t32:#25699b!important;--xz-t33:#4d6886!important;--xz-t34:#4b697b!important;--xz-t35:#326f33!important;--xz-t36:#2d6e57!important;--xz-t37:#0d6ca0!important;--xz-t38:#123af7!important;--xz-t39:#4d14f5!important;--xz-t40:#8715f4!important;--xz-t41:#6c6654!important;--xz-t42:#6b6455!important;--xz-t43:#626654!important;--xz-t44:#6e6552!important;--xz-t45:#3767a7!important;--xz-t46:#8510f9!important;--xz-t47:#766138!important;--xz-t48:#4111f9!important;--xz-t49:#776161!important;--xz-t50:#76632b!important;--xz-t51:#7d5c4f!important;--xz-t52:#6c624d!important;--xz-t53:#7e5f29!important;--xz-t54:#7b602c!important;--xz-t55:#796135!important;--xz-t56:#6f624a!important;--xz-t57:#6d634d!important;--xz-t58:#6f6550!important;--xz-t59:#6e6552!important;--xz-t60:#596579!important;--xz-t61:#15734f!important;--xz-t62:#4d6685!important;--xz-t63:#776161!important;--xz-t64:#ae4500!important;--xz-t65:#7b641a!important;--xz-t66:#b03a58!important;--xz-t67:#78622a!important;--xz-t68:#b03a65!important;--xz-t69:#806221!important;--xz-t70:#776161!important;--xz-t71:#b73527!important;--xz-t72:#805f1b!important;--xz-t73:#7e6017!important;--xz-t74:#6f673e!important;--xz-t75:#4a678f!important;--xz-t76:#7d611e!important;--xz-t77:#835c18!important;--xz-t78:#756232!important;--xz-t79:#c12718!important;--xz-t80:#805e1b!important;--xz-t81:#72653c!important;--xz-t82:#776161!important;--xz-t83:#726548!important;--xz-t84:#c71111!important;--xz-t85:#776336!important;--xz-t86:#c62218!important;--xz-t87:#c02a1e!important;--xz-t88:#a94817!important;--xz-t89:#8e5a0d!important;--xz-t90:#92570f!important;--xz-t91:#825e13!important;--xz-t92:#796110!important;--xz-t93:#806015!important;--xz-t94:#786317!important;--xz-t95:#72613b!important;--xz-t96:#776161!important;--xz-t97:#895b0c!important;--xz-t98:#79642e!important;--xz-t99:#905b07!important;--xz-t100:#805f0f!important;--xz-t101:#7b6339!important;--xz-t102:#cd0c2d!important;--xz-t103:#805f2d!important;--xz-t104:#79642e!important;--xz-t105:#716236!important;--xz-t106:#8c5a06!important;--xz-t107:#7c632b!important;--xz-t108:#776161!important;--xz-t109:#83610c!important;--xz-t110:#815e27!important;--xz-t111:#7b622c!important;--xz-t112:#bb3023!important;--xz-t113:#7b5e0d!important;--xz-t114:#766332!important;--xz-t115:#ce0a0a!important;--xz-t116:#7d6324!important;--xz-t117:#77622a!important;--xz-t118:#805d02!important;--xz-t119:#7a6221!important;--xz-t120:#cb0707!important;--xz-t121:#7a5e02!important;--xz-t122:#7a6202!important;--xz-t123:#cc0000!important;--xz-t124:#cc0000!important;--xz-t125:#cc0000!important;--xz-t126:#786500!important;--xz-t127:#895b00!important;--xz-t128:#835e00!important;--xz-t129:#776161!important;--xz-t130:#836100!important;--xz-t131:#895e00!important;--xz-t132:#835e00!important;--xz-t133:#895b00!important;--xz-t134:#7c6100!important;--xz-t135:#835d00!important;--xz-t136:#776161!important;--xz-t137:rgba(92,101,112,0.8)!important;--xz-t138:rgba(131,92,24,0.95)!important;--xz-t139:rgba(116,98,45,0.66)!important;--xz-t140:rgba(119,97,97,0.72)!important;";
+    var NIGHT_DECL = "--xz-t0:#10b981!important;--xz-t1:#22c55e!important;--xz-t2:#2dd4bf!important;--xz-t3:#4ade80!important;--xz-t4:#60a5fa!important;--xz-t5:#63c08c!important;--xz-t6:#68c5b2!important;--xz-t7:#6ee7b7!important;--xz-t8:#7dd3a0!important;--xz-t9:#7ddc9a!important;--xz-t10:#7f9db0!important;--xz-t11:#7fa593!important;--xz-t12:#7fb69b!important;--xz-t13:#7fd2c1!important;--xz-t14:#7fd4e8!important;--xz-t15:#7fe0b0!important;--xz-t16:#8a8478!important;--xz-t17:#8a8578!important;--xz-t18:#8a9496!important;--xz-t19:#8a949e!important;--xz-t20:#8b8674!important;--xz-t21:#8b9199!important;--xz-t22:#8e8778!important;--xz-t23:#8fa2c0!important;--xz-t24:#8fae7a!important;--xz-t25:#929292!important;--xz-t26:#93c5fd!important;--xz-t27:#94a3b8!important;--xz-t28:#9a9a9a!important;--xz-t29:#9aa0a6!important;--xz-t30:#9c9686!important;--xz-t31:#9c968c!important;--xz-t32:#9ec9e8!important;--xz-t33:#9fb3c8!important;--xz-t34:#9fb6c4!important;--xz-t35:#9fd4a0!important;--xz-t36:#9fd8c4!important;--xz-t37:#9fd8f7!important;--xz-t38:#a5b4fc!important;--xz-t39:#a78bfa!important;--xz-t40:#a855f7!important;--xz-t41:#a9a390!important;--xz-t42:#b7b1a4!important;--xz-t43:#b7b8b3!important;--xz-t44:#b8b0a0!important;--xz-t45:#b9cde8!important;--xz-t46:#c084fc!important;--xz-t47:#c0a97a!important;--xz-t48:#c4b5fd!important;--xz-t49:#c7c7c7!important;--xz-t50:#c8b06a!important;--xz-t51:#c8b1a8!important;--xz-t52:#c8c1b2!important;--xz-t53:#c9a05a!important;--xz-t54:#c9a86a!important;--xz-t55:#c9b183!important;--xz-t56:#c9bfae!important;--xz-t57:#c9c2b2!important;--xz-t58:#c9c2b4!important;--xz-t59:#c9c3b6!important;--xz-t60:#c9ced7!important;--xz-t61:#c9f5e4!important;--xz-t62:#cbd5e1!important;--xz-t63:#cecece!important;--xz-t64:#d35400!important;--xz-t65:#d4af37!important;--xz-t66:#d8899d!important;--xz-t67:#d8c48f!important;--xz-t68:#d98ca8!important;--xz-t69:#d9b76d!important;--xz-t70:#dcdcdc!important;--xz-t71:#df7468!important;--xz-t72:#e0b96a!important;--xz-t73:#e2bd63!important;--xz-t74:#e2decb!important;--xz-t75:#e2e8f0!important;--xz-t76:#e3c98a!important;--xz-t77:#e6bd76!important;--xz-t78:#e6dcc4!important;--xz-t79:#e74c3c!important;--xz-t80:#e8cb92!important;--xz-t81:#e8e3d3!important;--xz-t82:#e8e8e8!important;--xz-t83:#e9e5dc!important;--xz-t84:#ef4444!important;--xz-t85:#efe9dc!important;--xz-t86:#f08a84!important;--xz-t87:#f0a6a0!important;--xz-t88:#f0b090!important;--xz-t89:#f0b45a!important;--xz-t90:#f0b46a!important;--xz-t91:#f0d49a!important;--xz-t92:#f0d98a!important;--xz-t93:#f0d9a4!important;--xz-t94:#f0e2b0!important;--xz-t95:#f1ede4!important;--xz-t96:#f1f1f1!important;--xz-t97:#f2c26f!important;--xz-t98:#f2ecdd!important;--xz-t99:#f39c12!important;--xz-t100:#f3d999!important;--xz-t101:#f3eee5!important;--xz-t102:#f43f5e!important;--xz-t103:#f4ece0!important;--xz-t104:#f4efe2!important;--xz-t105:#f4f1e8!important;--xz-t106:#f59e0b!important;--xz-t107:#f5efe2!important;--xz-t108:#f5f5f5!important;--xz-t109:#f6dc9c!important;--xz-t110:#f6eee1!important;--xz-t111:#f6f1e6!important;--xz-t112:#f7d7d4!important;--xz-t113:#f7e6b6!important;--xz-t114:#f7f4ec!important;--xz-t115:#f87171!important;--xz-t116:#f8f3e7!important;--xz-t117:#f9f6ee!important;--xz-t118:#fbbf24!important;--xz-t119:#fbf8f0!important;--xz-t120:#fca5a5!important;--xz-t121:#fcd34d!important;--xz-t122:#fde68a!important;--xz-t123:#ff5252!important;--xz-t124:#ff6b6b!important;--xz-t125:#ff8a8a!important;--xz-t126:#ffd700!important;--xz-t127:#ffd88a!important;--xz-t128:#ffeec2!important;--xz-t129:#fff!important;--xz-t130:#fff6dc!important;--xz-t131:#fff6e2!important;--xz-t132:#fff8e6!important;--xz-t133:#fffaf0!important;--xz-t134:#fffdf6!important;--xz-t135:#fffdf8!important;--xz-t136:#ffffff!important;--xz-t137:rgba(150,158,168,.8)!important;--xz-t138:rgba(230,189,118,.95)!important;--xz-t139:rgba(240,234,216,0.66)!important;--xz-t140:rgba(255,255,255,.72)!important;";
+
+    /* 夜墨＝原本暖金修仙（归档/v611-主题与视口重构前 之前的备份值）。
+       用 !important 钉死，避免被后注入的基础 CSS 覆盖掉。 */
+    var NIGHT_TOKENS =
+        ':root,.xz-root{' +
+        '--xz-void:#090b10!important;--xz-bg:#0e1219!important;--xz-card:#151a24!important;' +
+        '--xz-card-hover:#1c2331!important;' +
+        '--xz-border:rgba(212,175,55,0.22)!important;--xz-border-strong:rgba(212,175,55,0.55)!important;' +
+        '--xz-gold:#d4af37!important;--xz-gold-bright:#ffd700!important;' +
+        '--xz-gold-fill:#d4af37!important;' +
+        '--xz-gold-glow:rgba(212,175,55,0.25)!important;' +
+        '--xz-jade:#d4af37!important;--xz-cyan:#7fd2c1!important;' +
+        '--xz-purple:#a855f7!important;--xz-crimson:#e11d48!important;' +
+        '--xz-text:#f1ede4!important;--xz-text-2:#c8c1b2!important;--xz-muted:#7e7769!important;' +
+        NIGHT_DECL + '}';
+    var DAY_TOKENS =
+        ':root[data-xz-theme="day"],.xz-root[data-xz-theme="day"],body[data-xz-theme="day"]{' +
+        '--xz-void:#efe9dc!important;--xz-bg:#f7f4ec!important;--xz-card:#fffdf8!important;' +
+        '--xz-card-hover:#fffaf0!important;' +
+        '--xz-border:rgba(138,95,20,0.28)!important;--xz-border-strong:rgba(138,95,20,0.60)!important;' +
+        '--xz-gold:#7a5510!important;--xz-gold-bright:#8a5f14!important;' +
+        '--xz-gold-fill:#e2bd63!important;' +
+        '--xz-gold-glow:rgba(160,111,18,0.16)!important;' +
+        '--xz-jade:#1a6d5c!important;--xz-cyan:#14695c!important;' +
+        '--xz-purple:#6d3480!important;--xz-crimson:#9b1c33!important;' +
+        '--xz-text:#1a1408!important;--xz-text-2:#2e2415!important;--xz-muted:#4a4133!important;' +
+        DAY_DECL + '}';
+
+    /* 状态栏自己铺不透明底：以前 root/main 都是 rgba(0,0,0,0)，全靠 --dhl-*
+       渐变撑着，渐变一丢亮字就压在宿主页面底色上 ⇒「字都看不到，全身黑的」。 */
+    var SURFACE =
+        '.xz-root{background:var(--xz-bg)!important;color:var(--xz-text-2)!important;}' +
+        '.xz-root .xz-main-box{background-color:var(--xz-card)!important;}' +
+        ':root[data-xz-theme="day"] .xz-root .xz-main-box,' +
+        '.xz-root[data-xz-theme="day"] .xz-main-box' +
+        '{background-color:var(--xz-card)!important;}' +
+        /* 根因⑥：进度条轨道在日光下也必须是深色的。条上文字恒定是白字
+           （#f3f6fa 已列 KEEP_RAW 不收编），浅轨道＝白字看不见。
+           夜墨轨道本来就是深色 ⇒ 只在日光下钉，夜墨一个字节不动。 */
+        ':root[data-xz-theme="day"] .xz-progress,' +
+        'body[data-xz-theme="day"] .xz-progress,' +
+        '.xz-root[data-xz-theme="day"] .xz-progress' +
+        '{background:#332914!important;}';
+
+    /* 弹层统一几何：只吃 --xz-vw/--xz-vh，不写死任何 px / vh。
+       !important 只压尺寸上限，不动 position/display（保住原有 flex 布局）。 */
+    var VIEW =
+        ':root{--xz-vw:100vw;--xz-vh:100dvh;--xz-vtop:0px;--xz-vleft:0px;' +
+        '--xz-gap:clamp(8px,1.6vmin,20px);}' +
+        '[data-xz-ovl-wrap]{top:var(--xz-vtop)!important;left:var(--xz-vleft)!important;' +
+        'width:var(--xz-vw)!important;height:var(--xz-vh)!important;' +
+        'max-width:var(--xz-vw)!important;max-height:var(--xz-vh)!important;' +
+        'padding:var(--xz-gap)!important;box-sizing:border-box!important;' +
+        'overflow:auto!important;overscroll-behavior:contain;}' +
+        /* 全屏遮罩里的卡片：兜底钳到真视口（对非 id 选择器有效；
+           id 选择器那几张卡由下面的 vh 收编从根上解决）。 */
+        '[data-xz-ovl-wrap] > *{max-width:100%!important;' +
+        'max-height:calc(var(--xz-vh) - 2*var(--xz-gap))!important;' +
+        'box-sizing:border-box!important;}' +
+        '[data-xz-ovl-box]' +
+        '{max-width:calc(var(--xz-vw) - 2*var(--xz-gap))!important;' +
+        'max-height:calc(var(--xz-vh) - 2*var(--xz-gap))!important;' +
+        'box-sizing:border-box!important;overflow:auto!important;overscroll-behavior:contain;}' +
+        '[data-xz-ovl-box] [data-xz-ovl-body]{min-height:0!important;overflow:auto!important;}' +
+        '@supports not (height:100dvh){:root{--xz-vh:100vh!important;}}';
+
+    var LAYER_ID = 'xz-v611-layer';
+    function docs() {
+        var out = [], seen = [];
+        function add(w) { try { var d = w && w.document; if (!d || !d.documentElement || seen.indexOf(d) >= 0) return;
+            seen.push(d); out.push(d); } catch (e) {} }
+        add(window); try { add(window.parent); } catch (e1) {} try { add(window.top); } catch (e2) {}
+        return out;
+    }
+    function layerCss() { return NIGHT_TOKENS + DAY_TOKENS + SURFACE + VIEW; }
+
+    /* ── 主题属性同步：根因③ ─────────────────────────────────────────────
+       CSS 在 getDoc()（顶层文档），属性却只挂在脚本自己那份 document 上。
+       这里把 self / parent / top 的 html + body + 所有 .xz-root 全部同步。 */
+    function sync(theme) {
+        var day = (theme === 'day'), ds = docs(), i, d;
+        for (i = 0; i < ds.length; i++) {
+            d = ds[i];
+            try { if (day) d.documentElement.setAttribute('data-xz-theme', 'day');
+                  else d.documentElement.removeAttribute('data-xz-theme'); } catch (eA) {}
+            try { if (d.body) { if (day) d.body.setAttribute('data-xz-theme', 'day');
+                                else d.body.removeAttribute('data-xz-theme'); } } catch (eB) {}
+            try { var rs = d.querySelectorAll('.xz-root');
+                for (var j = 0; j < rs.length; j++) { if (day) rs[j].setAttribute('data-xz-theme', 'day');
+                    else rs[j].removeAttribute('data-xz-theme'); } } catch (eC) {}
+        }
+        measure();
+        return day;
+    }
+
+    /* 一处算视口：visualViewport（含软键盘）＋ 各窗口在**真实屏幕**上的可见高。
+       iframe 里 vh 是 1680（iframe 内容高），不是屏幕 844 —— 弹层整块出屏的老根因。
+       ⚠ 算法与 05 的 xzCemVisibleH 同源（那边注释明说「两处是同一套算法，
+         只改一边会让战斗球好使、管理器球不好使」），别只改一边。 */
+    function visibleH(w) {
+        var h = 0;
+        try { h = w.innerHeight || (w.document && w.document.documentElement
+            && w.document.documentElement.clientHeight) || 0; } catch (e0) { return 0; }
+        if (!h) return 0;
+        try { if (w === w.top || w === w.parent) return h; } catch (eT) { return h; }
+        try {
+            var fe = w.frameElement; if (!fe) return h;
+            var r = fe.getBoundingClientRect(), ph = 0;
+            try { ph = w.parent.innerHeight || 0; } catch (eP) {}
+            if (!ph) return h;
+            return Math.min(h, Math.max(0, Math.min(ph, r.bottom) - Math.max(0, r.top)));
+        } catch (e1) { return h; }
+    }
+    function measure() {
+        var w = window, vv = null, vw = 0, vh = 0, top = 0, left = 0;
+        try { vv = w.visualViewport || null; } catch (e0) {}
+        try { if (vv && vv.width) { vw = vv.width; top = vv.offsetTop || 0; left = vv.offsetLeft || 0; } } catch (e1) {}
+        if (!vw) { try { vw = w.innerWidth || 0; } catch (e3) {} }
+        /* 取 self / parent / top 三份窗口里**可见高最小**的那个：顶层几乎总是真屏幕。
+           ⚠ 不再用 frameElement.getBoundingClientRect().top 当 --xz-vtop：
+             position:fixed 相对的是 iframe 自己的视口，把父窗口里的 y 偏移再加一遍，
+             等于把弹层往屏幕下方推，越推越看不见。 */
+        var cand = [window];
+        try { if (window.parent) cand.push(window.parent); } catch (eA) {}
+        try { if (window.top) cand.push(window.top); } catch (eB) {}
+        for (var k = 0; k < cand.length; k++) {
+            var h = visibleH(cand[k]);
+            if (h > 0 && (!vh || h < vh)) vh = h;
+        }
+        try { if (vv && vv.height && vv.height < vh) vh = vv.height; } catch (e4) {}  // 软键盘
+        if (vw < 200) vw = 360; if (vh < 240) vh = 640;
+        var ds = docs();
+        for (var i = 0; i < ds.length; i++) { try {
+            var st = ds[i].documentElement.style;
+            /* ★ 用 important：裁决层 @supports not(dvh) 那条 :root{--xz-vh:100vh!important}
+               在老浏览器上会盖掉普通行内值，弹层又被打回 iframe 高度。 */
+            st.setProperty('--xz-vw', Math.round(vw) + 'px', 'important');
+            st.setProperty('--xz-vh', Math.round(vh) + 'px', 'important');
+            st.setProperty('--xz-vtop', Math.round(top) + 'px', 'important');
+            st.setProperty('--xz-vleft', Math.round(left) + 'px', 'important');
+        } catch (e5) {} }
+        return { vw: Math.round(vw), vh: Math.round(vh) };
+    }
+
+    /* ── CSS 收编：把基础规则里的写死文字色换成 var(--xz-tN, 原值) ────────
+       ⚠ 含 data-xz-theme 的规则块整块跳过：v473 那批日光覆写已逐条照顾了
+         「深底白字」等语义例外，继续当日光下的最终裁决者，不能被压深。
+       ⚠ 带 fallback：令牌表没注入到某文档也只是退回原本夜墨，不会隐形字。 */
+    /* ── vh 收编（根因⑦）：iframe 里 100dvh 是 iframe 的高度，不是屏幕 ────
+       只改声明体、不碰选择器与 @media 条件（媒体查询里写 calc 不合法）。
+       100vh/100dvh → var(--xz-vh)；其余 → calc(var(--xz-vh) * 比例)。
+       替换后不再有 vh 字面量 ⇒ 幂等。
+       ⚠⚠ 这是模板字符串里！所有正则反斜杠必须写两份（\d / \b），
+         写成一份会被模板吃掉（\d→d、\b→退格符）⇒ 正则恒不匹配、静默失效。
+         v611 第一版就栽在这：vhFix 生成出来是 /(d+(?:.d+)?)d?vh/gi，一条都换不掉。
+         闸里加了行为单测（真喂 '80vh' 看输出），字符串检查挡不住这种。 */
+    function vhFix(decl) {
+        return decl.replace(/(\d+(?:\.\d+)?)d?vh\b/gi, function (all, num) {
+            var n = parseFloat(num) / 100;
+            return n >= 0.999 && n <= 1.001 ? 'var(--xz-vh)' : 'calc(var(--xz-vh) * ' + n + ')';
+        });
+    }
+    function patchRule(chunk) {
+        var brace = chunk.indexOf('{');
+        if (brace < 0) return chunk;
+        var sel = chunk.slice(0, brace);
+        if (sel.indexOf('data-xz-theme') >= 0) return chunk;      // 日光覆写，跳过
+        var decl = chunk.slice(brace + 1);
+        decl = decl.replace(/(?<![-\w])color(\s*):(\s*)(#[0-9a-fA-F]{3,8}|rgba?\([^)]*\))/gi,
+            function (all, s1, s2, val) {
+                var name = TONE_MAP[String(val).toLowerCase()];
+                if (!name) return all;                   // 未登记的新色保持原样，不静默改
+                return 'color' + s1 + ':' + s2 + 'var(--' + name + ',' + val + ')';
+            });
+        /* ★ 金底黑字（根因⑧）：日光下 --xz-gold 被压成深金 #7a5510，而这类按钮的
+           文字是极暗色 #0a0c10/#0b0f17（生成器不收编极暗色）⇒ 黑压深金 = 1.09:1，
+           实测「调 AI 生成 5 条」「进入此州 ▸」「在此」全糊成一片。
+           源码里 background:var(--xz-gold) 共 5+1 处，**逐条核过全是配极暗字**，
+           底色统一换 --xz-gold-fill（夜墨同值、日光保持亮金 #e2bd63）⇒ 黑字始终可读。 */
+        decl = decl.replace(/background(\s*):(\s*)var\(--xz-gold\)/gi,
+            'background$1:$2var(--xz-gold-fill)');
+        return sel + '{' + vhFix(decl);
+    }
+    function patch(css) {
+        if (typeof css !== 'string' || !css) return css;
+        var parts = css.split('}'), out = [];
+        for (var i = 0; i < parts.length; i++) out.push(patchRule(parts[i]));
+        return out.join('}');
+    }
+    /* 运行时遍历 / 监听所有 <style>：不改源码里 10 处注入点，全自动覆盖
+       已有弹层 + 以后新建的弹层（作者要求「不要慢慢在那微调」）。 */
+    function patchStyles(d) {
+        try { var ss = d.querySelectorAll('style'); for (var i = 0; i < ss.length; i++) {
+            var s = ss[i]; if (s.id === LAYER_ID || s.getAttribute('data-xz-v611')) continue;
+            /* ★ 只收编本项目自己的样式表：宿主（酒馆）的 <style> 一个字节都不动。
+               判定 = id 以 xz 开头，或文本里出现 .xz- / #xz- 选择器。 */
+            var txt = s.textContent || '';
+            var ours = /^xz/i.test(s.id || '') || /\.(xz-|thdl-)|#xz-/i.test(txt.slice(0, 4000));
+            if (!ours || !txt || txt.indexOf('color') < 0) continue;
+            var out = patch(txt); if (out !== txt) s.textContent = out;
+            s.setAttribute('data-xz-v611', '1');
+        } } catch (e) {}
+    }
+
+    /* ── 内联 style 收编（根因⑤）────────────────────────────────────────
+       HTML 字符串里的 style="color:#f87171"，patchStyles 只改 <style> 表，
+       管不到它。这里把内联 color 换成 var(--xz-tN, 原值)：
+         夜墨 → 令牌=原值；日光 → 令牌=同色相压深值。
+       · 负向断言只认属性名 color，border-color / background-color 不误伤。
+       · 替换后串里不再有 # ⇒ 天然幂等。
+       · 纯属性读写、不触发 layout；且 observer 只听 childList，改属性不会自激。 */
+    function ink(node) {
+        if (!node || node.nodeType !== 1) return;
+        var els = [], i;
+        try { if (node.hasAttribute && node.hasAttribute('style')) els.push(node); } catch (e0) {}
+        try { var sub = node.querySelectorAll ? node.querySelectorAll('[style]') : [];
+            for (i = 0; i < sub.length; i++) els.push(sub[i]); } catch (e1) {}
+        for (i = 0; i < els.length; i++) {
+            var st; try { st = els[i].getAttribute('style'); } catch (e2) { continue; }
+            if (!st || (st.indexOf('color') < 0 && st.indexOf('vh') < 0)) continue;
+            var out = st.replace(/(?<![-\w])color(\s*):(\s*)(#[0-9a-fA-F]{3,8}|rgba?\([^)]*\))/gi,
+                function (all, s1, s2, val) {
+                    var name = TONE_MAP[String(val).toLowerCase()];
+                    return name ? 'color' + s1 + ':' + s2 + 'var(--' + name + ',' + val + ')' : all;
+                });
+            out = vhFix(out);   // 内联 style="max-height:56vh" 同样要按真视口算
+            if (out !== st) { try { els[i].setAttribute('style', out); } catch (e3) {} }
+        }
+    }
+
+    /* 裁决层永远置底（同特异性后者胜）。带 !important 双保险。 */
+    function inject() {
+        var ds = docs();
+        for (var i = 0; i < ds.length; i++) { try {
+            var d = ds[i], el = d.getElementById(LAYER_ID);
+            if (!el) { el = d.createElement('style'); el.id = LAYER_ID; }
+            el.textContent = layerCss();
+            var head = d.head || d.documentElement;
+            if (el.parentNode !== head || head.lastElementChild !== el) head.appendChild(el);
+        } catch (e) {} }
+    }
+
+    /* 新建弹层自动纳入：只认「fixed + 高层 z + 大尺寸」，状态栏/toast 不误伤。
+       近全屏 ⇒ wrap；否则 ⇒ box。只打标记，不改布局。 */
+    function tag(node, d) {
+        if (!node || node.nodeType !== 1 || node.id === LAYER_ID) return;
+        if (node.hasAttribute('data-xz-ovl-wrap') || node.hasAttribute('data-xz-ovl-box')) return;
+        /* ★ 严格早退：状态栏 1.5 秒一轮重绘，绝不能对每个新节点都做 getComputedStyle
+           （强制同步布局，会肉眼可见地卡）。只认 id/class 带 xz / modal / overlay / panel
+           且是 fixed 定位的候选；其余一律零成本放过。 */
+        var idc = String(node.id || '') + ' ' + String(node.className || '');
+        if (!/xz-|xz_|modal|overlay|portal|dialog|panel/i.test(idc)) return;
+        if (node.nodeName !== 'DIV' && node.nodeName !== 'SECTION' && node.nodeName !== 'ASIDE') return;
+        var s; try { s = d.defaultView && d.defaultView.getComputedStyle(node); } catch (e) { return; }
+        if (!s || s.position !== 'fixed') return;
+        var z = parseInt(s.zIndex, 10) || 0; if (z < 1000) return;
+        var r; try { r = node.getBoundingClientRect(); } catch (e2) { return; }
+        var de = d.documentElement.style;
+        var vw = parseFloat(de.getPropertyValue('--xz-vw')) || 0;
+        var vh = parseFloat(de.getPropertyValue('--xz-vh')) || 0;
+        if (!vw || !vh) return;
+        if (r.width < vw * 0.35 && r.height < vh * 0.35) return;   // 小提示不接管
+        try { node.setAttribute(
+            (r.width >= vw * 0.8 && r.height >= vh * 0.8) ? 'data-xz-ovl-wrap' : 'data-xz-ovl-box', '1');
+        } catch (e3) {}
+    }
+    function arm() {
+        var ds = docs();
+        for (var i = 0; i < ds.length; i++) { (function (d) {
+            if (d.__xzV611Armed) return; d.__xzV611Armed = 1;
+            patchStyles(d);
+            try { if (d.body) ink(d.body); } catch (eI) {}
+            try { if (d.body) { var all = d.body.querySelectorAll('div,section,aside');
+                for (var j = 0; j < all.length; j++) tag(all[j], d); } } catch (e0) {}
+            try { var mo = new MutationObserver(function (recs) {
+                var needLayer = false;
+                for (var k = 0; k < recs.length; k++) {
+                    var tgt = recs[k].target; if (tgt && (tgt.nodeName === 'HEAD' || tgt === d.head)) needLayer = true;
+                    var ns = recs[k].addedNodes;
+                    for (var j = 0; j < ns.length; j++) { var n = ns[j]; if (n.nodeType !== 1) continue;
+                        if (n.nodeName === 'STYLE') { patchStyles(d); needLayer = true; continue; }
+                        ink(n);                 // 覆盖 n 自身 + 整棵子树的内联 style
+                        tag(n, d);
+                        try { var sub = n.querySelectorAll ? n.querySelectorAll('div,section,aside,style') : [];
+                            for (var q = 0; q < sub.length; q++) {
+                                if (sub[q].nodeName === 'STYLE') { patchStyles(d); needLayer = true; }
+                                else tag(sub[q], d);
+                            } } catch (eS) {}
+                    } }
+                if (needLayer) inject();
+            }); mo.observe(d.documentElement, { childList: true, subtree: true }); } catch (e1) {}
+        })(ds[i]); }
+        try { if (!window.__xzV611Bound) {
+            window.__xzV611Bound = 1;
+            var re = function () { measure(); inject(); };
+            window.addEventListener('resize', re, { passive: true });
+            window.addEventListener('orientationchange', re, { passive: true });
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', re, { passive: true });
+                window.visualViewport.addEventListener('scroll', measure, { passive: true });
+            }
+        } } catch (e2) {}
+    }
+
+    var API = { patch: patch, ink: ink, sync: sync, inject: inject, measure: measure, arm: arm,
+        css: layerCss, version: 'v611' };
+    try { window[KEY] = API; } catch (e6) {}
+    try { if (window.top && window.top !== window) window.top[KEY] = API; } catch (e7) {}
+    try { if (window.parent && window.parent !== window) window.parent[KEY] = API; } catch (e8) {}
+    /* 首次：读玩家选择（明确存了 'day' 才日光），同步全部文档，再挂监听。 */
+    var init = 'night';
+    try { init = localStorage.getItem('xzTheme') === 'day' ? 'day' : 'night'; } catch (e9) {}
+    sync(init); inject();
+    try { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', arm, { once: true });
+          else arm(); } catch (e10) {}
+})();
+/* <<< XZ_V611_END <<< */
+
+
 /* ══════════════════════════════════════════════════════════════════════════
    境界表与位阶判定（**全文件唯一一份**）
    ══════════════════════════════════════════════════════════════════════════
@@ -2826,8 +3195,8 @@ function xzTypeOf(name, fbT, fbA) {
         ':root[data-xz-theme="day"] #xz-portrait-box .xz-ovl-none{color:#686250 !important;}',
         '.xz-root[data-xz-theme="day"] #xz-portrait-box .xz-ovl-hint{color:#676256 !important;}',
         ':root[data-xz-theme="day"] #xz-portrait-box .xz-ovl-hint{color:#676256 !important;}',
-        '.xz-root[data-xz-theme="day"] #xz-portrait-box .xz-tab-btn,#xz-inline-overlay .xz-tab-btn{color:#7b5b4e !important;}',
-        ':root[data-xz-theme="day"] #xz-portrait-box .xz-tab-btn,#xz-inline-overlay .xz-tab-btn{color:#7b5b4e !important;}',
+        '.xz-root[data-xz-theme="day"] #xz-portrait-box .xz-tab-btn,.xz-root[data-xz-theme="day"] #xz-inline-overlay .xz-tab-btn{color:#7b5b4e !important;}',
+        ':root[data-xz-theme="day"] #xz-portrait-box .xz-tab-btn,:root[data-xz-theme="day"] #xz-inline-overlay .xz-tab-btn{color:#7b5b4e !important;}',
         '.xz-root[data-xz-theme="day"] .xz-root .xz-wiki-static .xz-wiki-item-star{color:#7f5c02 !important;}',
         ':root[data-xz-theme="day"] .xz-root .xz-wiki-static .xz-wiki-item-star{color:#7f5c02 !important;}',
         '.xz-root[data-xz-theme="day"] .xz-dmg-fold[open]>summary span:last-child{color:#766019 !important;}',
@@ -2860,10 +3229,10 @@ function xzTypeOf(name, fbT, fbA) {
         ':root[data-xz-theme="day"] .xz-chip-more{color:#626262 !important;}',
         '.xz-root[data-xz-theme="day"] #xz-wiki-modal .xz-wiki-item-star{color:#7f5c02 !important;}',
         ':root[data-xz-theme="day"] #xz-wiki-modal .xz-wiki-item-star{color:#7f5c02 !important;}',
-        '.xz-root[data-xz-theme="day"] .xz-root .xz-rpg-desc,.xz-root .xz-wiki-item-desc{color:#6a614f !important;}',
-        ':root[data-xz-theme="day"] .xz-root .xz-rpg-desc,.xz-root .xz-wiki-item-desc{color:#6a614f !important;}',
-        '.xz-root[data-xz-theme="day"] .xz-root .xz-box-v b,.xz-root .xz-npc-grid4 b{color:#835a00 !important;}',
-        ':root[data-xz-theme="day"] .xz-root .xz-box-v b,.xz-root .xz-npc-grid4 b{color:#835a00 !important;}',
+        '.xz-root[data-xz-theme="day"] .xz-root .xz-rpg-desc,.xz-root[data-xz-theme="day"] .xz-root .xz-wiki-item-desc{color:#6a614f !important;}',
+        ':root[data-xz-theme="day"] .xz-root .xz-rpg-desc,:root[data-xz-theme="day"] .xz-root .xz-wiki-item-desc{color:#6a614f !important;}',
+        '.xz-root[data-xz-theme="day"] .xz-root .xz-box-v b,.xz-root[data-xz-theme="day"] .xz-root .xz-npc-grid4 b{color:#835a00 !important;}',
+        ':root[data-xz-theme="day"] .xz-root .xz-box-v b,:root[data-xz-theme="day"] .xz-root .xz-npc-grid4 b{color:#835a00 !important;}',
         '.xz-root[data-xz-theme="day"] .xz-eq-bar{color:#7f5c02 !important;}',
         ':root[data-xz-theme="day"] .xz-eq-bar{color:#7f5c02 !important;}',
         '.xz-root[data-xz-theme="day"] .xz-eq-bar small{color:#52637c !important;}',
@@ -4282,6 +4651,9 @@ function xzTypeOf(name, fbT, fbA) {
     }
     function xzThemeApply(t) {
         var day = (t === 'day');
+        /* ★ v611：把主题属性同步到 CSS 真正所在的那份文档（getDoc/top）。
+           以前只写裸 document.documentElement，iframe 里 :root[day] 永不匹配。 */
+        try { if (window.__XZ_V611__) window.__XZ_V611__.sync(t); } catch (eVS) {}
         try {
             var rootEl = document.querySelector('.xz-root');
             if (rootEl) { if (day) rootEl.setAttribute('data-xz-theme', 'day'); else rootEl.removeAttribute('data-xz-theme'); }
@@ -12091,31 +12463,73 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
     }
     function xzHotCheck() {
         try {
-            /* ★★★ v607：loader 已经探到最新 tag 时，版本页**直接用它** ★★★
-               病根：version.json 在 CDN 节点上是 12h 缓存，四个节点各停在各的年月
-               （实测：仓库真身 v1.27，四个节点全给 v1.2，玩家机器上甚至命中更早的 v1.191）。
-               于是版本页显示的"线上最新"永远是旧号，看起来像「推了 v1.191」。
-               loader 现在直接探 tag（新 tag = 新 URL，不吃缓存），它探到的就是真相。
-               ⇒ 有 tag 就用 tag，没有才回落清单。 */
-            var _hotTag = '';
+            /* ★★★ v610：每 20 秒真去问一次「线上有没有新版本」★★★
+               上一版（v607）在这里直接拿 __XZ_HOT_TAG__（= 当前正在跑的版本）当线上最新，
+               于是永远显示「已是最新」—— 推了新版也毫无反应（作者 2026-11-14 报的就是这个）。
+               现在：每次检查都用 <script> 拉一次 COS 的 ver.js（脚本不走 XHR ⇒ 不受跨域/节点缓存影响），
+               拿到的号与**当前运行版本**比：
+                 · 更新 → HOTV.note 写「有新版本 vX，刷新页面后生效」，刷不刷由玩家决定
+                 · 相同 → 「已是最新」
+                 · 拉不到 → 记 err（不编数字）
+               ⚠ 这一分支只负责显示，**不 reload、不碰任何面板**。 */
+            var _ossBase = 'https://123-1532053135.cos.ap-guangzhou.myqcloud.com';
+            var _curVer = '';
             try {
                 var _tw = window.top || window;
-                _hotTag = String(_tw.__XZ_HOT_TAG__ || '');
-            } catch (eHT) { _hotTag = ''; }
-            if (/^v[\d.]+$/.test(_hotTag)) {
-                try {
-                    var _before = [HOTV.latest, HOTV.err, HOTV.first, HOTV.note].join('|');
-                    HOTV.first = false;
-                    HOTV.at = Date.now();
-                    HOTV.err = false;
-                    HOTV.latest = _hotTag;
-                    HOTV.note = '已按最新版本加载';
-                    if ([HOTV.latest, HOTV.err, HOTV.first, HOTV.note].join('|') !== _before) {
-                        try { render(true); } catch (eR0) {}
-                    }
-                } catch (eHV0) {}
-                return;
+                _curVer = String(_tw.__XZ_OSS_CUR__ || _tw.__XZ_HOT_TAG__ || '');
+            } catch (eHT) { _curVer = ''; }
+            if (!/^v[\d.]+$/.test(_curVer)) {
+                try { _curVer = String(window.__XZ_CARD_VER__ || ''); } catch (eCV1) { _curVer = ''; }
+                if (!/^v[0-9.]+$/.test(_curVer)) { try { _curVer = String((window.top && window.top.__XZ_CARD_VER__) || ''); } catch (eCV2) {} }
+                if (!/^v[0-9.]+$/.test(_curVer)) { try { _curVer = String((window.parent && window.parent.__XZ_CARD_VER__) || ''); } catch (eCV3) {} }
             }
+            var _cmpVer = function (a, b) {
+                var x = String(a).replace(/^v/i, '').split('.').map(Number);
+                var y = String(b).replace(/^v/i, '').split('.').map(Number);
+                var n = Math.max(x.length, y.length), i, p, q;
+                for (i = 0; i < n; i++) {
+                    p = x[i] || 0; q = y[i] || 0;
+                    if (p > q) return 1; if (p < q) return -1;
+                }
+                return 0;
+            };
+            var _setHot = function (v, err) {
+                var _before = [HOTV.latest, HOTV.err, HOTV.first, HOTV.note].join('|');
+                HOTV.first = false;
+                HOTV.at = Date.now();
+                if (err) { HOTV.err = true; }
+                else {
+                    HOTV.err = false;
+                    HOTV.latest = v;
+                    HOTV.note = (_curVer && _cmpVer(v, _curVer) > 0)
+                        ? ('有新版本 ' + v + '，刷新页面后生效') : '已是最新';
+                }
+                if ([HOTV.latest, HOTV.err, HOTV.first, HOTV.note].join('|') !== _before) {
+                    try { render(true); } catch (eR0) {}
+                }
+            };
+            (function () {
+                var done = false;
+                function fin(v) {
+                    if (done) return;
+                    done = true;
+                    if (/^v[\d.]+$/.test(v)) _setHot(v, false);
+                    else _setHot('', true);
+                }
+                try {
+                    var el = document.createElement('script');
+                    el.src = _ossBase + '/ver.js?t=' + Date.now();
+                    el.onload = function () {
+                        var v = '';
+                        try { v = String(window.__XZ_OSS_VER__ || ''); } catch (eV3) { v = ''; }
+                        fin(v);
+                    };
+                    el.onerror = function () { fin(''); };
+                    (document.head || document.documentElement).appendChild(el);
+                    setTimeout(function () { fin(''); }, 4000);
+                } catch (eO) { fin(''); }
+            })();
+            return;
             /* ★★★ v541：页面不可见时**不发请求** ★★★
                这条按 20 秒一次跑、永不停止（作者口径：v1.051「20 秒一次」）。
                玩家挂机不看屏幕时它照样每 20 秒打一次 GitHub raw：
