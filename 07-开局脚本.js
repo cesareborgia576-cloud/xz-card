@@ -45,9 +45,9 @@
     var KEY = '__XZ_V611__';
     try { if (window.top && window.top !== window && window.top[KEY]) { window[KEY] = window.top[KEY]; return; } } catch (e0) {}
 
-    var TONE_MAP = {"#10b981":"xz-t0","#22c55e":"xz-t1","#2dd4bf":"xz-t2","#4ade80":"xz-t3","#60a5fa":"xz-t4","#63c08c":"xz-t5","#68c5b2":"xz-t6","#6ee7b7":"xz-t7","#7dd3a0":"xz-t8","#7ddc9a":"xz-t9","#7f9db0":"xz-t10","#7fa593":"xz-t11","#7fb69b":"xz-t12","#7fd2c1":"xz-t13","#7fd4e8":"xz-t14","#7fe0b0":"xz-t15","#8a8478":"xz-t16","#8a8578":"xz-t17","#8a9496":"xz-t18","#8a949e":"xz-t19","#8b8674":"xz-t20","#8b9199":"xz-t21","#8e8778":"xz-t22","#8fa2c0":"xz-t23","#8fae7a":"xz-t24","#929292":"xz-t25","#93c5fd":"xz-t26","#94a3b8":"xz-t27","#9a9a9a":"xz-t28","#9aa0a6":"xz-t29","#9c9686":"xz-t30","#9c968c":"xz-t31","#9ec9e8":"xz-t32","#9fb3c8":"xz-t33","#9fb6c4":"xz-t34","#9fd4a0":"xz-t35","#9fd8c4":"xz-t36","#9fd8f7":"xz-t37","#a5b4fc":"xz-t38","#a78bfa":"xz-t39","#a855f7":"xz-t40","#a9a390":"xz-t41","#b7b1a4":"xz-t42","#b7b8b3":"xz-t43","#b8b0a0":"xz-t44","#b9cde8":"xz-t45","#c084fc":"xz-t46","#c0a97a":"xz-t47","#c4b5fd":"xz-t48","#c7c7c7":"xz-t49","#c8b06a":"xz-t50","#c8b1a8":"xz-t51","#c8c1b2":"xz-t52","#c9a05a":"xz-t53","#c9a86a":"xz-t54","#c9b183":"xz-t55","#c9bfae":"xz-t56","#c9c2b2":"xz-t57","#c9c2b4":"xz-t58","#c9c3b6":"xz-t59","#c9ced7":"xz-t60","#c9f5e4":"xz-t61","#cbd5e1":"xz-t62","#cecece":"xz-t63","#d35400":"xz-t64","#d4af37":"xz-t65","#d8899d":"xz-t66","#d8c48f":"xz-t67","#d98ca8":"xz-t68","#d9b76d":"xz-t69","#dcdcdc":"xz-t70","#df7468":"xz-t71","#e0b96a":"xz-t72","#e2bd63":"xz-t73","#e2decb":"xz-t74","#e2e8f0":"xz-t75","#e3c98a":"xz-t76","#e6bd76":"xz-t77","#e6dcc4":"xz-t78","#e74c3c":"xz-t79","#e8cb92":"xz-t80","#e8e3d3":"xz-t81","#e8e8e8":"xz-t82","#e9e5dc":"xz-t83","#ef4444":"xz-t84","#efe9dc":"xz-t85","#f08a84":"xz-t86","#f0a6a0":"xz-t87","#f0b090":"xz-t88","#f0b45a":"xz-t89","#f0b46a":"xz-t90","#f0d49a":"xz-t91","#f0d98a":"xz-t92","#f0d9a4":"xz-t93","#f0e2b0":"xz-t94","#f1ede4":"xz-t95","#f1f1f1":"xz-t96","#f2c26f":"xz-t97","#f2ecdd":"xz-t98","#f39c12":"xz-t99","#f3d999":"xz-t100","#f3eee5":"xz-t101","#f43f5e":"xz-t102","#f4ece0":"xz-t103","#f4efe2":"xz-t104","#f4f1e8":"xz-t105","#f59e0b":"xz-t106","#f5efe2":"xz-t107","#f5f5f5":"xz-t108","#f6dc9c":"xz-t109","#f6eee1":"xz-t110","#f6f1e6":"xz-t111","#f7d7d4":"xz-t112","#f7e6b6":"xz-t113","#f7f4ec":"xz-t114","#f87171":"xz-t115","#f8f3e7":"xz-t116","#f9f6ee":"xz-t117","#fbbf24":"xz-t118","#fbf8f0":"xz-t119","#fca5a5":"xz-t120","#fcd34d":"xz-t121","#fde68a":"xz-t122","#ff5252":"xz-t123","#ff6b6b":"xz-t124","#ff8a8a":"xz-t125","#ffd700":"xz-t126","#ffd88a":"xz-t127","#ffeec2":"xz-t128","#fff":"xz-t129","#fff6dc":"xz-t130","#fff6e2":"xz-t131","#fff8e6":"xz-t132","#fffaf0":"xz-t133","#fffdf6":"xz-t134","#fffdf8":"xz-t135","#ffffff":"xz-t136","rgba(150,158,168,.8)":"xz-t137","rgba(230,189,118,.95)":"xz-t138","rgba(240,234,216,0.66)":"xz-t139","rgba(255,255,255,.72)":"xz-t140"};
-    var DAY_DECL = "--xz-t0:#0a7552!important;--xz-t1:#147136!important;--xz-t2:#177065!important;--xz-t3:#157438!important;--xz-t4:#0762d2!important;--xz-t5:#2e734d!important;--xz-t6:#2b7062!important;--xz-t7:#13754e!important;--xz-t8:#277446!important;--xz-t9:#20753a!important;--xz-t10:#4c687a!important;--xz-t11:#4d6d5e!important;--xz-t12:#3f6e57!important;--xz-t13:#276e60!important;--xz-t14:#186f83!important;--xz-t15:#1c7348!important;--xz-t16:#6c6659!important;--xz-t17:#696456!important;--xz-t18:#566669!important;--xz-t19:#5c6670!important;--xz-t20:#6b6657!important;--xz-t21:#5c6570!important;--xz-t22:#6b6558!important;--xz-t23:#4e658a!important;--xz-t24:#536c42!important;--xz-t25:#776161!important;--xz-t26:#0463ce!important;--xz-t27:#54667e!important;--xz-t28:#776161!important;--xz-t29:#5c6670!important;--xz-t30:#696456!important;--xz-t31:#6d6559!important;--xz-t32:#25699b!important;--xz-t33:#4d6886!important;--xz-t34:#4b697b!important;--xz-t35:#326f33!important;--xz-t36:#2d6e57!important;--xz-t37:#0d6ca0!important;--xz-t38:#123af7!important;--xz-t39:#4d14f5!important;--xz-t40:#8715f4!important;--xz-t41:#6c6654!important;--xz-t42:#6b6455!important;--xz-t43:#626654!important;--xz-t44:#6e6552!important;--xz-t45:#3767a7!important;--xz-t46:#8510f9!important;--xz-t47:#766138!important;--xz-t48:#4111f9!important;--xz-t49:#776161!important;--xz-t50:#76632b!important;--xz-t51:#7d5c4f!important;--xz-t52:#6c624d!important;--xz-t53:#7e5f29!important;--xz-t54:#7b602c!important;--xz-t55:#796135!important;--xz-t56:#6f624a!important;--xz-t57:#6d634d!important;--xz-t58:#6f6550!important;--xz-t59:#6e6552!important;--xz-t60:#596579!important;--xz-t61:#15734f!important;--xz-t62:#4d6685!important;--xz-t63:#776161!important;--xz-t64:#ae4500!important;--xz-t65:#7b641a!important;--xz-t66:#b03a58!important;--xz-t67:#78622a!important;--xz-t68:#b03a65!important;--xz-t69:#806221!important;--xz-t70:#776161!important;--xz-t71:#b73527!important;--xz-t72:#805f1b!important;--xz-t73:#7e6017!important;--xz-t74:#6f673e!important;--xz-t75:#4a678f!important;--xz-t76:#7d611e!important;--xz-t77:#835c18!important;--xz-t78:#756232!important;--xz-t79:#c12718!important;--xz-t80:#805e1b!important;--xz-t81:#72653c!important;--xz-t82:#776161!important;--xz-t83:#726548!important;--xz-t84:#c71111!important;--xz-t85:#776336!important;--xz-t86:#c62218!important;--xz-t87:#c02a1e!important;--xz-t88:#a94817!important;--xz-t89:#8e5a0d!important;--xz-t90:#92570f!important;--xz-t91:#825e13!important;--xz-t92:#796110!important;--xz-t93:#806015!important;--xz-t94:#786317!important;--xz-t95:#72613b!important;--xz-t96:#776161!important;--xz-t97:#895b0c!important;--xz-t98:#79642e!important;--xz-t99:#905b07!important;--xz-t100:#805f0f!important;--xz-t101:#7b6339!important;--xz-t102:#cd0c2d!important;--xz-t103:#805f2d!important;--xz-t104:#79642e!important;--xz-t105:#716236!important;--xz-t106:#8c5a06!important;--xz-t107:#7c632b!important;--xz-t108:#776161!important;--xz-t109:#83610c!important;--xz-t110:#815e27!important;--xz-t111:#7b622c!important;--xz-t112:#bb3023!important;--xz-t113:#7b5e0d!important;--xz-t114:#766332!important;--xz-t115:#ce0a0a!important;--xz-t116:#7d6324!important;--xz-t117:#77622a!important;--xz-t118:#805d02!important;--xz-t119:#7a6221!important;--xz-t120:#cb0707!important;--xz-t121:#7a5e02!important;--xz-t122:#7a6202!important;--xz-t123:#cc0000!important;--xz-t124:#cc0000!important;--xz-t125:#cc0000!important;--xz-t126:#786500!important;--xz-t127:#895b00!important;--xz-t128:#835e00!important;--xz-t129:#776161!important;--xz-t130:#836100!important;--xz-t131:#895e00!important;--xz-t132:#835e00!important;--xz-t133:#895b00!important;--xz-t134:#7c6100!important;--xz-t135:#835d00!important;--xz-t136:#776161!important;--xz-t137:rgba(92,101,112,0.8)!important;--xz-t138:rgba(131,92,24,0.95)!important;--xz-t139:rgba(116,98,45,0.66)!important;--xz-t140:rgba(119,97,97,0.72)!important;";
-    var NIGHT_DECL = "--xz-t0:#10b981!important;--xz-t1:#22c55e!important;--xz-t2:#2dd4bf!important;--xz-t3:#4ade80!important;--xz-t4:#60a5fa!important;--xz-t5:#63c08c!important;--xz-t6:#68c5b2!important;--xz-t7:#6ee7b7!important;--xz-t8:#7dd3a0!important;--xz-t9:#7ddc9a!important;--xz-t10:#7f9db0!important;--xz-t11:#7fa593!important;--xz-t12:#7fb69b!important;--xz-t13:#7fd2c1!important;--xz-t14:#7fd4e8!important;--xz-t15:#7fe0b0!important;--xz-t16:#8a8478!important;--xz-t17:#8a8578!important;--xz-t18:#8a9496!important;--xz-t19:#8a949e!important;--xz-t20:#8b8674!important;--xz-t21:#8b9199!important;--xz-t22:#8e8778!important;--xz-t23:#8fa2c0!important;--xz-t24:#8fae7a!important;--xz-t25:#929292!important;--xz-t26:#93c5fd!important;--xz-t27:#94a3b8!important;--xz-t28:#9a9a9a!important;--xz-t29:#9aa0a6!important;--xz-t30:#9c9686!important;--xz-t31:#9c968c!important;--xz-t32:#9ec9e8!important;--xz-t33:#9fb3c8!important;--xz-t34:#9fb6c4!important;--xz-t35:#9fd4a0!important;--xz-t36:#9fd8c4!important;--xz-t37:#9fd8f7!important;--xz-t38:#a5b4fc!important;--xz-t39:#a78bfa!important;--xz-t40:#a855f7!important;--xz-t41:#a9a390!important;--xz-t42:#b7b1a4!important;--xz-t43:#b7b8b3!important;--xz-t44:#b8b0a0!important;--xz-t45:#b9cde8!important;--xz-t46:#c084fc!important;--xz-t47:#c0a97a!important;--xz-t48:#c4b5fd!important;--xz-t49:#c7c7c7!important;--xz-t50:#c8b06a!important;--xz-t51:#c8b1a8!important;--xz-t52:#c8c1b2!important;--xz-t53:#c9a05a!important;--xz-t54:#c9a86a!important;--xz-t55:#c9b183!important;--xz-t56:#c9bfae!important;--xz-t57:#c9c2b2!important;--xz-t58:#c9c2b4!important;--xz-t59:#c9c3b6!important;--xz-t60:#c9ced7!important;--xz-t61:#c9f5e4!important;--xz-t62:#cbd5e1!important;--xz-t63:#cecece!important;--xz-t64:#d35400!important;--xz-t65:#d4af37!important;--xz-t66:#d8899d!important;--xz-t67:#d8c48f!important;--xz-t68:#d98ca8!important;--xz-t69:#d9b76d!important;--xz-t70:#dcdcdc!important;--xz-t71:#df7468!important;--xz-t72:#e0b96a!important;--xz-t73:#e2bd63!important;--xz-t74:#e2decb!important;--xz-t75:#e2e8f0!important;--xz-t76:#e3c98a!important;--xz-t77:#e6bd76!important;--xz-t78:#e6dcc4!important;--xz-t79:#e74c3c!important;--xz-t80:#e8cb92!important;--xz-t81:#e8e3d3!important;--xz-t82:#e8e8e8!important;--xz-t83:#e9e5dc!important;--xz-t84:#ef4444!important;--xz-t85:#efe9dc!important;--xz-t86:#f08a84!important;--xz-t87:#f0a6a0!important;--xz-t88:#f0b090!important;--xz-t89:#f0b45a!important;--xz-t90:#f0b46a!important;--xz-t91:#f0d49a!important;--xz-t92:#f0d98a!important;--xz-t93:#f0d9a4!important;--xz-t94:#f0e2b0!important;--xz-t95:#f1ede4!important;--xz-t96:#f1f1f1!important;--xz-t97:#f2c26f!important;--xz-t98:#f2ecdd!important;--xz-t99:#f39c12!important;--xz-t100:#f3d999!important;--xz-t101:#f3eee5!important;--xz-t102:#f43f5e!important;--xz-t103:#f4ece0!important;--xz-t104:#f4efe2!important;--xz-t105:#f4f1e8!important;--xz-t106:#f59e0b!important;--xz-t107:#f5efe2!important;--xz-t108:#f5f5f5!important;--xz-t109:#f6dc9c!important;--xz-t110:#f6eee1!important;--xz-t111:#f6f1e6!important;--xz-t112:#f7d7d4!important;--xz-t113:#f7e6b6!important;--xz-t114:#f7f4ec!important;--xz-t115:#f87171!important;--xz-t116:#f8f3e7!important;--xz-t117:#f9f6ee!important;--xz-t118:#fbbf24!important;--xz-t119:#fbf8f0!important;--xz-t120:#fca5a5!important;--xz-t121:#fcd34d!important;--xz-t122:#fde68a!important;--xz-t123:#ff5252!important;--xz-t124:#ff6b6b!important;--xz-t125:#ff8a8a!important;--xz-t126:#ffd700!important;--xz-t127:#ffd88a!important;--xz-t128:#ffeec2!important;--xz-t129:#fff!important;--xz-t130:#fff6dc!important;--xz-t131:#fff6e2!important;--xz-t132:#fff8e6!important;--xz-t133:#fffaf0!important;--xz-t134:#fffdf6!important;--xz-t135:#fffdf8!important;--xz-t136:#ffffff!important;--xz-t137:rgba(150,158,168,.8)!important;--xz-t138:rgba(230,189,118,.95)!important;--xz-t139:rgba(240,234,216,0.66)!important;--xz-t140:rgba(255,255,255,.72)!important;";
+    var TONE_MAP = {"#10b981":"xz-t0","#22c55e":"xz-t1","#2dd4bf":"xz-t2","#4ade80":"xz-t3","#60a5fa":"xz-t4","#63c08c":"xz-t5","#68c5b2":"xz-t6","#6ee7b7":"xz-t7","#7dd3a0":"xz-t8","#7ddc9a":"xz-t9","#7f9db0":"xz-t10","#7fa593":"xz-t11","#7fb69b":"xz-t12","#7fd2c1":"xz-t13","#7fd4e8":"xz-t14","#7fe0b0":"xz-t15","#8a8478":"xz-t16","#8a8578":"xz-t17","#8a9496":"xz-t18","#8a949e":"xz-t19","#8b8674":"xz-t20","#8b9199":"xz-t21","#8e8778":"xz-t22","#8fa2c0":"xz-t23","#8fae7a":"xz-t24","#929292":"xz-t25","#93c5fd":"xz-t26","#94a3b8":"xz-t27","#9a9a9a":"xz-t28","#9aa0a6":"xz-t29","#9c9686":"xz-t30","#9c968c":"xz-t31","#9ec9e8":"xz-t32","#9fb3c8":"xz-t33","#9fb6c4":"xz-t34","#9fd4a0":"xz-t35","#9fd8c4":"xz-t36","#9fd8f7":"xz-t37","#a5b4fc":"xz-t38","#a78bfa":"xz-t39","#a855f7":"xz-t40","#a9a390":"xz-t41","#b7b1a4":"xz-t42","#b7b8b3":"xz-t43","#b8b0a0":"xz-t44","#b9cde8":"xz-t45","#c084fc":"xz-t46","#c0a97a":"xz-t47","#c4b5fd":"xz-t48","#c7c7c7":"xz-t49","#c8b06a":"xz-t50","#c8b1a8":"xz-t51","#c8c1b2":"xz-t52","#c9a05a":"xz-t53","#c9a86a":"xz-t54","#c9b183":"xz-t55","#c9bfae":"xz-t56","#c9c2b2":"xz-t57","#c9c2b4":"xz-t58","#c9c3b6":"xz-t59","#c9ced7":"xz-t60","#c9f5e4":"xz-t61","#cbd5e1":"xz-t62","#cecece":"xz-t63","#d35400":"xz-t64","#d4af37":"xz-t65","#d8899d":"xz-t66","#d8c48f":"xz-t67","#d98ca8":"xz-t68","#d9b76d":"xz-t69","#dcdcdc":"xz-t70","#df7468":"xz-t71","#e0b96a":"xz-t72","#e2decb":"xz-t73","#e2e8f0":"xz-t74","#e3c98a":"xz-t75","#e6bd76":"xz-t76","#e6dcc4":"xz-t77","#e74c3c":"xz-t78","#e8cb92":"xz-t79","#e8e3d3":"xz-t80","#e8e8e8":"xz-t81","#e9e5dc":"xz-t82","#ef4444":"xz-t83","#efe9dc":"xz-t84","#f08a84":"xz-t85","#f0a6a0":"xz-t86","#f0b090":"xz-t87","#f0b45a":"xz-t88","#f0b46a":"xz-t89","#f0d49a":"xz-t90","#f0d98a":"xz-t91","#f0d9a4":"xz-t92","#f0e2b0":"xz-t93","#f1ede4":"xz-t94","#f1f1f1":"xz-t95","#f2c26f":"xz-t96","#f2ecdd":"xz-t97","#f39c12":"xz-t98","#f3d999":"xz-t99","#f3eee5":"xz-t100","#f43f5e":"xz-t101","#f4ece0":"xz-t102","#f4efe2":"xz-t103","#f4f1e8":"xz-t104","#f59e0b":"xz-t105","#f5efe2":"xz-t106","#f5f5f5":"xz-t107","#f6dc9c":"xz-t108","#f6eee1":"xz-t109","#f6f1e6":"xz-t110","#f7d7d4":"xz-t111","#f7e6b6":"xz-t112","#f7f4ec":"xz-t113","#f87171":"xz-t114","#f8f3e7":"xz-t115","#f9f6ee":"xz-t116","#fbbf24":"xz-t117","#fbf8f0":"xz-t118","#fca5a5":"xz-t119","#fcd34d":"xz-t120","#fde68a":"xz-t121","#ff5252":"xz-t122","#ff6b6b":"xz-t123","#ff8a8a":"xz-t124","#ffd88a":"xz-t125","#ffeec2":"xz-t126","#fff":"xz-t127","#fff6dc":"xz-t128","#fff6e2":"xz-t129","#fff8e6":"xz-t130","#fffaf0":"xz-t131","#fffdf6":"xz-t132","#fffdf8":"xz-t133","#ffffff":"xz-t134","rgba(150,158,168,.8)":"xz-t135","rgba(230,189,118,.7)":"xz-t136","rgba(230,189,118,.85)":"xz-t137","rgba(230,189,118,.92)":"xz-t138","rgba(230,189,118,.95)":"xz-t139","rgba(240,234,216,0.66)":"xz-t140","rgba(255,255,255,.72)":"xz-t141","rgba(255,255,255,.74)":"xz-t142"};
+    var DAY_DECL = "--xz-t0:#0a7552!important;--xz-t1:#147136!important;--xz-t2:#177065!important;--xz-t3:#157438!important;--xz-t4:#0762d2!important;--xz-t5:#2e734d!important;--xz-t6:#2b7062!important;--xz-t7:#13754e!important;--xz-t8:#277446!important;--xz-t9:#20753a!important;--xz-t10:#4c687a!important;--xz-t11:#4d6d5e!important;--xz-t12:#3f6e57!important;--xz-t13:#276e60!important;--xz-t14:#186f83!important;--xz-t15:#1c7348!important;--xz-t16:#6c6659!important;--xz-t17:#696456!important;--xz-t18:#566669!important;--xz-t19:#5c6670!important;--xz-t20:#6b6657!important;--xz-t21:#5c6570!important;--xz-t22:#6b6558!important;--xz-t23:#4e658a!important;--xz-t24:#536c42!important;--xz-t25:#776161!important;--xz-t26:#0463ce!important;--xz-t27:#54667e!important;--xz-t28:#776161!important;--xz-t29:#5c6670!important;--xz-t30:#696456!important;--xz-t31:#6d6559!important;--xz-t32:#25699b!important;--xz-t33:#4d6886!important;--xz-t34:#4b697b!important;--xz-t35:#326f33!important;--xz-t36:#2d6e57!important;--xz-t37:#0d6ca0!important;--xz-t38:#123af7!important;--xz-t39:#4d14f5!important;--xz-t40:#8715f4!important;--xz-t41:#6c6654!important;--xz-t42:#6b6455!important;--xz-t43:#626654!important;--xz-t44:#6e6552!important;--xz-t45:#3767a7!important;--xz-t46:#8510f9!important;--xz-t47:#766138!important;--xz-t48:#4111f9!important;--xz-t49:#776161!important;--xz-t50:#76632b!important;--xz-t51:#7d5c4f!important;--xz-t52:#6c624d!important;--xz-t53:#7e5f29!important;--xz-t54:#7b602c!important;--xz-t55:#796135!important;--xz-t56:#6f624a!important;--xz-t57:#6d634d!important;--xz-t58:#6f6550!important;--xz-t59:#6e6552!important;--xz-t60:#596579!important;--xz-t61:#15734f!important;--xz-t62:#4d6685!important;--xz-t63:#776161!important;--xz-t64:#ae4500!important;--xz-t65:#7b641a!important;--xz-t66:#b03a58!important;--xz-t67:#78622a!important;--xz-t68:#b03a65!important;--xz-t69:#806221!important;--xz-t70:#776161!important;--xz-t71:#b73527!important;--xz-t72:#805f1b!important;--xz-t73:#6f673e!important;--xz-t74:#4a678f!important;--xz-t75:#7d611e!important;--xz-t76:#835c18!important;--xz-t77:#756232!important;--xz-t78:#c12718!important;--xz-t79:#805e1b!important;--xz-t80:#72653c!important;--xz-t81:#776161!important;--xz-t82:#726548!important;--xz-t83:#c71111!important;--xz-t84:#776336!important;--xz-t85:#c62218!important;--xz-t86:#c02a1e!important;--xz-t87:#a94817!important;--xz-t88:#8e5a0d!important;--xz-t89:#92570f!important;--xz-t90:#825e13!important;--xz-t91:#796110!important;--xz-t92:#806015!important;--xz-t93:#786317!important;--xz-t94:#72613b!important;--xz-t95:#776161!important;--xz-t96:#895b0c!important;--xz-t97:#79642e!important;--xz-t98:#905b07!important;--xz-t99:#805f0f!important;--xz-t100:#7b6339!important;--xz-t101:#cd0c2d!important;--xz-t102:#805f2d!important;--xz-t103:#79642e!important;--xz-t104:#716236!important;--xz-t105:#8c5a06!important;--xz-t106:#7c632b!important;--xz-t107:#776161!important;--xz-t108:#83610c!important;--xz-t109:#815e27!important;--xz-t110:#7b622c!important;--xz-t111:#bb3023!important;--xz-t112:#7b5e0d!important;--xz-t113:#766332!important;--xz-t114:#ce0a0a!important;--xz-t115:#7d6324!important;--xz-t116:#77622a!important;--xz-t117:#805d02!important;--xz-t118:#7a6221!important;--xz-t119:#cb0707!important;--xz-t120:#7a5e02!important;--xz-t121:#7a6202!important;--xz-t122:#cc0000!important;--xz-t123:#cc0000!important;--xz-t124:#cc0000!important;--xz-t125:#895b00!important;--xz-t126:#835e00!important;--xz-t127:#776161!important;--xz-t128:#836100!important;--xz-t129:#895e00!important;--xz-t130:#835e00!important;--xz-t131:#895b00!important;--xz-t132:#7c6100!important;--xz-t133:#835d00!important;--xz-t134:#776161!important;--xz-t135:rgba(92,101,112,0.8)!important;--xz-t136:rgba(131,92,24,0.7)!important;--xz-t137:rgba(131,92,24,0.85)!important;--xz-t138:rgba(131,92,24,0.92)!important;--xz-t139:rgba(131,92,24,0.95)!important;--xz-t140:rgba(116,98,45,0.66)!important;--xz-t141:rgba(119,97,97,0.72)!important;--xz-t142:rgba(119,97,97,0.74)!important;";
+    var NIGHT_DECL = "--xz-t0:#10b981!important;--xz-t1:#22c55e!important;--xz-t2:#2dd4bf!important;--xz-t3:#4ade80!important;--xz-t4:#60a5fa!important;--xz-t5:#63c08c!important;--xz-t6:#68c5b2!important;--xz-t7:#6ee7b7!important;--xz-t8:#7dd3a0!important;--xz-t9:#7ddc9a!important;--xz-t10:#7f9db0!important;--xz-t11:#7fa593!important;--xz-t12:#7fb69b!important;--xz-t13:#7fd2c1!important;--xz-t14:#7fd4e8!important;--xz-t15:#7fe0b0!important;--xz-t16:#8a8478!important;--xz-t17:#8a8578!important;--xz-t18:#8a9496!important;--xz-t19:#8a949e!important;--xz-t20:#8b8674!important;--xz-t21:#8b9199!important;--xz-t22:#8e8778!important;--xz-t23:#8fa2c0!important;--xz-t24:#8fae7a!important;--xz-t25:#929292!important;--xz-t26:#93c5fd!important;--xz-t27:#94a3b8!important;--xz-t28:#9a9a9a!important;--xz-t29:#9aa0a6!important;--xz-t30:#9c9686!important;--xz-t31:#9c968c!important;--xz-t32:#9ec9e8!important;--xz-t33:#9fb3c8!important;--xz-t34:#9fb6c4!important;--xz-t35:#9fd4a0!important;--xz-t36:#9fd8c4!important;--xz-t37:#9fd8f7!important;--xz-t38:#a5b4fc!important;--xz-t39:#a78bfa!important;--xz-t40:#a855f7!important;--xz-t41:#a9a390!important;--xz-t42:#b7b1a4!important;--xz-t43:#b7b8b3!important;--xz-t44:#b8b0a0!important;--xz-t45:#b9cde8!important;--xz-t46:#c084fc!important;--xz-t47:#c0a97a!important;--xz-t48:#c4b5fd!important;--xz-t49:#c7c7c7!important;--xz-t50:#c8b06a!important;--xz-t51:#c8b1a8!important;--xz-t52:#c8c1b2!important;--xz-t53:#c9a05a!important;--xz-t54:#c9a86a!important;--xz-t55:#c9b183!important;--xz-t56:#c9bfae!important;--xz-t57:#c9c2b2!important;--xz-t58:#c9c2b4!important;--xz-t59:#c9c3b6!important;--xz-t60:#c9ced7!important;--xz-t61:#c9f5e4!important;--xz-t62:#cbd5e1!important;--xz-t63:#cecece!important;--xz-t64:#d35400!important;--xz-t65:#d4af37!important;--xz-t66:#d8899d!important;--xz-t67:#d8c48f!important;--xz-t68:#d98ca8!important;--xz-t69:#d9b76d!important;--xz-t70:#dcdcdc!important;--xz-t71:#df7468!important;--xz-t72:#e0b96a!important;--xz-t73:#e2decb!important;--xz-t74:#e2e8f0!important;--xz-t75:#e3c98a!important;--xz-t76:#e6bd76!important;--xz-t77:#e6dcc4!important;--xz-t78:#e74c3c!important;--xz-t79:#e8cb92!important;--xz-t80:#e8e3d3!important;--xz-t81:#e8e8e8!important;--xz-t82:#e9e5dc!important;--xz-t83:#ef4444!important;--xz-t84:#efe9dc!important;--xz-t85:#f08a84!important;--xz-t86:#f0a6a0!important;--xz-t87:#f0b090!important;--xz-t88:#f0b45a!important;--xz-t89:#f0b46a!important;--xz-t90:#f0d49a!important;--xz-t91:#f0d98a!important;--xz-t92:#f0d9a4!important;--xz-t93:#f0e2b0!important;--xz-t94:#f1ede4!important;--xz-t95:#f1f1f1!important;--xz-t96:#f2c26f!important;--xz-t97:#f2ecdd!important;--xz-t98:#f39c12!important;--xz-t99:#f3d999!important;--xz-t100:#f3eee5!important;--xz-t101:#f43f5e!important;--xz-t102:#f4ece0!important;--xz-t103:#f4efe2!important;--xz-t104:#f4f1e8!important;--xz-t105:#f59e0b!important;--xz-t106:#f5efe2!important;--xz-t107:#f5f5f5!important;--xz-t108:#f6dc9c!important;--xz-t109:#f6eee1!important;--xz-t110:#f6f1e6!important;--xz-t111:#f7d7d4!important;--xz-t112:#f7e6b6!important;--xz-t113:#f7f4ec!important;--xz-t114:#f87171!important;--xz-t115:#f8f3e7!important;--xz-t116:#f9f6ee!important;--xz-t117:#fbbf24!important;--xz-t118:#fbf8f0!important;--xz-t119:#fca5a5!important;--xz-t120:#fcd34d!important;--xz-t121:#fde68a!important;--xz-t122:#ff5252!important;--xz-t123:#ff6b6b!important;--xz-t124:#ff8a8a!important;--xz-t125:#ffd88a!important;--xz-t126:#ffeec2!important;--xz-t127:#fff!important;--xz-t128:#fff6dc!important;--xz-t129:#fff6e2!important;--xz-t130:#fff8e6!important;--xz-t131:#fffaf0!important;--xz-t132:#fffdf6!important;--xz-t133:#fffdf8!important;--xz-t134:#ffffff!important;--xz-t135:rgba(150,158,168,.8)!important;--xz-t136:rgba(230,189,118,.7)!important;--xz-t137:rgba(230,189,118,.85)!important;--xz-t138:rgba(230,189,118,.92)!important;--xz-t139:rgba(230,189,118,.95)!important;--xz-t140:rgba(240,234,216,0.66)!important;--xz-t141:rgba(255,255,255,.72)!important;--xz-t142:rgba(255,255,255,.74)!important;";
 
     /* 夜墨＝原本暖金修仙（归档/v611-主题与视口重构前 之前的备份值）。
        用 !important 钉死，避免被后注入的基础 CSS 覆盖掉。 */
@@ -2468,6 +2468,95 @@ function xzSkeletonOfSkill(skill) {
         }
         return pool[Math.floor(Math.random() * pool.length)];
     }
+    /* ★★★ v613：血脉随机**抽成一个函数** —— 因为「🎲 随机血脉」和「🎲 全部随机」
+       必须掷出**同一套东西**。分两处写的话，将来改了权重 / 名字表只会改到一处，
+       而漏的那一处不报错：玩家点「全随机」得到的灵根和「只掷血脉」明显不同，
+       却没有任何地方会红。这类分叉本项目栽过（正名进了池子、引擎却不认）。
+       ⚠ 返回一句人类可读的摘要，由调用方拼进 note —— 别在这里改 `state.note`，
+         全随机时它要在同一句里带上另外三样。 */
+    function rollBloodInto(d) {
+        /* 随机灵根：按权重掷品阶（越高贵越稀），纯度 1~100，再配一个名字。
+           掷出来仍可手改 —— 随机是给想省事的人用的，不是强制。 */
+        var rk = [['伪灵根', 30], ['四灵根', 24], ['三灵根', 12], ['双灵根', 8], ['天灵根', 5], ['圣灵根', 3]];  // 权重：圣灵根最稀（最低）
+        var tot = 0, i;
+        for (i = 0; i < rk.length; i++) tot += rk[i][1];
+        var r = Math.random() * tot, pickRank = '伪灵根';
+        for (i = 0; i < rk.length; i++) { r -= rk[i][1]; if (r <= 0) { pickRank = rk[i][0]; break; } }
+        var names = {
+            '伪灵根': '山野散根', '四灵根': '小宗传承根', '三灵根': '望族古根',
+            '双灵根': '圣地主脉根', '圣灵根': '太古神兽根', '天灵根': '帝者遗脉'
+        };
+        d.spiritRootRank = pickRank;
+        d.spiritRootPurity = 5 + Math.floor(Math.random() * 96);
+        d.spiritRootName = names[pickRank] || pickRank;
+        /* ★ v74：随机灵根**连效果一起掷** —— 按品阶从预设池抽一条自由文本被动，
+           否则掷出来的血只有名/阶/纯度，「效果」栏永远是空的（用户报障）。 */
+        d.spiritRootEffect = rollBloodEffect(pickRank);
+        return d.spiritRootName + '（' + d.spiritRootRank + ' ' + d.spiritRootPurity + '%）';
+    }
+    /* ★★★ v613：从预设池里掷一件「能直接用」的玄技／玄诀／武器 ★★★
+       ── 为什么用预设池而不是从零拼 ──────────────────────────────────────────
+         `PRESET_SKILLS` / `PRESET_HEARTS` / `PRESET_ARTS` 里每一条都过过闸
+         （机制名在引擎表里、条数不超品质上限、玄技里绝不出现「灵力上限」
+         这种只许挂玄诀/武器/灵根的机制）。从零 `rollFunc` 拼一条虽然也能跑，
+         但绕过了这些约束 —— 引擎口径一收紧，随机出来的就是
+         "写得进变量、打起来不生效"的那类静默坏招。
+       ── 为什么必须按名字去重 ────────────────────────────────────────────────
+         `buildVars` 用**名字当键**（`learnedSkill[it.名] = …`）。掷出三门同名的玄技
+         ⇒ 后写覆盖前写 ⇒ 变量里只剩一门，而界面上「已配」明明列着三门。
+         这是本项目典型的"看着都对、数据少一半"。⇒ `used` 逐件登记。
+       ⚠ 武器品质必须**夹回允许档**：`PRESET_ARTS` 里有「天阶」的「无垢古剑」，
+         而武器下拉只给凡/黄/玄/地（`qualityOptionsFor`）。把天阶直接写进变量，
+         界面上那个 `<select>` 里没有这个 option ⇒ 显示空白，玩家以为坏了。
+       ⚠ 武器的「效果」是**一整串**（含描写），玄技/玄诀的是**对象**。
+         两者不同构，别用一份 copy 逻辑硬套（对象会被 JSON 拍平成一串）。 */
+    function rollItemFrom(kind, d, used) {
+        var elem = String((d && d.elem) || '火');
+        var pool = presetsOf(kind, elem, '', '');
+        if (!pool || !pool.length) return null;
+        var cand = pool.filter(function (x) { return x && x.名 && !used[x.名]; });
+        if (!cand.length) cand = pool.slice();      /* 池子用尽：允许重名，但现实里到不了 */
+        var src = cand[Math.floor(Math.random() * cand.length)];
+        var it = emptyItem(kind);
+        it.名 = src.名;
+        it.品质 = src.品质 || it.品质;
+        if (kind === '武器') {
+            if (['凡阶', '黄阶', '玄阶', '地阶'].indexOf(it.品质) < 0) it.品质 = '地阶';
+            it.效果 = src.效果 || '';
+        } else {
+            it.效果 = JSON.parse(JSON.stringify(src.效果 || {}));
+            it.目标 = src.目标 || it.目标;
+            it.消耗 = (typeof src.消耗 === 'number') ? src.消耗 : it.消耗;
+            if (kind === '玄诀') it.目标 = '自身';   /* 被动恒自身：预设里也是，这里再钉一次 */
+            it.类型 = (kind === '玄诀') ? '被动' : '主动';
+        }
+        used[it.名] = 1;
+        return it;
+    }
+    /* ★★★ v613：「补到几件」的口径 ─────────────────────────────────────────
+       全掷满（玄技 30 / 玄诀 15）会把「已配」列表撑成几十屏，开局第一眼就是灾难。
+       开局真要的是"我有几门能打的" ⇒ 玄技 3 门、玄诀 2 部、武器 1 件。
+       武器上限本来就是 1（`maxSlots` 写死），所以不用取 min。 */
+    function rollFillCount(kind) {
+        if (kind === '武器') return 1;
+        return (kind === '玄诀') ? 2 : 3;
+    }
+    /* 掷一类：清空该类 → 按口径补满 → 复位"正在修改"。
+       ⚠ `state.editing[kind]` 必须复位：它存的是下标，清了列表之后那个下标
+         要么越界、要么指着另一件 —— 之后玩家点「保存修改」就会改错东西（静默）。 */
+    function rollKindInto(kind, d) {
+        if (!d.items[kind]) return 0;
+        var used = {}, n = 0, lim = Math.min(rollFillCount(kind), maxSlots(d, kind));
+        d.items[kind] = [];
+        for (var i = 0; i < lim; i++) {
+            var it = rollItemFrom(kind, d, used);
+            if (!it) break;
+            d.items[kind].push(it);
+            n++;
+        }
+        state.editing[kind] = null;
+        return n;
+    }
     function draftTianjiao(d) {
         var names = ['非天骄', '普通天骄', '大天骄', '天选之子'];
         /* ★★★ v405：**只看灵根**，六档灵根 → 四档天骄一一对死 ——
@@ -2786,6 +2875,15 @@ function xzSkeletonOfSkill(skill) {
            `state.pasCat` 分开存 —— 那两个是**卡片内**面板的状态，
            弹层是另一块界面，共用一个变量会出现"关掉弹层回来分类被改了"。 */
         forgeCat: '',
+        /* ★★★ v613：预设开局卡片里**哪一条是展开的**（存 id，'' = 全收起）★★★
+           作者 2026-11-15：「卡片里默认折叠，点开后是更为详细的开场白内容」。
+           ⚠ 为什么不用原生 `<details>`：那是全项目折叠说明的通用做法（`.xz-st-fold`），
+             但 `<details>` 的展开态由 DOM 自己记，而本卡片每次 `render(true)` 都
+             `innerHTML` 整块重建 ⇒ 展开态归零。玩家点开一条、再点任何东西触发重绘，
+             它又自己合上了（本项目踩过十几次的"自己回去了"）。
+           ⚠ **必须进 render 的 sig**：不进就是点开毫无反应（sig 没变，render 直接 return）。
+           ⚠ 只存一个 id：20 条同时展开 = 一屏几千像素，等于把滑轮的意义抹掉。 */
+        premOpen: '',
     };
 
     /* ★ v222：武器只剩三件 —— 武器名 / 品质 / 效果。
@@ -4986,7 +5084,7 @@ d.attrs[a] = v;
                    **不是**把这个数抬到 830。
                ⚠ 别再手工调。改字体/间距/@media → 跑 `node 工具/_v471_maxh.mjs` 取新值
                  → 改这里 → 再跑 `_v471_overflow.mjs` 确认手机/桌面两档都等高。 */
-            '.xz-st-card.xz-st-fixh{min-height:926px;}',   /* ★ v587：第 4 页「剧本选择」换成六颗矩形按钮（3 列×2 行、每颗 44px + 7px 间距），比原来那颗单行开关高了 25px。`node 工具/_v471_maxh.mjs` 现取：全宽度最大实高 925.41px（390 宽那一档）⇒ 基准抬到 926。★ v1.053 的旧值 897（当时实测 901.69）已作废 */
+            '.xz-st-card.xz-st-fixh{min-height:1324px;}',   /* ★ v613：第 4 页新增「预设开局」纵向滑轮（max-height:min(46vh,320px) + 每条一句简介）⇒ 第 4 页从 926 涨到 1306.94（390 宽）/1323.11（560、820 宽）。`node 工具/_v471_maxh.mjs` 现取：全宽度最大实高 1323.11 ⇒ 基准抬到 1324。血脉（灵根）同时整块从第 2 页搬到第 3 页：第 3 页 926.11（390）/942.8（360），第 1/2 页 573/595.53，都不超过基准。★ 旧值 926 是 v587 定的（当时第 4 页「剧本选择」换六颗矩形按钮、实测 925.41）；再往前 897（v1.053）、768（v471）、743、690、650 均已作废 */
             '.xz-st-head{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--xz-border);background:var(--dhl-header);box-shadow:0 4px 15px rgba(0,0,0,0.45);}',
             /* ★ v595：开局面板的主题开关（与 05 顶栏那颗同款：图标 + 两字） */
             '.xz-st-theme{display:inline-flex;align-items:center;gap:3px;flex:none;padding:3px 8px;'
@@ -5359,6 +5457,88 @@ d.attrs[a] = v;
             '@media (max-width:430px){.xz-st-scnb-d{display:none;}'
                 + '.xz-st-scn{grid-auto-rows:38px;gap:6px;}'
                 + '.xz-st-scnb{padding:0 6px;}.xz-st-scnb-n{font-size:11.5px;}}',
+
+            /* ══ ★★★ v613：预设开局 · 纵向滑轮 ═★★ ─────────────────────────────
+               作者 2026-11-15：「纵向滑轮列表」。20 条要能滚，且每条带一句简介。
+               ── 为什么定高 + overflow-y ──────────────────────────────────────
+                 不定高的话 20 条会把第 4 页撑到几千像素，「确认开局」按钮要滚很久
+                 才够得着 —— 那就是本项目反复出现的「按钮像消失了」。
+                 `max-height:min(46vh,320px)`：小屏跟着 vh 收，大屏封顶 320px。
+               ── 为什么 `overscroll-behavior:contain` ──────────────────────────
+                 滚到底时不许把滚动传给外层页面（会带着整个开局卡一起弹），
+                 这是 v592 更新记录弹层验证过的同一条。
+               ── 为什么每条是 button 而不是 div+click ──────────────────────────
+                 按钮自带键盘可达（Tab / 回车）和 disabled 语义；
+                 本项目的点击委托读 `data-xz-act`，button 与 div 都一样能分发。 */
+            '.xz-st-prem{max-height:min(46vh,320px);overflow-y:auto;overflow-x:hidden;'
+                + 'overscroll-behavior:contain;-webkit-overflow-scrolling:touch;'
+                + 'display:flex;flex-direction:column;gap:5px;margin:2px 0 0;'
+                + 'padding:4px 5px 4px 2px;border:1px solid rgba(230,189,118,.18);'
+                + 'border-radius:6px;scrollbar-width:thin;}',
+            '.xz-st-prem-i{display:flex;flex-direction:column;align-items:stretch;gap:3px;'
+                + 'width:100%;min-width:0;box-sizing:border-box;text-align:left;'
+                + 'padding:6px 8px 7px;border-radius:5px;overflow:hidden;'
+                + 'border:1px solid rgba(230,189,118,.28);background:rgba(230,189,118,.05);'
+                + 'color:var(--xz-text);font-family:inherit;transition:all .15s;flex:0 0 auto;}',
+            '.xz-st-prem-i:hover{border-color:rgba(230,189,118,.55);background:rgba(230,189,118,.10);}',
+            /* 选中态沿用剧本按钮那套语言：底色加重 + 左侧一道竖标（不另造视觉） */
+            '.xz-st-prem-i.on{border-color:var(--xz-gold);background:rgba(230,189,118,.22);'
+                + 'box-shadow:inset 2px 0 0 var(--xz-gold-bright);}',
+            /* 展开态：底色比选中态再淡一点（两者可能同时成立 —— "正在用"且"正打开看"），
+               所以用 `box-shadow` 画外圈而不是改底色，避免与 `.on` 抢同一属性。 */
+            '.xz-st-prem-i.open{border-color:rgba(230,189,118,.72);background:rgba(230,189,118,.09);'
+                + 'box-shadow:0 0 0 1px rgba(230,189,118,.28);}',
+            /* ★★★ v613 第二轮：卡片头是一颗**按钮**（点它只展开） ★★★
+               `appearance:none` + `font-family:inherit`：不写的话在 iOS Safari 上
+               button 会套一层系统字体与内阴影，跟周围的中文完全不搭。
+               `width:100%` + `text-align:left`：让整行可点，别只在字上点得中。 */
+            '.xz-st-prem-hd{display:flex;align-items:center;gap:6px;min-width:0;width:100%;'
+                + 'box-sizing:border-box;appearance:none;background:none;border:0;padding:0;'
+                + 'cursor:pointer;text-align:left;color:inherit;font-family:inherit;}',
+            '.xz-st-prem-n{flex:1 1 auto;min-width:0;font-size:12px;font-weight:var(--xz-fw-med);'
+                + 'letter-spacing:.02em;color:var(--xz-gold-bright);'
+                + 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
+            '.xz-st-prem-i.on .xz-st-prem-n{color:#fff;}',
+            '.xz-st-prem-t{flex:0 0 auto;font-size:9px;font-weight:400;letter-spacing:0;'
+                + 'padding:1px 5px;border-radius:3px;border:1px solid rgba(230,189,118,.35);'
+                + 'color:rgba(230,189,118,.85);background:rgba(230,189,118,.08);}',
+            /* 折叠指示三角：默认 `▸`、展开 `▾`（由 HTML 里写字符，不在 CSS 里换内容 ——
+               内容换法用 `::after{content}` 会被 `content` 属性判据拦住，且不可无障碍朗读） */
+            '.xz-st-prem-c{flex:0 0 auto;font-size:10px;line-height:1;color:rgba(230,189,118,.7);'
+                + 'transition:transform .15s;}',
+            '.xz-st-prem-b{display:block;font-size:10.5px;font-weight:400;letter-spacing:0;'
+                + 'line-height:1.45;color:var(--xz-text-2);'
+                + 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
+            '.xz-st-prem-i.on .xz-st-prem-b{color:rgba(255,255,255,.74);}',
+            /* ★ 展开后的详情块：左内缩 6px，与卡片头形成"从属"关系（不另加边框，避免套框） */
+            '.xz-st-prem-d{margin:4px 0 0 6px;padding:6px 0 0 8px;'
+                + 'border-left:1px solid rgba(230,189,118,.30);}',
+            '.xz-st-prem-loc{font-size:10px;font-weight:400;letter-spacing:.02em;'
+                + 'color:rgba(230,189,118,.92);margin-bottom:4px;}',
+            /* ★ 开场白全文：`pre-wrap` **必须**保留 —— 它本来就是分三段的（醒 → 景 → 台词）。
+               写成 `normal` 会把换行全吃掉，三段粘成一大坨，那正是"看不出这是开场白"的形状。
+               ⚠ `word-break:break-word` 兜住长串中文/英文混排，别让它在窄屏撑出横向滚动。 */
+            '.xz-st-prem-op{font-size:11px;font-weight:400;letter-spacing:0;line-height:1.62;'
+                + 'color:var(--xz-text-2);white-space:pre-wrap;word-break:break-word;'
+                + 'max-height:min(30vh,200px);overflow-y:auto;overscroll-behavior:contain;'
+                + 'scrollbar-width:thin;}',
+            /* 选择按钮：铺满整行、金色实底黑字 —— 展开后视线落点唯一，不会点错。
+               ⚠ 底色走 `--xz-gold-fill` 而不是 `--xz-gold`：日光主题把 `--xz-gold` 压成
+                 深金 `#7a5510`，黑字压深金只有 1.09:1，全糊（v611 踩过的形状）。 */
+            '.xz-st-prem-pick{display:block;width:100%;box-sizing:border-box;margin-top:6px;'
+                + 'appearance:none;cursor:pointer;padding:6px 10px;border-radius:5px;'
+                + 'border:1px solid var(--xz-gold);background:var(--xz-gold-fill);'
+                + 'color:#0a0c10;font-family:inherit;font-size:11.5px;font-weight:var(--xz-fw-med);'
+                + 'letter-spacing:.02em;transition:filter .15s;}',
+            '.xz-st-prem-pick:hover{filter:brightness(1.12);}',
+            /* 窄屏：简介允许折两行（宁可折，也不截成看不懂的半句）；
+               容器降高，把屏底让给「确认开局」；开场白上限也跟着收，否则展开一条就占满全屏。 */
+            '@media (max-width:430px){.xz-st-prem{max-height:min(42vh,270px);}'
+                + '.xz-st-prem-n{font-size:11.5px;}'
+                + '.xz-st-prem-b{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;'
+                + '-webkit-box-orient:vertical;}'
+                + '.xz-st-prem-op{max-height:min(26vh,150px);font-size:10.5px;line-height:1.55;}'
+                + '.xz-st-prem-d{margin-left:3px;padding-left:6px;}}',
             /* ★ v470：页码删了之后，翻页条只剩两颗按钮 —— 「下一步」贴右边才不至于两边空荡。
                `margin-left:auto` 只给主按钮，第 1 页没有「上一步」时它仍然靠右。 */
             '.xz-st-pager .xz-st-main{justify-content:center;}',
@@ -7695,6 +7875,225 @@ d.attrs[a] = v;
         }
         return XZ_SCENARIOS[0];   /* 脏值一律回落正常时代，不抛错 */
     }
+
+    /* ══════════════════════════════════════════════════════════════════════════
+       ★★★ v613：预设开局（20 条）★★★
+       作者 2026-11-15：「在开局界面新增一些预设开局……至少 20 个……纵向滑轮列表」
+         「只定落点+开场白」「不要开场白，我他妈只要输入到酒馆输入框的那种」
+         「20 条是挑选一些有女角色的地点的开局，和一些有趣的地点的开局，要有修仙味」
+
+       ── 这个「预设」和 PLACES / 本地预设都**不是**一回事 ────────────────────
+         · `PLACES`（13 条）：老开场白索引机制（`greeting` 指向 00-开场.md 的楼层），
+           用户明确不要 —— 「不要开场白」。PLACES 保持原样、无入口，不动它。
+         · 本地预设（`XZ_PRESET_KEY`）：玩家自己「存为本地预设」，整份 draft 快照。
+         · 本表：**官方预设**，只定两样 —— 落点（`big`/`small`）+ 开场白（`open`）。
+           点一下就是往 draft 里写这三个字段，确认开局时由 `customOpeningText()`
+           拼成「落点：…」+ 开场白 追加进酒馆输入框（与玩家手填完全同一条路）。
+
+       ── 为什么只定这两样 ────────────────────────────────────────────────────
+         用户原话「只定落点+开场白」。境界/灵根/四维留给玩家自己捏 ——
+         预设是「给我一个开局场面」，不是「替我决定我是谁」。
+         ⇒ 点了预设只写 `place='custom'` / `customBig` / `customSmall` / `customOpening`，
+           **一个别的字段都不碰**（不覆盖玩家已经捏好的人物）。
+
+       ── 落点全部来自舆图真表 ────────────────────────────────────────────────
+         `big` 必须是 05 `XZ_MAP_STATES` 里真实存在的「州·域·城」三段。
+         写错一个字的后果：舆图定位不到、状态栏显示"不在任何州"、`<地点>` 标签不出图。
+         ⚠ 这个错**在浏览器里看不出来** —— 三段下拉会把非法值静默落回该州第一项，
+           所以回读到的永远是个合法串，点一遍永远是绿的。
+         ⇒ `_v613_start_presets.mjs` 专门设了一个静态档：从 05 源码里切出
+           `XZ_MAP_STATES` 的 `[...]` 字面量求值，把 20 条的 `big` 逐条求交，
+           查不到就红（已用「幽月仙宫→幽月仙宮」一字之差实测过，它抓得住）。
+         同一档还查 id 唯一 / 字段齐全 / 开场白长度 / 沿革话 / 是否分段 /
+           共用落点的 `small` 是否互不相同。
+
+       ── 文案口径 ────────────────────────────────────────────────────────────
+         要有修仙味：写气味、声音、具体动作，不写"天地灵气浓郁"这种空话。
+         每条 60~130 字，够模型起一段，又不至于把玩家想说的全说死。
+         ⚠ 不许有沿革话（「已下架」「旧写法」），世界书/提示词铁律同款。
+         ══════════════════════════════════════════════════════════════════════ */
+    var XZ_START_PRESETS = [
+        /* ── 一、有女角色的地点（12 条）────────────────────────────────────── */
+        {
+            id: 'yy-cherry', name: '幽月仙宫 · 樱桃玉榻', tag: '女角色',
+            big: '人州·中域·幽月仙宫', small: '宗主寝殿',
+            blurb: '全女禁地里醒来，黑发金瞳的女宗主侧卧榻上剥樱桃。',
+            open: '我是被一阵樱桃的甜香熏醒的。\n'
+                + '睁眼是重重叠叠的绛紫纱帐，帐外一炉冷香烧到只剩灰。玉榻另一头侧卧着个黑发金瞳的女人，'
+                + '指尖捻着一颗樱桃，也不吃，只在你眼前慢慢转。\n'
+                + '「醒了。」她把樱桃递到你唇边，眼睛却一寸不离地盯着你的反应，「说说看，你记得多少？」'
+        },
+        {
+            id: 'yy-coldmoon', name: '幽月仙宫 · 冷月惊鸿', tag: '女角色',
+            big: '人州·中域·幽月仙宫', small: '望月台',
+            blurb: '宫中剑仙在月台上独舞，一剑霜寒，回头问你从哪来。',
+            open: '望月台高得能听见风从脚底下过。\n'
+                + '台上一个人在舞剑，白衣翻成一片月色的浪。剑锋掠过来时你鬓角一凉，一缕头发无声落地。'
+                + '她收剑而立，剑尖还悬着一线寒气，隔着三步看你：「宫门有阵，你是怎么进来的？」'
+        },
+        {
+            id: 'jx-snow', name: '霜霄仙阙 · 雪夜归人', tag: '女角色',
+            big: '人州·雪域·霜霄仙阙', small: '圣女偏殿',
+            blurb: '四姐是这里圣女，万年清规不许男子入主峰，她把你藏进了偏殿。',
+            open: '雪压着殿檐，压得木头一声一声地响。\n'
+                + '我在偏殿的炭盆边醒过来，身上盖着一件绣金的白羽氅。殿门被人从外面推开一条缝，'
+                + '风雪卷进来，又被一个金发的身影挡住。她把斗篷上的雪抖在门外，才肯进来。\n'
+                + '「别出声。」她压低声音，耳朵却红着，「主峰的人今夜会来查。」'
+        },
+        {
+            id: 'fy-master', name: '霜霄仙阙 · 素心尊者', tag: '女角色',
+            big: '人州·雪域·霜霄仙阙', small: '讲经堂',
+            blurb: '清冷尊者讲经讲到你身上，问一句答不上，就要罚抄经。',
+            open: '讲经堂里静得能听见香灰落下的声音。\n'
+                + '上首的素心尊者一身素白，手里捻着念珠，念到一半忽然停下，抬眼看向你：'
+                + '「《清静经》第三篇，『道』字作何解？」\n'
+                + '满堂的人都低头不敢喘。你却听见她指尖那串念珠，转得比刚才快了一点。'
+        },
+        {
+            id: 'sanjian-girl', name: '三剑宗 · 古灵精怪', tag: '女角色',
+            big: '人州·中域·三剑宗', small: '山门石阶',
+            blurb: '山门寒碜得可疑，一位啃野果的俏师姐正想法子把你拐进去。',
+            open: '山门是两块歪石头搭的，连块匾都没有。\n'
+                + '古松上坐着个系红绳的姑娘，青绿衣裙，背一柄普通长剑，正啃野灵果啃得满手是汁。'
+                + '见你走到阶下，她把果核往树下一丢，从两丈高的枝上跳下来，落地时裙角都没乱。\n'
+                + '「来拜师的？」她凑近半步，眼睛亮得发慌，「我们这儿有门无上吐纳神诀——包吃包住。」'
+        },
+        {
+            id: 'qingmu-girl', name: '青木药宗 · 药谷伏击', tag: '女角色',
+            big: '人州·中域·青木药宗', small: '药谷',
+            blurb: '药香深谷里，小药童被邪修截断归路，一谷灵草眼看要落入人手。',
+            open: '药谷里先是极静的，静到能分出七八种药香。\n'
+                + '然后是一声瓷器摔碎。我循声过去，看见一个背着药篓的小姑娘退到崖壁下，'
+                + '前头三个黑衣人各持短刃，把谷口堵死。地上散着一卷残方，被风掀开一角。\n'
+                + '她看见我，眼里先是惊喜，随即又拼命摇头，示意我别过来。'
+        },
+        {
+            id: 'ayisha-hanhai', name: '月牙泉城 · 瀚海仙姬', tag: '女角色',
+            big: '人州·沙洲·月牙泉城', small: '泉边酒肆',
+            blurb: '沙洲唯一的水边，一位仙姬在酒肆里等你赌一局。',
+            open: '月牙泉的水在夜里是黑的，只有月亮照到的那一小片是亮的。\n'
+                + '泉边酒肆棚子快被风掀了，里头却坐得满。最里头一张矮几上摆着骰盅，'
+                + '对面是个披着薄纱的女人，赤着脚，脚踝上绕着三圈银铃。\n'
+                + '「外乡人。」她推过一只空碗，「陪我赌一局。赢了，我告诉你这口泉水为什么不会干。」'
+        },
+        {
+            id: 'xuanyu-ji', name: '玄京 · 官票庄', tag: '女角色',
+            big: '人州·雪域·玄京', small: '官票庄',
+            blurb: '雪域帝都的官票庄，掌柜娘子一眼看出你身上那枚票子不对。',
+            open: '官票庄的柜台高得能挡住人半张脸。\n'
+                + '我把那枚票子推上去时，柜后的女人只扫了一眼，指甲在票面上轻轻一刮，'
+                + '忽然抬眼把我从头看到脚。她合上账簿，声音压得很低：\n'
+                + '「这票子十五年前就该兑了。你从哪儿得的？」'
+        },
+        {
+            id: 'huanmu-fox', name: '幻木林 · 狐族', tag: '女角色',
+            big: '妖州·幽篁域·幻木林', small: '林心石台',
+            blurb: '幻木成阵，你走进的每一步都在被人看着。',
+            open: '幻木林的树是会动的——不是枝叶动，是整棵树在你不看它的时候挪了地方。\n'
+                + '我第三次看见那块青苔石头时，索性站住不动。林子里静下来，连虫声都停了。\n'
+                + '然后一根白尾巴从树后探出来，晃了晃，又缩回去。树后有人憋着笑，笑得气都漏了。'
+        },
+        {
+            id: 'luyin-ze', name: '鳞鱼族水泽 · 雾中渔歌', tag: '女角色',
+            big: '妖州·荒原域·鳞鱼族水泽', small: '泽畔舟头',
+            blurb: '荒原尽头一片水泽，雾里有人唱渔歌，唱的是你的名字。',
+            open: '荒原走到第七天，鼻子先闻到了水汽。\n'
+                + '雾大得只看得见脚前三尺，水面却是亮的。有歌声从雾里出来，很轻，调子古怪，'
+                + '一半是吟一半是哼。我听了半天才发现，那调子里反复念的是我的名字。\n'
+                + '雾里一条小舟慢慢显出来，船头立着个湿淋淋的影子，尾鳍在船板上轻轻拍。'
+        },
+        {
+            id: 'duancang-cliff', name: '断霜崖 · 孤峰刀仙', tag: '女角色',
+            big: '人州·雪域·断霜崖', small: '崖顶石坪',
+            blurb: '孤峰上只有一间石屋，屋主人在崖边磨一把比人还长的刀。',
+            open: '断霜崖只有一条上来的路，走到后头连路都没了，只剩凿在石壁上的脚窝。\n'
+                + '崖顶是一块被削平的石头。有人背对着我坐在崖边，膝上横着一把比人还长的刀，'
+                + '正用一块粗石一下一下地磨，磨一下，崖下的云就散一寸。\n'
+                + '「上来做什么。」她没回头。'
+        },
+        {
+            id: 'guanyin-xingtai', name: '司天监 · 遮眼星官', tag: '女角色',
+            big: '人州·中域·司天监', small: '观星台',
+            blurb: '观星台上蒙眼的女星官，说你命格该在昨夜就断了。',
+            open: '观星台四壁都是星图，画到一半停了笔。\n'
+                + '台中央立着个蒙着白绸的女人，面前一架浑天仪缓缓自己转着。她侧过脸，'
+                + '白绸下头似乎"看"住了我。\n'
+                + '「奇怪。」她伸手在虚空里一点，「你的命格，昨夜就该断了。」'
+        },
+
+        /* ── 二、有趣的地点（8 条）────────────────────────────────────────── */
+        {
+            id: 'taixu-ruins', name: '太虚古地 · 门前石阶', tag: '遗迹',
+            big: '人州·中域·太虚古地', small: '门前石阶',
+            blurb: '上古遗迹的门开了一条缝，缝里透出的光不是这个年头的。',
+            open: '太虚古地的门比传说里矮。\n'
+                + '传说里它高九丈，眼前这道不过两人来高，石面被风蚀得坑坑洼洼。'
+                + '可它开着一条缝——真正的门缝，黑得能吞光，缝里透出一线极淡的青。\n'
+                + '我把手搭上门沿，石头上竟然是温的。'
+        },
+        {
+            id: 'qianji-market', name: '千机坊市 · 鬼市开锣', tag: '市井',
+            big: '人州·中域·千机坊市', small: '地底鬼市',
+            blurb: '子时三刻鬼市开锣，卖的东西不认钱，只认你身上的一样东西。',
+            open: '子时三刻，千机坊市上头的青石板被从底下顶开了。\n'
+                + '灯火从缝里一盏一盏亮上来，先是一线，后是一片，把那片地照得像翻过来的星空。'
+                + '摊子摆得极密，摊主都戴着斗笠，谁也不看谁。\n'
+                + '我蹲到最近一个摊子前，摊上什么货都没有，只有一块木牌：「不认钱。以物易物，以记易记。」'
+        },
+        {
+            id: 'jiujie-leichi', name: '九劫雷池 · 引雷台', tag: '险地',
+            big: '魔州·焦雷域·九劫雷池', small: '引雷台',
+            blurb: '雷池里的雷不落地，只在半空打转，等一个敢站上引雷台的人。',
+            open: '雷池不是池，是一片被雷劈了千年的焦土。\n'
+                + '土上头的云压得极低，云里滚着不计其数的电，落到半空就被什么挡住，'
+                + '噼啪地散成一片蓝白的网，始终落不到地上。\n'
+                + '引雷台就在网底下。台面上刻着一行极浅的字：站上来的，都是想挨一下的。'
+        },
+        {
+            id: 'wuri-rift', name: '无日裂口 · 冥渊关', tag: '绝地',
+            big: '魔州·烬灰域·无日裂口', small: '冥渊关',
+            blurb: '裂口深不见底，关上的守军已经三百年没换过岗。',
+            open: '无日裂口把天劈成了两半。\n'
+                + '裂口两边是绝壁，中间什么都没有——不是黑，是"没有"，眼睛看过去会滑开。'
+                + '冥渊关就横在裂口最窄处，一道黑石关墙，关楼上的旗冻得像块铁板。\n'
+                + '守关的兵看见我，先摸了摸刀柄，才问：「过关文书。」'
+        },
+        {
+            id: 'chijin-mine', name: '赤晶矿脉 · 矿洞深处', tag: '矿脉',
+            big: '妖州·熔岩域·赤晶矿脉', small: '三号竖井',
+            blurb: '矿洞里每一块赤晶都在往一个方向长，像被谁叫去的。',
+            open: '矿洞里热得像口蒸锅。\n'
+                + '我举着灯往里走，两侧的赤晶越长越密，到后头连成一片，把整条巷道照成暗红色。'
+                + '走了一段我才发觉不对——这些晶体的尖端，全都朝着同一个方向。\n'
+                + '灯油忽然"滋"地爆了一声，巷子深处传来一种极规律的、像是心跳的闷响。'
+        },
+        {
+            id: 'gujiang-blackwater', name: '黑水渡 · 摆渡人', tag: '市井',
+            big: '妖州·荒原域·黑水渡', small: '旧渡口',
+            blurb: '荒原上的旧渡口，船夫的斗笠下从没有人看清过脸。',
+            open: '黑水渡的水是墨色的，不流，也不臭。\n'
+                + '渡口只剩半截木栈桥，桥头坐着个戴斗笠的船夫，手里一根竹篙，篙上挂着盏灭了的灯。\n'
+                + '我在栈桥边站定，他抬起斗笠一点点——底下的影子没有脸。「去哪儿？」他问，「说清楚，我渡不了含糊的地方。」'
+        },
+        {
+            id: 'suijiao-market', name: '碎角市 · 雷骨铺', tag: '市井',
+            big: '魔州·焦雷域·碎角市', small: '雷骨铺',
+            blurb: '魔族边市里，有人把雷劈过的骨头挂在门口当招牌。',
+            open: '碎角市没城墙，只有一圈用牲口骨堆的界。\n'
+                + '市口第一家铺子门楣上挂着一截骨头，焦黑，纹路里还偶尔走一线极细的电。'
+                + '铺子里没有柜台，四面墙都是架子，架子上摆着同样焦黑的骨头，大小不一。\n'
+                + '「挑一件。」铺主头也不抬，「但你得先说说，你身上带不带雷。」'
+        },
+        {
+            id: 'wangu-collection', name: '万骨集 · 骨塔', tag: '绝地',
+            big: '妖州·荒原域·万骨集', small: '骨塔底层',
+            blurb: '荒原上垒着一座骨塔，塔身每一根骨头都刻着一个名字。',
+            open: '万骨集不是集市，是一座塔。\n'
+                + '远看像一堆乱石，走近才看清全是骨头——兽骨、人骨、还有一些说不清是什么的骨，'
+                + '一层压一层垒到十几丈高，垒得极整齐。\n'
+                + '塔底有一道入口，门楣上一根肋骨横着，骨面上密密麻麻刻满了名字。最底下那行还很新。'
+        }
+    ];
     var XZ_ST_SECTS = ['预设', '道基', '灵根', '四维', '地点', '梗概'];
     function wizBarHtml() {
         var cur = Number(state.page) || 0;
@@ -7794,6 +8193,96 @@ d.attrs[a] = v;
         return h;
     }
 
+    /* ★★★ v613：灵根（血脉）整块 —— 第 3 页的四个「选择」之一 ★★★
+       ── 它为什么在函数里而不是内联在第 3 页 ────────────────────────────────
+         这一段有 5 个 `data-xz-field`（spiritRootName / spiritRootRank /
+         spiritRootPurity / spiritRootEffect / bloodDesc）+ 2 颗按钮
+         （blood-open / roll-eff-blood）+ 一行「预计天骄」读数。
+         `onField` 与 `handleAction` 全靠这些名字找元素 —— 复制一份就是两份实现，
+         将来改字段名会漏一处，而漏的那一处**不报错**，只是那个框在那一页不生效。
+       ── 与第 2 页的关系 ────────────────────────────────────────────────────
+         第 2 页只留 `sectClose('灵根')` 之前的那段注释指向本函数，**不再调用**。
+       ⚠ 返回值是**一整块**（自带 sectOpen/sectClose），调用方直接 `h +=`，别再包一层。 */
+    var SPIRIT_ROOT_RANKS = ['伪灵根', '四灵根', '三灵根', '双灵根', '天灵根', '圣灵根'];  // 顺序：低→高；圣灵根为顶（用户口径：圣灵根 > 天灵根）
+    function spiritRootBlockHtml(d) {
+        var h = '';
+        /* ★ v43 灵根选择：品阶定上限、纯度定兑现。可手填，也可「随机灵根」掷一组。 */
+        var tjNow = draftTianjiao(d);
+        /* 右侧小字放"预计天骄"—— 它是**会变的读数**，必须留在折叠区外。
+           原来它是一整行长句（还带"圣灵根·天选之子 天灵根·大天骄…"那段对照表），
+           用户说的"解释字体太多"有一半是它。 */
+        h += sectOpen('血脉 · 灵根', (d.spiritRootName || '未定') + ' · ' + (d.spiritRootRank || '伪灵根') +
+            ' · 纯度 ' + (Number(d.spiritRootPurity) || 0) + '% · 预计天骄 ' + tjNow.name, '灵根');
+        /* ★★★ v613：标题栏右侧加「🎲 全随机」—— 用户要「单项（如武器，或削血脉）的全随机」。
+           ⚠ 放标题栏而不是表单里：它掷的是**整块五项**，不是一个字段；
+             挂在任何一个输入框旁边都会被读成"只改这一格"（旁边那颗是 field 级的）。
+           ⚠ 窗口用的是 `data-xz-act="roll-blood"`（既有实现，v43 起就在），不新造动作名。 */
+        h += '<div class="xz-st-flow" style="margin:0 0 6px;gap:6px;">'
+            + '<button type="button" class="xz-st-dice" data-xz-act="roll-blood"'
+            + ' style="flex:0 0 auto;padding:4px 10px;">🎲 随机血脉</button>'
+            + '<span class="xz-st-tiny" style="flex:1 1 auto;align-self:center;">'
+            + '品阶、纯度、名称、效果一起掷；掷完仍可逐格手改</span></div>';
+        /* ★★★ v466 第四轮压扁：灵根从 3 行 → 2 行 ★★★
+           第三轮量出来的真相（`工具/_v466_flow.mjs`，760px 宽、卡片内可用 720px）：
+             行1 名称(720，独占)  ← 就是这一行白占的
+             行2 品阶(218) 纯度%(88) 效果(308) + 按钮(88) = 717/720（**刚好塞满**）
+             行3 说明(720)
+           所以能省的不是「行高」而是**少一行**：名称本来 `flex:1 1 100%` 强制独占，
+           改成 `flex:1 1 200px` 后它依旧 grow 到满宽（宽屏得 627px），
+           但**多出的那个空位现在可以给按钮**，于是按钮从行 2 尾挪走、
+           行 2 空出来的位置由「说明」顶上 ⇒ 3 行变 2 行（82px → ≈55px）。
+           ⚠ 200 这个基准不能放大：390px 窄屏下可用 350px，名称(200) + 按钮(88) + 间距(5)
+             = 293 才勉强同屏；写成 280 就会在手机上把按钮挤下去、反而多一行。
+           ⚠ 「随机灵根」按钮紧跟名称之后（DOM 顺序），不是放在末尾 ——
+             flex-wrap 严格按 DOM 顺序回流，顺序错了宽屏也拼不到一起。
+           ⚠ `data-xz-field` / `min/max` / `maxlength` 全部原样 —— 纯排版，
+             `onField` 按 `data-xz-field` 找，与在第几行、第几列完全无关。 */
+        h += '<div class="xz-st-flow" style="margin-top:0;">' +
+             '<div class="xz-st-cell" style="flex:1 1 200px;"><label>名称</label>' +
+             '<input type="text" data-xz-field="spiritRootName" value="' + esc(d.spiritRootName || '') + '" placeholder="如：九幽地冥蟒 / 太古虚龙"></div>' +
+             '<div class="xz-st-cell"><label>品阶</label><select data-xz-field="spiritRootRank">' + opts(SPIRIT_ROOT_RANKS, d.spiritRootRank || '伪灵根') + '</select></div>' +
+            '<div class="xz-st-cell" style="flex:0 0 104px;"><label>天骄预计</label>' +
+            '<div style="padding:5px 8px;border:1px solid rgba(212,175,55,.45);border-radius:8px;background:rgba(212,175,55,.10);color:var(--xz-gold-bright);font-size:12.5px;font-weight:var(--xz-fw-med);text-align:center;">' +
+            esc((tjNow && tjNow.name) || '非天骄') + '</div></div>' +
+             '<div class="xz-st-cell" style="flex:0 0 88px;"><label>纯度 %</label>' +
+             '<input type="number" data-xz-field="spiritRootPurity" min="0" max="100" value="' + (Number(d.spiritRootPurity) || 0) + '"></div>' +
+             /* ★ 效果 + 说明是两个 80 字短文本，宽屏并排一行、窄屏自动折。
+                `flex:1 1 210px` 是本条能并排的临界值：两个 210 + 间距 ≈ 430px，
+                再小会在 760px 宽时反而挤成一行两半 —— 实测 210 时两边各得 ≈325px，
+                够显示 40 个字，玩家扫一眼就知道写没写。 */
+             /* ★ v468：灵根的「效果」也标「被动」（用户：「武器那边和**灵根**那边
+                也给被动这俩字加上啊」）。
+                ⚠ 标签塞进 label 里面而不是另起一个 span 挂在 cell 外面 ——
+                  `.xz-st-cell` 是 label 上、控件下的竖排，多一个兄弟节点会多占一整行；
+                 挂进 `<label>` 里就只是标题那一行变宽，高度一分不涨。
+                 （第 2 页预算 628px，实测加完仍是 628px，见 _v466_h.mjs。）
+                ⚠ 别给这个 input 加 `readonly`：效果栏是玩家要写的（与玄诀那个
+                 「目标=自身 / readonly」不同，那个是定死的，这个是空的等人填）。 */
+             /* ★★★ v584：灵根效果 —— 🎲 旁边加**自选**入口 ★★★
+                用户原话：「血脉也开始实装效果自选，也是弹层。」
+                原来只有 🎲（随机一条）。池子 16 条三组全在 `EFF_PAS_POOL`，
+                引擎 `SPIRIT_ROOT_EFFECT_KEYS` 也全认 —— 能力在，只是没有选的入口。
+                ⚠ 两个按钮都要保留：掷是"懒得想"，选是"我想好了"。
+                  只留一个都会让另一类玩家难受。
+                ⚠ 别把「选效果」塞进这一行做内联面板（v468 试过并明确否决）：
+                  第 2 页预算已经吃满，16 条网格一进来就撑破。弹层才是不涨页高的解法。 */
+             '<div class="xz-st-cell" style="flex:1 1 210px;"><label>效果' +
+             '<span class="xz-chip-sm" style="margin-left:5px;color:#60a5fa;border-color:rgba(59,130,246,0.5);">被动</span>' +
+             '</label>' +
+             '<input type="text" data-xz-field="spiritRootEffect" maxlength="80" value="' + esc(d.spiritRootEffect || '') + '" placeholder="永久被动，可留空">' +
+             '<button type="button" class="xz-st-dice" data-xz-act="blood-open" style="flex:0 0 auto;padding:4px 9px;">选</button>' +
+             '<button type="button" class="xz-st-dice" data-xz-act="roll-eff-blood" style="flex:0 0 auto;">🎲</button></div>' +
+             '<div class="xz-st-cell" style="flex:1 1 210px;"><label>说明</label>' +
+             '<input type="text" data-xz-field="bloodDesc" maxlength="80" value="' + esc(d.bloodDesc || '') + '" placeholder="来历与体征，可留空"></div>' +
+             '</div>';
+        h += foldTip('品阶 = 这条灵根能到的<em>上限</em>；纯度 = 当下兑现几成（0~100），最低伪灵根。<br>'
+            + '天骄档只看灵根：<b>圣灵根</b> · 天选之子　<b>天灵根</b> · 大天骄　<b>双灵根</b> · 普通天骄　三灵根及以下 · 非天骄。');
+        h += sectClose('灵根');   /* ⚠ 必须传同一个 key（v470 修：这里原来漏传，多闭合一层 div，
+                                     把 .xz-st-body 提前关掉 ⇒ 下面「四维」整块掉出作用域，
+                                     四个数字框退回浏览器默认白底黑字。见 CSS 里 `.xz-st-sect-b input` 那段） */
+        return h;
+    }
+
     /* ── 第 2 页：姓名/年龄/境界/属性 + 灵根 + 四维 ─────────────────────────
        ★★★ v466：整页改成「四个美化框」，解释全部收进折叠 ★★★
        ⚠ 顺序就是玩家的填写顺序：道基 → 灵根 → 四维；预设条在最上面（它是"整体操作"）。
@@ -7872,73 +8361,20 @@ d.attrs[a] = v;
         h += foldTip('年龄可填 ' + ageRange[0] + '~' + ageRange[1] + ' 岁。');
         h += sectClose('道基');
 
-        /* 框二：灵根 */
-        /* ★ v43 灵根选择：品阶定上限、纯度定兑现。可手填，也可「随机灵根」掷一组。 */
-        var SPIRIT_ROOT_RANKS = ['伪灵根', '四灵根', '三灵根', '双灵根', '天灵根', '圣灵根'];  // 顺序：低→高；圣灵根为顶（用户口径：圣灵根 > 天灵根）
-        var tjNow = draftTianjiao(d);
-        /* 右侧小字放"预计天骄"—— 它是**会变的读数**，必须留在折叠区外。
-           原来它是一整行长句（还带"圣灵根·天选之子 天灵根·大天骄…"那段对照表），
-           用户说的"解释字体太多"有一半是它。 */
-        h += sectOpen('灵根', (d.spiritRootName || '未定') + ' · ' + (d.spiritRootRank || '伪灵根') +
-            ' · 纯度 ' + (Number(d.spiritRootPurity) || 0) + '% · 预计天骄 ' + tjNow.name, '灵根');
-        /* ★★★ v466 第四轮压扁：灵根从 3 行 → 2 行 ★★★
-           第三轮量出来的真相（`工具/_v466_flow.mjs`，760px 宽、卡片内可用 720px）：
-             行1 名称(720，独占)  ← 就是这一行白占的
-             行2 品阶(218) 纯度%(88) 效果(308) + 按钮(88) = 717/720（**刚好塞满**）
-             行3 说明(720)
-           所以能省的不是「行高」而是**少一行**：名称本来 `flex:1 1 100%` 强制独占，
-           改成 `flex:1 1 200px` 后它依旧 grow 到满宽（宽屏得 627px），
-           但**多出的那个空位现在可以给按钮**，于是按钮从行 2 尾挪走、
-           行 2 空出来的位置由「说明」顶上 ⇒ 3 行变 2 行（82px → ≈55px）。
-           ⚠ 200 这个基准不能放大：390px 窄屏下可用 350px，名称(200) + 按钮(88) + 间距(5)
-             = 293 才勉强同屏；写成 280 就会在手机上把按钮挤下去、反而多一行。
-           ⚠ 「随机灵根」按钮紧跟名称之后（DOM 顺序），不是放在末尾 ——
-             flex-wrap 严格按 DOM 顺序回流，顺序错了宽屏也拼不到一起。
-           ⚠ `data-xz-field` / `min/max` / `maxlength` 全部原样 —— 纯排版，
-             `onField` 按 `data-xz-field` 找，与在第几行、第几列完全无关。 */
-        h += '<div class="xz-st-flow" style="margin-top:0;">' +
-             '<div class="xz-st-cell" style="flex:1 1 200px;"><label>名称</label>' +
-             '<input type="text" data-xz-field="spiritRootName" value="' + esc(d.spiritRootName || '') + '" placeholder="如：九幽地冥蟒 / 太古虚龙"></div>' +
-             '<div class="xz-st-cell"><label>品阶</label><select data-xz-field="spiritRootRank">' + opts(SPIRIT_ROOT_RANKS, d.spiritRootRank || '伪灵根') + '</select></div>' +
-            '<div class="xz-st-cell" style="flex:0 0 104px;"><label>天骄预计</label>' +
-            '<div style="padding:5px 8px;border:1px solid rgba(212,175,55,.45);border-radius:8px;background:rgba(212,175,55,.10);color:var(--xz-gold-bright);font-size:12.5px;font-weight:var(--xz-fw-med);text-align:center;">' +
-            esc((tjNow && tjNow.name) || '非天骄') + '</div></div>' +
-             '<div class="xz-st-cell" style="flex:0 0 88px;"><label>纯度 %</label>' +
-             '<input type="number" data-xz-field="spiritRootPurity" min="0" max="100" value="' + (Number(d.spiritRootPurity) || 0) + '"></div>' +
-             /* ★ 效果 + 说明是两个 80 字短文本，宽屏并排一行、窄屏自动折。
-                `flex:1 1 210px` 是本条能并排的临界值：两个 210 + 间距 ≈ 430px，
-                再小会在 760px 宽时反而挤成一行两半 —— 实测 210 时两边各得 ≈325px，
-                够显示 40 个字，玩家扫一眼就知道写没写。 */
-             /* ★ v468：灵根的「效果」也标「被动」（用户：「武器那边和**灵根**那边
-                也给被动这俩字加上啊」）。
-                ⚠ 标签塞进 label 里面而不是另起一个 span 挂在 cell 外面 ——
-                  `.xz-st-cell` 是 label 上、控件下的竖排，多一个兄弟节点会多占一整行；
-                 挂进 `<label>` 里就只是标题那一行变宽，高度一分不涨。
-                 （第 2 页预算 628px，实测加完仍是 628px，见 _v466_h.mjs。）
-                ⚠ 别给这个 input 加 `readonly`：效果栏是玩家要写的（与玄诀那个
-                 「目标=自身 / readonly」不同，那个是定死的，这个是空的等人填）。 */
-             /* ★★★ v584：灵根效果 —— 🎲 旁边加**自选**入口 ★★★
-                用户原话：「血脉也开始实装效果自选，也是弹层。」
-                原来只有 🎲（随机一条）。池子 16 条三组全在 `EFF_PAS_POOL`，
-                引擎 `SPIRIT_ROOT_EFFECT_KEYS` 也全认 —— 能力在，只是没有选的入口。
-                ⚠ 两个按钮都要保留：掷是"懒得想"，选是"我想好了"。
-                  只留一个都会让另一类玩家难受。
-                ⚠ 别把「选效果」塞进这一行做内联面板（v468 试过并明确否决）：
-                  第 2 页预算已经吃满，16 条网格一进来就撑破。弹层才是不涨页高的解法。 */
-             '<div class="xz-st-cell" style="flex:1 1 210px;"><label>效果' +
-             '<span class="xz-chip-sm" style="margin-left:5px;color:#60a5fa;border-color:rgba(59,130,246,0.5);">被动</span>' +
-             '</label>' +
-             '<input type="text" data-xz-field="spiritRootEffect" maxlength="80" value="' + esc(d.spiritRootEffect || '') + '" placeholder="永久被动，可留空">' +
-             '<button type="button" class="xz-st-dice" data-xz-act="blood-open" style="flex:0 0 auto;padding:4px 9px;">选</button>' +
-             '<button type="button" class="xz-st-dice" data-xz-act="roll-eff-blood" style="flex:0 0 auto;">🎲</button></div>' +
-             '<div class="xz-st-cell" style="flex:1 1 210px;"><label>说明</label>' +
-             '<input type="text" data-xz-field="bloodDesc" maxlength="80" value="' + esc(d.bloodDesc || '') + '" placeholder="来历与体征，可留空"></div>' +
-             '</div>';
-        h += foldTip('品阶 = 这条灵根能到的<em>上限</em>；纯度 = 当下兑现几成（0~100），最低伪灵根。<br>'
-            + '天骄档只看灵根：<b>圣灵根</b> · 天选之子　<b>天灵根</b> · 大天骄　<b>双灵根</b> · 普通天骄　三灵根及以下 · 非天骄。');
-        h += sectClose('灵根');   /* ⚠ 必须传同一个 key（v470 修：这里原来漏传，多闭合一层 div，
-                                     把 .xz-st-body 提前关掉 ⇒ 下面「四维」整块掉出作用域，
-                                     四个数字框退回浏览器默认白底黑字。见 CSS 里 `.xz-st-sect-b input` 那段） */
+        /* ★★★ v613：灵根（血脉）整块**已搬到第 3 页** ★★★
+           作者 2026-11-15：「血脉搬迁到技能分页里，刚刚好四个都是选择的」。
+           第 3 页从此是四个「选择」：血脉 / 玄技 / 玄诀 / 武器 —— 全是"从池子里选一个"，
+           而第 2 页只剩「道基 + 四维」两样**打数字**的，语义反而更干净了。
+
+           ── 为什么抽成 `spiritRootBlockHtml(d)` 而不是复制一份到第 3 页 ──────
+             这一段有 5 个 `data-xz-field`（spiritRootName/Rank/Purity/Effect、
+             bloodDesc）+ 2 颗按钮（blood-open / roll-eff-blood），onField 与
+             handleAction 都按这些名字找。复制一份就是两份实现：
+             将来改字段名会漏一处，而漏的那一处**不报错**，只是那个框在那一页不生效。
+             ⇒ 抽函数，第 2 页不再调用，第 3 页调用。
+           ⚠ 别把那段从 `spiritRootBlockHtml` 里删了当"搬走"：`draftTianjiao` 的读数、
+             天骄预计这些都在里面。 */
+
         /* 框三：四维 */
         h += sectOpen('四维分配', '上限 ' + rule.total + ' 点');
         /* ★★★ v466 第三轮压扁：四维从 2 行 → **1 行** ★★★
@@ -7998,6 +8434,17 @@ d.attrs[a] = v;
            那条上方的病历）。这里只留一句提醒：
            ⚠ 别再给某一页单独挂密度档：玩家逐页翻的时候会立刻看出"这页跟别页不一样"，
              而那正是 v470 要修的病。要降高度只能靠减**行数**。 */
+        /* ★★★ v613：第 3 页 =「四个都是选择的」★★★
+           作者 2026-11-15：「血脉搬迁到技能分页里，刚刚好四个都是选择的」。
+           四个区块从上到下的顺序按"玩家在开局时最可能先想什么"排：
+             ① 血脉   —— 先定出身（决定天骄档，影响后面能学几门）
+             ② 已配   —— 已经选了什么（只读回看）
+             ③ 锻造台 —— 想加/改什么（操作区，弹层入口）
+             ④ / 全随机 —— 懒得挑的人一条捷径
+           ⚠ 血脉**必须放最上面**：它是这四个里唯一影响"其余三个能装多少"的
+             （天骄档 → 品阶上限），放下面会让玩家先挑完武器再发现该重开。 */
+        h += spiritRootBlockHtml(d);
+
         /* 核心专区：展示所有已配置的玄技栏
            ★ v466：标题只出现一次 —— 走 sect 的标题栏，框内不再重复输出。
            ★★★ v468：右侧计数去掉了「部 / 件 / 门」三个量词（用户：「这里，0部去掉，
@@ -8056,6 +8503,43 @@ d.attrs[a] = v;
         /* 一句提示：让玩家知道点进去能干什么，而不是以为它只是个"看"的按钮。
            ⚠ 不写"弹层"这种实现词 —— 玩家不关心它是浮层还是别的。 */
         h += '<div class="xz-st-tiny" style="margin-top:5px;text-align:center;">新建或修改玄技／玄诀／武器，效果可以逐条勾选</div>';
+        h += sectClose();
+
+        /* ★★★ v613：一键总全随机 ★★★
+           作者 2026-11-15：「血脉和技能和武器搞个全随机按钮，
+             有一键总全随机和单项（如武器，或削血脉）的全随机。」
+           ── 为什么单独一块、还放在最后 ────────────────────────────────────
+             它掷的是**上面三块的全部内容**（血脉五项 + 玄技/玄诀/武器各一件），
+             是一次性的"我很懒，给我一套能玩的"。放在最后 = 玩家先看到自己
+             要填什么，再看这条捷径；放最前面会让整页像"只有随机"。
+           ── 单项随机在哪 ─────────────────────────────────────────────────
+             · 血脉  → 上面「血脉 · 灵根」标题栏下面那颗「🎲 随机血脉」（五项一起）
+             · 玄技/玄诀/武器 → 本块下面三颗，各掷一件**装进已配**
+               （不是掷表单 —— 表单是"我马上要添加的那件"，掷了还得点添加）
+           ── ⚠ 掷的是"补满到上限"还是"各一件" ─────────────────────────────
+             取**各补到上限**：玄技 30 门全掷满会瞬间灌满整页已配列表，
+             而开局真要的是"我有几门能打的"。⇒ 玄技补到 min(3, 上限)，
+             玄诀补到 min(2, 上限)，武器恒 1 件（上限就是 1）。
+             这与"全随机"的语义不冲突 —— 它保证的是**能开局**，不是塞满。
+           ⚠ 已配非空时**先清再掷**：混着旧件掷会变成"随机加了几件"，
+             玩家点全随机的心理预期是"整页重新来一套"。 */
+        h += sectOpen('全随机', '一键掷一套');
+        h += '<button type="button" class="xz-st-main" data-xz-act="roll-everything"'
+            + ' style="width:100%;">🎲 全部随机（血脉 + 玄技 + 玄诀 + 武器）</button>';
+        h += '<div class="xz-st-flow" style="margin:6px 0 0;gap:6px;">'
+            + '<button type="button" class="xz-st-dice" data-xz-act="roll-blood"'
+            + ' style="flex:1 1 0;padding:5px 8px;">🎲 只掷血脉</button>'
+            + '<button type="button" class="xz-st-dice" data-xz-act="roll-kind" data-xz-kind="玄技"'
+            + ' style="flex:1 1 0;padding:5px 8px;">🎲 只掷玄技</button>'
+            + '<button type="button" class="xz-st-dice" data-xz-act="roll-kind" data-xz-kind="玄诀"'
+            + ' style="flex:1 1 0;padding:5px 8px;">🎲 只掷玄诀</button>'
+            + '<button type="button" class="xz-st-dice" data-xz-act="roll-kind" data-xz-kind="武器"'
+            + ' style="flex:1 1 0;padding:5px 8px;">🎲 只掷武器</button>'
+            + '</div>';
+        h += foldTip('「全部随机」＝ 血脉五项 + 玄技 3 门 + 玄诀 2 部 + 武器 1 件，'
+            + '已配的会先清空再掷。单项只动那一块，其余一概不碰。<br>'
+            + '掷完每一项都还能手改 —— 随机只是省事，不是锁死。'
+            + '<br>⚠ 名字是模板名（如「炽焰诀」），想换成自己编的名字直接在锻造台里改。');
         h += sectClose();
         /* ★ v470：原来这里关的是 `.xz-st-tight`，现在那层包裹没了，此行一并去掉。 */
         return h;
@@ -8159,6 +8643,102 @@ d.attrs[a] = v;
     function pageWizPlaceHtml(d) {
         var h = "";
         d.place = "custom";
+
+        /* ★★★ v613：预设开局（纵向滑轮）★★★
+           作者 2026-11-15：「新增一些预设开局……至少 20 个……不用弹层，采用纵向滑轮式」
+           放在「自定义开局」**上面**：它是这一页最短的一条路（点一下 → 落点和开场白都填好），
+           而下面的下拉框是"我自己一格一格填"，属于进阶路径。
+
+           ── 为什么是纵向滑轮而不是横向卡片 ────────────────────────────────
+             作者点名「纵向滑轮列表」。而且每条要带一句 blurb（否则 20 个名字长得一样），
+             横向卡片要同时塞名字+简介+标签，手机上会挤成一条缝。
+             纵向列表可以名字一行、简介一行，20 条滚动浏览反而更快。
+
+           ── 高度 ─────────────────────────────────────────────────────────
+             定高 `min(46vh, 320px)` + `overflow-y:auto`。
+             ⚠ 定高必须有上限：不定高的话 20 条会把第 4 页撑到几千像素，
+               下面「确认开局」按钮要滚很久才够得着（本项目「确认开局按钮消失」的形状）。
+             ⚠ `min-height:0` 必须配 `flex:1`，否则在 flex 容器里滚不动（v592 同款）。 */
+        h += sectOpen('预设开局', XZ_START_PRESETS.length + ' 条', '预设开局');
+        /* ★★★ v613 第二轮：改成**卡片折叠式** ★★★
+           作者 2026-11-15（原话）：「开场这里需要改，我要改成卡片式，也就是，
+             卡片里默认折叠，点开后是更为详细的开场白内容，然后有个选择按钮。」
+
+           ── 与上一版（整条即按钮）的本质差别 ────────────────────────────────
+             上一版每条是一个 `<button data-xz-act="prem-pick">`：点火就载入。
+             问题不是"能不能用"，而是**点之前没法看** —— 20 条里挑一条，
+             玩家最想知道的是「这一局开场是什么样」，而上一版的 blurb 只有一行，
+             等于闭着眼选。⇒ 拆成两级动作：
+               · 点卡片头  → 展开（只展开，**不载入**）
+               · 点「选择此开局」 → 才真的写进落点与开场白
+             ⚠ 展开与选择**必须是两个元素**：合成一个的话，"我想先看看"
+               会直接把当前填的东西覆盖掉（而且是静默覆盖 —— 玩家只会觉得
+               "我点了一下就变了"）。
+
+           ── 为什么展开态存在 `state.premOpen` 而不是用 `<details>` ──────────
+             全项目的折叠说明都用原生 `<details>`（`.xz-st-fold`），那条经验**不适用于这里**：
+             `<details>` 的展开态是 DOM 自己记的，而本卡片每次 `render(true)` 都会
+             `innerHTML` 整块重建 ⇒ 展开态归零。玩家点开一条、再点别处触发一次重绘，
+             刚才展开的那条就自己合上了（本项目踩过十几次的"点了没反应/自己回去了"）。
+             ⇒ 用 `state.premOpen` 记住"哪一条是展开的"，并由它生成本次 HTML。
+           ⚠ 它同时要进 render sig：不是为了主路径（`render(true)` 会跳过 sig），
+             而是为了 1.5s 轮询那次 `render(false)` 能补画 —— 详见 sig 里那段的说明。
+           ⚠ 只允许同时展开一条：20 条全展开等于回到"一屏几千像素"的老病。
+             这不是限制，是让"我在看哪一条"有唯一答案。 */
+        h += '<div class="xz-st-prem">';
+        for (var _pi = 0; _pi < XZ_START_PRESETS.length; _pi++) {
+            var _p = XZ_START_PRESETS[_pi];
+            /* ★★★ v613：选中判定必须比 big **和** small ★★★
+               20 条里有两组共用同一个 big（「幽月仙宫」两条、「霜霄仙阙」两条），
+               它们只靠 small 区分（宗主寝殿 / 望月台，圣女偏殿 / 讲经堂）。
+               只比 big 的话，载入其中一条会让**两条同时高亮** ——
+               玩家看到两行都是"正在用"，不知道该点哪条收起、也不知道自己到底
+               选了哪个开场。这类"看起来对、信息却是错的"比不亮更糟。
+               ⚠ 代价：载入后玩家若手改了「小位置」，高亮会消失。
+                 那是**诚实**的 —— 他确实已经不是在用这条预设的原始落点了。
+                 别为了"高亮别灭"改成只比 big，那会把上面那个双亮带回来。 */
+            var _pOn = (String(d.customBig || '') === _p.big
+                     && String(d.customSmall || '') === _p.small);
+            var _pOp = (String(state.premOpen || '') === _p.id);
+            h += '<div class="xz-st-prem-i' + (_pOn ? ' on' : '') + (_pOp ? ' open' : '') + '">';
+            /* 卡片头 = 折叠/展开的开关。**不载入**任何东西。 */
+            h += '<button type="button" class="xz-st-prem-hd"'
+                + ' data-xz-act="prem-toggle" data-xz-prem="' + esc(_p.id) + '"'
+                + ' aria-expanded="' + (_pOp ? 'true' : 'false') + '"'
+                + ' title="' + (_pOp ? '收起' : '展开看开场白') + '">'
+                + '<span class="xz-st-prem-n">' + esc(_p.name) + '</span>'
+                + '<span class="xz-st-prem-t">' + esc(_p.tag) + '</span>'
+                + '<span class="xz-st-prem-c" aria-hidden="true">' + (_pOp ? '▾' : '▸') + '</span>'
+                + '</button>';
+            /* 一句梗概：折叠态唯一能看到的"这是什么"，所以**收起时也显示** */
+            h += '<div class="xz-st-prem-b">' + esc(_p.blurb) + '</div>';
+            if (_pOp) {
+                h += '<div class="xz-st-prem-d">';
+                /* 落点单独一行：它是"这一局在哪发生"，与正文分开读更清楚 */
+                h += '<div class="xz-st-prem-loc">' + esc(_p.big)
+                    + (_p.small ? (' · ' + esc(_p.small)) : '') + '</div>';
+                /* ★ 开场白原文：`white-space:pre-wrap` 保留换行（它本来就是分段写的）。
+                   ⚠ 不截断、不加省略号 —— 这一段就是"点开后更为详细的内容"本身，
+                     截了就白展开。玩家自己判断这局合不合口味。 */
+                h += '<div class="xz-st-prem-op">' + esc(_p.open) + '</div>';
+                h += '<button type="button" class="xz-st-prem-pick"'
+                    + ' data-xz-act="prem-pick" data-xz-prem="' + esc(_p.id) + '">'
+                    + (_pOn ? '✓ 正在用这个开局（点一下重新载入）' : '选择此开局')
+                    + '</button>';
+                h += '</div>';
+            }
+            h += '</div>';
+        }
+        h += '</div>';
+        h += foldTip(
+            '点卡片**只是展开看开场白**，不会动你填的东西；展开后点「选择此开局」才把'
+            + '<b>落点</b>和<b>开场白</b>填好，其余（姓名/境界/血脉/四维/玄技）仍由你自己定。'
+            + '载入后照样能改下面的下拉框和开场白框。<br>'
+            + '· 金色左边线且名字发白的，就是**当前落点与它一致**的那条。'
+            + '· 开场白是写进酒馆输入框的正文（配「落点：州·域·城」那行），不是卡里的固定楼层。'
+        );
+        h += sectClose('预设开局');
+
         h += sectOpen("自定义开局", "");
         h += customBlock(d);
         h += sectClose();
@@ -8765,6 +9345,39 @@ d.attrs[a] = v;
                           长度不变 ⇒ sig 不变 ⇒ 弹层里那颗按钮的 ✓ 不跟手。
                           放**整串**进去：它最多几百字，sig 每月算一次，代价可以忽略。 */
                        state.bloodPick ? String((state.draft && state.draft.spiritRootEffect) || '') : '',
+                       /* ★★★ v613：预设开局载入必须能重画 ★★★
+                          `prem-pick` 只改 `state.draft`（customBig/customSmall/customOpening），
+                          而 draft **全项目都不进 sig**（每次 render 从 DOM 重贴）。
+                          ⇒ 不补这一项，点预设 = 改了 draft、签名一模一样、render 直接 return，
+                            表现就是「点了没反应」，而落点下拉和开场白框全是旧的。
+                          选 `customBig` 作读数：它同时决定
+                            · 哪条预设高亮（`.xz-st-prem-i.on` 比的就是它）
+                            · 「自定义开局」三段下拉显示哪个城
+                            · 开场白框里的字（customOpening 与本项同一次写入，一起变）
+                          ⚠ 别只放 `customBig` 的**长度**：换一条同长度落点的预设
+                            （如「幽月仙宫」↔「霜霞仙阙」这类等长城名）长度不变 ⇒ sig 不变。
+                            直接放整串，几百字，代价可忽略（与上面 bloodPick 同一条经验）。 */
+                       String((state.draft && state.draft.customBig) || ''),
+                       /* ★★★ v613 第二轮：预设卡片的**展开态** ★★★
+                          作者把预设开局改成「卡片默认折叠 → 点开看全文 → 点选择才载入」，
+                          展开/收起只改 `state.premOpen`（不动 draft 一个字）。
+                          ── 先说清一个容易搞反的因果 ──────────────────────────────
+                            主路径**不靠**这一格：点卡片头走的是 `render(true)`，
+                            `hard = (force !== false)` ⇒ hard=true ⇒ 上面那条
+                            `sig === state.lastSig` 判断**整条被跳过**。
+                            所以这里不放它，点开照样能展开。
+                          ── 那为什么还要放 ──────────────────────────────────────
+                            因为 `render()` 开头有一条 `if (state.rendering || dead) return;`。
+                            玩家点得快 / 正好撞上一次重绘时，点击触发的 `render(true)`
+                            会被**整条丢掉**（不排队、不重试）。此时唯一能补画的，
+                            就是 1.5s 轮询里那次 `render(false)` —— 而那次是**要比 sig 的**。
+                            不放它 ⇒ sig 与 lastSig 一样 ⇒ 补画也不发生 ⇒ 卡片永远停在折叠态。
+                            这是"偶发、且只在手快时出现"的一类，复现极难、查起来极贵。
+                          ⚠ 别用"展开了几条"这种读数：同时只允许展开一条，那个数恒为 0/1，
+                            从一条换到另一条时 1→1 不变 ⇒ sig 一样。必须放**是哪一条**（id）。
+                          ⚠ 也别指望上面那条 `customBig` 兜住：展开**不碰 draft**，
+                            点开一条新卡片时 customBig 一个字符都不会变。 */
+                       String(state.premOpen || ''),
                        ].join('|');
             if (mounted && ours && !hard && sig === state.lastSig) { scrubMark(mes); return; }
             if (!hard && focusInside(pre)) { scrubMark(mes); return; }
@@ -9902,23 +10515,41 @@ host.__xzGuard = true;
                 return;
             }
             if (act === 'roll-blood') {
-                /* 随机灵根：按权重掷品阶（越高贵越稀），纯度 1~100，再配一个名字。
-                   掷出来仍可手改 —— 随机是给想省事的人用的，不是强制。 */
-                var _rk = [['伪灵根', 30], ['四灵根', 24], ['三灵根', 12], ['双灵根', 8], ['天灵根', 5], ['圣灵根', 3]];  // 随机灵根权重：圣灵根最稀（权重最低）
-                var _tot = 0, _i;
-                for (_i = 0; _i < _rk.length; _i++) _tot += _rk[_i][1];
-                var _r = Math.random() * _tot, _pick = '伪灵根';
-                for (_i = 0; _i < _rk.length; _i++) { _r -= _rk[_i][1]; if (_r <= 0) { _pick = _rk[_i][0]; break; } }
-                var _names = { '伪灵根': '山野散根', '四灵根': '小宗传承根', '三灵根': '望族古根',
-                               '双灵根': '圣地主脉根', '圣灵根': '太古神兽根', '天灵根': '帝者遗脉' };
-                d.spiritRootRank = _pick;
-                d.spiritRootPurity = 5 + Math.floor(Math.random() * 96);
-                d.spiritRootName = _names[_pick] || _pick;
-                /* ★ v74：随机灵根**连效果一起掷** —— 按品阶从预设池抽一条自由文本被动，
-                   否则掷出来的血只有名/阶/纯度，「效果」栏永远是空的（用户报障）。 */
-                d.spiritRootEffect = rollBloodEffect(_pick);
-                state.note = '灵根已掷：' + d.spiritRootName + '（' + d.spiritRootRank + ' ' + d.spiritRootPurity + '%）' +
-                    ' — 效果：' + d.spiritRootEffect;
+                /* ★ v613：实现搬到 `rollBloodInto`（「全部随机」与「只掷血脉」共用一份） */
+                var _bsum = rollBloodInto(d);
+                state.note = '血脉已掷：' + _bsum + ' — 效果：' + d.spiritRootEffect;
+                render(true); return;
+            }
+            /* ★★★ v613：单项全随机（只掷玄技 / 只掷玄诀 / 只掷武器）★★★
+               作者 2026-11-15：「血脉和技能和武器搞个全随机按钮，
+                 有一键总全随机和单项（如武器，或削血脉）的全随机。」
+               ⚠ 掷的是**「已配」里的东西**（d.items），不是锻造台表单 ——
+                 表单是"我马上要添加的那一件"，掷了还得再点「添加」，
+                 那就不叫"一键"了。玩家的预期是"我现在有了一把随机武器"。
+               ⚠ 种类来自 `data-xz-kind`（按钮自带），不读 `state.tab`：
+                 `state.tab` 是锻造台当前页签，与这三颗按钮点哪个无关。 */
+            if (act === 'roll-kind') {
+                var _rk2 = String(t.getAttribute('data-xz-kind') || '');
+                if (['玄技', '玄诀', '武器'].indexOf(_rk2) < 0) return;
+                var _rn2 = rollKindInto(_rk2, d);
+                state.note = _rn2
+                    ? ('🎲 ' + _rk2 + '已整批重掷：' + _rn2 + ' 件。想改哪件点「修改」。')
+                    : ('⚠ ' + _rk2 + '没能掷出东西（预设池是空的）。');
+                render(true); return;
+            }
+            /* ★★★ v613：一键总全随机 ★★★
+               = 血脉五项 + 玄技 + 玄诀 + 武器，四块一起换一套。
+               ⚠ 一句 note 里报**四样都动了**：只报"已随机"的话，玩家看不出
+                 武器是"本来就那把"还是"被换掉了"。 */
+            if (act === 'roll-everything') {
+                var _esum = rollBloodInto(d);
+                var _en = {};
+                ['玄技', '玄诀', '武器'].forEach(function (k4) { _en[k4] = rollKindInto(k4, d); });
+                /* 锻造台如果正开着编辑模式，它的下标也跟着失效了 ⇒ 一并复位 */
+                state.forge = null;
+                state.note = '🎲 全部随机：血脉 ' + _esum
+                    + '；玄技 ' + _en['玄技'] + ' 门／玄诀 ' + _en['玄诀'] + ' 部／武器 ' + _en['武器'] + ' 件。'
+                    + '名字是模板名，想换自己编的就在锻造台里改。';
                 render(true); return;
             }
             /* ★ v1.053：在场人物 ·「其他」自填 */
@@ -9972,6 +10603,55 @@ host.__xzGuard = true;
                 return;
             }
             if (act === 'mist-view') { openMistView(); return; }
+            /* ══ ★★★ v613：预设开局 · 载入 ═★★ ────────────────────────────
+               作者 2026-11-15：「只定落点+开场白」。
+               ── 只写这四个字段，别的**一个都不碰** ─────────────────────────
+                 `place='custom'`（走自选开局那条路，才吃 customOpening）、
+                 `customBig` / `customSmall`（落点）、
+                 `customOpening`（开场白）。
+                 境界/灵根/四维/技能/剧本/关系全部保留玩家当前的选择 ——
+                 预设给的是"一个开局场面"，不是"替你重捏一遍人"。
+                 ⚠ 这是本函数的**唯一**正确写法。若顺手把 d.scenario 也改了，
+                   玩家明明选了「灰雾」，点个预设就变回正常时代，而且界面不报。
+               ── 落点必须回写 `bigState`/`bigArea`/`bigCity` 三兄弟吗 ──────────
+                 不用。`customBlock(d)` 里的三段下拉是**从 `d.customBig` 反解**
+                 （`pickTriple(tree, d.customBig)`），改 customBig 就够；
+                 而且 `onField` 的三兄弟只在玩家**手动动下拉**时才写。
+                 ⇒ 这里少写一次反解，也少一处漂移的可能。 */
+            /* ★★★ v613：展开/收起预设卡片 —— **只展开，不载入** ★★★
+               作者：「卡片里默认折叠，点开后是更为详细的开场白内容，然后有个选择按钮。」
+               ⚠ 这个分支不许碰 `d` 的任何字段。一旦在这里写 draft，就会出现
+                 "我只是想看看"却把当前开局覆盖掉的事故（而且玩家不会立刻发现）。
+               ⚠ 同时只允许展开一条：`state.premOpen` 存的是 id（不是布尔），
+                 点另一条就换过去；点同一条则收起（空串）。 */
+            if (act === 'prem-toggle') {
+                var _tid = String(t.getAttribute('data-xz-prem') || '');
+                state.premOpen = (String(state.premOpen || '') === _tid) ? '' : _tid;
+                render(true);
+                return;
+            }
+            if (act === 'prem-pick') {
+                var _pid = String(t.getAttribute('data-xz-prem') || '');
+                var _ph = null;
+                for (var _pj = 0; _pj < XZ_START_PRESETS.length; _pj++) {
+                    if (XZ_START_PRESETS[_pj].id === _pid) _ph = XZ_START_PRESETS[_pj];
+                }
+                if (!_ph) { state.note = '⚠ 不认识的预设开局：' + _pid; render(true); return; }
+                d.place = 'custom';
+                d.customBig = _ph.big;
+                d.customSmall = _ph.small;
+                d.customOpening = _ph.open;
+                /* ⚠ 不要在这里碰 `state.sectOpen`：`sectOpen()/sectClose()` 的 key 形参
+                   已被忽略（手风琴撤了，所有分区恒定展开，见这两个函数的实现）。
+                   写了也不会有任何效果，只会让后来的人以为这里还有折叠逻辑。 */
+                /* ★ 载入后**收起**这条卡：展开态留着的话，"选好了"这件事没有任何可见变化
+                   （卡片本来就开着，只是左边多了条金线），玩家会以为没成功又点一次。
+                   收起来 = 一次明确的状态迁移：看 → 选 → 收起。 */
+                state.premOpen = '';
+                state.note = '已载入预设开局：' + _ph.name + '（落点与开场白已填好，其余仍按你自己的设定）。';
+                render(true);
+                return;
+            }
             if (act === 'kin-none' || act === 'kin-six') {
                 d.kin = (act === 'kin-six') ? 'six' : '';
                 wbToggleNow(d.kin === 'six', KIN_ENTRY_TITLE, '人物关系预设');
