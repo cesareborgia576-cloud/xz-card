@@ -804,9 +804,36 @@
          下限仍按「顶配天才的到境年龄」上浮少许（练气 16 / 筑基 36 / 金丹 88 / 元婴 165 /
          化神 260 / 炼虚 375），只在寿元拉长后放开上限，下限不动 ——
          否则会冒出「十五岁元婴」这种比寿元更离谱的东西。
-       ⚠ 上限必须与《设定-数值表》逐格相等：`工具/_v290_realm_audit.mjs` 会读那张表比对。 */
+       ⚠ 上限必须与《设定-数值表》逐格相等：`工具/_v290_realm_audit.mjs` 会读那张表比对。
+
+       ══════════════════════════════════════════════════════════════════════
+       ★★★ v621（作者 2026-11-16）：这张表**只管"这一档能活多久"，不再管创角能填几岁** ★★★
+       作者原话（连改三版，以最后一句为准）：
+         「还有这个年龄，也记得改，最低8岁改成。」
+         「不，是最低年龄不再受限，任何境界都不再受限，这是开局创角的主角特权，
+           条目不用改，」
+
+       ── 所以改的是什么 ────────────────────────────────────────────────────
+         `REALM_AGE_RANGE` 从「创角输入框的合法区间」降格成「**寿元**参考区间」：
+         · 输入框的 `min` / `max` 不再从这里取（否则玩家选「金丹」就被锁在 88~500）；
+         · `onField` 不再按境界段 clamp；
+         · 换境界时那段「低于下限就抬到下限」也一并**去掉**（那是同一道闸的第二个实现）。
+         ⇒ 创角年龄只受一个绝对边界约束（见 `XZ_AGE_ABS`），与境界无关。
+       ── 为什么这是对的（不是"放开校验"）──────────────────────────────────
+         境界与年龄本来就是两件事：801 岁的老怪物可以是元婴，十几岁的天才也可以是元婴。
+         原来那张表把"顶配天才的到境年龄"当成了年龄下限 —— 那是**统计口径**，
+         不是**个体事实**。用它卡输入框，等于告诉玩家"你不许比平均天才更快"。
+         而这正是作者要的"主角特权"：这一版主角可以不走平均线。
+       ── ⚠ 条目不用改（作者明说）──────────────────────────────────────────
+         《变量更新规则》里那条 `年龄: {type: number, 10~2500}` **保持原样**。
+         它管的是 AI 每楼写变量的合法区间，不是创角特权；动了它会影响既有人物与
+         DLC 人物的建档校验。作者原话「条目不用改」就是这一条。
+         （本轮一度把它改成 8~2500，已按作者口径全部还原。）
+       ══════════════════════════════════════════════════════════════════════ */
     var REALM_AGE_RANGE = {
-        '凡人': [10, 80],
+        /* ⚠ 这张表现在**只用来显示"这一档大约能活多久"**（标题提示、`foldTip` 里的参考值），
+           不再参与任何 clamp。真要改创角的年龄边界，改下面的 `XZ_AGE_ABS`。 */
+        '凡人': [8, 80],
         '练气': [16, 150],
         '筑基': [36, 300],
         '金丹': [88, 500],
@@ -814,6 +841,15 @@
         '化神': [260, 2000],
         '炼虚': [375, 3000]
     };
+    /* ★★★ v621：创角年龄的**唯一**绝对边界（与境界无关）★★★
+       下限 8：作者先说过「最低 8 岁」，随后又改成「不再受限」——
+         两句并不矛盾：**境界的那套下限全部取消**（选金丹不必再填 88 岁以上），
+         但完全无下限会让「0 岁」「负数」「3 岁」也进来，那是数据错误不是特权。
+         ⇒ 保留 8 这个绝对底线（凡人段原来的下限），境界段一律不管。
+       上限 2500：与《变量更新规则》里 `10~2500` 的上限同源 —— 那一条是 AI 写变量的
+         合法区间，创角填得比它更大，下一楼就会被模型判非法、把年龄改回去。
+         ⚠ 这个 2500 必须与条目里那个数字**保持一致**；下限不要求一致（8 < 10 是特权）。 */
+    var XZ_AGE_ABS = [8, 2500];
     function getRealmAgeRange(realm) {
         return REALM_AGE_RANGE[bigOf(realm)] || REALM_AGE_RANGE['练气'];
     }
@@ -1149,36 +1185,7 @@
       { k: '伤害', g: '伤', selfOk: false, base: '{DMG}', unit: 'num', txt: '本击直接伤害（按品质 × 境界算）' },
 
       /* ── 常驻增益：挂上就一直有，不看场上发生什么 ── */
-      /* ★ v506：这一组原来 28 项，砍到 25 —— 用户 2026-10-31：
-         「怎么几把多重复的，回血，治疗，回复，你想干什么」「又叠层增伤是吧」
-         ① `回复` 删：引擎里 beh 与「治疗」**逐字相同**（都是 heal），纯别名，
-            而且它的说明「每手回血」本身就是假的（heal 是一次性结算）。
-         ② `速度` 删：说明里自己写着「同提速，另一个写法」。
-         ③ `叠层增伤` 删（自选器）：
-            ⚠ 写这条注释当时（v506）的理由是「它落 ningshenRounds，全库没有一处读」，
-              那个理由**已经过期** —— v506 当轮就补了消费点（processTurnStartDots 的
-              ningshenRounds 那段），现在写「叠层增伤」真的会涨 swordIntent，本文件下面
-              的注释与 `工具/_v514_effect_matrix` 都实测过。
-              仍然不摆进自选池，理由变成了「它与叠层是同一个东西的两种说法，
-              玩家分不清」——不是因为它不生效。
-         ⚠ `回复`/`速度` **不从引擎删**：世界书和 210 门预设里还写着它们，
-            删引擎 = 整批招式静默失效。只是自选器不再摆出来。
-         ④ `势种` —— **v514 已从引擎彻底删除**（不是只从自选器下架）：
-            用户 2026-10-31：「势种删掉啊，没有势种这个东西，势种是早期的东西，
-            现在只有叠层」。三处实现一起清：机制名表 / `applyV75Effects` 的
-            `case 'v2seed'` 分支 / `processTurnStartDots` 里读 `v2domain` 的整段。
-            现在写「势种」= 引擎不认 = 落叙述、不生效、也不报错。
-            ⚠ `V2_STATES` / `v2Add` 一个字都没动 —— 那是**叠层**四支的底层，
-              与"势种"这个机制名不是一回事。
-         ⑤ `净化` 不进自选器（作者拍板下架）：引擎仍认这个名字（存量招式、预设、
-           DLC 档案都写着），登记在 `XZ_ATOM_INTERNAL` 里；世界书目录、翻译词表、
-           本池、下面的 AI 产出清单一律不留它 —— 四处同时清，漏一处模型就还会照抄。
-         ⑥ `牺牲` 从常益挪到**条益**（条件增益）：割自己的血换增伤，
-            收益取决于割了多少，不是"挂上就一直有"。用户：「牺牲不是他妈条件增益吗」。
-         ⑦ `回血` 显示名改 **持续治疗**：与「治疗」（一次性）形成对照，
-            玩家一眼能分出"瞬间一口"和"每手都回"。引擎侧另加了同义词，
-            写「回血:10」的旧招式不受影响。
-         ⚠ 闸 `_v447_eff_picker` 的 ALIAS_OF / INTERNAL_ONLY / BANNED 已同步（漏一个它判红）。 */
+      
       { k: '吸血', g: '常益', selfOk: false, base: 30, unit: 'pct', txt: '本击伤害的 30% 回给自己（一次结算）' },
       { k: '治疗', g: '常益', base: '{DMG}', unit: 'num', txt: '瞬间回一大口，一次结算（按品质 × 境界）', selfOk: true },
       { k: '护盾', g: '常益', base: '{DMG}', unit: 'num', txt: '一层吸收伤害的盾', selfOk: true },
@@ -1734,8 +1741,7 @@ var XZ_SKILL_SKELETON = {
   '终结式':   ['兑付全部层数', '每层+12%'],
   '绝式':     ['兑付每层+12%', '必暴', '穿防40%'],
   '本命式':   [],
-  /* ★ v514：与 04 的 SKILL_SKELETON 逐字同源 —— '领域' 已撤空。
-     原来挂的「每回合自生层」依赖已下架的机制名「势种」，「领域展开」从来没有实现。 */
+  
   '领域':     [],
   '本命杀招': ['兑付全部层数', '每层+9%', '无视护盾'],
   '保命翻盘': [],
@@ -2884,6 +2890,29 @@ function xzSkeletonOfSkill(skill) {
            ⚠ **必须进 render 的 sig**：不进就是点开毫无反应（sig 没变，render 直接 return）。
            ⚠ 只存一个 id：20 条同时展开 = 一屏几千像素，等于把滑轮的意义抹掉。 */
         premOpen: '',
+        /* ★★★ v622：这一局的正文是"载入的预设"还是"玩家自己写的" ★★★
+           `''` = 玩家自己写的（默认）／预设 id = 载入的是那条预设。
+           ── 它守的是一条很硬的需求（作者 2026-11-16 原话）──────────────
+             「且选择预设开场白时，不要把自定义开局的内容跟着傻乎乎的输出到酒馆输入框。」
+             实测过旧行为：选「幽月仙宫·樱桃玉榻」+ 在场人物选白长雪，确认开局后
+             酒馆输入框里是这么三块 ——
+               落点：人州·中域·幽月仙宫·宗主寝殿
+               （预设正文）
+               在场人物：白长雪 —— 开局即在场的角色。请在正文里把他们写进场景…
+             第三块是作者点名的那句"自定义开局的内容"：预设正文里早就写着人是谁了，
+             再补一条"在场人物：白长雪"只会让模型把同一个人写两遍，或者以为还有别人。
+           ⇒ `customOpeningText()` 按这个字段分流：
+             · 载入预设（本字段非空）⇒ **只发预设正文**，落点行与在场人物行都不发；
+             · 自己写（本字段为空）⇒ 落点 + 正文 + 在场人物，一段不少（原行为）。
+           ⚠ 它必须跟着 `d.customOpening` 一起被"改字即失效"：
+             玩家载入预设后手改了正文，那就不再是"预设的正文"了，
+             但他也没写落点/人物 —— 这条边界见 `premWrote` 那套判定。
+           ⚠ 它**不进 draft、不写变量**：纯界面态，与 `premWrote` 同一层。
+             写进 draft 会被 `commitDraft` 之类的路径带出去，那是另一处要维护的真相。 */
+        premId: '',
+        /* 我们上次**逐字**写进开场白框的那一段（'' = 没写过 / 已被玩家改过）。
+           `d.customOpening === state.premWrote` 才允许我们覆盖它。 */
+        premWrote: '',
     };
 
     /* ★ v222：武器只剩三件 —— 武器名 / 品质 / 效果。
@@ -4097,13 +4126,6 @@ d.attrs[a] = v;
        顺序＝文件名排序，必须与卡里的 greetings 顺序一致；索引 0 = 第一楼（first_mes）。 ===== */
 
 
-
-
-
-
-
-
-
     var GREETING_CONTENTS = [
         // 0: 00-开场.md · 通用（凡人村落序章）
         "<content>\n【开局 · 仙缘初启】\n\n看不到状态栏和开局脚本就刷新网页！！！\n刷新网页之后等十秒左右就会出现了！！！\n</content>\n<UpdateVariable>\n<Analysis>\n</Analysis>\n<JSONPatch>\n[]\n</JSONPatch>\n</UpdateVariable>",
@@ -4862,6 +4884,31 @@ d.attrs[a] = v;
        ⚠ 小位置允许空（用户：「小位置那个框就是可选填，非选择的」）——
          空就不拼第二段，不许留一个孤零零的「·」。
        ⚠ 不许在这里加任何"请按公式重算"之类的话（v363 的账，见上面 fillComposer 的注释）。 */
+    /* ★★★ v622：同一局，两种拼法 —— 载入预设时**只发正文** ★★★
+       作者 2026-11-16：「且选择预设开场白时，不要把自定义开局的内容跟着傻乎乎的输出到
+       酒馆输入框。」
+
+       ── 旧行为（实测过，不是推测）────────────────────────────────────────
+         选「幽月仙宫·樱桃玉榻」+ 在场人物选白长雪 ⇒ 确认开局后输入框是：
+             落点：人州·中域·幽月仙宫·宗主寝殿
+             （预设正文，里面已经写着"黑发金瞳的女人"）
+             在场人物：白长雪 —— 开局即在场的角色。请在正文里把他们写进场景，
+             并照《变量更新规则》在建档时补全各人的面板字段。
+         后两块是"自定义开局"那套的产物，混进预设开局里就是两套设定打架：
+         预设正文里的人是宗主，而"在场人物：白长雪"是玩家在自定义那一栏选的，
+         模型只能二选一，或者把两个人都写出来。
+
+       ── 分流规则（只有一条判断）──────────────────────────────────────────
+         `state.premId` 非空 ⇒ 这一局的正文来自预设 ⇒ **只发正文**。
+         `state.premId` 为空 ⇒ 玩家自己写的 ⇒ 落点 + 正文 + 在场人物（原样）。
+       ⚠ 为什么不按"在场人物是否为空"来分流：那是**结果**不是**原因**。
+         玩家完全可能载入预设之后又去改落点（落点行该不该发就又变成另一个问题），
+         而"这条正文是谁写的"始终只有一个答案，判它才不会漂。
+
+       ── 为什么"自定义开局"那条路径一个字都不改 ──────────────────────────
+         落点行与在场人物行是 v382 / v385 两条硬需求挣来的（作者当年原话：
+         「我要追加的文本就是，大地点和小地点，以及玩家输入的开场白全部追加到输入框」
+         「我说仅限自定义开局要追加输入」）。**"仅限自定义开局"**——预设开局从来就不该有。 */
     function customOpeningText(d) {
         if (!d) return '';
         var big = String(d.customBig || '').trim();
@@ -4879,19 +4926,41 @@ d.attrs[a] = v;
             if (pk && pk.str) big = pk.str;
         }
         var placeLine = big + (small ? ('·' + small) : '');
-        if (!placeLine && !open) return '';
-        var out = placeLine ? ('落点：' + placeLine) : '';
-        if (out && open) out += '\n\n';
-        out += open;
-        /* ★ 2026-11-03（作者：「这开局人物选了没用啊，开场白里又没添加」）
-           第 4 页选的在场人物原来只落进变量 `人物列表`，正文里一个人都没提；
-           模型是照着输入框这段文字写第一段的 ⇒ 不在文字里点名，就等于没选。
-           ⇒ 在场人物直接写进开场白，与落点同一套格式。
-           ⚠ 一个都没选就**不写这一行**：写「在场人物：无」等于凭空教模型"这里没人"。 */
-        var castNames = (d.cast || []).filter(function (x) { return !!x; });
-        if (castNames.length) {
-            out += (out ? '\n\n' : '') + '在场人物：' + castNames.join('、') +
-                ' —— 开局即在场的角色。请在正文里把他们写进场景，并照《变量更新规则》在建档时补全各人的面板字段。';
+
+        /* ★★★ v622：载入预设 ⇒ 只发正文 ★★★
+           ⚠ 载入了预设但正文被清空（玩家把框删干净了）时，也不能掉回落点行 ——
+             那时他既没有预设正文、也不是"自己写的自定义开局"，
+             发一行"落点：…"等于凭空给他造了一个自定义开局。
+             validate 那边会拦住空正文（`自选开局必须填写开场白内容`），
+             所以这里只会返回空串，玩家看到的是校验提示，不是一句莫名的落点。
+           ⚠ **剧本那一行不走这个分流**（见下面）。剧本是独立分区「剧本选择」，
+             对预设开局与自定义开局同样生效 —— 选了「灰雾」就该让模型知道，
+             不能因为"这一局用了预设"就不提。第一版把 `return open` 写在这儿，
+             等于把剧本也一起吞了，那是个只会在"预设 + 非正常时代"这一组合下
+             才现形的 bug（其它组合全绿）。 */
+        var _isPrem = !!(state && state.premId);
+        var out;
+        if (_isPrem) {
+            out = open;
+        } else {
+            if (!placeLine && !open) return '';
+            out = placeLine ? ('落点：' + placeLine) : '';
+            if (out && open) out += '\n\n';
+            out += open;
+            /* ★ 2026-11-03（作者：「这开局人物选了没用啊，开场白里又没添加」）
+               第 4 页选的在场人物原来只落进变量 `人物列表`，正文里一个人都没提；
+               模型是照着输入框这段文字写第一段的 ⇒ 不在文字里点名，就等于没选。
+               ⇒ 在场人物直接写进开场白，与落点同一套格式。
+               ⚠ 一个都没选就**不写这一行**：写「在场人物：无」等于凭空教模型"这里没人"。
+               ★★★ v622：这一行**只在自定义开局**（`_isPrem` 为假）才写 ★★★
+                 作者原话：「在场人物是他妈自定义的啊，你都鸡巴选了白长雪的开局了，
+                 那他妈还要选吗」—— 预设正文里已经写着人是谁了，再补一句
+                 「在场人物：白长雪」只会让模型把同一个人写两遍，或者以为还有别人。 */
+            var castNames = (d.cast || []).filter(function (x) { return !!x; });
+            if (castNames.length) {
+                out += (out ? '\n\n' : '') + '在场人物：' + castNames.join('、') +
+                    ' —— 开局即在场的角色。请在正文里把他们写进场景，并照《变量更新规则》在建档时补全各人的面板字段。';
+            }
         }
         /* ★ v587：剧本（互斥单选）写进开局提示。空串（正常时代）就不写这一行 ——
            正常时代是默认世界，不需要额外叮嘱；写出来反而像"开了个特殊模式"。 */
@@ -5232,6 +5301,36 @@ d.attrs[a] = v;
             '.xz-st-slot-details{font-size:11px;color:var(--xz-text-2);margin-top:1px;}',
             '.xz-st-slot-desc-text{font-size:11px;color:var(--xz-text-2);margin-top:2px;}',
             '.xz-st-slot-empty-tip{font-size:11px;color:#6b6656;}',
+            /* ★★★ v620：已配 = 固定高度滚动框 ★★★
+               用户原话：「已配你他妈不改成固定大小的滑轮式，你是不是脑子有问题」。
+               ── 为什么必须定高 ────────────────────────────────────────────────
+                 已配是**动态列表**（玄技上限 30 门），没上限时它一出条数就把卡片撑长，
+                 v469/v470/v471 三轮"顶穿卡片"的病根全在这里：
+                 上面藏表单省 168px，下面列表加 15 门就全吃回去。
+               ── 178px 怎么来的 ────────────────────────────────────────────────
+                 单条已配 ≈ 46px（标题行 22 + 效果胶囊 24）。
+                 178 ≈ 3.8 条 ⇒ 静止时露 3 条整 + 第 4 条的一半。
+                 **那半条是刻意的**：露出整数条会被读成"就这些了"，半条才提示"还能滚"。
+               ── ⚠ 三个不许改 ──────────────────────────────────────────────────
+                 ① 不许改成 `flex:1` 撑满 —— 那还是"跟着卡片变"，等于没上限。
+                 ② 不许改 `min-height` 当上限 —— min-height 只会让它更长。
+                 ③ 不许去掉 `overscroll-behavior:contain`：滚动到底后继续滚会带动
+                    外层四页向导一起滚，玩家会以为"翻页了"。
+               ── ⚠ 滚动条必须自己美化（用户：「滑轮的美化天天掉」）──────────────────
+                 裸 `::-webkit-scrollbar` 在夜墨主题上是一道**白杠**，比没有更难看。
+                 下面那一组三条是唯一真相源，`_v620_forge_layout` 闸逐条守着（②-D/E/F/G）：
+                   · `::-webkit-scrollbar`        → 宽度 6px（不是 8：8 会盖住最后 2px 文字）
+                   · `::-webkit-scrollbar-track`   → 透明（有底色会像多一条边）
+                   · `::-webkit-scrollbar-thumb`   → 暖金半透明 + 圆角
+                 ⚠ 别用 `scrollbar-width:thin` 单独兜底就完事：它**只在 Firefox 生效**，
+                   而玩家用的是 Chromium 内核 —— 只写它等于什么都没写（这个坑踩过）。 */
+            '.xz-st-eqscroll{max-height:178px;overflow-y:auto;overscroll-behavior:contain;'
+                + '-webkit-overflow-scrolling:touch;scrollbar-width:thin;'
+                + 'scrollbar-color:rgba(230,189,118,.42) transparent;}',
+            '.xz-st-eqscroll::-webkit-scrollbar{width:6px;}',
+            '.xz-st-eqscroll::-webkit-scrollbar-track{background:transparent;}',
+            '.xz-st-eqscroll::-webkit-scrollbar-thumb{background:rgba(230,189,118,.42);border-radius:3px;}',
+            '.xz-st-eqscroll::-webkit-scrollbar-thumb:hover{background:rgba(230,189,118,.62);}',
             '.xz-st-tag-term{color:#7fd2c1;background:rgba(213,180,121,0.12);padding:0 3px;border-radius:2px;border:1px solid rgba(213,180,121,0.28);margin-right:2px;}',
             /* 锻造模板 */
             '.xz-st-tpl-box{border:1px solid rgba(230,189,118,.4);border-radius:8px;padding:6px 8px;margin:4px 0;background:rgba(255,255,255,.015);}',
@@ -5404,10 +5503,41 @@ d.attrs[a] = v;
                    反而比藏起来更占地方；藏了玩家仍看得懂两个按钮干什么）
                ⚠ 藏说明只能用 `display:none` 在 media 里，不要在 JS 里少输出 ——
                  桌面端要看得见「查看全书原创与 DLC 人物条目…」这句。 */
-            '.xz-st-cem{display:flex;align-items:center;gap:6px;flex-wrap:wrap;'
-                + 'padding:3px 7px;margin:6px 0 0;border-radius:8px;'
-                + 'background:var(--xz-card,#151a24);border:1px solid rgba(201,168,106,.34);}',
-            '.xz-st-cem-t{flex:none;font-size:11px;color:var(--xz-text-2);}',
+            /* ★★★ v622：人物条目那一条改成**和其他分区头同形的标题栏** ★★★
+               作者 2026-11-16：「人物条目这部分的表头没有美化，对齐其他的表头美化。」
+               ── 原来错在哪 ────────────────────────────────────────────────────
+                 它是一条淡框里塞「人物条目 / 若想游玩 DLC，可点这里 / 一颗按钮」，
+                 `padding:3px 7px;border-radius:8px`（**四角圆**、白框、无金标、无渐变）。
+                 而全页其他分区头是 `.xz-st-sect-h`：左侧 3px 金色竖标、渐变底、
+                 `padding:6px 10px`、`border-radius:9px 9px 0 0`（只圆上两角，与下方内容接连）。
+                 两者并排就是"这一条明显是后贴上去的"。
+               ── 为什么不是把 `.xz-st-sect-h` 直接套上去 ────────────────────────
+                 那条 bar 是 `div`（`.xz-st-sect-h{cursor:default}`），而这里面有一颗
+                 **必须能点的按钮**。直接套会同时踩两个坑：
+                   ① 那条 CSS 是按 `.xz-st-sect` 的子元素写的（`border-bottom` 假设下面有 `.xz-st-sect-b`），
+                      单独用会留下一条悬空的下边框；
+                   ② v470 那套判据核「card 内 `.xz-st-body` 恰好 1 个」等结构，
+                      塞进假分区容易连带踩线。
+               ⇒ 做法是**复刻视觉、不复刻结构**：同一个金标 `::before`、同一套渐变与圆角、
+                 同一档 padding / 字号 / 配色。判据按"实测计算样式与真分区头一致"来写，
+                 所以哪天真的统一了两边，这条也不会假红。 */
+            '.xz-st-cem{display:flex;align-items:center;gap:7px;flex-wrap:wrap;'
+                + 'padding:6px 10px;margin:7px 0 0;border-radius:9px 9px 0 0;'
+                + 'background:linear-gradient(90deg,rgba(230,189,118,.10),rgba(230,189,118,.015));'
+                + 'border:1px solid rgba(230,189,118,.16);border-bottom-color:rgba(230,189,118,.10);}',
+            /* 金标：与 `.xz-st-sect-h::before` **逐字相同**的三条（宽高/渐变/光晕）。
+               ⚠ 别写成 `content:none` 或换个颜色 —— 这条的全部意义就是"看起来是同一个头"。 */
+            '.xz-st-cem::before{content:"";flex:none;width:3px;height:15px;border-radius:2px;'
+                + 'background:linear-gradient(180deg,var(--xz-gold-bright),rgba(230,189,118,.35));'
+                + 'box-shadow:0 0 7px rgba(242,194,111,.45);}',
+            /* 标题字号 / 字重 / 颜色 / 字距与 `.xz-st-sect-t` **逐字相同**。
+               ⚠ 第一版写的是 13px + `var(--xz-gold-bright)`，比真表头大一号、也亮一档，
+                 并排看像"这条是新插进来的"。真表头是 12px + `var(--xz-gold)` + `.06em`。
+                 ⇒ 直接照抄那四个值，别再自己调 —— "对齐其他表头"就是字面意思，
+                   不是"看起来差不多"。`_v622_start_reorg` ⑥-G/⑥-H 实测计算样式比对。 */
+            '.xz-st-cem-t{flex:0 1 auto;font-size:12px;font-weight:var(--xz-fw-med);'
+                + 'color:var(--xz-gold);letter-spacing:.06em;'
+                + 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
             '.xz-st-cem-d{flex:1 1 120px;min-width:0;font-size:10px;color:var(--xz-muted);line-height:1.4;}',
             '.xz-st-cem-b{flex:none;padding:2px 9px;font-size:11px;cursor:pointer;border-radius:6px;'
                 + 'background:rgba(230,189,118,.10);color:#e8cb92;border:1px solid rgba(201,168,106,.6);'
@@ -5417,6 +5547,18 @@ d.attrs[a] = v;
             '.xz-st-cem-b:hover{background:rgba(230,189,118,.20);}',
             '.xz-st-cem-b.alt{background:rgba(155,180,220,.10);color:#b9cde8;border-color:rgba(155,180,220,.55);}',
             '.xz-st-cem-b.alt:hover{background:rgba(155,180,220,.20);}',
+            /* ★★★ v621：第 4 页「落点场景图」★★★
+               作者 2026-11-16：「选地点时，根据大位置的第三级显示场景图在开局脚本里。」
+               ── 为什么压在图片右下角而不是放图上方 ──────────────────────────
+                 图本身已经说了"这里是哪"，城名只是注释。放上方就要多占一行高度，
+                 而第 4 页高度已拍板不许涨（作者：「就这个高度吧。高度别改了」）。
+               ⚠ 底色是**半透明黑**而不是主题变量：图是彩色照片，压深色底才读得清，
+                 跟主题无关（日光模式下压浅色会糊在图里）。 */
+            '.xz-st-scene{position:relative;margin:7px 0 0;line-height:0;}',
+            '.xz-st-scene-n{position:absolute;right:6px;bottom:6px;line-height:1.4;'
+                + 'padding:1px 7px;border-radius:5px;font-size:10.5px;'
+                + 'background:rgba(8,10,14,.72);color:#f1ede4;border:1px solid rgba(230,189,118,.35);'
+                + 'pointer-events:none;}',
             /* 翻页条：上一步 / 下一步（下一步是主按钮）
                ★ v470：`/ .xz-st-pager-info` 那条「N / 4」的样式随元素一起删了。
                  留着只会让后来的人以为还有个页码要管 —— 无主样式比没有样式更误导。 */
@@ -5531,6 +5673,17 @@ d.attrs[a] = v;
                 + 'color:#0a0c10;font-family:inherit;font-size:11.5px;font-weight:var(--xz-fw-med);'
                 + 'letter-spacing:.02em;transition:filter .15s;}',
             '.xz-st-prem-pick:hover{filter:brightness(1.12);}',
+            /* ★★★ v622：第 0 张「自定义开局」—— 它是**入口**，不是预设列表里的一条内容 ★★★
+               跟 21 条预设长得一样会让玩家以为"这也是一条能直接用的预设"，所以给虚线框：
+               虚线是"自己写"的通用语言（可填、待填），实线是"已经写好了"。
+               ⚠ 只写 `border-style`，**绝不写 border-color / background / box-shadow** ——
+                 那三个分别被 `.xz-st-prem-i.on`（特异性 0,2,0）与 `.open` 占着，
+                 在这里硬写等于把"正在用""正展开"两个状态一起吞掉，
+                 而且吞得**完全静默**（颜色看起来只是"没变"），真 Chrome 也不报错。
+                 `border-style` 没人抢 ⇒ 选中/展开时虚线照旧保留，这两种状态叠在虚线上。
+               `margin-bottom` 比 `.xz-st-prem` 的 flex gap 多 3px，把它与后面 21 条预设
+                 之间拉开一道缝，读起来才像"入口 / 列表"两段而不是 22 条并列。 */
+            '.xz-st-prem-custom{border-style:dashed;margin-bottom:3px;flex:0 0 auto;}',
             /* 窄屏：简介允许折两行（宁可折，也不截成看不懂的半句）；
                容器降高，把屏底让给「确认开局」；开场白上限也跟着收，否则展开一条就占满全屏。 */
             '@media (max-width:430px){.xz-st-prem{max-height:min(42vh,270px);}'
@@ -5656,6 +5809,41 @@ d.attrs[a] = v;
                 + 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
             '.xz-st-sect-x{flex:0 1 auto;margin-left:8px;font-size:10.5px;color:var(--xz-text-2);font-weight:400;'
                 + 'letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
+            /* ★★★ v620：标题栏右侧「读数 + 操作按钮」容器 ★★★
+               原来 `.xz-st-sect-x` 只有一个 `<span>` 装计数，靠 `text-overflow:ellipsis`
+               截断。现在里面可能还塞一颗 🎲（随机），两个子元素必须有各自的盒模型：
+                 · `.xz-st-sect-n` = 计数（可省略号）
+                 · 按钮本身 `flex:0 0 auto`（**绝不许被压缩**，压了就成半个字）
+               ⚠ 别把 ellipsis 留在父级：父级一旦 ellipsis，按钮里的文字也会被截成「🎲 掷玄…」，
+                 而按钮**不能**这样降级 —— 它的字就是它的功能说明。
+               ⚠ 允许换行（`flex-wrap:wrap`）：窄屏上计数 + 按钮挤不下时，按钮掉到第二行，
+                 比把它压成省略号可读得多。 */
+            '.xz-st-sect-x{display:inline-flex;align-items:center;gap:6px;flex:0 1 auto;margin-left:auto;}',
+            '.xz-st-sect-n{flex:0 1 auto;min-width:0;font-size:10.5px;color:var(--xz-text-2);font-weight:400;'
+                + 'letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
+            '.xz-st-sect-x>.xz-st-dice,.xz-st-sect-x>.xz-st-mini{flex:0 0 auto;}',
+            /* ★★★ v622：窄屏下「标题 + 右侧摘要」允许整行折行（否则摘要被省略号吃掉）★★★
+               ── 病历（`_v471_overflow --phone` 抓到的，390 宽）──────────────────
+                 第 3 页「血脉 · 灵根」那条分区头右侧挂着一串状态摘要：
+                   `山野散根 · 伪灵根 · 纯度 10% · 预计天骄 …`  **多 59px**
+                 以及标题本身「血脉 · 灵根」**多 12px**。
+                 两者都是 `nowrap + ellipsis` ⇒ 字被省略号吃掉，玩家看不到纯度和天骄，
+                 而**全库所有静态闸全绿**（类名都在、CSS 都定义了）。
+               ── 为什么是"让它折行"而不是"删字" ────────────────────────────────
+                 那几个读数就是玩家要的信息（纯度/天骄直接决定这一局强度），
+                 删字等于拿信息换版面；截断则等于"看起来有、其实读不到"。
+                 390 宽下本来就该占两行 —— 分区头是容器，不是单行标签。
+               ── 怎么折 ───────────────────────────────────────────────────────
+                 `.xz-st-sect-h` 加 `flex-wrap:wrap` ⇒ 放不下时摘要整体掉到第二行；
+                 标题与摘要各自 `white-space:normal` + `overflow:visible`，
+                 让它们在需要时**自己也能断**（中文可断，不需要 `break-word`；
+                 但 `%`/数字串连着写，加 `break-word` 兜住极端窄屏）。
+               ⚠ 只对 `.xz-st-sect-h` 生效，**不要**把这条写成全局 `*{flex-wrap}`：
+                 `.xz-st-row` 那套是靠 `nowrap` 保证"标签-控件"同一行的，动了会散架。
+               ⚠ 宽屏不受影响：`flex-wrap` 只在放不下时才换行，820 宽仍然是一行。 */
+            '.xz-st-sect-h{flex-wrap:wrap;row-gap:2px;}',
+            '.xz-st-sect-h>.xz-st-sect-t,.xz-st-sect-h .xz-st-sect-n{'
+                + 'white-space:normal;overflow:visible;text-overflow:clip;word-break:break-word;}',
             '.xz-st-sect-b{padding:7px 11px 9px;}',
             /* ★ v470：第 1 页「版本号 / 前言 / 注意事项」三块的正文样式 ★
                ⚠ 必须给 `.xz-st-about` 写样式：它是本轮新加的类，不写就是
@@ -6184,9 +6372,24 @@ d.attrs[a] = v;
          这比逐个删实参安全 —— 删漏一个就会把 `'已配'` 当标题渲染出去。
        ⚠ 别把这两个形参彻底删掉再改 8 处调用：那是 8 次手工改，没有收益。
        ⚠ 一旦有人想恢复折叠，先读上面这两条用户原话。**他要的是不跳，不是能点。** */
-    function sectOpen(title, extra, key) {   // eslint-disable-line no-unused-vars
+    /* ★★★ v620：第三个形参 `headAct` = 放进标题栏右侧的操作按钮 HTML ★★★
+       为什么要这个口子：随机类按钮必须**贴在它作用的那一块的头上**，
+       而不是另立一个「全随机」标头在整页最下面（用户原话见 pageWizSkillHtml 里那段）。
+       放进标题栏 = "这块东西"和"能对它做什么"在同一行，中间不隔别的区块。
+       ⚠ `extra`（那段计数小字）与 `headAct` 都进右侧：计数在左、按钮在右，
+         顺序是 `extra` → `headAct`，别调换（读数是信息、按钮是动作，信息先出）。
+       ⚠ `headAct` 是调用方拼好的 HTML，**不在这里 esc** —— 它含 data-* 属性与按钮标签。
+         调用方必须自己保证里面没有玩家输入（现在三处调用都是代码里写死的常量）。 */
+    function sectOpen(title, extra, key, headAct) {   // eslint-disable-line no-unused-vars
         return '<div class="xz-st-sect">' +
-            '<div class="xz-st-sect-h"><span class="xz-st-sect-t">' + esc(title) + '</span></div>' +
+            '<div class="xz-st-sect-h"><span class="xz-st-sect-t">' + esc(title) + '</span>' +
+            ((extra || headAct)
+                ? '<span class="xz-st-sect-x">'
+                    + (extra ? '<span class="xz-st-sect-n">' + esc(extra) + '</span>' : '')
+                    + (headAct || '')
+                    + '</span>'
+                : '') +
+            '</div>' +
             '<div class="xz-st-sect-b">';
     }
     function sectClose(key) {   // eslint-disable-line no-unused-vars
@@ -6227,6 +6430,25 @@ d.attrs[a] = v;
                 '<span class="xz-st-equipped-count">' + _count + '</span>' +
                 '</div>';
         }
+        /* ★★★ v620：已配列表 = **固定高度的滚动框** ★★★
+           用户原话：「已配你他妈不改成固定大小的滑轮式，你是不是脑子有问题」。
+           ── 原来错在哪 ────────────────────────────────────────────────────
+             已配是**动态列表**（玄技上限 30 门），它一出条数就把整张卡撑长。
+             v469/v470 那几轮全在跟"卡片被顶穿"打架，原因就是这里没有上限 ——
+             上面藏一个表单省 168px，下面列表加 15 门就全吃回去。
+           ── 为什么用 max-height + overflow-y:auto，而不是 flex 撑满 ─────────
+             卡片高度是四页共用的基准（`min-height`），已配这一块必须给一个
+             **确定的上限**才能让它自己的增长不出框。给它 `flex:1` 反而会让它
+             随卡片长高——那还是"跟着内容变"。
+           ── 高度取 178px 的依据 ────────────────────────────────────────────
+             一条已配 ≈ 46px（标题行 22 + 效果胶囊行 24），178 ≈ 3.8 条：
+             不滚动时正好露出 3 条整 + 第 4 条的一半 —— **半条是"还能滚"的视觉提示**，
+             比露出整数条更好（露出 3 条整会被误读成"就这些了"）。
+             ⚠ 这个数**只影响这一块的内部**，不动第 3 页整体高度（作者已拍板高度不改）。
+           ⚠ 滚动条必须自己美化：`.xz-st-eqscroll` 在 CSS 里有 `::-webkit-scrollbar`
+             那一组（v620 起 `_v620_forge_layout` 的 ②-D/E/F 逐条守着，掉了会红）。
+             裸滚动条在夜墨主题上是一道白杠，比没有滚动条更难看。 */
+        h += '<div class="xz-st-eqscroll">';
 
         /* v71：玄技卡标签为「主动 · 功能 · 目标 · 消耗」。 */
         function _slotItem(it, i, kind) {
@@ -6337,6 +6559,7 @@ d.attrs[a] = v;
 
         /* v70：旧杀招槽位已下架，这里不再有第四类。 */
 
+        h += '</div>';   /* ← 关闭 .xz-st-eqscroll（v620 定高滚动层） */
         h += '</div>';
         return h;
     }
@@ -6456,8 +6679,12 @@ d.attrs[a] = v;
     }
     /* ★ v527：`pasNoteKeys()` / `pasNoteCur()` 删了（同上，描写输入框下线）。 */
 
-    /* 玄诀 / 武器的面板 */
-    function pasPickerHtml(it, kind) {
+    /* 玄诀 / 武器的面板
+       ★ v620：第三形参 `inOverlay` 与 `effPickerHtml` 完全同理 ——
+         卡片里只画「已选摘要 + 展开按钮」，整块网格只在弹层里画。
+         ⚠ 两支必须**同形**：只给一支加 `inOverlay` 就会出现"玄技不占地方、玄诀占"
+           这种半对半错的状态，而静态闸看不出来（它们看类名不看调用点）。 */
+    function pasPickerHtml(it, kind, inOverlay) {
         /* ★ 记下"现在在改哪一类"：`tplHtml` 对玄诀与武器各调一次，
            而 `pasPickApply()` 只知道"某个 kind"。不记的话点确定会写回错的那一支
            （玄诀的效果跑到武器上，且界面看着都对）。 */
@@ -6500,7 +6727,10 @@ d.attrs[a] = v;
         } else {
         }
 
-        if (state.pasOpen) {
+        /* ★ v620：`&& inOverlay` —— 整块网格只在弹层里画（卡片里只留上面那行摘要）。
+           ⚠ 别把条件写成 `inOverlay !== false`（那会在漏传时默认画）：
+             漏传应当表现为"卡片里什么都不多"，而不是"卡片里摊开一个网格"。 */
+        if (state.pasOpen && inOverlay) {
             /* ★ v468：`pas` 这个修饰类 = 玄诀/武器那只面板的更矮上限。
                它展开时只藏了「效果」70px，而玄技藏 168px —— 同一个 163px
                放进两份表单里必然有一边超（实测玄诀长 44px）。
@@ -6625,7 +6855,19 @@ d.attrs[a] = v;
         state.pasSel = sel;
     }
 
-    function effPickerHtml(it, kind) {
+    /* ★★★ v620：第三个形参 inOverlay 决定**画不画展开区** ★★★
+       ── 为什么必须分开 ──────────────────────────────────────────────────
+         这个函数现在有**两个调用者**：
+           · 卡片里的 `tplHtml`  → 只要「已选摘要 + 展开按钮」那一行
+           · 弹层里的 `renderForgeOverlay` → 要整块（分类 + 网格 + 确定）
+         不分开的后果是**两边各画一份**：卡片里摊着一个面板、弹层里又摊一个，
+         而且两个都绑 `data-xz-act="pick-tog"` ⇒ 点卡片的那个，弹层里那个不会跟手
+         （看起来"勾了没反应"，其实是勾到了另一份）。这正是用户要避免的"挤"。
+       ── 为什么不用 `state.pickOpen` 判断的就够了 ────────────────────────
+         它只表达"面板开着"，不表达"开在哪"。同一个 `pickOpen=true` 时，
+         卡片不该画展开区（面板在弹层里），弹层该画。**位置是调用者的属性，
+         不是状态的属性** —— 所以必须由调用方告诉它，不能猜。 */
+    function effPickerHtml(it, kind, inOverlay) {
         /* ★★★ v468：按类别分派 ★★★
            玄技走招式通道（EFF_POOL / 六类 / 有品质条数上限）；
            玄诀与武器走被动通道（EFF_PAS_POOL / 三组 / 无条数上限）。
@@ -6636,7 +6878,7 @@ d.attrs[a] = v;
            会把第 2 页撑破（那页已经 628px），而灵根效果本来就只有一句。
            ⚠ 别把两条通道合成一个函数：它们的池子、上限、排序、写回目标全都不同，
              合在一起以后每加一个条件都要写 if，最后必然只改对一半。 */
-        if (kind === '玄诀' || kind === '武器') return pasPickerHtml(it, kind);
+        if (kind === '玄诀' || kind === '武器') return pasPickerHtml(it, kind, inOverlay);
         var q = it.品质 || '黄阶';
         var maxN = EFF_QUAL_MAX[q] || 3;
         var sel = (state.pickSel || []).filter(function (k) { return !!EFF_BY_KEY[k]; });
@@ -6668,13 +6910,15 @@ d.attrs[a] = v;
         } else {
         }
 
-        /* ══ 展开区 ════════════════════════════════════════════════════════
+        /* ══ 展开区（**只在弹层里画**，v620）════════════════════════════════
+           ⚠ `!inOverlay` 就整段不画：卡片里只留上面那行「已选摘要 + 展开按钮」。
+             卡片里画了也没地方放（一摊开就把表单挤没，那正是 `_hideForm` 的病根）。
            ★★★ v468：两级折叠（用户：「这个展开选效果就不能一下子展开这么多，
               而是按分类去选，选了之后，才展示对应的效果部分，不是一下子展示完全部」）
            第一级 = 六个分类（点到哪一类才展开哪一类）；
            第二级 = 该类里的机制按钮。同一时刻只展开一类。 */
-        if (state.pickOpen) {
-            /* ★ v468：面板分两层 —— 上面可滚（成套/分类/网格/提示/描写），
+        if (state.pickOpen && inOverlay) {
+            /* ★ v468：面板分两层 —— 上面可滚（分类/网格/提示），
                下面「确定」钉死。见上方面板限高那段注释里的账：
                不收这个，展开一次就把第 3 页顶高 137px。 */
             h += '<div class="xz-st-pickpanel">';
@@ -6724,16 +6968,33 @@ d.attrs[a] = v;
                —— 探针实测过：不补这一句，展开后网格高 **0px**（`_v584` ②-J 红）。
                ⚠ 只在"没选过任何分类"时才兜底：玩家自己选过（或被 `pick-cat` 设过）
                  就一切照旧，别把他的手选覆盖掉。
-               ⚠ 用 `EFF_GROUPS[0]` 而**不是**写死 '伤'：分类表将来加一个排前面的，
-                 写死就会指到一个不存在的类，网格永远空。 */
-            if (!curG && EFF_GROUPS.length) curG = EFF_GROUPS[0].k;
-            h += '<div class="xz-st-pickcats">';
-            EFF_GROUPS.forEach(function (g) {
-                var items = EFF_POOL.filter(function (e2) {
-                    if (e2.g !== g.k) return false;
-                    if (selfSide && effBlockedOnSelf(e2.k)) return false;
+               ⚠⚠ v620 又踩了一次（同一个兜底，错法不同）：原来写的是
+                 `curG = EFF_GROUPS[0].k` —— 但下面渲染分类按钮时会 **`if (!items.length) return`**
+                 跳过空组。于是当**第一组在当前目标下没有可选项**（例如目标改成"自身"后
+                 伤害类被整组过滤掉），`curG` 指向一个"没有渲染出来、也没有按钮"的组
+                 ⇒ 分类条有按钮、网格**空的**、而且没有任何提示。
+                 探针实测：④-H2「当前分类下有可勾的效果」= 0 个。
+               ⇒ 兜底必须取**第一个真的有可选项的组**，与渲染那侧的过滤条件
+                 （同一条 `selfSide && effBlockedOnSelf` 判据）**完全一致**。
+                 ⚠ 这就是"同一份过滤写两遍"的代价：只要两处条件有一点点不同，
+                   就会指到一个界面上不存在的组。所以这里抽成 `_grpItems()` 一处。 */
+            function _grpItems(gg, it0) {
+                return EFF_POOL.filter(function (e2) {
+                    if (e2.g !== gg.k) return false;
+                    if (selfSide) {
+                        if (effBlockedOnSelf(e2.k)) return false;
+                    }
                     return true;
                 });
+            }
+            if (!curG) {
+                for (var _gi0 = 0; _gi0 < EFF_GROUPS.length; _gi0++) {
+                    if (_grpItems(EFF_GROUPS[_gi0]).length) { curG = EFF_GROUPS[_gi0].k; break; }
+                }
+            }
+            h += '<div class="xz-st-pickcats">';
+            EFF_GROUPS.forEach(function (g) {
+                var items = _grpItems(g);
                 if (!items.length) return;
                 var on = (curG === g.k);
                 h += '<button type="button" class="xz-st-pickcat' + (on ? ' on' : '') + '"'
@@ -6757,15 +7018,15 @@ d.attrs[a] = v;
                ⚠ 关联删除：`EFF_TASTES` 表、`pick-taste` 事件分支、
                  `.xz-st-st-chip` / `.xz-st-pickbtns` 三处 CSS（一并清，别留死代码）。 */
 
-            /* 二级：只渲染当前这一类 */
+            /* 二级：只渲染当前这一类
+               ⚠ v620：这里改成调 `_grpItems()` —— 与上面"挑默认分类"用**同一份**过滤。
+                 原来是两处各写一遍同样的 `filter`，只要有一处条件不同（哪怕只是
+                 少一个 `selfSide`），就会出现"分类条指到 A、网格画的是 B"或
+                 "网格空的但分类按钮都在"，而**两边都不报错**。 */
             if (curG) {
                 var gg = null;
                 for (var _gi = 0; _gi < EFF_GROUPS.length; _gi++) { if (EFF_GROUPS[_gi].k === curG) { gg = EFF_GROUPS[_gi]; break; } }
-                var gItems = gg ? EFF_POOL.filter(function (e2) {
-                    if (e2.g !== gg.k) return false;
-                    if (selfSide && effBlockedOnSelf(e2.k)) return false;
-                    return true;
-                }) : [];
+                var gItems = gg ? _grpItems(gg) : [];
                 if (gItems.length) {
                     h += '<div class="xz-st-pickgrid">';
                     gItems.forEach(function (e2) {
@@ -6999,20 +7260,41 @@ d.attrs[a] = v;
            ⚠ 这一漏的成因很典型：`_hideForm0` 与 `_hideForm` 是**两条并行判据**，
              加一个 kind 时只改了一处就不会有报错，只是高度悄悄多 91px。
              所以下面 `_hideForm` 也一起改成同一个写法，两个真相源合并成一个。 */
-        /* ★★★ v584：这两条 `_hideForm` 判据在**弹层里必须恒为假** ★★★
-           它们存在的**唯一理由**是「卡片内限高」：第 3 页的卡片高度定死 771px
-           （四页等高基准），展开一个 163px 的效果面板就必须藏掉同样高的表单，
-           否则顶穿卡片。那是**拿功能换高度**。
-           弹层把表单搬出了卡片 ⇒ 这个理由整个消失了。再藏就是纯粹的损失：
-           玩家勾效果时看不见自己起的名字、也改不了品质，得来回点两次。
-           —— 探针实测过（`_v584` ②-J/②-K）：保留这两条时网格高 **0px**、
-           「名」输入框**消失**；弹层里明明有的是地方。
-           ⚠ 不删代码、只让它恒假：`tplHtml` 将来若被别的容器复用（例如窄屏内联），
-             那两条逻辑还有意义。所以用一个具名常量把它钉死在"弹层语境"。
-           ⚠ 这个常量**不许**改成可配置：一旦某条路径能把它设回 true，
-             就会出现"有的机器上名字框会消失"——那种 bug 查不出来。 */
-        var XZ_IN_OVERLAY = true;   /* tplHtml 现在**只**被弹层调用（全库唯一调用点在 renderForgeOverlay） */
-        var _hideForm0 = !XZ_IN_OVERLAY && ((kind === '玄技') ? !!state.pickOpen : !!state.pasOpen);
+        /* ★★★ v620：`XZ_IN_OVERLAY` 这个常量**作废，整段删除** ★★★
+           ── 它的来历（v584）──────────────────────────────────────────────
+             我当时把整个锻造台搬进弹层，于是这三条 `_hideForm` 判据的全部理由
+             （"卡片内限高，展开面板就得藏表单"）消失了 —— 弹层里有的是地方。
+             为了不改代码，我加了一个 `var XZ_IN_OVERLAY = true`
+             把三条判据**钉成恒假**，让表单永远显示。
+           ── 为什么现在必须删 ──────────────────────────────────────────────
+             v620 把表单搬回卡片内（用户：「我他妈意思是**选效果**才有弹层啊，
+             其他像原来一样啊」）⇒ 那个理由**又回来了**：
+             卡片高度是四页共用的基准，展开选效果时表单必须让位。
+             留着 `XZ_IN_OVERLAY = true` 的后果不是"多显示一点东西"，
+             而是展开面板时卡片被顶长 —— 正是作者早在 v468 就明令禁止的。
+           ── ⚠ 教训（值得单独记一笔）────────────────────────────────────────
+             用"具名常量把判据钉死"来适配新架构，本质是给旧逻辑打麻药：
+             它让代码看起来还在、判据看起来还跑，实际一个都没生效。
+             架构变了就该**改判据本身**，而不是加一个开关让它安静。
+             （同一类错在 v583 也犯过：往 `__XZ_STATUS_TEST__` 加键充数。） */
+        /* ★★★ v620：`_hideForm` 三条判据**全部作废**（回到"表单常显"）★★★
+           ── 它们原来的理由 ────────────────────────────────────────────────
+             「展开一个 163px 的效果面板就要藏掉同样高的表单，否则顶穿卡片」。
+             这个理由的前提是**面板画在卡片里**。
+           ── 现在的前提变了 ────────────────────────────────────────────────
+             v620 把面板搬进弹层（用户：「我他妈意思是**选效果**才有弹层啊」）
+             ⇒ 卡片里根本不出现面板 ⇒ 没有任何东西需要表单让位。
+             再藏就是纯粹的损失：玩家一勾效果，名字/品质/目标/消耗就整段消失，
+             而它们此刻既没被遮挡、也没被挤占 —— 那是 v584 一样的"拿功能换高度"，
+             只不过这次换的高度根本不需要。
+           ── ⚠ 为什么不能"留着反正不跑" ──────────────────────────────────────
+             这几条判据读的是 `state.pickOpen`，而那个标志在弹层打开时是 **true**
+             ⇒ 留着它们，卡片里的表单会在弹层开着时**整段消失**。
+             玩家关掉弹层回来一看："我填的名字呢？"（值还在 `state.tpl`，
+             但界面空白——这正是本项目最忌讳的"看起来数据丢了"）。
+           ⇒ 三条判据统一删掉，表单无条件渲染。下面三处各留一句指回这里，
+             免得下次有人照着旧注释又加回去。 */
+        var _hideForm0 = false;
         if (!_hideForm0) {
             h += '<div class="xz-st-row"><label>' + esc(kind + '名') + '</label>' +
                 '<input type="text" data-xz-tpl="名" maxlength="8" value="' + esc(it.名) + '" placeholder="必填：自己起一个名字" required>' +
@@ -7042,7 +7324,7 @@ d.attrs[a] = v;
                记账不改会误导下一个改这里的人（他会以为"119 是算出来的最优"）。
                ⚠ 两只面板必须能分别量到：玄诀那只带 `pas` 类，闸按 `getComputedStyle`
                  取各自的 max-height，别用同一个常量判两只。 */
-            var _hideForm = !XZ_IN_OVERLAY && ((kind === '玄技') ? !!state.pickOpen : !!state.pasOpen);
+            var _hideForm = false;   /* v620：作废，理由见上面 `_hideForm0` 那段 */
             if (!_hideForm) {
             /* ★ v75：玄技与玄诀**同一套表单**（六字段：名/品质/类型/目标/功能/消耗）。
                类型由所选类别定死、不给玩家改。
@@ -7117,14 +7399,12 @@ d.attrs[a] = v;
            ⚠ 别再留"武器特殊"这个口子：`_hideForm0` 已经统一成两岔，
              这里再写一份 `kind === '武器'` 的判据就是**又开一个真相源**，
              下次加 kind 照样只改对一半（这正是上面那 91px 的成因）。 */
-        /* ★★★ v584 补漏：这一处先前漏掉了 `!XZ_IN_OVERLAY` ★★★
-           病历：v584 给 `tplHtml` 里两处 `_hideForm` 都加了 `!XZ_IN_OVERLAY`，
-           唯独这第三处（武器的 `_hideFormW`）漏了 ⇒ 探针 `_v471_paspanel` 报
-           「武器展开后效果 textarea 高度 0 ⇒ `_hideForm` 复活了」。
-           这就是本项目那条老病：**两份同构代码只改了一份，而且零报错**
-           —— 玄诀那边看得见表单、武器那边看不见，静态闸一条都不会红。
-           ⇒ 三处判据必须是同一个写法：`!XZ_IN_OVERLAY && (…)`。 */
-        var _hideFormW = !XZ_IN_OVERLAY && ((kind === '玄技') ? !!state.pickOpen : !!state.pasOpen);
+        /* ★ v620：`XZ_IN_OVERLAY` 已整体删除，三处判据回到同一个直白写法。
+           这里保留 v471 那条教训（它跟常量无关，仍然成立）：
+           **两份同构代码只改了一份，而且零报错** —— 玄诀那边看得见表单、
+           武器那边看不见，静态闸一条都不会红。所以 `_hideForm0` / `_hideForm` /
+           `_hideFormW` 三处必须永远同形，改一处就得改三处。 */
+        var _hideFormW = false;   /* v620：作废，理由见上面 `_hideForm0` 那段 */
         if (canDesc && !_hideFormW) {
             /* ★ v509：整栏删掉（用户 2026-10-31：「武器哪里有类型，给我他妈删了类型这一栏」）。
                病历：v468 按「武器那边也给被动这俩字加上」加了一个只读框「类型 / 常驻装配」+「被动」标签，
@@ -7513,6 +7793,112 @@ d.attrs[a] = v;
             });
     }
 
+    /* ══════════════════════════════════════════════════════════════════════
+       ★★★ v621：选地点时显示**场景图**（按大位置第三级 = 城名）★★★
+       作者 2026-11-16：「选地点时，根据大位置的第三级显示场景图在开局脚本里。」
+
+       ── 图从哪来 ──────────────────────────────────────────────────────────
+       05 的 `XZ_SCENE_IMG`（v612 建的表）。**不另造一张表**：
+         · 它的 key 逐字等于 `XZ_MAP_STATES` 里城市的 `n` —— 正好就是大位置第三级；
+         · 它与 `<地点>` 正文标签共用同一批图（`image-hosting@main/scene/scene-NN.png`），
+           同一座城在正文里和在第 4 页看到的是同一张，不会"两处各一个真相"。
+       ⇒ 取表也必须走 05 的**同一个出口**：`window.XZ_SCENE_IMG`。
+         ⚠ 它是 IIFE 内的 var，只挂了 window（见 05 里 eSceneExp 那段注释）；
+           所以这里跟在 `placeTree()` 后面同样扫整条窗口链 + 同源 iframe。
+           只扫 `window` 的话，07 跑在消息 iframe 里时永远取不到 ——
+           表现是"场景图永远不显示"，而 05 那边一切正常。
+
+       ── 为什么取不到要**安静地降级**，不像别处那样出声 ──────────────────
+       这张图是**锦上添花**：48 城里 4 个雪域小世家本来就没图（见 05 表上方注释），
+       而 DLC 城、玩家手填的城名也都不在表里。若每次都弹提示，
+       那 4 个城和所有 DLC 城的玩家会在选地点时一直看到一条红字警告 ——
+       而他们**什么都没做错**。⇒ 取不到就整块不输出（不占高度、不留空框）。
+       ⚠ 但"取不到表"与"这座城没图"必须能分开：
+         前者是脚本没加载完（可以重试、可以让玩家知道），后者是正常的。
+         这里用 `sceneImgTable()` 返回 `null` / `{}` / `{城名:url}` 三种值区分。 */
+    function sceneImgTable() {
+        /* ① 正路：05 挂在 window 上的那张表 */
+        var list = [], i, j, frames, w, t = null;
+        try {
+            list.push(window);
+            if (window.parent && window.parent !== window) list.push(window.parent);
+            if (window.top && window.top !== window && list.indexOf(window.top) < 0) list.push(window.top);
+        } catch (e0) {}
+        for (i = 0; i < list.length; i++) {
+            try { if (list[i].XZ_SCENE_IMG && typeof list[i].XZ_SCENE_IMG === 'object') { t = list[i].XZ_SCENE_IMG; break; } } catch (eA) {}
+        }
+        /* ② 同源 iframe 也扫（酒馆常把脚本跑在消息 iframe 里，与 placeTree 同一套顺序） */
+        if (!t) {
+            for (i = 0; i < list.length && !t; i++) {
+                try { frames = list[i].document.querySelectorAll('iframe'); } catch (eB) { frames = []; }
+                for (j = 0; j < frames.length && !t; j++) {
+                    w = null;
+                    try { w = frames[j].contentWindow; } catch (eC) { w = null; }
+                    if (!w) continue;
+                    try { if (w.XZ_SCENE_IMG && typeof w.XZ_SCENE_IMG === 'object') t = w.XZ_SCENE_IMG; } catch (eD) {}
+                }
+            }
+        }
+        return t;
+    }
+    /* 按城名取图。**不做模糊、不做包含匹配** —— 与 05 的 `<地点>` 标签同口径：
+       城名必须逐字相等。包含匹配会让「玄京」匹到「玄京北郊」这种不存在的城，
+       也会让「三剑宗」被更短的「三剑」先命中。 */
+    function sceneImgOf(city) {
+        var t = sceneImgTable();
+        if (!t) return '';
+        var k = String(city || '').trim();
+        if (!k) return '';
+        try { return String(t[k] || ''); } catch (e) { return ''; }
+    }
+    /* 场景图渲染。取不到就返回空串（理由见上面的注释：这是锦上添花，不是前置条件）。 */
+    function sceneBlockHtml(city) {
+        var url = sceneImgOf(city);
+        if (!url) return '';
+        var alt = String(city || '');
+        /* ⚠ `<img>` 必须限高 + `object-fit:cover`：48 张场景图比例不一
+           （有横有竖），不限高的话高的那张会把第 4 页顶长，
+           而作者已拍板「开局脚本就这个高度吧，高度别改了」。
+           `min(140px, 22vh)` —— 手机上 22vh 比 140 小，取它，免得图把整屏占掉。 */
+        return '<div class="xz-st-scene">'
+            + '<img src="' + esc(url) + '" alt="' + esc(alt) + ' 场景图"'
+            + ' loading="lazy" referrerpolicy="no-referrer"'
+            + ' style="display:block;width:100%;max-height:min(140px,22vh);object-fit:cover;'
+            + 'border-radius:7px;border:1px solid rgba(230,189,118,.28);"'
+            /* 图上叠城名：单看图认不出是哪座城。`pointer-events:none` 让它不挡点击 */
+            + ' onerror="this.style.display=\'none\';var c=this.nextElementSibling;if(c)c.style.display=\'block\';"'
+            + '>'
+            + '<span class="xz-st-scene-n">' + esc(alt) + '</span>'
+            + '</div>';
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       ★★★ v621：亲缘开关 → 预设开场白取哪一份 ★★★
+       作者 2026-11-16：「开局写多一份根据是否开启亲缘人物关系预设，因为我发现了，
+         不这样搞会很割裂，也就是开启时，选择的那些6姐和妈的开场白内容就实时变动。」
+
+       ── 这是**唯一**的取法。任何地方都不许直接读 `p.open` ─────────────────
+         预设卡片（展开态预览）、`prem-pick`（载入草稿）、`customOpeningText`
+         （写进酒馆输入框）三处都要说"这个开局的开场白是什么"。
+         三处各写一遍 `d.kin === 'six' ? p.openKin : p.open` 就必然有一天对不上 ——
+         而这一条对不上的表现是**玩家看到的预览与他实际拿到的正文不是同一段**。
+         ⇒ 全部走 `presetOpenOf(p, kinOn)`。
+       ⚠ 参数是**布尔**而不是 draft：调用点有的手上有 `d`（载入、拼输入框），
+         有的只有卡片和 state（渲染）。传布尔让两边都省事，也避免有人顺手在里面
+         改 draft（这个函数只是"读"，不许有副作用）。
+       ⚠ kinOn 为真但这条没有 openKin ⇒ 退回 open。
+         那不是错：只有涉及家人的条目才需要变体，幻木林那种写两份纯属留隐患。
+       ══════════════════════════════════════════════════════════════════════ */
+    function kinEnabled(d) {
+        var k = d && d.kin;
+        return k === 'six';
+    }
+    function presetOpenOf(p, kinOn) {
+        if (!p) return '';
+        if (kinOn && p.openKin) return String(p.openKin);
+        return String(p.open || '');
+    }
+
     function customBlock(d) {
         var p = placeOf(d.place);
         if (!p.custom) return '';
@@ -7603,6 +7989,18 @@ d.attrs[a] = v;
             return '<option value="' + esc(c) + '"' + (c === city ? ' selected' : '') + '>' + esc(c) + '</option>';
         }).join('') : '<option value="">（无地点）</option>') + '</select>';
         h += '</div></div>';
+        /* ★★★ v621：三个下拉选完，立刻显示**这座城的场景图** ★★★
+           作者 2026-11-16：「选地点时，根据大位置的第三级显示场景图在开局脚本里。」
+           ── 为什么挂在这里（三段下拉之后、小位置之前）──────────────────────
+             它在"你选了哪里"和"你还要补什么"之间，是最自然的阅读位置；
+             放最底下的话，玩家选完城要往下滚才看得见 —— 等于没有实时反馈。
+           ── 取哪一段 ────────────────────────────────────────────────────
+             用 `city`（`pickTriple` 求出的**第三级**），不是 `don.customBig` 原文。
+             理由与落盘同口径：原文可能是两段写法或旧地名，`city` 才是舆图上的真城名。
+             而 `XZ_SCENE_IMG` 的 key 逐字等于舆图城名 ⇒ 必须拿 `city` 去查。
+           ⚠ 没有图时**整块不输出**：4 个雪域小世家、DLC 城、手填城名都不在图里，
+             那不是错误。留一个空框或一行"暂无图"只会让第 4 页更高。 */
+        h += sceneBlockHtml(city);
         /* ★ v1.053d：原来这里有一行「当前落点：人州 · 中域 · 司天监」的回显，作者 17:31 点名删掉
            —— 三个下拉框本身已经写着选了什么，再回显一句就是同一件事说两遍。 */
 
@@ -7640,67 +8038,65 @@ d.attrs[a] = v;
     }
 
     /* ══════════════════════════════════════════════════════════════════════════
-       ★★★ v584：造化锻造台 → 弹层 ★★★
-       用户原话：「对于一些面板空间不大的，就使用弹层。比如开局脚本里的玄技玄诀
-         和武器锻造台，彻底改为弹层式，这样子就不用在那挤来挤去了。」
-       ── 为什么原来必须"挤" ──────────────────────────────────────────────
-       第 3 页原先是「已配列表 + 三页签 + 六字段表单 + 选效果面板」全塞进一个
-       771px 的卡片。为了让展开面板不把卡片顶穿，只好在选效果时把整段表单**藏掉**
-       （`_hideForm` 那段病历记着：不藏就顶穿 91px）。那是"拿功能换高度"。
-       ⇒ 弹层把"编辑"这个动作整体搬出卡片：卡片里只留已配的几件 + 一个按钮，
-         **表单和选效果面板同时在弹层里**，谁都不用给谁让位。
-       ── 三条必须守住的东西 ──────────────────────────────────────────────
-       ① **表单真身不动**：还是 `state.tpl[kind]`，还是那套 `data-xz-tpl` 字段。
-          `onField` / `roll-all` / `add` 一个字都不用改 —— 弹层只是换个地方画它。
-       ② **`state.editing` 语义不动**：新建 = null，编辑 = 下标。
-          这样「添加到玄技」与「保存修改」走的还是同一条 `act === 'add'` 链路，
-          改名/满额/校验全部照旧，不存在"弹层里能绕过上限"。
-       ③ **弹层自己滚动**：`overlayShell` 的 body 已经是 `overflow-y:auto`，
-          所以这里**不要**再给任何子段限高 —— 限高是卡片内的补救手段，
-          搬到弹层里就成了"两层滚动条"，手机上极难操作。
-       ⚠ 弹层挂在 card 外面（见 buildHtml 里那处调用的注释）：
-         `_v470_balance` 判 card 内 `.xz-st-body` 恰好 1 个，而 overlayShell 内部
-         容器也带这个类 —— 放进 card 里会让那条闸红在"body 被提前闭合"上。
-       ══════════════════════════════════════════════════════════════════════════ */
+       ★★★ v620：弹层 = **只管选效果**（不是整个锻造台）★★★
+       用户原话（2026-11-16）：
+         「我他妈让你搞弹层的意义是什么！效果这么多用弹层啊，其他像原来一样啊，
+           我他妈意思是**选效果才有弹层**啊」
+       这是他第二次说这件事（v584 时他说的是「玄技玄诀和武器锻造台，彻底改为弹层式」，
+       我理解成了"整个锻造台"）。真正的分工是：
+         · **效果网格**（几十个按钮、分类条）→ 弹层。它才是"面板空间不大"的那个东西。
+         · **五个输入框**（名/品质/目标/消耗/效果）→ 就在卡片里，像原来一样。
+       ── v584 错在哪（复盘，别再犯）─────────────────────────────────────────
+         我把"锻造台"整块搬走，于是卡片里只剩三行读数 + 一颗按钮，
+         而那张截图里第 3 页下半截是**一大片空白**。弹层的意义是给"多"找地方，
+         不是给"五个框"找地方 —— 后者搬走只换来一次多余点击和一个空洞。
+       ── 这个弹层里现在有什么 ──────────────────────────────────────────────
+         只有 `effPickerHtml` / `pasPickerHtml` 展开出来的那一块（分类 + 网格 + 确定）。
+         它画的是**同一个** `state.pickOpen` / `state.pasOpen` 控制的那个面板 ——
+         也就是说：卡片里点「▼ 展开选效果」→ `state.pickOpen = true` →
+         卡片内那块表单让位（`_hideForm`），同时这个弹层挂出来。
+       ── ⚠ 三条必须守住 ───────────────────────────────────────────────────
+         ① **写回链路一个字不改**：还是 `effPickApply()` / `pasPickApply()`
+            写 `state.tpl[kind].效果`。弹层只换"画在哪"，不换"写到哪"。
+         ② **不从弹层里调 `tplHtml`**：那会把表单又画进弹层（就是 v584 的错）。
+            这里只要 `effPickerHtml` / `pasPickerHtml` 一个。
+         ③ **弹层挂在 card 外面**（见 buildHtml 里那处调用的注释）：
+            `_v470_balance` 判 card 内 `.xz-st-body` 恰好 1 个，而 `overlayShell`
+            内部容器也带这个类 —— 放进 card 里那条闸会红（且报的话把人往错处引）。 */
     function renderForgeOverlay() {
         var st = state.forge;
         if (!st) return '';
         var kind = st.kind || '玄技';
         var d = state.draft;
         if (!d) return '';
-        var isEdit = (st.act === 'edit');
-        var editing = state.editing[kind];
         var it = state.tpl[kind];
         if (!it) return '';
 
-        /* 标题：新建与编辑要一眼分得开 —— 否则玩家不知道点「添加」是新增还是覆盖 */
-        var title = (isEdit && editing !== null)
-            ? ('✦ 修改' + kind + '《' + String(it.名 || '未命名') + '》')
-            : ('✦ 新增' + kind);
+        /* 标题说清"在给谁挑效果" —— 玩家可能同时开着两三个页签，别让他挑错对象 */
+        var title = '选效果 · ' + kind + (it.名 ? ('《' + String(it.名) + '》') : '');
 
-        var body = '';
-        /* 一、三页签（只在**新建**时给：编辑一件武器时不该还能切到玄技去） */
-        if (!isEdit) {
-            body += '<div class="xz-st-tabs" style="margin-top:0;">' + KINDS.map(function (k) {
-                var n = d.items[k].length, lim = maxSlots(d, k);
-                var unit = (k === '玄诀') ? '部' : (k === '武器') ? '件' : '门';
-                return '<button type="button" class="xz-st-tab' + (kind === k ? ' on' : '') + '"'
-                    + ' data-xz-act="forge-kind" data-xz-kind="' + esc(k) + '">'
-                    + esc(k) + ' ' + n + '/' + lim + '</button>';
-            }).join('') + '</div>';
-        }
-        /* 二、表单本身 —— 直接复用 `tplHtml`。
-           ⚠ 传 kind 之前已经由 `forge-kind` 把 `state.tab` 对齐过（见事件分支），
-             因为 `tplHtml` 内部的 `pasPickerHtml` 会读 `state.tab` 之外的 `state.pasKind`，
-             两处不一致就会把玄诀的效果写进武器。 */
-        body += tplHtml(kind, d);
-        /* 三、底部动作条：添加入口钉在最下面（弹层会滚动，按钮跟着滚走就找不到了） */
+        /* 三页签放在弹层顶部：效果池跟着类别走（玄技走招式通道、玄诀/武器走被动通道），
+           换类别＝换整个池子，所以这个选择必须在弹层里能改。
+           ⚠ 它改的是 `state.tab` + `state.forge.kind` 两个（`forge-kind` 分支负责），
+             不是只改一个 —— 只改一个就会出现"给玄技挑效果、写进武器"。 */
+        var body = '<div class="xz-st-tabs" style="margin-top:0;">' + KINDS.map(function (k) {
+            var n = d.items[k].length, lim = maxSlots(d, k);
+            var unit = (k === '玄诀') ? '部' : (k === '武器') ? '件' : '门';
+            return '<button type="button" class="xz-st-tab' + (kind === k ? ' on' : '') + '"'
+                + ' data-xz-act="forge-kind" data-xz-kind="' + esc(k) + '">'
+                + esc(k) + ' ' + n + '/' + lim + '</button>';
+        }).join('') + '</div>';
+
+        /* 只要选择器本身。传 kind 之前已经由 `forge-kind` 把 `state.tab` 对齐过，
+           因为 `pasPickerHtml` 读的是 `state.pasKind`，`effPickerHtml` 读 `state.tab`。 */
+        body += (kind === '玄技') ? effPickerHtml(it, kind, true) : pasPickerHtml(it, kind, true);
+
+        /* 底部：确定 = 收起面板（效果在勾选那一刻已经写回了，这里只负责收） */
         body += '<div style="position:sticky;bottom:-12px;margin:10px -14px -12px;padding:9px 14px;'
             + 'background:linear-gradient(to top,#141922 72%,rgba(20,25,34,0));'
             + 'border-top:1px solid rgba(230,189,118,.22);display:flex;gap:8px;align-items:center;">'
-            + '<button type="button" class="xz-st-main" data-xz-act="add" style="flex:1;">'
-            + (isEdit ? '保存修改' : '添加到' + esc(kind)) + '</button>'
-            + '<button type="button" class="xz-st-mini" data-xz-act="forge-close" style="flex:0 0 auto;padding:7px 12px;">✕ 关闭</button>'
+            + '<button type="button" class="xz-st-main" data-xz-act="forge-ok" style="flex:1;">'
+            + '确定</button>'
             + '</div>';
         return overlayShell(title, 'forge-close', body);
     }
@@ -7911,9 +8307,36 @@ d.attrs[a] = v;
          要有修仙味：写气味、声音、具体动作，不写"天地灵气浓郁"这种空话。
          每条 60~130 字，够模型起一段，又不至于把玩家想说的全说死。
          ⚠ 不许有沿革话（「已下架」「旧写法」），世界书/提示词铁律同款。
+         ── ★★★ v621：`openKin`（亲缘变体开场白）★★★ ────────────────────────
+         作者 2026-11-16 原话：「开局写多一份根据是否开启亲缘人物关系预设，
+           因为我发现了，不这样搞会很割裂，也就是开启时，选择的那些6姐和妈的开场白
+           内容就实时变动。」
+         ── 为什么必须有这个字段 ──────────────────────────────────────────
+           一张卡里「六姐」和「妈」是**同一个人**（言清漪 / 白长雪）。
+           关掉亲缘时，开场白里出现"她是四姐"这种话，模型要么照写（凭空多出一个姐姐），
+           要么当没看见（那这条开场白就白写了）—— 两种都是割裂。
+           ⇒ 涉及家人的条目各备两份：`open`（无关系）与 `openKin`（开启亲缘）。
+         ── 哪些条目必须有 `openKin` ──────────────────────────────────────
+           只有**开场白里点到那六位姐妹或娘的名号/排行**的才有意义。
+           不涉及家人的条目（幻木林、太虚古地…）写 `openKin` 就是纯复制，
+           反而给以后改文案留了"两份对不上"的隐患 ⇒ 那些不写。
+         ── 判据见 `工具/_v621_kin_variant.mjs` ─────────────────────────────
+           它逐条断言：凡是 `f` 列表里含六姐/娘的，`openKin` 必须存在且**不等于** `open`；
+           没有 `openKin` 的条目，`open` 里也不许出现那六位的名号（否则关着亲缘也割裂）。
          ══════════════════════════════════════════════════════════════════════ */
+    /* ★★★ v622：「自定义开局」在展开态里的保留 id ★★★
+       「开局选择」这个滑轮里第一条是自定义开局，它**不是**预设表里的一条
+       （不进 `XZ_START_PRESETS`、不占正式 id、不参与"选中哪条"的比较）。
+       但它要复用 `state.premOpen` 来保证"同时只有一条开着" ——
+       两套展开态各自为政的话，可能出现预设开着、自定义也开着，
+       那一屏就是两张全文叠在一起，滑轮的意义直接没了。
+       ⚠ 这个串必须**永远不可能**与预设 id 撞车：预设 id 全是以
+         `yy-` / `jx-` / `fy-` / `ayisha-` / `duancang-` / `guanyin-` / `tianyun-`
+         这类小写前缀开头的短横线串（见下面每条的 `id`）。
+         这里用全大写 + 双下划线，且 `_v622_start_reorg.mjs` 会逐条核对唯一性。 */
+    var XZ_CUSTOM_OPEN_ID = '__CUSTOM__';
     var XZ_START_PRESETS = [
-        /* ── 一、有女角色的地点（12 条）────────────────────────────────────── */
+        /* ── 一、有女角色的地点（13 条）────────────────────────────────────── */
         {
             id: 'yy-cherry', name: '幽月仙宫 · 樱桃玉榻', tag: '女角色',
             big: '人州·中域·幽月仙宫', small: '宗主寝殿',
@@ -7921,7 +8344,13 @@ d.attrs[a] = v;
             open: '我是被一阵樱桃的甜香熏醒的。\n'
                 + '睁眼是重重叠叠的绛紫纱帐，帐外一炉冷香烧到只剩灰。玉榻另一头侧卧着个黑发金瞳的女人，'
                 + '指尖捻着一颗樱桃，也不吃，只在你眼前慢慢转。\n'
-                + '「醒了。」她把樱桃递到你唇边，眼睛却一寸不离地盯着你的反应，「说说看，你记得多少？」'
+                + '「醒了。」她把樱桃递到你唇边，眼睛却一寸不离地盯着你的反应，「说说看，你记得多少？」',
+            /* 三姐司幽怜 · 幽月仙宫宗主。亲缘版：不是"陌生女人"，是那个从不改姓的姐姐。 */
+            openKin: '我是被一阵樱桃的甜香熏醒的。\n'
+                + '睁眼是重重叠叠的绛紫纱帐，帐外一炉冷香烧到只剩灰。玉榻另一头侧卧着个黑发金瞳的女人，'
+                + '指尖捻着一颗樱桃，也不吃，只在你眼前慢慢转。\n'
+                + '「醒了。」她把樱桃递到你唇边，眼睛却一寸不离地盯着你的反应，'
+                + '「九十六年，这个姓我没改。你猜为什么。」'
         },
         {
             id: 'yy-coldmoon', name: '幽月仙宫 · 冷月惊鸿', tag: '女角色',
@@ -7929,7 +8358,13 @@ d.attrs[a] = v;
             blurb: '宫中剑仙在月台上独舞，一剑霜寒，回头问你从哪来。',
             open: '望月台高得能听见风从脚底下过。\n'
                 + '台上一个人在舞剑，白衣翻成一片月色的浪。剑锋掠过来时你鬓角一凉，一缕头发无声落地。'
-                + '她收剑而立，剑尖还悬着一线寒气，隔着三步看你：「宫门有阵，你是怎么进来的？」'
+                + '她收剑而立，剑尖还悬着一线寒气，隔着三步看你：「宫门有阵，你是怎么进来的？」',
+            /* 二姐云疏月（幽月仙宫首席客卿，冷月峰）。亲缘版：她的第一反应不是"外人闯阵"，
+               是"你怎么回来了"—— 她守的不许说软话那条戒律，在这一句上先裂一道缝。 */
+            openKin: '望月台高得能听见风从脚底下过。\n'
+                + '台上一个人在舞剑，白衣翻成一片月色的浪。剑锋掠过来时你鬓角一凉，一缕头发无声落地。'
+                + '她收剑而立，剑尖还悬着一线寒气，隔着三步看你。\n'
+                + '「……不该来。」她说完这句，剑却没收回鞘里，「宫门有阵，我教你破。走的时候，别回头。」'
         },
         {
             id: 'jx-snow', name: '霜霄仙阙 · 雪夜归人', tag: '女角色',
@@ -7938,7 +8373,14 @@ d.attrs[a] = v;
             open: '雪压着殿檐，压得木头一声一声地响。\n'
                 + '我在偏殿的炭盆边醒过来，身上盖着一件绣金的白羽氅。殿门被人从外面推开一条缝，'
                 + '风雪卷进来，又被一个金发的身影挡住。她把斗篷上的雪抖在门外，才肯进来。\n'
-                + '「别出声。」她压低声音，耳朵却红着，「主峰的人今夜会来查。」'
+                + '「别出声。」她压低声音，耳朵却红着，「主峰的人今夜会来查。」',
+            /* 四姐陆昭华 · 霜霄仙阙现任圣女。亲缘版：blurb 里"四姐"这个词只在亲缘开时兑现，
+               所以正文也要跟上 —— 她破例这一件事，是**为家里那个人**破的。 */
+            openKin: '雪压着殿檐，压得木头一声一声地响。\n'
+                + '我在偏殿的炭盆边醒过来，身上盖着一件绣金的白羽氅。殿门被人从外面推开一条缝，'
+                + '风雪卷进来，又被一个金发的身影挡住。她把斗篷上的雪抖在门外，才肯进来。\n'
+                + '「别出声。」她压低声音，耳朵却红着，'
+                + '「主峰不许男子入内，这条规矩是我自己立的。今夜来查的人，也是我派的。」'
         },
         {
             id: 'fy-master', name: '霜霄仙阙 · 素心尊者', tag: '女角色',
@@ -7947,7 +8389,14 @@ d.attrs[a] = v;
             open: '讲经堂里静得能听见香灰落下的声音。\n'
                 + '上首的素心尊者一身素白，手里捻着念珠，念到一半忽然停下，抬眼看向你：'
                 + '「《清静经》第三篇，『道』字作何解？」\n'
-                + '满堂的人都低头不敢喘。你却听见她指尖那串念珠，转得比刚才快了一点。'
+                + '满堂的人都低头不敢喘。你却听见她指尖那串念珠，转得比刚才快了一点。',
+            /* 奶娘梵清仪 · 霜霄仙阙前任圣女、尊长。亲缘版：她抱过这个孩子，
+               所以有资格管；她从不提那一夜，于是永远欠着一句没头没尾的谢。 */
+            openKin: '讲经堂里静得能听见香灰落下的声音。\n'
+                + '上首的素心尊者一身素白，手里捻着念珠，念到一半忽然停下。她没有问你经文，'
+                + '只是把念珠搁在案上，那一下很轻，可满堂的人都听见了。\n'
+                + '「十一年前，我从山外抱回来一个孩子。」她垂着眼，「那一夜的事，我不提。'
+                + '你也别问。……坐吧，坐到我下首来。」'
         },
         {
             id: 'sanjian-girl', name: '三剑宗 · 古灵精怪', tag: '女角色',
@@ -7974,7 +8423,14 @@ d.attrs[a] = v;
             open: '月牙泉的水在夜里是黑的，只有月亮照到的那一小片是亮的。\n'
                 + '泉边酒肆棚子快被风掀了，里头却坐得满。最里头一张矮几上摆着骰盅，'
                 + '对面是个披着薄纱的女人，赤着脚，脚踝上绕着三圈银铃。\n'
-                + '「外乡人。」她推过一只空碗，「陪我赌一局。赢了，我告诉你这口泉水为什么不会干。」'
+                + '「外乡人。」她推过一只空碗，「陪我赌一局。赢了，我告诉你这口泉水为什么不会干。」',
+            /* 大姐阿依莎 · 沙洲月牙泉城供奉仙姬。亲缘版：账本最后那行"今年没找到"，
+               添了二十年，今夜可以停笔了。她嘴上还是生意人那副口气。 */
+            openKin: '月牙泉的水在夜里是黑的，只有月亮照到的那一小片是亮的。\n'
+                + '泉边酒肆棚子快被风掀了，里头却坐得满。最里头一张矮几上摆着骰盅，'
+                + '对面是个披着薄纱的女人，赤着脚，脚踝上绕着三圈银铃。\n'
+                + '她手里翻着一本账，翻到最后一行，指尖停住，合上了。\n'
+                + '「今年这行不用添了。」她推过一只空碗，笑意先到眼睛里，「坐。账我慢慢跟你算。」'
         },
         {
             id: 'xuanyu-ji', name: '玄京 · 官票庄', tag: '女角色',
@@ -8009,7 +8465,43 @@ d.attrs[a] = v;
             open: '断霜崖只有一条上来的路，走到后头连路都没了，只剩凿在石壁上的脚窝。\n'
                 + '崖顶是一块被削平的石头。有人背对着我坐在崖边，膝上横着一把比人还长的刀，'
                 + '正用一块粗石一下一下地磨，磨一下，崖下的云就散一寸。\n'
-                + '「上来做什么。」她没回头。'
+                + '「上来做什么。」她没回头。',
+            /* 五姐沈清颜 · 无宗无派散修。亲缘版：她是唯一不肯住进任何人屋檐下的那个，
+               所以没有"家"可回 —— 只有崖顶那块能坐的石头。那一排正字是数日子数出来的。 */
+            openKin: '断霜崖只有一条上来的路，走到后头连路都没了，只剩凿在石壁上的脚窝。\n'
+                + '崖顶是一块被削平的石头。有人背对着我坐在崖边，膝上横着一把比人还长的刀，'
+                + '正用一块粗石一下一下地磨，磨一下，崖下的云就散一寸。\n'
+                + '她没回头，可磨刀的手停了。「石头上坐得下两个人。」她说，'
+                + '「坐。别问崖壁上那一排刻的是什么。」'
+        },
+        {
+            id: 'tianyun-mother', name: '天云雪山 · 雪庐晨课', tag: '女角色',
+            big: '人州·雪域·天云雪山', small: '峰巅雪庐',
+            blurb: '雪域最北的断脊上，一位赤眸剑仙替你理完经脉，塞来一只冰雕的兔子。',
+            /* ★★★ v621：作者的「妈」★★★
+               原话：「开启时，选择的那些6姐和妈的开场白内容就实时变动」——
+               「妈」指白长雪（《亲缘·六姐与娘》第一节）。这条预设就是为了她而建的：
+               原来 20 条里**一座城都没有她所在的天云雪山** ⇒ 想从她那儿开局，
+               只能自己去下拉里翻城名，等于"妈"在开局界面上不存在。
+               ⚠ `open` 这一版是**关掉亲缘**时用的：她是雪域剑仙，与来者没有家门关系，
+                 所以只写师徒/恩人那一层克制（把汤药温着、把袖口抚平，话极少）。
+                 「也是你娘」这种句子**绝不能**出现在 `open` 里 —— 关着亲缘时，
+                 那句话会让模型凭空多认一个娘，正是作者说的"割裂"。 */
+            /* ★ v622：上一版 193 字，超了本项目定的 60~150 字口径（够模型起一段，
+               又不把话说死），`_v613_start_presets` 的静态档当场报红。收紧成 130 字上下，
+               保留三样东西：雪域的冷、她替你理经脉这个动作、那只冰雕兔子。 */
+            open: '天云雪山在雪域最北一段断脊上，终年铅云压顶。\n'
+                + '雪庐在峰巅，一进院墙风雪就断在身后三步。我从厚软的蒲团上睁眼，'
+                + '身侧雪白蒲团上跪坐着一道身影，银灰长发垂到腰际，正扣着我的腕子一寸寸理经脉。\n'
+                + '她收回手：「经脉通达，吐纳尚可。」说完从袖中掏出一只玄冰雕的胖雪兔，'
+                + '面不改色塞进我掌心。',
+            /* 亲缘版：同一场晨课，但她递兔子的动机从"奖你未懈怠"变成"给你的"。
+               多出来的只有一句 —— 她一辈子没出过雪域，阵眼在这儿，你在这儿，她更不走。 */
+            openKin: '天云雪山在雪域最北一段断脊上，终年铅云压顶。\n'
+                + '雪庐在峰巅，一进院墙风雪就断在身后三步——那道结界靠后山灵泉里一座小阵眼撑着，'
+                + '她这辈子没出过雪域：阵眼在这儿，走不开。\n'
+                + '我从厚软的蒲团上睁眼，她正扣着我的腕子一寸寸理经脉。收回手：「经脉通达，吐纳尚可。」\n'
+                + '然后掏出一只玄冰雕的胖雪兔塞进我掌心：「给你的。」'
         },
         {
             id: 'guanyin-xingtai', name: '司天监 · 遮眼星官', tag: '女角色',
@@ -8018,7 +8510,15 @@ d.attrs[a] = v;
             open: '观星台四壁都是星图，画到一半停了笔。\n'
                 + '台中央立着个蒙着白绸的女人，面前一架浑天仪缓缓自己转着。她侧过脸，'
                 + '白绸下头似乎"看"住了我。\n'
-                + '「奇怪。」她伸手在虚空里一点，「你的命格，昨夜就该断了。」'
+                + '「奇怪。」她伸手在虚空里一点，「你的命格，昨夜就该断了。」',
+            /* ★ 六姐言清漪 · 司天监掌星弟子，白布遮目，靠脚步认人 —— 作者点名的那两位之一。
+               亲缘版的关键是「听脚步」：她看不见，可你一进来她就知道是谁。
+               这就是《亲缘·六姐与娘》里写的"进屋先停一步，让她先听"。 */
+            openKin: '观星台四壁都是星图，画到一半停了笔。\n'
+                + '台中央立着个蒙着白绸的女人，面前一架浑天仪缓缓自己转着。我还没开口，'
+                + '她已经侧过脸来 —— 不是朝我的方向，是朝**我的脚步声**。\n'
+                + '「三步。右脚比左脚轻。」白绸下她的嘴唇动了一下，「……十一年了，你这走路的样子没改。」\n'
+                + '她伸手在虚空里一点，声音很稳：「你的命格，昨夜就该断了。我把它续回去了。」'
         },
 
         /* ── 二、有趣的地点（8 条）────────────────────────────────────────── */
@@ -8211,17 +8711,23 @@ d.attrs[a] = v;
         /* 右侧小字放"预计天骄"—— 它是**会变的读数**，必须留在折叠区外。
            原来它是一整行长句（还带"圣灵根·天选之子 天灵根·大天骄…"那段对照表），
            用户说的"解释字体太多"有一半是它。 */
+        /* ★★★ v620：随机按钮搬进**标题栏** ★★★
+           用户原话：「你他妈随机肯定是在对应部分随机啊，谁他妈叫你专门做一个标头」。
+           原来它在正文第一行占一整行（≈28px），内容是「🎲 随机血脉 + 一句解释」。
+           ── 为什么进标题栏而不是留在正文 ──────────────────────────────────
+             随机是**对整块的快捷操作**，性质等同"这块的菜单项"；
+             摆在正文第一行会让它看起来像"第一个要填的字段"，而它下面那行表格才是字段。
+             进标题栏之后，正文第一行直接是名称/品阶/天骄/纯度 —— 少一整行高度，
+             而且"这块能被随机"这件事仍然一眼可见。
+           ── 那句解释去哪了 ────────────────────────────────────────────────
+             折进 `foldTip`（"说明"那一行本来就有）。它讲的是"随机掷的是哪几项"，
+             属于解释不属于操作 —— 作者 2026-11-04 定过「所有解释只能进说明」。
+           ⚠ 动作名保留 `roll-blood`（v43 起就在，事件分支不用改）。 */
         h += sectOpen('血脉 · 灵根', (d.spiritRootName || '未定') + ' · ' + (d.spiritRootRank || '伪灵根') +
-            ' · 纯度 ' + (Number(d.spiritRootPurity) || 0) + '% · 预计天骄 ' + tjNow.name, '灵根');
-        /* ★★★ v613：标题栏右侧加「🎲 全随机」—— 用户要「单项（如武器，或削血脉）的全随机」。
-           ⚠ 放标题栏而不是表单里：它掷的是**整块五项**，不是一个字段；
-             挂在任何一个输入框旁边都会被读成"只改这一格"（旁边那颗是 field 级的）。
-           ⚠ 窗口用的是 `data-xz-act="roll-blood"`（既有实现，v43 起就在），不新造动作名。 */
-        h += '<div class="xz-st-flow" style="margin:0 0 6px;gap:6px;">'
-            + '<button type="button" class="xz-st-dice" data-xz-act="roll-blood"'
-            + ' style="flex:0 0 auto;padding:4px 10px;">🎲 随机血脉</button>'
-            + '<span class="xz-st-tiny" style="flex:1 1 auto;align-self:center;">'
-            + '品阶、纯度、名称、效果一起掷；掷完仍可逐格手改</span></div>';
+            ' · 纯度 ' + (Number(d.spiritRootPurity) || 0) + '% · 预计天骄 ' + tjNow.name, '灵根',
+            '<button type="button" class="xz-st-dice" data-xz-act="roll-blood"'
+            + ' style="padding:3px 9px;font-size:11px;" title="品阶、纯度、名称、效果一起掷；掷完仍可逐格手改">'
+            + '🎲 随机血脉</button>');
         /* ★★★ v466 第四轮压扁：灵根从 3 行 → 2 行 ★★★
            第三轮量出来的真相（`工具/_v466_flow.mjs`，760px 宽、卡片内可用 720px）：
              行1 名称(720，独占)  ← 就是这一行白占的
@@ -8276,6 +8782,7 @@ d.attrs[a] = v;
              '<input type="text" data-xz-field="bloodDesc" maxlength="80" value="' + esc(d.bloodDesc || '') + '" placeholder="来历与体征，可留空"></div>' +
              '</div>';
         h += foldTip('品阶 = 这条灵根能到的<em>上限</em>；纯度 = 当下兑现几成（0~100），最低伪灵根。<br>'
+            + '标题栏那颗「🎲 随机血脉」会把品阶、纯度、名称、效果<em>一起</em>掷掉（掷完仍可逐格手改）。<br>'
             + '天骄档只看灵根：<b>圣灵根</b> · 天选之子　<b>天灵根</b> · 大天骄　<b>双灵根</b> · 普通天骄　三灵根及以下 · 非天骄。');
         h += sectClose('灵根');   /* ⚠ 必须传同一个 key（v470 修：这里原来漏传，多闭合一层 div，
                                      把 .xz-st-body 提前关掉 ⇒ 下面「四维」整块掉出作用域，
@@ -8339,6 +8846,15 @@ d.attrs[a] = v;
                没填就印「男」（与 emptyDraft 的默认同源，别写第二个默认值）。 */
             + ' · ' + (d.gender === '女' ? '女' : '男');
         h += sectOpen('道基', _dkSummary, '道基');
+        /* ★★★ v621：年龄**不再受境界限制**（作者 2026-11-16）★★★
+           原话：「不，是最低年龄不再受限，任何境界都不再受限，这是开局创角的主角特权。」
+           ⇒ `min`/`max`/`title`/默认值**一律取 `XZ_AGE_ABS`**（8~2500 的绝对边界），
+             不再取 `getRealmAgeRange(d.realm)`。
+           ⚠ 这一行原来写的是 `value="' + (d.realAge || ageRange[0]) + '"` ——
+             默认值跟着境界走（选金丹就默认 88 岁）。那也是"境界限制年龄"的一种：
+             玩家切一下境界，年龄跟着跳，且没有提示。现在默认值只跟草稿走，
+             草稿没填才落绝对下限。
+           ⚠ `REALM_AGE_RANGE` 仍然有用：下面那行参考小字要用它回答"这一档能活多久"。 */
         var ageRange = getRealmAgeRange(d.realm);
         h += '<div class="xz-st-flow" style="margin-top:0;">' +
              '<div class="xz-st-cell"><label>姓名 <b style="color:#df7468;">*</b></label>' +
@@ -8351,14 +8867,20 @@ d.attrs[a] = v;
              '<div class="xz-st-cell" style="flex:0 0 76px;"><label>性别</label>' +
              '<select data-xz-field="gender">' + opts(['男', '女'], d.gender) + '</select></div>' +
              '<div class="xz-st-cell" style="flex:0 0 92px;"><label>年龄 <b style="color:#df7468;">*</b></label>' +
-             '<input type="number" data-xz-field="realAge" min="' + ageRange[0] + '" max="' + ageRange[1] + '" value="' + (d.realAge || ageRange[0]) + '" title="' + ageRange[0] + '~' + ageRange[1] + '岁"></div>' +
+             '<input type="number" data-xz-field="realAge" min="' + XZ_AGE_ABS[0] + '" max="' + XZ_AGE_ABS[1] + '"'
+             + ' value="' + (d.realAge || XZ_AGE_ABS[0]) + '"'
+             + ' title="' + XZ_AGE_ABS[0] + '~' + XZ_AGE_ABS[1] + '岁，与境界无关"></div>' +
              '<div class="xz-st-cell"><label>境界</label><select data-xz-field="realm">' + opts(REALMS, d.realm) + '</select></div>' +
              '<div class="xz-st-cell"><label>玄元属性</label><select data-xz-field="elem">' + opts(ELEMS, d.elem) + '</select></div>' +
              '</div>';
         /* 年龄标尺从"行内小字"挪成 title 提示 + 这里一行极小的灰字 ——
            直接删掉会让玩家不知道能填几岁（那是判据，不是装饰）。
-           放在框末一行 10px 灰字，比原来每行都挂一条要省空间。 */
-        h += foldTip('年龄可填 ' + ageRange[0] + '~' + ageRange[1] + ' 岁。');
+           放在框末一行 10px 灰字，比原来每行都挂一条要省空间。
+           ★ v621：措辞改了。原来写「年龄可填 16~150 岁」等于告诉玩家"你选了练气就只能填这个段"，
+             而现在的口径是**随便填**。改成先说能填的范围，再点出境界那一段只是寿元参考 ——
+             不写这一句的话，玩家切到金丹看到「88~500」会以为又被限制了。 */
+        h += foldTip('年龄可填 ' + XZ_AGE_ABS[0] + '~' + XZ_AGE_ABS[1] + ' 岁，<b>与境界无关</b>。'
+            + '（' + (d.realm || '此境界') + '寿元约 ' + ageRange[0] + '~' + ageRange[1] + ' 岁，仅供参考。）');
         h += sectClose('道基');
 
         /* ★★★ v613：灵根（血脉）整块**已搬到第 3 页** ★★★
@@ -8466,82 +8988,77 @@ d.attrs[a] = v;
              这是 v467 就在注释里定下的规矩，别为了省高度把它也折了。
            ⚠ 默认**收起**（不传 key 时 `state.sectOpen` 初始为 '道基'，
              这里传 '已配' 则默认不展开）—— 第 3 页真正要操作的是锻造台。 */
-        h += sectOpen('已配 · 核心专区', '玄技 ' + _sk + ' · 玄诀 ' + _hj + ' · 武器 ' + _wr, '已配');
+        /* ★★★ v620：随机按钮**回归各自分区**，不再单独立一个「全随机」标头 ★★★
+           用户原话：「谁他妈教你这样子摆放随机的，你他妈随机肯定是在对应部分随机啊，
+             谁他妈叫你专门做一个标头」。
+           ── 原来错在哪 ────────────────────────────────────────────────────
+             v613 在整页最下面立了一个独立 sect「全随机 / 一键掷一套」，
+             里面放「全部随机 + 只掷血脉 + 只掷玄技 + 只掷玄诀 + 只掷武器」。
+             那是把"操作"和"它作用的对象"拆到两个地方 —— 玩家看到「只掷武器」
+             时，武器那一条在**上面隔了两块**的地方。随机是就地操作，不是独立功能。
+           ── 现在的归属（按钮跟着它掷的东西走）────────────────────────────
+             · 血脉     → 「血脉 · 灵根」区块里（已经在那儿，v613 就放对了）
+             · 玄技/玄诀/武器 → 各自那一个页签 → 所以进「造化锻造台」那一块的标题栏，
+               掷的是**当前页签**那一类（`roll-kind` + `state.tab`）
+             · 全部随机 → 「已配」标题栏（它掷的正是已配里的全部内容）
+           ⚠ 「全部随机」放在已配标题栏而不是锻造台：它掷完的**结果就出现在已配上**，
+             紧挨着结果比挨着入口更合理；而且已配在最上面，玩家第一眼就能看到这条捷径。
+           ⚠ 别把「只掷玄技/玄诀/武器」三颗又摆回来：页签已经表达了"现在在弄哪一类"，
+             再摆三颗就是**同一个选择做了两遍**（v620 用户骂的就是这种冗余）。 */
+        h += sectOpen('已配 · 核心专区', '玄技 ' + _sk + ' · 玄诀 ' + _hj + ' · 武器 ' + _wr, '已配',
+            '<button type="button" class="xz-st-dice" data-xz-act="roll-everything"'
+            + ' style="padding:3px 9px;font-size:11px;"'
+            + ' title="血脉五项 + 玄技 3 门 + 玄诀 2 部 + 武器 1 件；已配的先清空再掷">'
+            + '🎲 全部随机</button>');
         h += renderEquippedBox(d, true);
         h += sectClose('已配');   /* ⚠ 必须传同一个 key：传空会多闭合一层 div（静默塌版） */
 
-        /* ★★★ v584：锻造台整块改成**弹层入口** ★★★
-           用户原话：「开局脚本里的玄技玄诀和武器锻造台，彻底改为弹层式，
-             这样子就不用在那挤来挤去了。」
-           ── 这一块原来长什么样 ──────────────────────────────────────────
-             三页签 + 六字段表单 + 选效果面板全在这里，展开任何一段都要先藏掉另一段
-             （`_hideForm` 那段病历：不藏就顶穿 91px）。等于"选了效果就看不见名字"。
-           ── 现在 ────────────────────────────────────────────────────────
-             卡片里只留**三行读数**（每类几件 / 上限几件）+ 一个「打开锻造台」按钮。
-             表单与自选面板都在弹层里，同时可见、互不让位。
-           ⚠ 为什么保留三行读数而不是只留一个按钮：玩家要一眼知道"我现在配了几门"，
-             不然打开弹层才知道满没满。这三行是**只读**的，零控件、零高度浪费。
-           ⚠ 那个 `data-xz-act="tab"` 的三页签**删掉了**：它唯一的作用是切
-             `state.tab` 决定下面渲染哪类表单，而表单已经不在卡片里了。
-             切换改由弹层内的 `forge-kind` 负责（同一个 `state.tab`，只是换个地方点）。 */
-        h += sectOpen('造化锻造台');
-        h += '<div style="display:flex;flex-direction:column;gap:4px;margin:2px 0 7px;">'
-            + KINDS.map(function (k) {
-                var n = d.items[k].length, lim = maxSlots(d, k);
-                var unit = (k === '玄诀') ? '部' : (k === '武器') ? '件' : '门';
-                var full = n >= lim;
-                return '<div style="display:flex;align-items:baseline;gap:6px;font-size:11.5px;">'
-                    + '<span style="color:var(--xz-text-2);flex:0 0 40px;">' + esc(k) + '</span>'
-                    + '<span style="color:' + (full ? '#e8cb92' : 'var(--xz-gold-bright)') + ';font-weight:var(--xz-fw-med);">'
-                    + n + '</span>'
-                    + '<span style="color:var(--xz-muted);font-size:10.5px;">/ ' + lim + ' ' + unit + (full ? '（已满）' : '') + '</span>'
-                    + '</div>';
-            }).join('')
-            + '</div>';
-        h += '<button type="button" class="xz-st-main" data-xz-act="forge-open" style="width:100%;">'
-            + '⚒ 打开锻造台</button>';
-        /* 一句提示：让玩家知道点进去能干什么，而不是以为它只是个"看"的按钮。
-           ⚠ 不写"弹层"这种实现词 —— 玩家不关心它是浮层还是别的。 */
-        h += '<div class="xz-st-tiny" style="margin-top:5px;text-align:center;">新建或修改玄技／玄诀／武器，效果可以逐条勾选</div>';
-        h += sectClose();
+        /* ══════════════════════════════════════════════════════════════════════
+           ★★★ v620：锻造台**回到卡片内联**，只把「选效果」放进弹层 ★★★
+           用户原话（本轮，2026-11-16）：
+             「我他妈让你搞弹层的意义是什么！效果这么多用弹层啊，其他像原来一样啊，
+               我他妈意思是**选效果才有弹层**啊」
+             「开局脚本他妈整整空出来几倍的高度，你要鸡巴干嘛」
+           ── v584 错在哪 ────────────────────────────────────────────────────
+             我当时把「锻造台整块」搬进弹层，于是卡片里只剩三行读数和一颗按钮
+             —— 那张截图里第 3 页下半截是**一大片空白**。弹层的意义是给
+             「效果网格（几十个按钮）」找地方，不是给「五个输入框」找地方。
+             五个输入框本来就不占多少高度，搬走之后卡片空着、操作还多一次点击。
+           ── 现在的分工（这才是用户要的）────────────────────────────────────
+             卡片内：三页签 + 表单（名/品质/目标/消耗/效果/添加）—— 「像原来一样」
+             弹层内：**只有**效果自选的面板（分类 + 网格 + 确定）
+           ── 高度怎么不涨 ──────────────────────────────────────────────────
+             别人已经拍板「开局脚本就这个高度吧。高度别改了」⇒ 不许把第 3 页撑长。
+             腾地方的两个来源，都不是"删功能"：
+               ① 已配收成定高滚动框（v620，178px 封顶）—— 它原来会随条数无限长
+               ② `_hideForm` 那套**保留且必须保留**：展开选效果时卡片内的表单整段藏，
+                  收起时再出现。v584 把它用 `XZ_IN_OVERLAY` 钉成恒假（因为表单也在弹层里），
+                  现在表单回到卡片内 ⇒ 那个理由消失，它必须复活。
+           ══════════════════════════════════════════════════════════════════════ */
+        /* 锻造台标题栏右侧：**当前页签那一类**的随机（掷一件装进已配）。
+           ⚠ 它跟着 `state.tab` 走：页签切到武器，这颗就掷武器 —— 同一个按钮、
+             不同页签掷不同东西，比三颗"只掷X"并排更少字也更少错（v620）。 */
+        var _tabNow = state.tab || '玄技';
+        h += sectOpen('造化锻造台', '玄技 ' + _sk + ' · 玄诀 ' + _hj + ' · 武器 ' + _wr,
+            '锻造台',
+            '<button type="button" class="xz-st-dice" data-xz-act="roll-kind" data-xz-kind="' + esc(_tabNow) + '"'
+            + ' style="padding:3px 9px;font-size:11px;" title="随机一件「' + esc(_tabNow) + '」并直接装进已配">'
+            + '🎲 掷' + esc(_tabNow) + '</button>');
+        /* 一、三页签（切 `state.tab`，决定下面渲染哪一类表单）
+           ⚠ 属性名是 `data-xz-kind`（不是 `data-xz-tab`）：`act === 'tab'` 那个分支
+             读的就是它（`t.getAttribute('data-xz-kind')`）。写错属性名的后果不是报错，
+             是 `|| '武器'` 兜底 ⇒ **不管点哪个页签都跳到武器**，而且零报错。 */
+        h += '<div class="xz-st-tabs" style="margin-top:0;">' + KINDS.map(function (k) {
+            var n = d.items[k].length, lim = maxSlots(d, k);
+            var unit = (k === '玄诀') ? '部' : (k === '武器') ? '件' : '门';
+            return '<button type="button" class="xz-st-tab' + (state.tab === k ? ' on' : '') + '"'
+                + ' data-xz-act="tab" data-xz-kind="' + esc(k) + '">'
+                + esc(k) + ' ' + n + '/' + lim + '</button>';
+        }).join('') + '</div>';
+        /* 二、表单（名/品质/目标/消耗/效果/添加）—— 按当前页签那一类渲染 */
+        h += tplHtml(state.tab || '玄技', d);
+        h += sectClose('锻造台');
 
-        /* ★★★ v613：一键总全随机 ★★★
-           作者 2026-11-15：「血脉和技能和武器搞个全随机按钮，
-             有一键总全随机和单项（如武器，或削血脉）的全随机。」
-           ── 为什么单独一块、还放在最后 ────────────────────────────────────
-             它掷的是**上面三块的全部内容**（血脉五项 + 玄技/玄诀/武器各一件），
-             是一次性的"我很懒，给我一套能玩的"。放在最后 = 玩家先看到自己
-             要填什么，再看这条捷径；放最前面会让整页像"只有随机"。
-           ── 单项随机在哪 ─────────────────────────────────────────────────
-             · 血脉  → 上面「血脉 · 灵根」标题栏下面那颗「🎲 随机血脉」（五项一起）
-             · 玄技/玄诀/武器 → 本块下面三颗，各掷一件**装进已配**
-               （不是掷表单 —— 表单是"我马上要添加的那件"，掷了还得点添加）
-           ── ⚠ 掷的是"补满到上限"还是"各一件" ─────────────────────────────
-             取**各补到上限**：玄技 30 门全掷满会瞬间灌满整页已配列表，
-             而开局真要的是"我有几门能打的"。⇒ 玄技补到 min(3, 上限)，
-             玄诀补到 min(2, 上限)，武器恒 1 件（上限就是 1）。
-             这与"全随机"的语义不冲突 —— 它保证的是**能开局**，不是塞满。
-           ⚠ 已配非空时**先清再掷**：混着旧件掷会变成"随机加了几件"，
-             玩家点全随机的心理预期是"整页重新来一套"。 */
-        h += sectOpen('全随机', '一键掷一套');
-        h += '<button type="button" class="xz-st-main" data-xz-act="roll-everything"'
-            + ' style="width:100%;">🎲 全部随机（血脉 + 玄技 + 玄诀 + 武器）</button>';
-        h += '<div class="xz-st-flow" style="margin:6px 0 0;gap:6px;">'
-            + '<button type="button" class="xz-st-dice" data-xz-act="roll-blood"'
-            + ' style="flex:1 1 0;padding:5px 8px;">🎲 只掷血脉</button>'
-            + '<button type="button" class="xz-st-dice" data-xz-act="roll-kind" data-xz-kind="玄技"'
-            + ' style="flex:1 1 0;padding:5px 8px;">🎲 只掷玄技</button>'
-            + '<button type="button" class="xz-st-dice" data-xz-act="roll-kind" data-xz-kind="玄诀"'
-            + ' style="flex:1 1 0;padding:5px 8px;">🎲 只掷玄诀</button>'
-            + '<button type="button" class="xz-st-dice" data-xz-act="roll-kind" data-xz-kind="武器"'
-            + ' style="flex:1 1 0;padding:5px 8px;">🎲 只掷武器</button>'
-            + '</div>';
-        h += foldTip('「全部随机」＝ 血脉五项 + 玄技 3 门 + 玄诀 2 部 + 武器 1 件，'
-            + '已配的会先清空再掷。单项只动那一块，其余一概不碰。<br>'
-            + '掷完每一项都还能手改 —— 随机只是省事，不是锁死。'
-            + '<br>⚠ 名字是模板名（如「炽焰诀」），想换成自己编的名字直接在锻造台里改。');
-        h += sectClose();
-        /* ★ v470：原来这里关的是 `.xz-st-tight`，现在那层包裹没了，此行一并去掉。 */
         return h;
     }
 
@@ -8644,10 +9161,35 @@ d.attrs[a] = v;
         var h = "";
         d.place = "custom";
 
+        /* ★★★ v622：整页重排（作者 2026-11-16 原话）★★★
+           「然后自定义开局这个部分挪进预设开局的最顶端。点击后展开的就是自定义开局的内容。
+             然后预设开局叫做开局选择，在场人物部分容纳进自定义开局里。」
+
+           ── 改完之后的第 4 页长这样（自上而下）────────────────────────────
+             ① 开局选择（原「预设开局」改名）
+                · 第 1 条永远是一个**折叠卡片「自定义开局」** —— 点开就是
+                  落点三段下拉 + 小位置 + 场景图 + 开场白框 + **在场人物**。
+                · 第 2 条起是 21 条官方预设（点开看全文 → 点「选择此开局」载入）。
+             ② 剧本选择
+             ③ 人物关系预设
+             ④ 人物条目（那条标题栏 v622 起与其他分区头同形）
+
+           ── 为什么"自定义"要变成预设列表里的第一条，而不是单独一个分区 ──────
+             它们本来就是**同一件事的两个选项**：「这一局从哪儿开、开场白是什么」。
+             分成两个分区，玩家会以为是两个独立步骤（先填自定义、再选预设？），
+             而实际上选了预设就覆盖了自定义那两样。并进同一个列表之后，
+             "二选一"这件事本身就写在了界面上，不用解释。
+           ⚠ 但顺序不能反过来（预设在上、自定义在下）：作者明确说「挪进最顶端」。
+             自定义是"我自己写"，是这一页的默认路径；21 条预设是备选。
+
+           ── ⚠ 一个必须守住的边界 ────────────────────────────────────────────
+             「自定义开局」这条卡片**不是** `XZ_START_PRESETS` 里的一条 ——
+             它不进那张表、不占 id、不参与"选中哪条"的高亮比较。
+             混进去会立刻坏三处：`_v613_start_presets` 的「20 条」计数、
+             `prem-pick` 的查表、以及"共用 big 的两条要按 small 区分"那套判定。 */
+
         /* ★★★ v613：预设开局（纵向滑轮）★★★
            作者 2026-11-15：「新增一些预设开局……至少 20 个……不用弹层，采用纵向滑轮式」
-           放在「自定义开局」**上面**：它是这一页最短的一条路（点一下 → 落点和开场白都填好），
-           而下面的下拉框是"我自己一格一格填"，属于进阶路径。
 
            ── 为什么是纵向滑轮而不是横向卡片 ────────────────────────────────
              作者点名「纵向滑轮列表」。而且每条要带一句 blurb（否则 20 个名字长得一样），
@@ -8659,33 +9201,67 @@ d.attrs[a] = v;
              ⚠ 定高必须有上限：不定高的话 20 条会把第 4 页撑到几千像素，
                下面「确认开局」按钮要滚很久才够得着（本项目「确认开局按钮消失」的形状）。
              ⚠ `min-height:0` 必须配 `flex:1`，否则在 flex 容器里滚不动（v592 同款）。 */
-        h += sectOpen('预设开局', XZ_START_PRESETS.length + ' 条', '预设开局');
-        /* ★★★ v613 第二轮：改成**卡片折叠式** ★★★
-           作者 2026-11-15（原话）：「开场这里需要改，我要改成卡片式，也就是，
-             卡片里默认折叠，点开后是更为详细的开场白内容，然后有个选择按钮。」
+        h += sectOpen('开局选择', (XZ_START_PRESETS.length + 1) + ' 种', '开局选择');
 
-           ── 与上一版（整条即按钮）的本质差别 ────────────────────────────────
-             上一版每条是一个 `<button data-xz-act="prem-pick">`：点火就载入。
-             问题不是"能不能用"，而是**点之前没法看** —— 20 条里挑一条，
-             玩家最想知道的是「这一局开场是什么样」，而上一版的 blurb 只有一行，
-             等于闭着眼选。⇒ 拆成两级动作：
-               · 点卡片头  → 展开（只展开，**不载入**）
-               · 点「选择此开局」 → 才真的写进落点与开场白
-             ⚠ 展开与选择**必须是两个元素**：合成一个的话，"我想先看看"
-               会直接把当前填的东西覆盖掉（而且是静默覆盖 —— 玩家只会觉得
-               "我点了一下就变了"）。
-
-           ── 为什么展开态存在 `state.premOpen` 而不是用 `<details>` ──────────
-             全项目的折叠说明都用原生 `<details>`（`.xz-st-fold`），那条经验**不适用于这里**：
-             `<details>` 的展开态是 DOM 自己记的，而本卡片每次 `render(true)` 都会
-             `innerHTML` 整块重建 ⇒ 展开态归零。玩家点开一条、再点别处触发一次重绘，
-             刚才展开的那条就自己合上了（本项目踩过十几次的"点了没反应/自己回去了"）。
-             ⇒ 用 `state.premOpen` 记住"哪一条是展开的"，并由它生成本次 HTML。
-           ⚠ 它同时要进 render sig：不是为了主路径（`render(true)` 会跳过 sig），
-             而是为了 1.5s 轮询那次 `render(false)` 能补画 —— 详见 sig 里那段的说明。
-           ⚠ 只允许同时展开一条：20 条全展开等于回到"一屏几千像素"的老病。
-             这不是限制，是让"我在看哪一条"有唯一答案。 */
+        /* ★★★ v622：自定义那张卡必须**在滑轮容器里面**，而且是第一个孩子 ★★★
+           ── 为什么这件事值得单开一段注释（第一版写错了）──────────────────
+             第一版把它画在 `<div class="xz-st-prem">` **外面**（先画自定义、后开容器）。
+             视觉上"在最上面"是成立的，但作者要的是「挪进预设开局的最顶端」——
+             它得是**这个列表的第一条**，跟着列表一起滚，而不是列表顶上一块独立的面板。
+             更实际的问题：放在外面时它没有 `.xz-st-prem` 的定高与滚动约束，
+             一展开就把整页顶长几百像素，而下面 21 条仍然在自己的小窗口里滚 ——
+             两套滚动区并存，手感是分裂的。
+           ── 所以顺序是：sectOpen → .xz-st-prem 开 → 自定义卡 → 21 条预设 → 收 ──
+             ⚠ 别再把它挪到容器外："在最上面"要靠 DOM 顺序证，不靠"看起来在上面"。 */
         h += '<div class="xz-st-prem">';
+
+        /* ── 第一条：自定义开局（v622 从独立分区搬进来，作者点名放最顶端）────
+           ⚠ `state.premOpen` 复用同一个变量，取值用 `XZ_CUSTOM_OPEN_ID` 这个
+              **不会与预设 id 撞车**的保留串。复用而不是新开一个 state 字段，
+             是因为"同时只有一条开着"这条规则对自定义那条同样成立 ——
+             两套展开态各自为政的话，可能出现"预设开着、自定义也开着"，
+             那一屏就是两张全文叠在一起，滑轮的意义直接没了。 */
+        var _cOp = (String(state.premOpen || '') === XZ_CUSTOM_OPEN_ID);
+        h += '<div class="xz-st-prem-i xz-st-prem-custom' + (_cOp ? ' open' : '')
+            + (state.premId ? '' : ' on') + '">';
+        h += '<button type="button" class="xz-st-prem-hd"'
+            + ' data-xz-act="prem-toggle" data-xz-prem="' + XZ_CUSTOM_OPEN_ID + '"'
+            + ' aria-expanded="' + (_cOp ? 'true' : 'false') + '"'
+            + ' title="' + (_cOp ? '收起' : '展开自己写落点与开场白') + '">'
+            + '<span class="xz-st-prem-n">自定义开局</span>'
+            + '<span class="xz-st-prem-t">自己写</span>'
+            + '<span class="xz-st-prem-c" aria-hidden="true">' + (_cOp ? '▾' : '▸') + '</span>'
+            + '</button>';
+        h += '<div class="xz-st-prem-b">自己挑州、域、城，写一段开场白，再点几位在场人物。</div>';
+        if (_cOp) {
+            h += '<div class="xz-st-prem-d">';
+            h += customBlock(d);
+            /* ★★★ v622：在场人物并进自定义开局（作者原话）★★★
+               「在场人物部分容纳进自定义开局里。」
+               ── 为什么它属于这里，而不是一个独立分区 ──────────────────────
+                 "这一局有谁在场"和"这一局在哪、开场白是什么"是同一件事的三面，
+                 而且**只有自定义开局用得上**：选了预设就按预设正文起局，
+                 预设里的人已经写在正文里了，再选一遍只会让他多说一遍。
+                 ⇒ 并进来之后，选预设那一侧**天然没有在场人物入口**，
+                   也就不会有人"选了预设又去选人"导致正文里角色重复。
+               ⚠ 它必须是 `castBlockHtml` 原样调用，不许改成别处也有第二份：
+                 第 4 页以外没有任何地方该有在场人物选择（第 4 页重排前就这一处）。 */
+            h += '<div class="xz-st-cem" style="margin-top:9px;">'
+                + '<span class="xz-st-cem-t">在场人物</span>'
+                + '<span class="xz-st-cem-d">'
+                + ((d.cast && d.cast.length) ? ('已选 ' + d.cast.length + ' 人') : '未选')
+                + '</span></div>';
+            h += castBlockHtml(d);
+            h += '</div>';
+        }
+        h += '</div>';
+
+        /* ⚠ v622：这里原来还有一行 `h += '<div class="xz-st-prem">';` ——
+           容器已经在上面（自定义卡之前）开过了，这里再开一个会把 21 条预设
+           装进**第二个**滑轮容器里，而自定义那张落在第一个里。
+           表现为"两个各自能滚的小窗口叠在一起"，截图里一眼就能看出来，
+           但 DOM 查询（`.xz-st-prem` 取第一个）不会报错 —— 只会静默地少一半内容。
+           ⇒ 已经删掉。别再补回来。 */
         for (var _pi = 0; _pi < XZ_START_PRESETS.length; _pi++) {
             var _p = XZ_START_PRESETS[_pi];
             /* ★★★ v613：选中判定必须比 big **和** small ★★★
@@ -8719,8 +9295,12 @@ d.attrs[a] = v;
                     + (_p.small ? (' · ' + esc(_p.small)) : '') + '</div>';
                 /* ★ 开场白原文：`white-space:pre-wrap` 保留换行（它本来就是分段写的）。
                    ⚠ 不截断、不加省略号 —— 这一段就是"点开后更为详细的内容"本身，
-                     截了就白展开。玩家自己判断这局合不合口味。 */
-                h += '<div class="xz-st-prem-op">' + esc(_p.open) + '</div>';
+                     截了就白展开。玩家自己判断这局合不合口味。
+                   ★★★ v621：这里**必须**按亲缘开关取变体 ★★★
+                     玩家在这里读到的，就是他点「选择此开局」之后会拿到的那一段。
+                     直接写 `_p.open` 的话，开着亲缘时预览还是无关系版 ——
+                     预览与结果不一致，比"没预览"更让人不信这个面板。 */
+                h += '<div class="xz-st-prem-op">' + esc(presetOpenOf(_p, kinEnabled(d))) + '</div>';
                 h += '<button type="button" class="xz-st-prem-pick"'
                     + ' data-xz-act="prem-pick" data-xz-prem="' + esc(_p.id) + '">'
                     + (_pOn ? '✓ 正在用这个开局（点一下重新载入）' : '选择此开局')
@@ -8734,14 +9314,30 @@ d.attrs[a] = v;
             '点卡片**只是展开看开场白**，不会动你填的东西；展开后点「选择此开局」才把'
             + '<b>落点</b>和<b>开场白</b>填好，其余（姓名/境界/血脉/四维/玄技）仍由你自己定。'
             + '载入后照样能改下面的下拉框和开场白框。<br>'
+            + '· 第一条「自定义开局」是你自己写；下面每一条是一次备好的开局场面。'
             + '· 金色左边线且名字发白的，就是**当前落点与它一致**的那条。'
             + '· 开场白是写进酒馆输入框的正文（配「落点：州·域·城」那行），不是卡里的固定楼层。'
         );
-        h += sectClose('预设开局');
+        /* ★★★ v622：这里**只能**有一个 `sectClose`，不许再加 `h += '</div>'` ★★★
+           ── 病历（多关一层，是静默塌版，闸才知道）────────────────────────
+             改第 4 页时我把老代码的 `sectClose('预设开局')` 拆成了
+             「`h += '</div>'`（自以为在收 .xz-st-prem）+ `sectClose('开局选择')`」——
+             而 `.xz-st-prem` 在上面 **9290 行那个 `h += '</div>'` 里已经收掉了**。
+             ⇒ 多关一层，把 `.xz-st-body` 提前关掉。
+           ── 病果（浏览器完全静默，控制台干净）──────────────────────────────
+             「剧本选择」「人物关系预设」两个分区整块掉到 `.xz-st-body` **外面**
+             ⇒ 它们的输入框退回浏览器默认白底黑字；卡片直接子节点里冒出一个裸
+             `.xz-st-sect`（实测 2 个：卡片内 1 正常 + 外面 1 游离）。
+             只有 `_v470_balance` 数 DOM 层级看得见 —— 这正是那个闸存在的理由。
+           ── 收支必须自己数一遍（这次栽的就是没数）──────────────────────────
+             sectOpen 净开 2 层（.xz-st-sect + .xz-st-sect-b，.xz-st-sect-h 自闭合）
+             + `<div class="xz-st-prem">` 1 层 = 3 层
+             收：9290 的 `</div>`（prem）+ 这一个 sectClose（2 层）= 3 层 ✔ */
+        h += sectClose('开局选择');
 
-        h += sectOpen("自定义开局", "");
-        h += customBlock(d);
-        h += sectClose();
+        /* ★ v622：原「自定义开局」独立分区**已删**（搬进「开局选择」第一条，
+           见上面那段）。原「在场人物」独立分区也**已删**（并进自定义开局里）。
+           ⚠ 两块都别再单独加回来 —— 加回来就是同一件事在界面上出现两次。 */
 
         /* ★★★ v587：剧本选择（原「迷雾模式」）★★★
 
@@ -8789,10 +9385,11 @@ d.attrs[a] = v;
             + '<br>⚠ 六个剧本**同时只开一个**，所以「绝望时代 + 灰雾」这种叠法不成立。'
         );
         h += sectClose();
-        h += sectOpen("在场人物", (d.cast && d.cast.length) ? (d.cast.length + " 人") : "未选");
-        h += castBlockHtml(d);
-        h += sectClose();
-        /* ★ v1.053c：关系预设只留两个按钮（作者 2026-11-03）。
+        /* ★ v622：原「在场人物」分区**已删** —— 并进「开局选择」第一条的
+           「自定义开局」里（作者原话：「在场人物部分容纳进自定义开局里」）。
+           ⚠ 别在这里补回来：它现在是自定义开局的子块，这里再来一份就是两套选人界面，
+             而且会出现"选了预设又选了人"导致正文里角色重复的病。
+           ★ v1.053c：关系预设只留两个按钮（作者 2026-11-03）。
            「六姐与娘」= 开启《亲缘·六姐与娘》世界书条目；「无关系」= 关掉它。
            不再逐人勾选 —— 那七个勾选框既占地方又让人以为可以只认一半。 */
         var _kinSix = (d.kin === "six");
@@ -9629,13 +10226,79 @@ host.__xzGuard = true;
                 d.gender = (String(t.value || '') === '女') ? '女' : '男';
                 render(true); return;
             }
-            if (field === 'realAge') { d.realAge = Math.max(10, Math.min(2500, parseInt(t.value, 10) || 16)); return; }
-            if (field === 'customBig') { d.customBig = String(t.value || '').slice(0, 24); return; }
-            if (field === 'customSmall') { d.customSmall = String(t.value || '').slice(0, 24); return; }
+            /* ★★★ v621：年龄只受 `XZ_AGE_ABS` 管，**与境界完全无关** ★★★
+               作者原话：「不，是最低年龄不再受限，任何境界都不再受限，
+               这是开局创角的主角特权，条目不用改。」
+               ⇒ 这里只钳 8~2500 这个绝对边界，绝不读 `REALM_AGE_RANGE`
+                 （那张表按境界分档，读了就等于把境界限制搬回来）。
+
+               ⚠ 钳制只在 **change（失焦 / 回车）** 那一刻做，`input`（打字中）不做。
+                 原因不是洁癖：`input` 里钳会把「想输 30」的人打死 ——
+                 按下 3 就被抬成 8，接着按 0 变成 80，越改越离谱。
+                 这类"输入框自己跟玩家打架"的 bug 只在真打字时才现形。
+               ⚠ 钳完**必须把结果写回框**（同 `attr` 分支下面那段回写）。
+                 少这一步就是本项目最典型的"静默钳制"：玩家填 3 → 草稿存 8、
+                 框里仍显示 3，没有任何提示，他以为填进去了，确认后变量却是 8。
+               ⚠ 空串 / NaN 落 16（`emptyDraft` 的默认），不落 8 ——
+                 玩家清空重填时框里蹦出「8」比「16」更像被谁偷偷改过。
+               ⚠ 打字中遇到非法值**不写草稿**（保持上一个合法值），
+                 纠正留给 change —— 这样草稿任何时刻都满足 validate，不会出现
+                 "看着填了、点确认才报错"的落差。 */
+            if (field === 'realAge') {
+                var _ra = parseInt(t.value, 10);
+                if (_ra >= XZ_AGE_ABS[0] && _ra <= XZ_AGE_ABS[1]) {
+                    d.realAge = _ra;
+                    return;
+                }
+                if (e.type !== 'change') return;
+                if (!isFinite(_ra)) _ra = 16;
+                _ra = Math.max(XZ_AGE_ABS[0], Math.min(XZ_AGE_ABS[1], _ra));
+                d.realAge = _ra;
+                try { t.value = String(_ra); } catch (eRA) {}
+                return;
+            }
+            /* ★ v622：手填落点 ⇒ 退出"预设开局"身份（理由同上面三段下拉那段：
+               落点被改过，这一局就不再是那条预设了）。
+               ⚠ 这两行必须在**写 draft 的同一步**里做。第一版把这一步单独放在
+                 后面（`if (field === 'customSmall' || field === 'customBig')`），
+                 而这两行前面已经 `return` —— 那段永远走不到，是纯死代码。
+                 判据（`_v622_start_reorg` ⑥）查的就是"同一个分支里做"，不是
+                 "文件某处有这句话"。 */
+            if (field === 'customBig') {
+                d.customBig = String(t.value || '').slice(0, 24);
+                if (state.premId) state.premId = '';
+                return;
+            }
+            if (field === 'customSmall') {
+                d.customSmall = String(t.value || '').slice(0, 24);
+                if (state.premId) state.premId = '';
+                return;
+            }
             /* ★ v542：上限跟着 `OPENING_MAX` 走，别再写死 500 ——
                写死的话扩写出来 900 字，玩家一在框里改动就被截回 500，
-               而且截得**毫无提示**（这正是「改了没反应」最气人的那种）。 */
-            if (field === 'customOpening') { d.customOpening = String(t.value || '').slice(0, OPENING_MAX); return; }
+               而且截得**毫无提示**（这正是「改了没反应」最气人的那种）。
+               ★★★ v622：改字 ⇒ **这一局不再是预设那一局** ★★★
+                 判据是"与 `premWrote` 逐字相等"：相等说明这仍是上一次
+                 `prem-pick` / 亲缘切换写进去的那段，来源没变；
+                 不相等说明玩家动了它 —— 那就不再发"只发正文"那一路，
+                 而是回到自定义开局的拼法（落点 + 正文 + 在场人物）。
+                 ── 不这么做的后果（很具体）────────────────────────────────
+                   玩家载入「幽月仙宫」，把第一句改成自己的，再确认开局：
+                   `premId` 还在 ⇒ 只发正文 ⇒ **落点那行没了**。
+                   他明明自己写了落点（`customBig`/`customSmall` 每次 onField 都在同步），
+                   结果正文里不提地点，模型只能自己猜 —— 而这正是 v382/v385
+                   花了两个版本才修好的事。
+                 ⚠ 别把 `premWrote` 一起清成空串：那条"改过就不覆盖"的判定
+                   （亲缘开关那段）靠它区分"我们写的"和"他改的"，
+                   清掉之后亲缘切换会把他的稿子当成我们写的、直接覆盖掉。 */
+            if (field === 'customOpening') {
+                var _co = String(t.value || '').slice(0, OPENING_MAX);
+                d.customOpening = _co;
+                if (state.premId && _co !== String(state.premWrote || '')) {
+                    state.premId = '';
+                }
+                return;
+            }
             /* ★★★ v385（用户第四遍）：「域他妈没跟着改啊，第三级也没跟着改啊」
                ── 这三个字段此前**没有任何分支接住**，选完草稿不变、render 不重算
                  ⇒ 域与城永远停在第一项（中州 / 天枢域），看起来就是「选了没反应」。
@@ -9656,11 +10319,22 @@ host.__xzGuard = true;
                     _next = { state: _next.state, area: _next.area, city: String(t.value || '') };
                 }
                 writeTriple(d, _tree, joinBig(_next));
+                /* ★★★ v622：自己改落点 ⇒ 退出"预设开局"身份 ★★★
+                   载入预设之后玩家又去动了下拉框，说明他要的开局已经不是那条预设了。
+                   这以后按自定义开局拼（落点 + 正文 + 在场人物）才对 ——
+                   否则他改出来的落点在确认时会被"只发正文"那一路吞掉，
+                   正文里不提地点，模型自己猜，v382/v385 修过的老毛病原样复发。
+                   ⚠ 不清 `premWrote`：那条判据是"框里那段是不是我们写的"，
+                     与落点无关。清了会让亲缘切换误判（把他的稿子当成我们写的覆盖掉）。 */
+                if (state.premId) state.premId = '';
                 /* 不塞 state.note：下面那行「当前落点」就是回显，再说一遍是噪音。
                    但**必须 render(true)** —— 否则草稿变了、下拉还是旧选项。 */
                 render(true);
                 return;
             }
+            /* ★ v622：手填小位置/落点退出预设身份这一步，已经并进上面各自的分支里
+               （第一版写在这里是**死代码** —— 上面两行各自 return 了，永远走不到）。
+               ⚠ 别搬回来："文件里某处有这句话"和"这条路径上真的会执行"是两件事。 */
             if (field === 'attr') {
                 var key = t.getAttribute('data-xz-attr');
                 if (!key) return;
@@ -9676,9 +10350,13 @@ host.__xzGuard = true;
             }
             if (field === 'realm') {
                 d.realm = t.value;
-                var rRange = getRealmAgeRange(d.realm);
-                if (d.realAge < rRange[0]) d.realAge = rRange[0];
-                if (d.realAge > rRange[1]) d.realAge = rRange[1];
+                /* ★★★ v621：换境界**不许再动年龄**（作者：「任何境界都不再受限，
+                   这是开局创角的主角特权」）★★★
+                   旧版在这里把年龄夹进 `getRealmAgeRange(d.realm)` 那一段 ——
+                   玩家切一下境界，年龄就悄悄跳了，而且**没有任何提示**：
+                   28 岁填好、切到金丹，年龄自己变成 88，玩家只会觉得"面板坏了"。
+                   现在年龄只受 `XZ_AGE_ABS` 管，与境界完全解耦。
+                   ⚠ 别改回"抬到下限"：那不是"校验变严"，那是替玩家改掉他填的数字。 */
                 clampAttrs(d);
                 var maxS = maxSlots(d, '玄技');
                 if (d.items.玄技.length > maxS) {
@@ -9982,40 +10660,33 @@ host.__xzGuard = true;
             /* ═══ v584：弹层（锻造台 / 灵根效果自选）════════════════════════
                ⚠ 这一组全是**纯界面态**，一律 `render(true)`；每个字段都已在 sig 里
                  （`state.forge` / `state.bloodPick`），漏了就是"点了没反应"。 */
-            if (act === 'forge-open') {
-                /* 新建：把当前页签那支的表单重置成空条目，再开弹层。
-                   ⚠ 必须重置 —— 上一次编辑完的残留（名字、效果）会留在 `state.tpl` 里，
-                     玩家点「打开锻造台」会看到一个"上次那门招"的表单，以为卡了。
-                   ⚠ 只在**未在编辑**时重置：编辑中途关掉弹层再打开，要能接着改。 */
-                var _fk = state.tab || '玄技';
-                state.forge = { kind: _fk, act: (state.editing[_fk] !== null ? 'edit' : 'new'), idx: state.editing[_fk] };
-                if (state.editing[_fk] === null) {
-                    state.tpl[_fk] = emptyItem(_fk);
-                    rollAll(state.tpl[_fk], _fk);
-                    if (_fk === '武器') state.tpl[_fk].描述 = '';
-                }
-                /* 打开时清掉两个自选面板的展开态：它们会把弹层内容顶得很长，
-                   而玩家刚进来第一件事是看见名字与品质，不是满屏效果按钮。 */
+            if (act === 'forge-ok') {
+                /* ★ v620：弹层底部的「确定」—— 只收面板，不碰数据。
+                   效果在勾选那一刻已经由 `effPickApply` / `pasPickApply` 写进
+                   `state.tpl[kind].效果` 了，这里再写一次就是"同一个动作两处触发"：
+                   以后谁改了写回逻辑，就会变成"点确定把玩家的手改覆盖掉"。
+                   ⚠ 三个 `state.forge` 关闭口（forge-ok / forge-close / pick-ok / pas-ok）
+                     都必须把两个展开态一起清掉，否则重开弹层会看到上一轮摊开的分类。 */
+                state.forge = null;
                 state.pickOpen = false;
                 state.pasOpen = false;
-                state.note = '';
+                state.pickCat = '';
+                state.pasCat = '';
                 render(true);
                 return;
             }
             if (act === 'forge-close') {
-                /* 关掉弹层**不丢表单内容**：`state.tpl` 原样留着，
-                   下次点开还是这份（玩家可能只是去看看已配列表）。
-                   ⚠ 但要把 `state.editing` 复位：关闭等于放弃这次修改，
-                     否则下次点「打开锻造台」会直接进入"修改第 N 件"，
-                     而那件的表单已经被清空 —— 表现是"点添加把别的招覆盖了"。 */
-                var _ck = (state.forge && state.forge.kind) || state.tab || '玄技';
+                /* 关掉弹层**不丢表单内容**：`state.tpl` 原样留着（玩家可能只是关掉看看别处）。
+                   ⚠ 但要把两个展开态复位：否则下次点「展开选效果」会直接看到上次那类，
+                     而玩家心里的预期是"重新挑"。
+                   ⚠ v622：这里原来有一行 `var _ck = state.tab || '玄技';`，全库零读 ——
+                     `_v335_dead_copy` 判红。删掉（不是加白名单：它确实一个用处都没有）。 */
                 state.forge = null;
-                state.editing[_ck] = null;
-                state.tpl[_ck] = emptyItem(_ck);
-                rollAll(state.tpl[_ck], _ck);
-                if (_ck === '武器') state.tpl[_ck].描述 = '';
                 state.pickOpen = false;
                 state.pasOpen = false;
+                state.pickCat = '';
+                state.pasCat = '';
+                state.note = '';
                 render(true);
                 return;
             }
@@ -10201,6 +10872,12 @@ host.__xzGuard = true;
                 state.pasOpen = false;
                 state.pickCat = '';
                 state.pasCat = '';
+                /* ★ v620：切页签时弹层也要收 —— 它是"给某一类挑效果"的场景化界面，
+                   换了一整套表单（类别都变了）就不该还挂着上一类的面板。
+                   不收的后果：弹层里那颗「确定」会把**新类别**的效果写进去，
+                   而玩家以为自己还在改原来那一类（`state.pasKind` 也会跟着错）。
+                   ⚠ 这与"切页签 = 换一整套表单"是同一条口径（上面那段病历）。 */
+                if (state.forge) state.forge = null;
                 render(true);
                 return;
             }
@@ -10221,7 +10898,38 @@ host.__xzGuard = true;
                ⚠ 三个分支都必须 `effPickApply()` 之后再 `render(true)`：
                  只重渲染不重算，界面上的"已选 N"会变而效果串不变 ——
                  那种不一致最难查（两边各自看着都对）。 */
-            if (act === 'pick-toggle') { state.pickOpen = !state.pickOpen; render(true); return; }
+            /* ★★★ v620：展开选效果 = **开弹层** ★★★
+               用户原话：「我他妈意思是选效果才有弹层啊」。
+               ── 为什么要在这里开弹层，而不是在卡片里摊开 ────────────────────
+                 效果池是几十个按钮 + 分类条，摊在卡片里必然吃掉表单的位置
+                 （这正是 v468 那套 `_hideForm` 的由来：展开了就得把表单藏掉）。
+                 藏掉表单 = 挑效果时看不见名字，得来回点两次 —— 拿功能换高度。
+                 搬进弹层之后，卡片里的表单**根本不需要让位**：面板压根不在卡片里。
+               ⚠ 两件事必须同时发生，缺一个就是"点了没反应"：
+                 ① `state.forge` 挂上（弹层据此渲染）
+                 ② `state.pickOpen/pasOpen` 置 true（选择器据此渲染展开区）
+                 只做 ① 会看到一个空弹层（没有展开区）；只做 ② 卡片里会摊开面板。
+               ⚠ `state.tab` 要跟着当前 kind 对齐：`effPickerHtml` 读它决定池子，
+                 不一致会把玄技的效果写进武器（v468 踩过）。 */
+            if (act === 'pick-toggle' || act === 'pas-toggle') {
+                var _tk = state.tab || '玄技';
+                state.forge = { kind: _tk, act: 'new', idx: state.editing[_tk] };
+                state.pasKind = _tk;
+                if (act === 'pick-toggle') {
+                    state.pickOpen = !state.pickOpen;
+                    state.pasOpen = false;
+                    state.pickCat = state.pickCat || '';
+                } else {
+                    state.pasOpen = !state.pasOpen;
+                    state.pickOpen = false;
+                    state.pasCat = '';
+                }
+                /* 两个都收起来了 ⇒ 弹层没必要留着（点「收起」等于关掉） */
+                if (!state.pickOpen && !state.pasOpen) state.forge = null;
+                state.note = '';
+                render(true);
+                return;
+            }
             /* ★ v468 一级分类：只改"展开哪一类"，不碰已选。
                ⚠ 必须 render(true) —— pickCat 进了 sig，这里改了不重渲染就是死键。 */
             if (act === 'pick-cat') {
@@ -10240,6 +10948,7 @@ host.__xzGuard = true;
             if (act === 'pick-ok') {
                 state.pickOpen = false;
                 state.pickCat = '';          /* 下次展开从"先选分类"开始，不再自动摊开上次那类 */
+                state.forge = null;          /* v620：弹层跟着收起（它只为选效果而存在） */
                 state.note = '已写入效果栏。要改描写就直接在效果栏那一行的「｜」后面写。';
                 render(true);
                 return;
@@ -10277,6 +10986,7 @@ host.__xzGuard = true;
             if (act === 'pas-ok') {
                 state.pasOpen = false;
                 state.pasCat = '';
+                state.forge = null;          /* v620：弹层跟着收起 */
                 state.note = '已写入效果栏。要改描写就直接在效果栏那一行的「｜」后面写。';
                 render(true);
                 return;
@@ -10640,7 +11350,35 @@ host.__xzGuard = true;
                 d.place = 'custom';
                 d.customBig = _ph.big;
                 d.customSmall = _ph.small;
-                d.customOpening = _ph.open;
+                /* ★★★ v621：按亲缘开关取变体，并且**记下我们写了什么** ★★★
+                   `state.premId` / `state.premWrote` 是下面「实时换文案」的判据：
+                     · `premId`  —— 当前这一局的正文来自哪条预设（'' = 玩家自己写的）
+                     · `premWrote` —— 我们上次**逐字**写进 textarea 的那段
+                   没有这两个，亲缘开关翻转时就没法判断"该不该动这个框"：
+                   玩家自己改过一个字，就不许再覆盖他（那是他最不能接受的那种静默覆盖）。 */
+                var _kinOn0 = kinEnabled(d);
+                var _openNow = presetOpenOf(_ph, _kinOn0);
+                d.customOpening = _openNow;
+                state.premId = _ph.id;
+                state.premWrote = _openNow;
+                /* ★★★ v622：载入预设就**清掉在场人物** ★★★
+                   作者原话：「在场人物是他妈自定义的啊，你都鸡巴选了白长雪的开局了，
+                   那他妈还要选吗」。
+                   ── 为什么是清掉，而不是"留着但不发"────────────────────────────
+                     `customOpeningText()` 那一侧已经按 `premId` 不发了，光不发也不会出错。
+                     但界面上那几位还挂在"在场人物"里（那是自定义开局框里的子块），
+                     玩家点开自定义那条会看到一串人，以为它们还在生效 ——
+                     而他刚刚选了预设。**界面和实际行为不一致**是这里最坏的形状。
+                   ── 为什么可以直接清而不怕丢东西 ──────────────────────────────
+                     站在预设开局这一侧，那些名字本来就没地方用（正文里不写、变量里不写）。
+                     真要用，他可以再点回自定义开局重新选 —— 但那时预设正文还在框里，
+                     混着用本来就是这一条需求要禁掉的东西。
+                   ⚠ 不是"删掉玩家选的"那么严重：`d.cast` 只是草稿里的界面态，
+                     确认开局时不会写进 `人物列表`（见 buildVars 那段注释），
+                     所以清了它不会被当成"改了玩家的存档"。 */
+                d.cast = [];
+                state.castPick = '';
+                state.castOther = null;
                 /* ⚠ 不要在这里碰 `state.sectOpen`：`sectOpen()/sectClose()` 的 key 形参
                    已被忽略（手风琴撤了，所有分区恒定展开，见这两个函数的实现）。
                    写了也不会有任何效果，只会让后来的人以为这里还有折叠逻辑。 */
@@ -10648,13 +11386,47 @@ host.__xzGuard = true;
                    （卡片本来就开着，只是左边多了条金线），玩家会以为没成功又点一次。
                    收起来 = 一次明确的状态迁移：看 → 选 → 收起。 */
                 state.premOpen = '';
-                state.note = '已载入预设开局：' + _ph.name + '（落点与开场白已填好，其余仍按你自己的设定）。';
+                state.note = '已载入预设开局：' + _ph.name
+                    + '（落点与开场白已填好；在场人物属于自定义开局，已随之清空。其余仍按你自己的设定）。';
                 render(true);
                 return;
             }
+            /* ★★★ v621：亲缘开关翻转 ⇒ 已载入的预设开场白**实时**跟着换 ★★★
+               作者 2026-11-16：「开启时，选择的那些6姐和妈的开场白内容就实时变动。」
+               ── 为什么必须在**点开关这一刻**换，而不是等确认开局 ──────────────
+                 开场白就摆在第 4 页的框里，玩家一边读一边决定要不要这段亲缘。
+                 等确认时才换 ⇒ 他读的那一段跟他最后拿到的不是同一段，
+                 等于"我明明读过了没事，怎么正文里冒出个四姐"。
+               ── 换的条件很窄，只换"还是我们写的那一段" ─────────────────────
+                 `d.customOpening === state.premWrote`（逐字相等）才动。
+                 玩家只要改过哪怕一个字，就**不碰** —— 那是他的稿子，不是预设的了。
+                 这时只更新 `premWrote` 的基准（置空），免得下次误判。
+               ── 没有载入预设（premId 为空）时**什么都不做** ─────────────────
+                 纯自定义开局里出现"姐/娘"是玩家自己写的，我们不知道他想指谁，
+                 替他改字是最坏的一种"贴心"。 */
             if (act === 'kin-none' || act === 'kin-six') {
                 d.kin = (act === 'kin-six') ? 'six' : '';
                 wbToggleNow(d.kin === 'six', KIN_ENTRY_TITLE, '人物关系预设');
+                var _pid2 = String(state.premId || '');
+                if (_pid2) {
+                    var _ph2 = null;
+                    for (var _pj2 = 0; _pj2 < XZ_START_PRESETS.length; _pj2++) {
+                        if (XZ_START_PRESETS[_pj2].id === _pid2) _ph2 = XZ_START_PRESETS[_pj2];
+                    }
+                    /* 三个条件全中才换：认得这条预设 / 这条真有变体 / 框里还是我们写的那段 */
+                    if (_ph2 && _ph2.openKin
+                        && String(d.customOpening || '') === String(state.premWrote || '')) {
+                        d.customOpening = presetOpenOf(_ph2, kinEnabled(d));
+                        state.premWrote = d.customOpening;
+                        state.note = '已按「' + (d.kin === 'six' ? '六姐与娘' : '无关系')
+                            + '」换过开场白：' + _ph2.name + '。';
+                    } else if (_ph2 && _ph2.openKin) {
+                        /* 框里已经被改过 —— 不动它，但要说清为什么没动，否则又是一次"点了没反应" */
+                        state.note = '开场白你已经改过了，这里不替你覆盖。'
+                            + '想换成「' + (d.kin === 'six' ? '六姐与娘' : '无关系')
+                            + '」那一版，重新点一下「' + _ph2.name + '」即可。';
+                    }
+                }
                 render(true);
                 return;
             }
@@ -10702,10 +11474,22 @@ host.__xzGuard = true;
     /* ============================ 校验与提交 ============================ */
     function validate(d) {
         var name = String(d.name || '').trim();
-        var rRange = getRealmAgeRange(d.realm);
-        var rAge = Number(d.realAge || 16);
-        if (rAge < rRange[0] || rAge > rRange[1]) {
-            throw vfail('实际骨龄不合修仙常理：当前境界【' + d.realm + '】按天元修仙标尺，真实寿元骨龄必须在 ' + rRange[0] + ' ~ ' + rRange[1] + ' 岁之间（百岁内结丹方为可能，不可低龄成道）。');
+        /* ★★★ v621：年龄校验从「按境界段」改成「绝对边界」（作者 2026-11-16）★★★
+           原话：「不，是最低年龄不再受限，任何境界都不再受限，这是开局创角的主角特权。」
+           ── 为什么这一条必须一起改（不然前面全白改）────────────────────────
+             输入框 min/max 放开、onField 不再钳，到这里还会被这条硬校验挡住 ——
+             `validate` 是确认开局的最后一道闸，它抛错就**开不了局**，
+             而报的话是「当前境界【金丹】…必须在 88 ~ 500 岁之间」。
+             那种表现最气人：三个数字框都填得进去，一点确认就红字，且不知道错在哪。
+           ── 现在还校验什么 ────────────────────────────────────────────────
+             只保数据的下限/上限与整数性：8 ~ 2500，且必须是正整数。
+             "8 岁能不能是金丹"不是脚本该管的事 —— 那是玩家这一局的选择。
+           ⚠ 报错文案里不许再出现「当前境界」「按天元修仙标尺」这类词：
+               它们会让玩家以为自己在跟一个境界表较劲，而实际上判的是绝对边界。 */
+        var rAge = Number(d.realAge || XZ_AGE_ABS[0]);
+        if (!isFinite(rAge) || Math.floor(rAge) !== rAge
+            || rAge < XZ_AGE_ABS[0] || rAge > XZ_AGE_ABS[1]) {
+            throw vfail('年龄要填 ' + XZ_AGE_ABS[0] + ' ~ ' + XZ_AGE_ABS[1] + ' 之间的整数（与境界无关，随便你几岁成道）。');
         }
         if (!name || name === '未知' || name === '无名') {
             throw vfail('踏入仙途前请先定夺姓名：请在开局面板填写本名（不可留空或填“未知”）。');
@@ -10725,7 +11509,38 @@ host.__xzGuard = true;
         });
         if (!d.items.玄技.length) throw vfail('请至少学一门玄技：在【造化锻造台 → 玄技】里自己起名、选品阶、定目标与消耗、在「效果」里写效果（每行「效果名: 效果串」，或点 🎲 自动填），再点【添加到玄技】。');
         var place = placeOf(d.place);
-        if (place.custom && !String(d.customOpening || '').trim()) throw vfail('自选开局必须填写开场白内容。');
+        /* ★★★ v622：开场白只在「玩家真的要走自定义」时才要求 ★★★
+           ── 作者拍板（2026-11-16）：「填单时不该要求」────────────────────────
+           ── 旧写法为什么不成立 ──────────────────────────────────────────────
+             `if (place.custom && !customOpening.trim()) throw` —— 问题是
+             `place.custom` 为真的场景**远多于**"玩家想自定义"：
+             DLC 落点（斗罗/斗破）也是 `custom: true`，它们同样没有预设开场白文件。
+             于是勾了 DLC、只想用它的落点、正文打算现写的玩家，会被这句拦住 ——
+             而他连"开场白"该写在哪个框里都还没看见。
+           ── v622 之后更尖锐 ─────────────────────────────────────────────────
+             自定义开局那张卡**默认折叠**（作者：「点击后展开的就是自定义开局的内容」）
+             ⇒ 开场白那个 textarea 压根没渲染 ⇒ 玩家连"有个必填框"都看不见。
+             要求一个看不见的框，是这里最坏的形状。
+           ── 新判据：三条正向条件，任一成立才算"他要自己写" ──────────────────
+             ① `state.premId` 非空 —— 他点过某条预设（正文由预设写入；此时为空
+                说明预设内容坏了，该拦）
+             ② `d.customOpening` 本身非空 —— 那没什么可拦的
+             ③ `d.customBig/customSmall` **与默认值不同** —— 只有"改过"才算数
+           ⚠⚠ ③ 绝不能用「非空」判断：`emptyDraft()` 里 `customBig` 的默认值就是
+              `'人州·中域·司天监'`（与 custom 落点的 `big` 一字不差，见 PLACES 那条），
+              写 `!!_big` 会让**所有人**都命中 —— 第一版就是这么写的，
+              结果 `_v582_submit_hang` 六条一起红，报的却是"提交卡住了"，方向完全错。
+              判"改过"只能跟默认值比，不能跟空串比。
+           ⚠ 判据**不看 textarea 在不在 DOM 里**：折叠与否是界面态，
+             拿它当判据等于"展开才校验、收起就放过"，同一份数据两种结论。 */
+        var _op = String(d.customOpening || '').trim();
+        var _bigChanged = String(d.customBig || '').trim() !== '人州·中域·司天监';
+        var _smChanged = !!String(d.customSmall || '').trim();
+        var _wantsCustom = !!(state && state.premId) || !!_op || _bigChanged || _smChanged;
+        if (_wantsCustom && !_op) {
+            throw vfail('你选了自写开局，但开场白是空的 —— 展开「自定义开局」把开场白写上，'
+                + '或点上面任意一条预设开局（那样正文自动填好）。');
+        }
         /* ★★★ v388：自选开局的落点也要校验 —— 这是 v382～v387 一直漏的那一半 ★★★
            当时的校验只查了开场白，**落点完全没查**。
            于是「苍玄九州」这种查不到的串能一路写进变量，玩家到舆图上才发现自己不在任何州。
