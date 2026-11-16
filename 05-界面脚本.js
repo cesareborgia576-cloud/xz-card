@@ -2563,6 +2563,24 @@ function xzTypeOf(name, fbT, fbA) {
     /* 浮层几何：position:fixed 的 containing block 不一定是真正的视口
        （被祖先 transform / filter / contain 接管就会变成那块小盒子），所以能用像素就用像素钳死。 */
     function xzOverlayGeom(win, doc) {
+        /* ★★★ 用户 2026-11-16：弹层「只能在脚本显示范围内弹出」+ 适配手机 ★★★
+           与 07 的 xzOvGeom 同口径：优先读 V611 的 --xz-vw/--xz-vh/--xz-vtop/--xz-vleft
+           （self/parent/top 最小可见高，随软键盘更新），而不是宿主 win 的 innerHeight
+           （iframe 里被撑到 1680 ⇒ 手机端弹层出屏）。读不到才回退旧算法。
+           ⚠ 两处必须一起改、写法一致 —— 这是 V611 引擎自己反复强调的「只改一边会分叉」。 */
+        try {
+            var de = doc && doc.documentElement;
+            if (de && de.style) {
+                var _vw = parseFloat(de.style.getPropertyValue('--xz-vw')) || 0;
+                var _vh = parseFloat(de.style.getPropertyValue('--xz-vh')) || 0;
+                var _vt = parseFloat(de.style.getPropertyValue('--xz-vtop')) || 0;
+                var _vl = parseFloat(de.style.getPropertyValue('--xz-vleft')) || 0;
+                if (_vw >= 200 && _vh >= 240) {
+                    return { vw: Math.round(_vw), vh: Math.round(_vh),
+                        top: Math.round(_vt), left: Math.round(_vl), hostH: Math.round(_vh) };
+                }
+            }
+        } catch (eV) {}
         var vw = 0, vh = 0, top = 0, left = 0, hostH = 0;
         try { hostH = win.innerHeight || 0; } catch (e0) {}
         try {
