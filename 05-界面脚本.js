@@ -49,7 +49,7 @@
     var DAY_DECL = "--xz-t0:#0a7552!important;--xz-t1:#147136!important;--xz-t2:#177065!important;--xz-t3:#157438!important;--xz-t4:#0762d2!important;--xz-t5:#2e734d!important;--xz-t6:#2b7062!important;--xz-t7:#13754e!important;--xz-t8:#277446!important;--xz-t9:#20753a!important;--xz-t10:#4c687a!important;--xz-t11:#4d6d5e!important;--xz-t12:#3f6e57!important;--xz-t13:#276e60!important;--xz-t14:#186f83!important;--xz-t15:#1c7348!important;--xz-t16:#6c6659!important;--xz-t17:#696456!important;--xz-t18:#566669!important;--xz-t19:#5c6670!important;--xz-t20:#6b6657!important;--xz-t21:#5c6570!important;--xz-t22:#6b6558!important;--xz-t23:#4e658a!important;--xz-t24:#536c42!important;--xz-t25:#776161!important;--xz-t26:#0463ce!important;--xz-t27:#54667e!important;--xz-t28:#776161!important;--xz-t29:#5c6670!important;--xz-t30:#696456!important;--xz-t31:#6d6559!important;--xz-t32:#25699b!important;--xz-t33:#4d6886!important;--xz-t34:#4b697b!important;--xz-t35:#326f33!important;--xz-t36:#2d6e57!important;--xz-t37:#0d6ca0!important;--xz-t38:#123af7!important;--xz-t39:#4d14f5!important;--xz-t40:#8715f4!important;--xz-t41:#6c6654!important;--xz-t42:#6b6455!important;--xz-t43:#626654!important;--xz-t44:#6e6552!important;--xz-t45:#3767a7!important;--xz-t46:#8510f9!important;--xz-t47:#766138!important;--xz-t48:#4111f9!important;--xz-t49:#776161!important;--xz-t50:#76632b!important;--xz-t51:#7d5c4f!important;--xz-t52:#6c624d!important;--xz-t53:#7e5f29!important;--xz-t54:#7b602c!important;--xz-t55:#796135!important;--xz-t56:#6f624a!important;--xz-t57:#6d634d!important;--xz-t58:#6f6550!important;--xz-t59:#6e6552!important;--xz-t60:#596579!important;--xz-t61:#15734f!important;--xz-t62:#4d6685!important;--xz-t63:#776161!important;--xz-t64:#ae4500!important;--xz-t65:#7b641a!important;--xz-t66:#b03a58!important;--xz-t67:#78622a!important;--xz-t68:#b03a65!important;--xz-t69:#806221!important;--xz-t70:#776161!important;--xz-t71:#b73527!important;--xz-t72:#805f1b!important;--xz-t73:#6f673e!important;--xz-t74:#4a678f!important;--xz-t75:#7d611e!important;--xz-t76:#835c18!important;--xz-t77:#756232!important;--xz-t78:#c12718!important;--xz-t79:#805e1b!important;--xz-t80:#72653c!important;--xz-t81:#776161!important;--xz-t82:#726548!important;--xz-t83:#c71111!important;--xz-t84:#776336!important;--xz-t85:#c62218!important;--xz-t86:#c02a1e!important;--xz-t87:#a94817!important;--xz-t88:#8e5a0d!important;--xz-t89:#92570f!important;--xz-t90:#825e13!important;--xz-t91:#796110!important;--xz-t92:#806015!important;--xz-t93:#786317!important;--xz-t94:#72613b!important;--xz-t95:#776161!important;--xz-t96:#895b0c!important;--xz-t97:#79642e!important;--xz-t98:#905b07!important;--xz-t99:#805f0f!important;--xz-t100:#7b6339!important;--xz-t101:#cd0c2d!important;--xz-t102:#805f2d!important;--xz-t103:#79642e!important;--xz-t104:#716236!important;--xz-t105:#8c5a06!important;--xz-t106:#7c632b!important;--xz-t107:#776161!important;--xz-t108:#83610c!important;--xz-t109:#815e27!important;--xz-t110:#7b622c!important;--xz-t111:#bb3023!important;--xz-t112:#7b5e0d!important;--xz-t113:#766332!important;--xz-t114:#ce0a0a!important;--xz-t115:#7d6324!important;--xz-t116:#77622a!important;--xz-t117:#805d02!important;--xz-t118:#7a6221!important;--xz-t119:#cb0707!important;--xz-t120:#7a5e02!important;--xz-t121:#7a6202!important;--xz-t122:#cc0000!important;--xz-t123:#cc0000!important;--xz-t124:#cc0000!important;--xz-t125:#895b00!important;--xz-t126:#835e00!important;--xz-t127:#776161!important;--xz-t128:#836100!important;--xz-t129:#895e00!important;--xz-t130:#835e00!important;--xz-t131:#895b00!important;--xz-t132:#7c6100!important;--xz-t133:#835d00!important;--xz-t134:#776161!important;--xz-t135:rgba(92,101,112,0.8)!important;--xz-t136:rgba(131,92,24,0.7)!important;--xz-t137:rgba(131,92,24,0.85)!important;--xz-t138:rgba(131,92,24,0.92)!important;--xz-t139:rgba(131,92,24,0.95)!important;--xz-t140:rgba(116,98,45,0.66)!important;--xz-t141:rgba(119,97,97,0.72)!important;--xz-t142:rgba(119,97,97,0.74)!important;";
     var NIGHT_DECL = "--xz-t0:#10b981!important;--xz-t1:#22c55e!important;--xz-t2:#2dd4bf!important;--xz-t3:#4ade80!important;--xz-t4:#60a5fa!important;--xz-t5:#63c08c!important;--xz-t6:#68c5b2!important;--xz-t7:#6ee7b7!important;--xz-t8:#7dd3a0!important;--xz-t9:#7ddc9a!important;--xz-t10:#7f9db0!important;--xz-t11:#7fa593!important;--xz-t12:#7fb69b!important;--xz-t13:#7fd2c1!important;--xz-t14:#7fd4e8!important;--xz-t15:#7fe0b0!important;--xz-t16:#8a8478!important;--xz-t17:#8a8578!important;--xz-t18:#8a9496!important;--xz-t19:#8a949e!important;--xz-t20:#8b8674!important;--xz-t21:#8b9199!important;--xz-t22:#8e8778!important;--xz-t23:#8fa2c0!important;--xz-t24:#8fae7a!important;--xz-t25:#929292!important;--xz-t26:#93c5fd!important;--xz-t27:#94a3b8!important;--xz-t28:#9a9a9a!important;--xz-t29:#9aa0a6!important;--xz-t30:#9c9686!important;--xz-t31:#9c968c!important;--xz-t32:#9ec9e8!important;--xz-t33:#9fb3c8!important;--xz-t34:#9fb6c4!important;--xz-t35:#9fd4a0!important;--xz-t36:#9fd8c4!important;--xz-t37:#9fd8f7!important;--xz-t38:#a5b4fc!important;--xz-t39:#a78bfa!important;--xz-t40:#a855f7!important;--xz-t41:#a9a390!important;--xz-t42:#b7b1a4!important;--xz-t43:#b7b8b3!important;--xz-t44:#b8b0a0!important;--xz-t45:#b9cde8!important;--xz-t46:#c084fc!important;--xz-t47:#c0a97a!important;--xz-t48:#c4b5fd!important;--xz-t49:#c7c7c7!important;--xz-t50:#c8b06a!important;--xz-t51:#c8b1a8!important;--xz-t52:#c8c1b2!important;--xz-t53:#c9a05a!important;--xz-t54:#c9a86a!important;--xz-t55:#c9b183!important;--xz-t56:#c9bfae!important;--xz-t57:#c9c2b2!important;--xz-t58:#c9c2b4!important;--xz-t59:#c9c3b6!important;--xz-t60:#c9ced7!important;--xz-t61:#c9f5e4!important;--xz-t62:#cbd5e1!important;--xz-t63:#cecece!important;--xz-t64:#d35400!important;--xz-t65:#d4af37!important;--xz-t66:#d8899d!important;--xz-t67:#d8c48f!important;--xz-t68:#d98ca8!important;--xz-t69:#d9b76d!important;--xz-t70:#dcdcdc!important;--xz-t71:#df7468!important;--xz-t72:#e0b96a!important;--xz-t73:#e2decb!important;--xz-t74:#e2e8f0!important;--xz-t75:#e3c98a!important;--xz-t76:#e6bd76!important;--xz-t77:#e6dcc4!important;--xz-t78:#e74c3c!important;--xz-t79:#e8cb92!important;--xz-t80:#e8e3d3!important;--xz-t81:#e8e8e8!important;--xz-t82:#e9e5dc!important;--xz-t83:#ef4444!important;--xz-t84:#efe9dc!important;--xz-t85:#f08a84!important;--xz-t86:#f0a6a0!important;--xz-t87:#f0b090!important;--xz-t88:#f0b45a!important;--xz-t89:#f0b46a!important;--xz-t90:#f0d49a!important;--xz-t91:#f0d98a!important;--xz-t92:#f0d9a4!important;--xz-t93:#f0e2b0!important;--xz-t94:#f1ede4!important;--xz-t95:#f1f1f1!important;--xz-t96:#f2c26f!important;--xz-t97:#f2ecdd!important;--xz-t98:#f39c12!important;--xz-t99:#f3d999!important;--xz-t100:#f3eee5!important;--xz-t101:#f43f5e!important;--xz-t102:#f4ece0!important;--xz-t103:#f4efe2!important;--xz-t104:#f4f1e8!important;--xz-t105:#f59e0b!important;--xz-t106:#f5efe2!important;--xz-t107:#f5f5f5!important;--xz-t108:#f6dc9c!important;--xz-t109:#f6eee1!important;--xz-t110:#f6f1e6!important;--xz-t111:#f7d7d4!important;--xz-t112:#f7e6b6!important;--xz-t113:#f7f4ec!important;--xz-t114:#f87171!important;--xz-t115:#f8f3e7!important;--xz-t116:#f9f6ee!important;--xz-t117:#fbbf24!important;--xz-t118:#fbf8f0!important;--xz-t119:#fca5a5!important;--xz-t120:#fcd34d!important;--xz-t121:#fde68a!important;--xz-t122:#ff5252!important;--xz-t123:#ff6b6b!important;--xz-t124:#ff8a8a!important;--xz-t125:#ffd88a!important;--xz-t126:#ffeec2!important;--xz-t127:#fff!important;--xz-t128:#fff6dc!important;--xz-t129:#fff6e2!important;--xz-t130:#fff8e6!important;--xz-t131:#fffaf0!important;--xz-t132:#fffdf6!important;--xz-t133:#fffdf8!important;--xz-t134:#ffffff!important;--xz-t135:rgba(150,158,168,.8)!important;--xz-t136:rgba(230,189,118,.7)!important;--xz-t137:rgba(230,189,118,.85)!important;--xz-t138:rgba(230,189,118,.92)!important;--xz-t139:rgba(230,189,118,.95)!important;--xz-t140:rgba(240,234,216,0.66)!important;--xz-t141:rgba(255,255,255,.72)!important;--xz-t142:rgba(255,255,255,.74)!important;";
 
-    /* 夜墨＝原本暖金修仙（归档/v611-主题与视口重构前 之前的备份值）。
+    /* 夜墨＝暖金修仙（归档/v611-主题与视口重构前 的备份值）。
        用 !important 钉死，避免被后注入的基础 CSS 覆盖掉。 */
     var NIGHT_TOKENS =
         ':root,.xz-root{' +
@@ -62,6 +62,32 @@
         '--xz-jade:#d4af37!important;--xz-cyan:#7fd2c1!important;' +
         '--xz-purple:#a855f7!important;--xz-crimson:#e11d48!important;' +
         '--xz-text:#f1ede4!important;--xz-text-2:#c8c1b2!important;--xz-muted:#7e7769!important;' +
+        NIGHT_DECL + '}';
+    /* ★★★ v626：玄青＝作者原版（玄青底 + 暖金），v611 被夜墨的 !important 盖掉了 ★★★
+       作者 2026-11-16：「我原版是玄青色配金色，你怎么给我改成这个了，这个颜色暂时保留，
+         但是玄青色那套也要搞回来。」
+       ── 色值出处：不是新调的，是 05 里那段 :root{--xz-void:#030d14;--xz-bg:#071720;
+          --xz-gold:#e6bd76;…}（"令牌同时挂到 :root" 那条）。v611 把夜墨钉成
+          :root,.xz-root{…!important} 之后，玄青那套仍在源码里，但**永远被盖住**
+          —— 这就是"配色被搞去哪了"的真相：没删，只是被更高优先级的裁决层压住了。
+       ── 为什么 --xz-card 用一个纯色而不是原来那个 linear-gradient ──────────
+         SURFACE 里有 .xz-root .xz-main-box{background-color:var(--xz-card)!important}，
+         background-color 吃不了渐变（整条声明会被浏览器丢弃）⇒ 用渐变值时
+         主框会退回透明，夜墨底上看着"没上色"。取 gradient 首色叠在 --xz-bg 上的
+         合成值 #10242c（16,37,45 的 96% over 7,23,32），视觉等价、且能被 background-color 用。
+       ⚠ 三档共用一个 sync()：属性值 == 'qing'。选择器 [data-xz-theme="qing"]
+         特异性高于 NIGHT 的 :root,.xz-root，两者都是 !important ⇒ 玄青能压过夜墨。 */
+    var QING_TOKENS =
+        ':root[data-xz-theme="qing"],.xz-root[data-xz-theme="qing"],body[data-xz-theme="qing"]{' +
+        '--xz-void:#030d14!important;--xz-bg:#071720!important;--xz-card:#10242c!important;' +
+        '--xz-card-hover:#16313b!important;' +
+        '--xz-border:rgba(213,180,121,0.28)!important;--xz-border-strong:rgba(242,194,111,0.72)!important;' +
+        '--xz-gold:#e6bd76!important;--xz-gold-bright:#f2c26f!important;' +
+        '--xz-gold-fill:#e6bd76!important;' +
+        '--xz-gold-glow:rgba(227,185,111,0.28)!important;' +
+        '--xz-jade:#68c5b2!important;--xz-cyan:#7fd2c1!important;' +
+        '--xz-purple:#d8899d!important;--xz-crimson:#aa5960!important;' +
+        '--xz-text:#f3eee5!important;--xz-text-2:#b7b8b3!important;--xz-muted:#8a9496!important;' +
         NIGHT_DECL + '}';
     var DAY_TOKENS =
         ':root[data-xz-theme="day"],.xz-root[data-xz-theme="day"],body[data-xz-theme="day"]{' +
@@ -122,25 +148,61 @@
         add(window); try { add(window.parent); } catch (e1) {} try { add(window.top); } catch (e2) {}
         return out;
     }
-    function layerCss() { return NIGHT_TOKENS + DAY_TOKENS + SURFACE + VIEW; }
+    /* 顺序有意义：NIGHT 用 :root,.xz-root（特异性 0,0,1 / 0,1,0），
+       QING / DAY 用 [data-xz-theme="…"]（0,1,0 → 0,2,0），虽然都是 !important，
+       但同特异性下**后写者胜** ⇒ QING 必须排在 NIGHT 之后。DAY 排最后，
+       保证"日光 + 残留的 qing 属性"这种脏组合最终仍以日光呈现。 */
+    function layerCss() { return NIGHT_TOKENS + QING_TOKENS + DAY_TOKENS + SURFACE + VIEW; }
 
     /* ── 主题属性同步：根因③ ─────────────────────────────────────────────
        CSS 在 getDoc()（顶层文档），属性却只挂在脚本自己那份 document 上。
-       这里把 self / parent / top 的 html + body + 所有 .xz-root 全部同步。 */
+       这里把 self / parent / top 的 html + body + 所有 .xz-root 全部同步。
+
+       ★★★ v626：三档（qing / night / day）★★★
+         ── 病根（只认 day 的写法为什么撑不住三档）──────────────────────────
+           原来写的是 day ? setAttribute('day') : removeAttribute() ——
+           二元判断。加第三档时，'qing' 落进 else 分支 ⇒ **属性被删掉** ⇒
+           玄青选择器 .xz-root[data-xz-theme="qing"] 永不匹配 ⇒ 界面退回夜墨，
+           而按钮上明明白白写着"玄青"。这类"切了但看起来没切"的错没有报错。
+         ── 现在 ────────────────────────────────────────────────────────────
+           统一走 ATTR_OF 映射：day→'day'、qing→'qing'、其它→null（=夜墨，裸属性）。
+           三个文档位置（html / body / .xz-root）用同一份逻辑，别再各写一遍。
+         ⚠ 未知值一律落 null（夜墨），**不许**透传成属性：脏的 localStorage
+           （比如旧版本写进来的 'dark'）透传出去就是一个谁都不认识的主题。
+         ⚠ 返回值仍是布尔（day），调用方有用它做判定的地方 —— 别改成返回字符串。 */
+    var ATTR_OF = { day: 'day', qing: 'qing', night: null };
     function sync(theme) {
-        var day = (theme === 'day'), ds = docs(), i, d;
+        var t = String(theme || '');
+        var attr = Object.prototype.hasOwnProperty.call(ATTR_OF, t) ? ATTR_OF[t] : null;
+        var ds = docs(), i, d;
         for (i = 0; i < ds.length; i++) {
             d = ds[i];
-            try { if (day) d.documentElement.setAttribute('data-xz-theme', 'day');
+            try { if (attr) d.documentElement.setAttribute('data-xz-theme', attr);
                   else d.documentElement.removeAttribute('data-xz-theme'); } catch (eA) {}
-            try { if (d.body) { if (day) d.body.setAttribute('data-xz-theme', 'day');
+            try { if (d.body) { if (attr) d.body.setAttribute('data-xz-theme', attr);
                                 else d.body.removeAttribute('data-xz-theme'); } } catch (eB) {}
             try { var rs = d.querySelectorAll('.xz-root');
-                for (var j = 0; j < rs.length; j++) { if (day) rs[j].setAttribute('data-xz-theme', 'day');
+                for (var j = 0; j < rs.length; j++) { if (attr) rs[j].setAttribute('data-xz-theme', attr);
                     else rs[j].removeAttribute('data-xz-theme'); } } catch (eC) {}
         }
         measure();
-        return day;
+        return (attr === 'day');
+    }
+    /* 当前主题（未知/读不到一律 night）。05/07 的按钮与 07 的默认初始化都调它，
+       别再各写一份 getItem() === 'day' ? 'day' : 'night' —— 那样加第三档必漏。 */
+    function themeNow() {
+        try {
+            var v = localStorage.getItem('xzTheme');
+            return (v === 'day' || v === 'qing') ? v : 'night';
+        } catch (e) { return 'night'; }
+    }
+    /* 循环顺序：夜墨 → 玄青 → 日光 → 夜墨。
+       为什么玄青排在夜墨之后：两者都是深色，连着看一眼就知道差在底色冷暖和金色明度，
+       玩家更容易知道自己刚才在哪个。 */
+    var CYCLE = ['night', 'qing', 'day'];
+    function themeNext(cur) {
+        var i = CYCLE.indexOf(String(cur || 'night'));
+        return CYCLE[(i < 0 ? 0 : i + 1) % CYCLE.length];
     }
 
     /* 一处算视口：visualViewport（含软键盘）＋ 各窗口在**真实屏幕**上的可见高。
@@ -353,13 +415,15 @@
     }
 
     var API = { patch: patch, ink: ink, sync: sync, inject: inject, measure: measure, arm: arm,
-        css: layerCss, version: 'v611' };
+        css: layerCss, version: 'v611',
+        /* ★ v626：三档主题的读写口给 05/07 的按钮用 ——
+           两处各写一份 getItem()==='day'?'day':'night' 是加第三档必然漏的那个口子。 */
+        themeNow: themeNow, themeNext: themeNext };
     try { window[KEY] = API; } catch (e6) {}
     try { if (window.top && window.top !== window) window.top[KEY] = API; } catch (e7) {}
     try { if (window.parent && window.parent !== window) window.parent[KEY] = API; } catch (e8) {}
-    /* 首次：读玩家选择（明确存了 'day' 才日光），同步全部文档，再挂监听。 */
-    var init = 'night';
-    try { init = localStorage.getItem('xzTheme') === 'day' ? 'day' : 'night'; } catch (e9) {}
+    /* 首次：读玩家选择（day/qing 才切，读不到按夜墨），同步全部文档，再挂监听。 */
+    var init = themeNow();
     sync(init); inject();
     try { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', arm, { once: true });
           else arm(); } catch (e10) {}
@@ -4658,50 +4722,92 @@ function xzTypeOf(name, fbT, fbA) {
            那里抛一次就会让整个界面脚本停摆 —— 主题是装饰，**不许它把功能带崩**。
        ══════════════════════════════════════════════════════════════════════ */
     var XZ_THEME_KEY = 'xzTheme';
+    /* ★★★ v626：三档主题（qing 玄青 / night 夜墨 / day 日光）★★★
+       作者 2026-11-16：「我原版是玄青色配金色…这个颜色暂时保留，但是玄青色那套也要搞回来。」
+       ── 为什么不再各处写 `=== 'day' ? 'day' : 'night'` ──────────────────
+         全库有 20 多处这个写法（05 六处、07 十余处）。加第三档时**必漏一处**，
+         而漏掉的表现是"在那块区域切了没反应"，不报错、不崩、只是颜色不对。
+       ⇒ 收敛成三个口：
+         · `xzThemeGet()`   —— 当前值（'qing'|'night'|'day'，读不到/脏值 → night）
+         · `xzThemeData()`  —— 该挂到 `data-xz-theme` 上的属性值（night 时返回 ''）
+         · `xzThemeNext()`  —— 循环下一档（night → qing → day → night）
+       ⚠ 优先复用 V611 引擎导出的同名函数（唯一真相源在生成器那边），
+         引擎没加载起来（离线闸夹具）才落到本文件的兜底实现。两套算法必须一致。 */
     function xzThemeGet() {
-        /* ★ v596：默认夜墨（作者 2026-11-13 拍板「都要改成默认深色」）。
-           ⚠ 判据方向只能这么写：**明确存了 'day' 才给日光**。
-           写成 `!== 'night' ? 'night' : 'day'` 看着一样，实则把「读不到 / 抛异常 /
-           旧键值是脏数据」全判成日光 —— 与 07 的默认逻辑必须同向，否则一边深一边浅。 */
-        try { return localStorage.getItem(XZ_THEME_KEY) === 'day' ? 'day' : 'night'; } catch (e) { return 'night'; }
+        try {
+            var V = window.__XZ_V611__;
+            if (V && typeof V.themeNow === 'function') return V.themeNow();
+        } catch (eV0) {}
+        try {
+            var v = localStorage.getItem(XZ_THEME_KEY);
+            return (v === 'day' || v === 'qing') ? v : 'night';
+        } catch (e) { return 'night'; }
+    }
+    /* 挂 `data-xz-theme` 用的值：夜墨是"无属性"（基础 CSS 就是夜墨）。 */
+    function xzThemeData(t) {
+        var v = String(t || xzThemeGet());
+        return (v === 'day' || v === 'qing') ? v : '';
+    }
+    function xzThemeNext(t) {
+        try {
+            var V = window.__XZ_V611__;
+            if (V && typeof V.themeNext === 'function') return V.themeNext(t);
+        } catch (eV1) {}
+        var cur = String(t || xzThemeGet());
+        return cur === 'night' ? 'qing' : (cur === 'qing' ? 'day' : 'night');
     }
     function xzThemeApply(t) {
-        var day = (t === 'day');
+        var attr = xzThemeData(t);
         /* ★ v611：把主题属性同步到 CSS 真正所在的那份文档（getDoc/top）。
            以前只写裸 document.documentElement，iframe 里 :root[day] 永不匹配。 */
-        try { if (window.__XZ_V611__) window.__XZ_V611__.sync(t); } catch (eVS) {}
+        try { if (window.__XZ_V611__) window.__XZ_V611__.sync(attr || 'night'); } catch (eVS) {}
         try {
             var rootEl = document.querySelector('.xz-root');
-            if (rootEl) { if (day) rootEl.setAttribute('data-xz-theme', 'day'); else rootEl.removeAttribute('data-xz-theme'); }
+            if (rootEl) { if (attr) rootEl.setAttribute('data-xz-theme', attr); else rootEl.removeAttribute('data-xz-theme'); }
             var de = document.documentElement;
-            if (day) de.setAttribute('data-xz-theme', 'day'); else de.removeAttribute('data-xz-theme');
+            if (attr) de.setAttribute('data-xz-theme', attr); else de.removeAttribute('data-xz-theme');
         } catch (e2) {}
     }
     function xzThemeSet(t) {
-        try { localStorage.setItem(XZ_THEME_KEY, t === 'day' ? 'day' : 'night'); } catch (e) {}
-        xzThemeApply(t);
+        /* ⚠ 只允许写三个合法值：脏值写进 localStorage 之后，
+           下一次 `xzThemeGet()` 会把它判成 night，看着像"自己变回夜墨了"。 */
+        var v = (t === 'day' || t === 'qing') ? t : 'night';
+        try { localStorage.setItem(XZ_THEME_KEY, v); } catch (e) {}
+        xzThemeApply(v);
     }
     function xzThemeToggle() {
-        xzThemeSet(xzThemeGet() === 'day' ? 'night' : 'day');
+        xzThemeSet(xzThemeNext(xzThemeGet()));
         render(true);   /* 只为换按钮上的图标与文字；主题本身已经即时生效 */
         return true;
     }
-    /* 切换按钮。**图标 + 两字**，宽度稳定（换词不换宽，这一格窄，跳一下就会挤到标题）*/
+    /* 切换按钮。**图标 + 两字**，宽度稳定（换词不换宽，这一格窄，跳一下就会挤到标题）
+       ★ v626：三档循环 夜墨 → 玄青 → 日光 → 夜墨。
+       图标语义仍是"点它会变成什么"（不是"现在是什么"）：
+         · 下一条是日光 ⇒ 画太阳
+         · 下一条是夜墨 ⇒ 画月亮
+         · 下一条是玄青 ⇒ 画水滴/山形（青＝冷色深底，用"半月+一点青"区分于纯月亮） */
     function xzThemeBtnHtml() {
-        var day = (xzThemeGet() === 'day');
-        /* 月亮 = 现在是白天、点一下去夜墨；太阳 = 现在是夜里、点一下去白天。
-           ⚠ 图标语义是"点它会变成什么"，不是"现在是什么" —— 后者玩家要试一次才知道。 */
-        var ico = day
-            ? '<path d="M20.2 14.4A8.4 8.4 0 0 1 9.6 3.8a8.4 8.4 0 1 0 10.6 10.6z"/>'
-            : '<circle cx="12" cy="12" r="4.1"/><path d="M12 2.6v2.6"/><path d="M12 18.8v2.6"/>'
-              + '<path d="M2.6 12h2.6"/><path d="M18.8 12h2.6"/><path d="M5.4 5.4l1.8 1.8"/>'
-              + '<path d="M16.8 16.8l1.8 1.8"/><path d="M18.6 5.4l-1.8 1.8"/><path d="M7.2 16.8l-1.8 1.8"/>';
+        var cur = xzThemeGet();
+        var next = xzThemeNext(cur);
+        var NAME = { night: '夜墨', qing: '玄青', day: '日光' };
+        var ico;
+        if (next === 'day') {
+            ico = '<circle cx="12" cy="12" r="4.1"/><path d="M12 2.6v2.6"/><path d="M12 18.8v2.6"/>'
+                + '<path d="M2.6 12h2.6"/><path d="M18.8 12h2.6"/><path d="M5.4 5.4l1.8 1.8"/>'
+                + '<path d="M16.8 16.8l1.8 1.8"/><path d="M18.6 5.4l-1.8 1.8"/><path d="M7.2 16.8l-1.8 1.8"/>';
+        } else if (next === 'qing') {
+            /* 青山一痕：左上弧 + 一个圆点（代表"青底金纹"的玄青档） */
+            ico = '<path d="M3.2 17.4c3.6-4.8 6.6-7.2 8.8-7.2s5.2 2.4 8.8 7.2"/>'
+                + '<circle cx="12" cy="6.6" r="2.1"/>';
+        } else {
+            ico = '<path d="M20.2 14.4A8.4 8.4 0 0 1 9.6 3.8a8.4 8.4 0 1 0 10.6 10.6z"/>';
+        }
         return '<button type="button" class="xz-theme-btn" data-xz-act="theme"'
-             + ' title="' + (day ? '切到夜墨模式' : '切到日光模式') + '"'
-             + ' aria-label="' + (day ? '切到夜墨模式' : '切到日光模式') + '">'
+             + ' title="' + ('当前' + NAME[cur] + '，点一下切到' + NAME[next]) + '"'
+             + ' aria-label="' + ('当前' + NAME[cur] + '，点一下切到' + NAME[next]) + '">'
              + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"'
              + ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'
-             + ico + '</svg><span>' + (day ? '夜墨' : '日光') + '</span></button>';
+             + ico + '</svg><span>' + NAME[next] + '</span></button>';
     }
 
     function pageMain() {
@@ -12090,9 +12196,12 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
            每次重渲染都会产出一个**不带 data-xz-theme 的新根节点** ⇒ 切到日光后
            点一下页签就弹回夜墨（闪一下）。写进模板才是"每次渲染都对"。
            ⚠ `xzThemeGet()` 每次都读 localStorage —— 它被 render 调用的频次不高
-             （只在切页/交互时），而 localStorage 读取是同进程内存操作，不是 IO。 */
-        var h = '<div class="xz-root' + (state.wide ? ' xz-wide' : '') + (xzThemeGet() === 'day' ? ' xz-day' : '') + '"'
-              + (xzThemeGet() === 'day' ? ' data-xz-theme="day"' : '')
+             （只在切页/交互时），而 localStorage 读取是同进程内存操作，不是 IO。
+           ★ v626：三档。`xz-day` 类只给日光（历史 CSS 里 `.xz-day` 那批选选择器
+             是日光专用，玄青不该继承它们）；`data-xz-theme` 给 day/qing 两档的真值。 */
+        var _thAttr = xzThemeData();
+        var h = '<div class="xz-root' + (state.wide ? ' xz-wide' : '') + (_thAttr === 'day' ? ' xz-day' : '') + '"'
+              + (_thAttr ? (' data-xz-theme="' + _thAttr + '"') : '')
               + ' id="' + HOST_ID + '">';
         h += '<div class="xz-main-box">';
 
