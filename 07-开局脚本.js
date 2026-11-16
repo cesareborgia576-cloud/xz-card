@@ -49,7 +49,7 @@
     var DAY_DECL = "--xz-t0:#0a7552!important;--xz-t1:#147136!important;--xz-t2:#177065!important;--xz-t3:#157438!important;--xz-t4:#0762d2!important;--xz-t5:#2e734d!important;--xz-t6:#2b7062!important;--xz-t7:#13754e!important;--xz-t8:#277446!important;--xz-t9:#20753a!important;--xz-t10:#4c687a!important;--xz-t11:#4d6d5e!important;--xz-t12:#3f6e57!important;--xz-t13:#276e60!important;--xz-t14:#186f83!important;--xz-t15:#1c7348!important;--xz-t16:#6c6659!important;--xz-t17:#696456!important;--xz-t18:#566669!important;--xz-t19:#5c6670!important;--xz-t20:#6b6657!important;--xz-t21:#5c6570!important;--xz-t22:#6b6558!important;--xz-t23:#4e658a!important;--xz-t24:#536c42!important;--xz-t25:#776161!important;--xz-t26:#0463ce!important;--xz-t27:#54667e!important;--xz-t28:#776161!important;--xz-t29:#5c6670!important;--xz-t30:#696456!important;--xz-t31:#6d6559!important;--xz-t32:#25699b!important;--xz-t33:#4d6886!important;--xz-t34:#4b697b!important;--xz-t35:#326f33!important;--xz-t36:#2d6e57!important;--xz-t37:#0d6ca0!important;--xz-t38:#123af7!important;--xz-t39:#4d14f5!important;--xz-t40:#8715f4!important;--xz-t41:#6c6654!important;--xz-t42:#6b6455!important;--xz-t43:#626654!important;--xz-t44:#6e6552!important;--xz-t45:#3767a7!important;--xz-t46:#8510f9!important;--xz-t47:#766138!important;--xz-t48:#4111f9!important;--xz-t49:#776161!important;--xz-t50:#76632b!important;--xz-t51:#7d5c4f!important;--xz-t52:#6c624d!important;--xz-t53:#7e5f29!important;--xz-t54:#7b602c!important;--xz-t55:#796135!important;--xz-t56:#6f624a!important;--xz-t57:#6d634d!important;--xz-t58:#6f6550!important;--xz-t59:#6e6552!important;--xz-t60:#596579!important;--xz-t61:#15734f!important;--xz-t62:#4d6685!important;--xz-t63:#776161!important;--xz-t64:#ae4500!important;--xz-t65:#7b641a!important;--xz-t66:#b03a58!important;--xz-t67:#78622a!important;--xz-t68:#b03a65!important;--xz-t69:#806221!important;--xz-t70:#776161!important;--xz-t71:#b73527!important;--xz-t72:#805f1b!important;--xz-t73:#6f673e!important;--xz-t74:#4a678f!important;--xz-t75:#7d611e!important;--xz-t76:#835c18!important;--xz-t77:#756232!important;--xz-t78:#c12718!important;--xz-t79:#805e1b!important;--xz-t80:#72653c!important;--xz-t81:#776161!important;--xz-t82:#726548!important;--xz-t83:#c71111!important;--xz-t84:#776336!important;--xz-t85:#c62218!important;--xz-t86:#c02a1e!important;--xz-t87:#a94817!important;--xz-t88:#8e5a0d!important;--xz-t89:#92570f!important;--xz-t90:#825e13!important;--xz-t91:#796110!important;--xz-t92:#806015!important;--xz-t93:#786317!important;--xz-t94:#72613b!important;--xz-t95:#776161!important;--xz-t96:#895b0c!important;--xz-t97:#79642e!important;--xz-t98:#905b07!important;--xz-t99:#805f0f!important;--xz-t100:#7b6339!important;--xz-t101:#cd0c2d!important;--xz-t102:#805f2d!important;--xz-t103:#79642e!important;--xz-t104:#716236!important;--xz-t105:#8c5a06!important;--xz-t106:#7c632b!important;--xz-t107:#776161!important;--xz-t108:#83610c!important;--xz-t109:#815e27!important;--xz-t110:#7b622c!important;--xz-t111:#bb3023!important;--xz-t112:#7b5e0d!important;--xz-t113:#766332!important;--xz-t114:#ce0a0a!important;--xz-t115:#7d6324!important;--xz-t116:#77622a!important;--xz-t117:#805d02!important;--xz-t118:#7a6221!important;--xz-t119:#cb0707!important;--xz-t120:#7a5e02!important;--xz-t121:#7a6202!important;--xz-t122:#cc0000!important;--xz-t123:#cc0000!important;--xz-t124:#cc0000!important;--xz-t125:#895b00!important;--xz-t126:#835e00!important;--xz-t127:#776161!important;--xz-t128:#836100!important;--xz-t129:#895e00!important;--xz-t130:#835e00!important;--xz-t131:#895b00!important;--xz-t132:#7c6100!important;--xz-t133:#835d00!important;--xz-t134:#776161!important;--xz-t135:rgba(92,101,112,0.8)!important;--xz-t136:rgba(131,92,24,0.7)!important;--xz-t137:rgba(131,92,24,0.85)!important;--xz-t138:rgba(131,92,24,0.92)!important;--xz-t139:rgba(131,92,24,0.95)!important;--xz-t140:rgba(116,98,45,0.66)!important;--xz-t141:rgba(119,97,97,0.72)!important;--xz-t142:rgba(119,97,97,0.74)!important;";
     var NIGHT_DECL = "--xz-t0:#10b981!important;--xz-t1:#22c55e!important;--xz-t2:#2dd4bf!important;--xz-t3:#4ade80!important;--xz-t4:#60a5fa!important;--xz-t5:#63c08c!important;--xz-t6:#68c5b2!important;--xz-t7:#6ee7b7!important;--xz-t8:#7dd3a0!important;--xz-t9:#7ddc9a!important;--xz-t10:#7f9db0!important;--xz-t11:#7fa593!important;--xz-t12:#7fb69b!important;--xz-t13:#7fd2c1!important;--xz-t14:#7fd4e8!important;--xz-t15:#7fe0b0!important;--xz-t16:#8a8478!important;--xz-t17:#8a8578!important;--xz-t18:#8a9496!important;--xz-t19:#8a949e!important;--xz-t20:#8b8674!important;--xz-t21:#8b9199!important;--xz-t22:#8e8778!important;--xz-t23:#8fa2c0!important;--xz-t24:#8fae7a!important;--xz-t25:#929292!important;--xz-t26:#93c5fd!important;--xz-t27:#94a3b8!important;--xz-t28:#9a9a9a!important;--xz-t29:#9aa0a6!important;--xz-t30:#9c9686!important;--xz-t31:#9c968c!important;--xz-t32:#9ec9e8!important;--xz-t33:#9fb3c8!important;--xz-t34:#9fb6c4!important;--xz-t35:#9fd4a0!important;--xz-t36:#9fd8c4!important;--xz-t37:#9fd8f7!important;--xz-t38:#a5b4fc!important;--xz-t39:#a78bfa!important;--xz-t40:#a855f7!important;--xz-t41:#a9a390!important;--xz-t42:#b7b1a4!important;--xz-t43:#b7b8b3!important;--xz-t44:#b8b0a0!important;--xz-t45:#b9cde8!important;--xz-t46:#c084fc!important;--xz-t47:#c0a97a!important;--xz-t48:#c4b5fd!important;--xz-t49:#c7c7c7!important;--xz-t50:#c8b06a!important;--xz-t51:#c8b1a8!important;--xz-t52:#c8c1b2!important;--xz-t53:#c9a05a!important;--xz-t54:#c9a86a!important;--xz-t55:#c9b183!important;--xz-t56:#c9bfae!important;--xz-t57:#c9c2b2!important;--xz-t58:#c9c2b4!important;--xz-t59:#c9c3b6!important;--xz-t60:#c9ced7!important;--xz-t61:#c9f5e4!important;--xz-t62:#cbd5e1!important;--xz-t63:#cecece!important;--xz-t64:#d35400!important;--xz-t65:#d4af37!important;--xz-t66:#d8899d!important;--xz-t67:#d8c48f!important;--xz-t68:#d98ca8!important;--xz-t69:#d9b76d!important;--xz-t70:#dcdcdc!important;--xz-t71:#df7468!important;--xz-t72:#e0b96a!important;--xz-t73:#e2decb!important;--xz-t74:#e2e8f0!important;--xz-t75:#e3c98a!important;--xz-t76:#e6bd76!important;--xz-t77:#e6dcc4!important;--xz-t78:#e74c3c!important;--xz-t79:#e8cb92!important;--xz-t80:#e8e3d3!important;--xz-t81:#e8e8e8!important;--xz-t82:#e9e5dc!important;--xz-t83:#ef4444!important;--xz-t84:#efe9dc!important;--xz-t85:#f08a84!important;--xz-t86:#f0a6a0!important;--xz-t87:#f0b090!important;--xz-t88:#f0b45a!important;--xz-t89:#f0b46a!important;--xz-t90:#f0d49a!important;--xz-t91:#f0d98a!important;--xz-t92:#f0d9a4!important;--xz-t93:#f0e2b0!important;--xz-t94:#f1ede4!important;--xz-t95:#f1f1f1!important;--xz-t96:#f2c26f!important;--xz-t97:#f2ecdd!important;--xz-t98:#f39c12!important;--xz-t99:#f3d999!important;--xz-t100:#f3eee5!important;--xz-t101:#f43f5e!important;--xz-t102:#f4ece0!important;--xz-t103:#f4efe2!important;--xz-t104:#f4f1e8!important;--xz-t105:#f59e0b!important;--xz-t106:#f5efe2!important;--xz-t107:#f5f5f5!important;--xz-t108:#f6dc9c!important;--xz-t109:#f6eee1!important;--xz-t110:#f6f1e6!important;--xz-t111:#f7d7d4!important;--xz-t112:#f7e6b6!important;--xz-t113:#f7f4ec!important;--xz-t114:#f87171!important;--xz-t115:#f8f3e7!important;--xz-t116:#f9f6ee!important;--xz-t117:#fbbf24!important;--xz-t118:#fbf8f0!important;--xz-t119:#fca5a5!important;--xz-t120:#fcd34d!important;--xz-t121:#fde68a!important;--xz-t122:#ff5252!important;--xz-t123:#ff6b6b!important;--xz-t124:#ff8a8a!important;--xz-t125:#ffd88a!important;--xz-t126:#ffeec2!important;--xz-t127:#fff!important;--xz-t128:#fff6dc!important;--xz-t129:#fff6e2!important;--xz-t130:#fff8e6!important;--xz-t131:#fffaf0!important;--xz-t132:#fffdf6!important;--xz-t133:#fffdf8!important;--xz-t134:#ffffff!important;--xz-t135:rgba(150,158,168,.8)!important;--xz-t136:rgba(230,189,118,.7)!important;--xz-t137:rgba(230,189,118,.85)!important;--xz-t138:rgba(230,189,118,.92)!important;--xz-t139:rgba(230,189,118,.95)!important;--xz-t140:rgba(240,234,216,0.66)!important;--xz-t141:rgba(255,255,255,.72)!important;--xz-t142:rgba(255,255,255,.74)!important;";
 
-    /* 夜墨＝原本暖金修仙（归档/v611-主题与视口重构前 之前的备份值）。
+    /* 夜墨＝暖金修仙（归档/v611-主题与视口重构前 的备份值）。
        用 !important 钉死，避免被后注入的基础 CSS 覆盖掉。 */
     var NIGHT_TOKENS =
         ':root,.xz-root{' +
@@ -62,6 +62,32 @@
         '--xz-jade:#d4af37!important;--xz-cyan:#7fd2c1!important;' +
         '--xz-purple:#a855f7!important;--xz-crimson:#e11d48!important;' +
         '--xz-text:#f1ede4!important;--xz-text-2:#c8c1b2!important;--xz-muted:#7e7769!important;' +
+        NIGHT_DECL + '}';
+    /* ★★★ v626：玄青＝作者原版（玄青底 + 暖金），v611 被夜墨的 !important 盖掉了 ★★★
+       作者 2026-11-16：「我原版是玄青色配金色，你怎么给我改成这个了，这个颜色暂时保留，
+         但是玄青色那套也要搞回来。」
+       ── 色值出处：不是新调的，是 05 里那段 :root{--xz-void:#030d14;--xz-bg:#071720;
+          --xz-gold:#e6bd76;…}（"令牌同时挂到 :root" 那条）。v611 把夜墨钉成
+          :root,.xz-root{…!important} 之后，玄青那套仍在源码里，但**永远被盖住**
+          —— 这就是"配色被搞去哪了"的真相：没删，只是被更高优先级的裁决层压住了。
+       ── 为什么 --xz-card 用一个纯色而不是原来那个 linear-gradient ──────────
+         SURFACE 里有 .xz-root .xz-main-box{background-color:var(--xz-card)!important}，
+         background-color 吃不了渐变（整条声明会被浏览器丢弃）⇒ 用渐变值时
+         主框会退回透明，夜墨底上看着"没上色"。取 gradient 首色叠在 --xz-bg 上的
+         合成值 #10242c（16,37,45 的 96% over 7,23,32），视觉等价、且能被 background-color 用。
+       ⚠ 三档共用一个 sync()：属性值 == 'qing'。选择器 [data-xz-theme="qing"]
+         特异性高于 NIGHT 的 :root,.xz-root，两者都是 !important ⇒ 玄青能压过夜墨。 */
+    var QING_TOKENS =
+        ':root[data-xz-theme="qing"],.xz-root[data-xz-theme="qing"],body[data-xz-theme="qing"]{' +
+        '--xz-void:#030d14!important;--xz-bg:#071720!important;--xz-card:#10242c!important;' +
+        '--xz-card-hover:#16313b!important;' +
+        '--xz-border:rgba(213,180,121,0.28)!important;--xz-border-strong:rgba(242,194,111,0.72)!important;' +
+        '--xz-gold:#e6bd76!important;--xz-gold-bright:#f2c26f!important;' +
+        '--xz-gold-fill:#e6bd76!important;' +
+        '--xz-gold-glow:rgba(227,185,111,0.28)!important;' +
+        '--xz-jade:#68c5b2!important;--xz-cyan:#7fd2c1!important;' +
+        '--xz-purple:#d8899d!important;--xz-crimson:#aa5960!important;' +
+        '--xz-text:#f3eee5!important;--xz-text-2:#b7b8b3!important;--xz-muted:#8a9496!important;' +
         NIGHT_DECL + '}';
     var DAY_TOKENS =
         ':root[data-xz-theme="day"],.xz-root[data-xz-theme="day"],body[data-xz-theme="day"]{' +
@@ -122,25 +148,61 @@
         add(window); try { add(window.parent); } catch (e1) {} try { add(window.top); } catch (e2) {}
         return out;
     }
-    function layerCss() { return NIGHT_TOKENS + DAY_TOKENS + SURFACE + VIEW; }
+    /* 顺序有意义：NIGHT 用 :root,.xz-root（特异性 0,0,1 / 0,1,0），
+       QING / DAY 用 [data-xz-theme="…"]（0,1,0 → 0,2,0），虽然都是 !important，
+       但同特异性下**后写者胜** ⇒ QING 必须排在 NIGHT 之后。DAY 排最后，
+       保证"日光 + 残留的 qing 属性"这种脏组合最终仍以日光呈现。 */
+    function layerCss() { return NIGHT_TOKENS + QING_TOKENS + DAY_TOKENS + SURFACE + VIEW; }
 
     /* ── 主题属性同步：根因③ ─────────────────────────────────────────────
        CSS 在 getDoc()（顶层文档），属性却只挂在脚本自己那份 document 上。
-       这里把 self / parent / top 的 html + body + 所有 .xz-root 全部同步。 */
+       这里把 self / parent / top 的 html + body + 所有 .xz-root 全部同步。
+
+       ★★★ v626：三档（qing / night / day）★★★
+         ── 病根（只认 day 的写法为什么撑不住三档）──────────────────────────
+           原来写的是 day ? setAttribute('day') : removeAttribute() ——
+           二元判断。加第三档时，'qing' 落进 else 分支 ⇒ **属性被删掉** ⇒
+           玄青选择器 .xz-root[data-xz-theme="qing"] 永不匹配 ⇒ 界面退回夜墨，
+           而按钮上明明白白写着"玄青"。这类"切了但看起来没切"的错没有报错。
+         ── 现在 ────────────────────────────────────────────────────────────
+           统一走 ATTR_OF 映射：day→'day'、qing→'qing'、其它→null（=夜墨，裸属性）。
+           三个文档位置（html / body / .xz-root）用同一份逻辑，别再各写一遍。
+         ⚠ 未知值一律落 null（夜墨），**不许**透传成属性：脏的 localStorage
+           （比如旧版本写进来的 'dark'）透传出去就是一个谁都不认识的主题。
+         ⚠ 返回值仍是布尔（day），调用方有用它做判定的地方 —— 别改成返回字符串。 */
+    var ATTR_OF = { day: 'day', qing: 'qing', night: null };
     function sync(theme) {
-        var day = (theme === 'day'), ds = docs(), i, d;
+        var t = String(theme || '');
+        var attr = Object.prototype.hasOwnProperty.call(ATTR_OF, t) ? ATTR_OF[t] : null;
+        var ds = docs(), i, d;
         for (i = 0; i < ds.length; i++) {
             d = ds[i];
-            try { if (day) d.documentElement.setAttribute('data-xz-theme', 'day');
+            try { if (attr) d.documentElement.setAttribute('data-xz-theme', attr);
                   else d.documentElement.removeAttribute('data-xz-theme'); } catch (eA) {}
-            try { if (d.body) { if (day) d.body.setAttribute('data-xz-theme', 'day');
+            try { if (d.body) { if (attr) d.body.setAttribute('data-xz-theme', attr);
                                 else d.body.removeAttribute('data-xz-theme'); } } catch (eB) {}
             try { var rs = d.querySelectorAll('.xz-root');
-                for (var j = 0; j < rs.length; j++) { if (day) rs[j].setAttribute('data-xz-theme', 'day');
+                for (var j = 0; j < rs.length; j++) { if (attr) rs[j].setAttribute('data-xz-theme', attr);
                     else rs[j].removeAttribute('data-xz-theme'); } } catch (eC) {}
         }
         measure();
-        return day;
+        return (attr === 'day');
+    }
+    /* 当前主题（未知/读不到一律 night）。05/07 的按钮与 07 的默认初始化都调它，
+       别再各写一份 getItem() === 'day' ? 'day' : 'night' —— 那样加第三档必漏。 */
+    function themeNow() {
+        try {
+            var v = localStorage.getItem('xzTheme');
+            return (v === 'day' || v === 'qing') ? v : 'night';
+        } catch (e) { return 'night'; }
+    }
+    /* 循环顺序：夜墨 → 玄青 → 日光 → 夜墨。
+       为什么玄青排在夜墨之后：两者都是深色，连着看一眼就知道差在底色冷暖和金色明度，
+       玩家更容易知道自己刚才在哪个。 */
+    var CYCLE = ['night', 'qing', 'day'];
+    function themeNext(cur) {
+        var i = CYCLE.indexOf(String(cur || 'night'));
+        return CYCLE[(i < 0 ? 0 : i + 1) % CYCLE.length];
     }
 
     /* 一处算视口：visualViewport（含软键盘）＋ 各窗口在**真实屏幕**上的可见高。
@@ -353,13 +415,15 @@
     }
 
     var API = { patch: patch, ink: ink, sync: sync, inject: inject, measure: measure, arm: arm,
-        css: layerCss, version: 'v611' };
+        css: layerCss, version: 'v611',
+        /* ★ v626：三档主题的读写口给 05/07 的按钮用 ——
+           两处各写一份 getItem()==='day'?'day':'night' 是加第三档必然漏的那个口子。 */
+        themeNow: themeNow, themeNext: themeNext };
     try { window[KEY] = API; } catch (e6) {}
     try { if (window.top && window.top !== window) window.top[KEY] = API; } catch (e7) {}
     try { if (window.parent && window.parent !== window) window.parent[KEY] = API; } catch (e8) {}
-    /* 首次：读玩家选择（明确存了 'day' 才日光），同步全部文档，再挂监听。 */
-    var init = 'night';
-    try { init = localStorage.getItem('xzTheme') === 'day' ? 'day' : 'night'; } catch (e9) {}
+    /* 首次：读玩家选择（day/qing 才切，读不到按夜墨），同步全部文档，再挂监听。 */
+    var init = themeNow();
     sync(init); inject();
     try { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', arm, { once: true });
           else arm(); } catch (e10) {}
@@ -457,17 +521,43 @@
     var HOST_ID = 'xz-start-host';
     var STYLE_ID = 'xz-start-style';
     /* ★ v595（作者 2026-11-13）：「开局脚本默认深色，能切日光」。
-       所以只有 localStorage 里**明确存了 'day'** 才挂日光；
-       没设过（null）或存的是 'night' ⇒ 基础深色。 */
+       ★★★ v626：三档（玄青 / 夜墨 / 日光），真源只有一处：`xzStartTheme()` ★★★
+       ── 为什么把它提成一个函数 ────────────────────────────────────────────
+         原先"当前主题"在这个文件里有 6 处各自现算（362 / 463 / 5064 / 9618 / 9634 行…），
+         全是 `getItem('xzTheme') === 'day' ? 'day' : 'night'`。加第三档时
+         只要漏一处，那一处就永远停在旧档 —— 界面上表现为"这块区域颜色不对"，
+         不报错、不崩，闸也看不出来。⇒ 全部收敛到 `xzStartTheme()`。
+       ⚠ 优先问 V611 引擎（它的 themeNow 是唯一真相源），引擎没起来才本地兜底。 */
+    function xzStartTheme() {
+        try {
+            var V = window.__XZ_V611__;
+            if (V && typeof V.themeNow === 'function') return V.themeNow();
+        } catch (eV0) {}
+        try {
+            var v = localStorage.getItem('xzTheme');
+            return (v === 'day' || v === 'qing') ? v : 'night';
+        } catch (e) { return 'night'; }
+    }
+    function xzStartThemeNext(t) {
+        try {
+            var V = window.__XZ_V611__;
+            if (V && typeof V.themeNext === 'function') return V.themeNext(t);
+        } catch (eV1) {}
+        var c = String(t || xzStartTheme());
+        return c === 'night' ? 'qing' : (c === 'qing' ? 'day' : 'night');
+    }
+    /* 挂 `data-xz-theme` 的值：夜墨=无属性，玄青='qing'，日光='day' */
+    function xzStartThemeAttr(t) {
+        var v = String(t || xzStartTheme());
+        return (v === 'day' || v === 'qing') ? v : '';
+    }
     try {
-        if (localStorage.getItem('xzTheme') === 'day') {
-            document.documentElement.setAttribute('data-xz-theme', 'day');
-        }
+        var _th0 = xzStartThemeAttr();
+        if (_th0) document.documentElement.setAttribute('data-xz-theme', _th0);
+        else document.documentElement.removeAttribute('data-xz-theme');
     } catch (eTh) {}
     /* ★ v611：开局面板是独立文档，主题属性必须同步到全部可达文档 */
-    try { if (window.__XZ_V611__) window.__XZ_V611__.sync(
-        (function () { try { return localStorage.getItem('xzTheme') === 'day' ? 'day' : 'night'; } catch (e) { return 'night'; } })()
-    ); } catch (eVS) {}
+    try { if (window.__XZ_V611__) window.__XZ_V611__.sync(xzStartTheme()); } catch (eVS) {}
     var UNIT_ID = 'xz-start-unit';
     /* ★★★ v470：版本号改成**卡版本**，不再是开局脚本自己的 6.0 ★★★
        用户原话：「版本号卡的版本，比如 v470 这样子，不是开局脚本的版本。」
@@ -3139,8 +3229,22 @@ function xzSkeletonOfSkill(skill) {
         item.消耗 = r < 0.35 ? 0 : (r < 0.7 ? 10 : (r < 0.9 ? 20 : 35));
     }
     /* ★ v75：判断是否攻击型 —— 效果集里存在「主击」或含「伤害」字样的效果 */
-    /* ⚠ 名字不在随机范围内 —— 名字由玩家自己起（卡里没有名池）。 */
-    function rollAll(item, kind) {
+    /* ★★★ v626：**名字也归随机**（作者 2026-11-16 第二次点名）★★★
+       原话：「你这里这个总随机倒是他妈的名字也随机啊我操。」
+       ── 原来的写法与它错在哪 ────────────────────────────────────────────
+         原注释是「名字不在随机范围内 —— 名字由玩家自己起（卡里没有名池）」，
+         于是点「总随机 🎲」只掷品质/目标/消耗/效果，**名字栏永远空着**，
+         表情是"必填：自己起一个名字"。而这颗按钮的语义是"整条给我一份能用的"，
+         名字留空 = 点完还得自己起名 = 它没兑现承诺。
+       ── ⚠ 但不能把掷名写进 rollAll 的**默认路径** ──────────────────────
+         全库有 6 处调 rollAll，其中 `emptyTplState()`（空表单初始化）与
+         锻造台「新建」都是"刚打开表单"，这两处若也掷名，玩家一进来就看到
+         一个陌生名字顶在「必填：自己起一个名字」的框里 —— 那才是反直觉。
+         ⇒ 掷名做成**显式第三参** `withName`，只有「总随机」那一颗按钮传 true。
+         这样"按钮的语义"与"表单初值"各归各位，谁都不会被对方的默认值影响。
+       ⚠ 名字必须**最后**掷：`rollTarget` 刚把目标定下来，名字池要按掷完之后的目标挑。
+         顺序反了会出现「掷出敌方单体、名字却是护体类」的错配。 */
+    function rollAll(item, kind, withName) {
         if (kind === '玄技') {
             rollQuality(item); rollTarget(item); rollFunc(item, kind); rollCost(item, kind);
             item.类型 = '主动';
@@ -3151,10 +3255,26 @@ function xzSkeletonOfSkill(skill) {
         } else if (kind === '武器') {
             rollQuality(item);
         }
+        if (withName) {
+            /* 属性取草稿的玄元属性、目标取掷完之后的值 —— 这两个参数决定从哪个名字池抽，
+               火系单体不该抽到水系群攻的名字（`namePoolFor` 就是按这两维切的）。 */
+            var _el = (state && state.draft && state.draft.elem) ? state.draft.elem : '火';
+            var _tg = (kind === '玄诀' || kind === '武器') ? '自身' : (item.目标 || '自身');
+            var _nm = rollNameFor(_el, _tg);
+            if (_nm) item.名 = _nm;
+        }
         return item;
     }
     function rollField(item, kind, field) {
-        if (field === '名') return item;                 // 名字不随机（自己起）
+        /* ★ v626：名字骰子也改走 `rollNameFor`（原来这里写死 return）。
+           与总随机同源：属性取草稿、目标取当前值。 */
+        if (field === '名') {
+            var _e1 = (state && state.draft && state.draft.elem) ? state.draft.elem : '火';
+            var _t1 = (kind === '玄诀' || kind === '武器') ? '自身' : (item.目标 || '自身');
+            var _n1 = rollNameFor(_e1, _t1);
+            if (_n1) item.名 = _n1;
+            return item;
+        }
         if (field === '品质') rollQuality(item);
         else if (field === '目标') rollTarget(item);
         else if (field === '效果') rollFunc(item, kind);
@@ -4154,23 +4274,23 @@ d.attrs[a] = v;
         // 2: 02-备选开场.md · 青木药宗
         "<content>\n【开局 · 青木药宗】\n这条雾道两边都插着旧灯杆，灯芯是新换的，光只照到脚下三步。\n\n再往东半日，是专做脏活、凶名在外的煞血门；往西，是弥漫着淡淡草木微香的边缘小宗——青木药宗。\n\n你初涉修行，玄元在经脉里走得还不太顺，一路避开了几个行迹鬼祟的劫道散修，摸到药谷入口那座青石药庐前时，额上已见薄汗。\n\n雾在身后合拢。回望时，来路只剩两盏灯，隔得很远。\n\n“小心呀！”\n\n路旁密密匝匝的灌木丛一动，钻出来一个身形娇小的小姑娘。她挽着宽大的布袖，露出一截沾着泥灰的纤细小臂，指甲缝里留着洗不掉的深绿药汁痕，额发被汗水软趴趴地黏在鬓角。身后还吃力地背着一只足有半人多高的竹编药篓，篓口满当当插着挂着晨露的新鲜灵草。\n\n她一眼看出你气机未稳，连药篓都没卸下就小跑过来，指尖稳稳搭上你的手腕。\n\n指尖搭上寸关尺的刹那，一股极其纯正柔和的草木玄元顺着经脉缓缓淌入丹田，悄然抚平了翻江倒海的气机。\n\n“经脉又薄又燥，玄根才刚开窍不久，怎么就敢一个人走这条道呀……”\n\n她松了口气，随后从腰间摸出一只温热的粗瓷小碗，盛着一勺碧绿微苦的药汤递到你唇边，眼睛笑成两弯月牙，嗓音软软糯糯，尾音不自觉地往上挑：\n\n“快喝了吧，是刚熬好的回春灵露。这条道上不干净——前几日有两拨人没走完，煞血门到现在还没把那两个的尸首捞回来。”\n\n她说到这儿，声音低了些，回头朝药谷里望了一眼。\n\n“要是暂时没个去处，不如先留在咱们药宗的偏庐歇歇脚？我这里有张缺了两味主药的古残方……你若肯帮我掌炉煽火，包你每天都有热药汤和灵米饭吃，好不好呀？”\n\n——她没说的是，缺的那两味主药，都在雾里。\n\n药宗的采雾队三个月前少了三个人。她师父说今年不再派人，可药炉上的火不能停，停了整炉就废。她自己在墙外采了半个月，采到的都是替不得的。\n\n所以那张残方，她不是在跟你商量。\n\n是在问：你敢不敢陪我走一趟。\n</content>\n<UpdateVariable>\n<Analysis>\n一、地理：人州·中域·青木药宗（百草药谷药庐）\n二、时间：1月1号 08:00\n三、开局落点：青木药宗（药谷外门）\n四、主角信息：开局一律健康（身受重伤的写法不用）\n五、人物列表：药仙儿建档在场（练气中期·青木药宗药童·普通天骄（灵根定档））；并写入玄技《回春露》《缠丝藤》《苦麻针》与玄诀《百草经》\n</Analysis>\n<JSONPatch>\n[\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/大位置\",\n        \"value\": \"人州·中域·青木药宗\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/小位置\",\n        \"value\": \"百草药谷药庐\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/日期\",\n        \"value\": \"1年1月1日\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/精确时间\",\n        \"value\": \"08:00\"\n    },\n    {\n        \"op\": \"add\",\n        \"path\": \"/人物列表/药仙儿\",\n        \"value\": {\n            \"姓名\": \"药仙儿\",\n            \"势力\": \"青木药宗\",\n            \"外貌\": \"持药篮的小药仙，袖口常年沾着药渍，随身带着上古残方拓片\",\n            \"性格\": \"温婉心细、药痴脾气，遇奇药就挪不动脚\",\n            \"好感度\": 30,\n            \"心里话\": \"他脸色好差，得先灌一碗热的。\",\n            \"种族\": \"人族\",\n            \"境界\": \"练气中期\",\n            \"气血\": 1861,\n            \"气血上限\": 1861,\n            \"灵力\": 910,\n            \"灵力上限\": 910,\n            \"玄元属性\": {\n                \"属性\": \"木\"\n            },\n            \"四维\": {\n                \"力量\": 2,\n                \"敏捷\": 4,\n                \"体质\": 3,\n                \"智力\": 7\n            },\n            \"灵根\": {\n                \"名称\": \"药王传人\",\n                \"品阶\": \"双灵根\",\n                \"纯度\": 55,\n                \"效果\": \"回血:3，气血上限:10｜药性通身，丹药入口见效快\"\n            },\n            \"天骄\": \"普通天骄\",\n            \"已学本领\": {\n                \"玄技\": {\n                    \"回春露\": {\n                        \"玄技名\": \"回春露\",\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"治疗\": \"31｜给自己或同伴\"\n                        },\n                        \"消耗\": 45\n                    },\n                    \"缠丝藤\": {\n                        \"玄技名\": \"缠丝藤\",\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"减速\": \"4:2｜藤蔓缠住脚踝，两回合脚步拖滞\"\n                        },\n                        \"消耗\": 45\n                    },\n                    \"苦麻针\": {\n                        \"玄技名\": \"苦麻针\",\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"流血\": \"40:3｜刺入经脉，气血缓缓流失\"\n                        },\n                        \"消耗\": 45\n                    }\n                },\n                \"玄诀\": {\n                    \"百草经\": {\n                        \"玄技名\": \"百草经\",\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"被动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"减伤\": \"15:3｜识药之能，疗伤效果更强\",\n                            \"回蓝\": \"5:3｜识药之能，疗伤效果更强\"\n                        },\n                        \"消耗\": 0\n                    }\n                }\n            },\n            \"灵宠\": {},\n            \"部位\": {\n                \"私处\": \"正常\",\n                \"奶子\": \"正常\",\n                \"大腿\": \"正常\",\n                \"足部\": \"正常\"\n            },\n            \"在场状态\": true\n        }\n    }\n]\n</JSONPatch>\n</UpdateVariable>\n<StatusPlaceHolderImpl/>",
         // 3: 03-备选开场.md · 幽月仙宫·樱桃玉榻
-        "<content>\n【开局 · 幽月仙宫·樱桃玉榻】\n意识从一场极沉的睡眠里缓缓浮上来。\n\n鼻端没有血腥气，只有一缕温热的甜香。\n\n身下是铺着紫貂绒的暖玉卧榻，帷帐轻垂，帐外雕梁画栋，轻纱在微风里如水波般荡。这里是人州·中域·万花迷沼最深处的沼心，那座外界玄修闻之色变的全女隐世圣地——幽月仙宫。\n\n你撑开眼皮，视线先落在正前方的紫玉软榻上。\n\n那上面斜斜侧躺着一个女人。\n\n墨黑的长发随意披散在肩背与榻上，发尾在暖光里泛出一点极淡的酒红；她身上是一件墨灰色的贴身衣袍，深V的领口缀着大片黑蕾丝，袖口也是蕾丝，衣料把该沉的地方都沉沉压着，一条宽黑腰封束住，其下是墨灰的长裙。额心垂着一条细金链，坠一颗红宝石；颈上另有一条金链，坠子是一枚琥珀色的圆，正好落在锁骨之间。\n\n她一只玉手支着雪腮，另一只手的葱白指尖，正慢条斯理地捻起一枚刚浸过冰泉、鲜艳欲滴的红樱桃。\n\n察觉到你的目光，女人唇角一寸寸扬起来。\n\n那一双美眸里泛着极罕见的暗金光泽，瞳仁在光里微微一收，像蛇。\n\n——司幽怜。幽月仙宫的现任宗主，元婴中期。\n\n也是你姐。\n\n“醒了？”\n\n她当着你面把樱桃递到唇边，咬破。汁水破裂的声音在寂静的寝殿里格外清晰，一滴猩红顺着嘴角滑下来，她抬手抹了，指尖在唇边停了一瞬。\n\n“三天。”她嗓音是刚睡醒那种慵懒，尾音却一点也不含糊，“你在墙外那截断道上躺了三天。要不是本座那日出沼，你现在已经被雾啃干净了——连骨头都不剩。”\n\n你张口，喉咙干得发不出声。\n\n“谁把你扔在那儿的。”她忽然不笑了，语气还是甜的，可每个字都像钉子，“说出来。本座去拆了他的骨头，一根一根，摆在他家门口。”\n\n你摇头。记忆停在雾里那盏灭掉的灯。\n\n她盯了你两秒，忽然又笑开，把果盘往你这边推了推。\n\n“算了。先吃。”她慢悠悠地拨了一下垂在胸前的发，那枚琥珀坠子跟着一晃，“想不起来也好。想不起来的人，才睡得着。”\n\n她靠回软榻，眼波扫过来，忽然正了神色：\n\n“不过有件事，先跟你讲清楚。幽月仙宫万年清规，男子不入沼心。本座是宗主，本座亲自把你抱进来的。”\n\n“……”\n\n“所以你从今天起，是本座的人。”她抬眼看你，眼尾那点笑意里没有半分商量的余地，“不是客卿，也不是囚徒。谁动你，就是动本座。”\n\n顿了一顿。\n\n她把视线移开，落在帐外那片浮动的轻纱上，声音低下去，低得几乎像自言自语：\n\n“……九十六年了。本座一直以为，再没有人会姓司了。”\n</content>\n\n<UpdateVariable>\n<Analysis>\n一、地理：人州·中域·万花迷沼·幽月仙宫（沼心玉榻）\n二、时间：1月1号 10:00\n三、开局落点：幽月仙宫（沼心玉榻）\n四、主角信息：开局一律健康（身受重伤的写法不用）\n五、人物列表：司幽怜建档在场（元婴中期·幽月仙宫宗主·大天骄（灵根定档）·玩家亲姐）；并写入玄技《月华照影》《幻纱帐》《幽冥引》与玄诀《太阴心》\n</Analysis>\n<JSONPatch>\n[\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/大位置\",\n        \"value\": \"人州·中域·幽月仙宫\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/小位置\",\n        \"value\": \"沼心玉榻\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/日期\",\n        \"value\": \"1年1月1日\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/精确时间\",\n        \"value\": \"10:00\"\n    },\n    {\n        \"op\": \"add\",\n        \"path\": \"/人物列表/司幽怜\",\n        \"value\": {\n            \"姓名\": \"司幽怜\",\n            \"势力\": \"幽月仙宫\",\n            \"外貌\": \"墨黑长发披散、发尾泛淡酒红，暗金蛇眸；墨灰深V衣袍缀黑蕾丝，宽黑腰封，额心细金链坠红宝石，颈上金链坠琥珀圆\",\n            \"性格\": \"知性妩媚、随性慵懒，温柔里全是刀；对唯一的骨肉护得极凶，笑里下刀从不预告\",\n            \"好感度\": 75,\n            \"心里话\": \"瘦成这样。谁把他扔在雾里的，本座要把这人查出来。\",\n            \"种族\": \"人族\",\n            \"境界\": \"元婴中期\",\n            \"气血\": 13824,\n            \"气血上限\": 13824,\n            \"灵力\": 8371,\n            \"灵力上限\": 8371,\n            \"玄元属性\": {\n                \"属性\": \"水\"\n            },\n            \"四维\": {\n                \"力量\": 6,\n                \"敏捷\": 8,\n                \"体质\": 6,\n                \"智力\": 10\n            },\n            \"灵根\": {\n                \"名称\": \"太虚残魂\",\n                \"品阶\": \"天灵根\",\n                \"纯度\": 90,\n                \"效果\": \"灵力上限:20，回蓝:5｜魂里残着太虚一脉，识海极阔\"\n            },\n            \"天骄\": \"大天骄\",\n            \"已学本领\": {\n                \"玄技\": {\n                    \"月华照影\": {\n                        \"玄技名\": \"月华照影\",\n                        \"品质\": \"地阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"伤害\": \"156｜月华自虚空落下，穿透护体灵光\"\n                        },\n                        \"消耗\": 520\n                    },\n                    \"幻纱帐\": {\n                        \"玄技名\": \"幻纱帐\",\n                        \"品质\": \"地阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"范围\",\n                        \"效果\": {\n                            \"闪避\": \"20:3｜纱影铺开，遮蔽四方视线，隐匿气息，敌方无法锁定\"\n                        },\n                        \"消耗\": 520\n                    },\n                    \"幽冥引\": {\n                        \"玄技名\": \"幽冥引\",\n                        \"品质\": \"天阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"伤害\": \"200｜直取神魂的一击\"\n                        },\n                        \"消耗\": 1400\n                    }\n                },\n                \"玄诀\": {\n                    \"太阴心\": {\n                        \"玄技名\": \"太阴心\",\n                        \"品质\": \"天阶\",\n                        \"类型\": \"被动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"减伤\": \"10｜心神稳固，不受幻术所动，心智坚定，免疫幻术与魅惑\"\n                        },\n                        \"消耗\": 0\n                    }\n                }\n            },\n            \"装备武器\": {\n                \"武器名\": \"九幽幻纱绫\",\n                \"品质\": \"地阶\",\n                \"效果\": \"闪避:15｜幽泉绫起，缠敌于幻境\"\n            },\n            \"灵宠\": {},\n            \"部位\": {\n                \"私处\": \"正常\",\n                \"奶子\": \"正常\",\n                \"大腿\": \"正常\",\n                \"足部\": \"正常\"\n            },\n            \"在场状态\": true\n        }\n    }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
+        "<content>\n【开局 · 幽月仙宫·樱桃玉榻】\n你是被一阵樱桃的甜香熏醒的。\n睁眼是重重叠叠的绛紫纱帐天花板，帐外一炉冷香烧到只剩灰。玉榻另一头侧卧着个黑发金瞳的女人，指尖捻着一颗樱桃，也不吃，只在你眼前慢慢转。她离你很近，或者说，你发现自己是贴着她睡的。没错，这人是你的三姐。\"醒了还不快起来，当真是小懒猫\"，她慵懒又富有魅惑的声音传出，突然将你揽了过来，以至于你的脸埋进了她柔软的胸里。\n</content>\n\n<UpdateVariable>\n<Analysis>\n一、地理：人州·中域·万花迷沼·幽月仙宫（沼心玉榻）\n二、时间：1月1号 10:00\n三、开局落点：幽月仙宫（沼心玉榻）\n四、主角信息：开局一律健康（身受重伤的写法不用）\n五、人物列表：司幽怜建档在场（元婴中期·幽月仙宫宗主·大天骄（灵根定档）·玩家亲姐）；并写入玄技《月华照影》《幻纱帐》《幽冥引》与玄诀《太阴心》\n</Analysis>\n<JSONPatch>\n[\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/大位置\",\n        \"value\": \"人州·中域·幽月仙宫\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/小位置\",\n        \"value\": \"沼心玉榻\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/日期\",\n        \"value\": \"1年1月1日\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/精确时间\",\n        \"value\": \"10:00\"\n    },\n    {\n        \"op\": \"add\",\n        \"path\": \"/人物列表/司幽怜\",\n        \"value\": {\n            \"姓名\": \"司幽怜\",\n            \"势力\": \"幽月仙宫\",\n            \"外貌\": \"墨黑长发披散、发尾泛淡酒红，暗金蛇眸；墨灰深V衣袍缀黑蕾丝，宽黑腰封，额心细金链坠红宝石，颈上金链坠琥珀圆\",\n            \"性格\": \"知性妩媚、随性慵懒，温柔里全是刀；对唯一的骨肉护得极凶，笑里下刀从不预告\",\n            \"好感度\": 75,\n            \"心里话\": \"瘦成这样。谁把他扔在雾里的，本座要把这人查出来。\",\n            \"种族\": \"人族\",\n            \"境界\": \"元婴中期\",\n            \"气血\": 13824,\n            \"气血上限\": 13824,\n            \"灵力\": 8371,\n            \"灵力上限\": 8371,\n            \"玄元属性\": {\n                \"属性\": \"水\"\n            },\n            \"四维\": {\n                \"力量\": 6,\n                \"敏捷\": 8,\n                \"体质\": 6,\n                \"智力\": 10\n            },\n            \"灵根\": {\n                \"名称\": \"太虚残魂\",\n                \"品阶\": \"天灵根\",\n                \"纯度\": 90,\n                \"效果\": \"灵力上限:20，回蓝:5｜魂里残着太虚一脉，识海极阔\"\n            },\n            \"天骄\": \"大天骄\",\n            \"已学本领\": {\n                \"玄技\": {\n                    \"月华照影\": {\n                        \"玄技名\": \"月华照影\",\n                        \"品质\": \"地阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"伤害\": \"156｜月华自虚空落下，穿透护体灵光\"\n                        },\n                        \"消耗\": 520\n                    },\n                    \"幻纱帐\": {\n                        \"玄技名\": \"幻纱帐\",\n                        \"品质\": \"地阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"范围\",\n                        \"效果\": {\n                            \"闪避\": \"20:3｜纱影铺开，遮蔽四方视线，隐匿气息，敌方无法锁定\"\n                        },\n                        \"消耗\": 520\n                    },\n                    \"幽冥引\": {\n                        \"玄技名\": \"幽冥引\",\n                        \"品质\": \"天阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"伤害\": \"200｜直取神魂的一击\"\n                        },\n                        \"消耗\": 1400\n                    }\n                },\n                \"玄诀\": {\n                    \"太阴心\": {\n                        \"玄技名\": \"太阴心\",\n                        \"品质\": \"天阶\",\n                        \"类型\": \"被动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"减伤\": \"10｜心神稳固，不受幻术所动，心智坚定，免疫幻术与魅惑\"\n                        },\n                        \"消耗\": 0\n                    }\n                }\n            },\n            \"装备武器\": {\n                \"武器名\": \"九幽幻纱绫\",\n                \"品质\": \"地阶\",\n                \"效果\": \"闪避:15｜幽泉绫起，缠敌于幻境\"\n            },\n            \"灵宠\": {},\n            \"部位\": {\n                \"私处\": \"正常\",\n                \"奶子\": \"正常\",\n                \"大腿\": \"正常\",\n                \"足部\": \"正常\"\n            },\n            \"在场状态\": true\n        }\n    }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
         // 4: 04-备选开场.md · 霜霄仙阙·雪夜归人
-        "<content>\n【开局 · 霜霄仙阙·雪夜归人】\n你醒在一处冷得发脆的静室里。\n\n不是被冻醒的——身上盖着两层厚氅，氅下还压着一只温着的暖玉枕。可空气里那股寒意还是往骨头缝里钻，像有人拿细针一点点挑你的经脉。\n\n记忆的最后一幕停在雾道上。\n\n你替驿站送一趟货，回程时雾来得比预计早。灯灭了一盏，队里有人喊了一声，然后就是白——不是黑，是白，白得什么都看不见。你只记得自己抓住了一根绳子，绳子另一头有人往回拽。\n\n“醒了？”\n\n声音从门口传来，清、冷，像碎冰落在玉盘上。\n\n你抬头。\n\n门口站着一个人。金色长发垂到腰际，发丝极细极亮，走动时像一整匹被阳光晒过的丝缎。额心一条细金链垂下来，末端坠着一颗绿玉；头顶一顶金色莲花冠，冠侧各垂一条金流苏长簪，随她转头的动作轻轻一晃。\n\n她穿一身素白立领旗袍，金线滚边，胸前扣着一枚红玉扣；外罩白底金纹的广袖长袍，袍摆从腰侧开出高叉。赤足，踝间一对银铃。身后悬着一圈比肩更宽的白底金边圆环，像一轮立在她背上的月。\n\n——陆昭华。\n\n霜霄仙阙的现任圣女，七十六岁破金丹，人州公认的高岭之花。\n\n也是你姐。\n\n“别这么看我。”她走进来，把一个粗陶碗搁在案上，动作谈不上温柔，碗底磕出一声脆响，“药。喝了。”\n\n你伸手去端，她忽然抬手按住你的手腕，指腹冰凉，力道却不容置疑地翻过来看了看你的掌心——那上面有一道被绳子勒出的血痕。\n\n她盯了两秒，什么也没说，收回手。\n\n“……雾道上的规矩，你学过。”她背过身去，声音淡淡，“谁走散了，不回头找。你倒好，绳子递给别人，自己断后。”\n\n“姐——”\n\n“在仙阙里别这么叫。”\n\n她打断得很快，快到像早就准备好。\n\n“全宗上下已经开始议这件事了。霜霄仙阙万年清规，不许男子踏入主峰。我是圣女，我把你带回来了。”她顿了顿，侧过脸，睫毛在眼下投出一小片阴影，“这不是你欠我什么，是我自己认的。你要还，就好好活着，别死在雾里。”\n\n门口传来一声轻咳。\n\n一个年纪更长些的女子立在廊下，霜白流云袍，发髻以一支古拙的霜凤簪挽起，神色平静得像一潭结了冰的水。\n\n梵清仪。霜霄仙阙前任圣女，如今的尊长。\n\n也是把你从雾里抱回来的那个人。\n\n“三日后入关。”她只说了五个字，目光在你脸上停了一瞬，又移开，“先养。”\n\n她转身走了，袍角在门槛上拂过，没有半点多余的动作。\n\n屋里只剩你们姐弟两个。\n\n陆昭华还站在原地，背对着你，肩线绷得很直。过了很久，她才开口，声音低下去，几乎听不清：\n\n“……那三天，我以为你死了。”\n\n银铃轻响，她抬手把额前的流苏拨到耳后，重新抬起下巴时，又是那副谁也近不得的冷傲模样。\n\n“偏殿不许出去。要什么让侍女传话。”她走向门口，脚步在门槛处停了一下，“——还有。以后出雾，先跟我说。”\n</content>\n<UpdateVariable>\n<Analysis>\n一、地理：人州·雪域·霜霄仙阙（霜霄道场偏殿）\n二、时间：1月1号 10:30\n三、开局落点：霜霄仙阙（霜霄道场偏殿）\n四、主角信息：开局一律健康（身受重伤的写法不用）\n五、人物列表：陆昭华建档在场（金丹中期·霜霄仙阙圣女·大天骄（灵根定档）·玩家亲姐）；梵清仪可在场（尊长·玩家奶娘）；并写入玄技《霜曜九剑》《冰棱锁》《踏霜步》与玄诀《霜女诀》\n</Analysis>\n<JSONPatch>\n[\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/大位置\",\n    \"value\": \"人州·雪域·霜霄仙阙\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/小位置\",\n    \"value\": \"霜霄道场偏殿\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/日期\",\n    \"value\": \"1年1月1日\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/精确时间\",\n    \"value\": \"10:30\"\n  },\n  {\n    \"op\": \"add\",\n    \"path\": \"/人物列表/陆昭华\",\n    \"value\": {\n      \"姓名\": \"陆昭华\",\n      \"势力\": \"霜霄仙阙\",\n      \"外貌\": \"金色长发垂至腰际，极细极亮；额心细金链坠绿玉，头顶金莲花冠、两侧金流苏长簪；素白立领旗袍金线滚边，胸前红玉扣，外罩白底金纹广袖长袍、腰侧高叉；赤足踝系银铃，身后一圈白底金边圆环\",\n      \"性格\": \"高冷傲娇，冷淬戒备，看不起来路不明的男子\",\n      \"好感度\": 0,\n      \"心里话\": \"这种浊物也配进仙阙？\",\n      \"种族\": \"人族\",\n      \"境界\": \"金丹中期\",\n      \"气血\": 8534,\n      \"气血上限\": 8534,\n      \"灵力\": 3710,\n      \"灵力上限\": 3710,\n      \"玄元属性\": {\n        \"属性\": \"冰\"\n      },\n      \"四维\": {\n        \"力量\": 7,\n        \"敏捷\": 7,\n        \"体质\": 6,\n        \"智力\": 6\n      },\n      \"灵根\": {\n        \"名称\": \"冰曜玉骨\",\n        \"品阶\": \"天灵根\",\n        \"纯度\": 86,\n        \"效果\": \"减伤:18，气血上限:15｜骨如冰玉，寒气自骨缝里往外冒\"\n      },\n      \"天骄\": \"大天骄\",\n      \"已学本领\": {\n        \"玄技\": {\n          \"霜曜九剑\": {\n            \"玄技名\": \"霜曜九剑\",\n            \"品质\": \"天阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"范围\",\n            \"效果\": {\n              \"伤害\": \"200｜九道剑光同时落下\"\n            },\n            \"消耗\": 1400\n          },\n          \"冰棱锁\": {\n            \"玄技名\": \"冰棱锁\",\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"效果\": {\n              \"减速\": \"3:2｜冰棱封住退路，脚下打滑\"\n            },\n            \"消耗\": 520\n          },\n          \"踏霜步\": {\n            \"玄技名\": \"踏霜步\",\n            \"品质\": \"玄阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"提速\": \"30:3｜一步踏上霜花，身法更快\"\n            },\n            \"消耗\": 170\n          }\n        },\n        \"玄诀\": {\n          \"霜女诀\": {\n            \"玄技名\": \"霜女诀\",\n            \"品质\": \"天阶\",\n            \"类型\": \"被动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"减速\": \"15:3｜寒气入体，被她打中的人动作变慢\"\n            },\n            \"消耗\": 0\n          }\n        }\n      },\n      \"装备武器\": {\n        \"武器名\": \"霜铃曜魄环\",\n        \"品质\": \"地阶\",\n        \"效果\": \"穿防:20｜霜铃一振，曜魄碎甲\"\n      },\n      \"灵宠\": {},\n      \"部位\": {\n        \"私处\": \"正常\",\n        \"奶子\": \"正常\",\n        \"大腿\": \"正常\",\n        \"足部\": \"正常\"\n      },\n      \"在场状态\": true\n    }\n  }\n]\n</JSONPatch>\n</UpdateVariable>\n\n\n<StatusPlaceHolderImpl/>",
+        "<content>\n【开局 · 霜霄仙阙·雪夜归人】\n你醒在一处冷得发脆的静室里，身上盖着两层厚氅，氅下压着一只温着的暖玉枕。\n门被推开，霜雪气卷进来一线。来人一身圣女规制的白袍，发间一支素银簪，眉眼端正得近乎刻板——霜霄仙阙现任圣女，陆昭华。\n她走到榻前站定，先看了你很久，才伸手把你额前贴着的一缕碎发拨开，指尖凉得像雪。\n「主峰不许男子入内。」她一字一句，声音平得听不出情绪，「你躺的这间，是主峰。」\n你张口，她却不许你说：「别解释。清规是清规。」\n顿了顿，她把暖玉枕往你颈下又塞实了些，动作轻得和刚才那句话判若两人。\n不错，这人是你的四姐。十一年散了之后头一个找回来的，也是她。\n她不会再破第二次例——可她已经为你破过一次了。\n</content>\n\n<UpdateVariable>\n<Analysis>\n一、地理：人州·雪域·霜霄仙阙（霜霄道场偏殿）\n二、时间：1月1号 10:30\n三、开局落点：霜霄仙阙（霜霄道场偏殿）\n四、主角信息：开局一律健康（身受重伤的写法不用）\n五、人物列表：陆昭华建档在场（金丹中期·霜霄仙阙圣女·大天骄（灵根定档）·玩家亲姐）；梵清仪可在场（尊长·玩家奶娘）；并写入玄技《霜曜九剑》《冰棱锁》《踏霜步》与玄诀《霜女诀》\n</Analysis>\n<JSONPatch>\n[\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/大位置\",\n    \"value\": \"人州·雪域·霜霄仙阙\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/小位置\",\n    \"value\": \"霜霄道场偏殿\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/日期\",\n    \"value\": \"1年1月1日\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/精确时间\",\n    \"value\": \"10:30\"\n  },\n  {\n    \"op\": \"add\",\n    \"path\": \"/人物列表/陆昭华\",\n    \"value\": {\n      \"姓名\": \"陆昭华\",\n      \"势力\": \"霜霄仙阙\",\n      \"外貌\": \"金色长发垂至腰际，极细极亮；额心细金链坠绿玉，头顶金莲花冠、两侧金流苏长簪；素白立领旗袍金线滚边，胸前红玉扣，外罩白底金纹广袖长袍、腰侧高叉；赤足踝系银铃，身后一圈白底金边圆环\",\n      \"性格\": \"高冷傲娇，冷淬戒备，看不起来路不明的男子\",\n      \"好感度\": 0,\n      \"心里话\": \"这种浊物也配进仙阙？\",\n      \"种族\": \"人族\",\n      \"境界\": \"金丹中期\",\n      \"气血\": 8534,\n      \"气血上限\": 8534,\n      \"灵力\": 3710,\n      \"灵力上限\": 3710,\n      \"玄元属性\": {\n        \"属性\": \"冰\"\n      },\n      \"四维\": {\n        \"力量\": 7,\n        \"敏捷\": 7,\n        \"体质\": 6,\n        \"智力\": 6\n      },\n      \"灵根\": {\n        \"名称\": \"冰曜玉骨\",\n        \"品阶\": \"天灵根\",\n        \"纯度\": 86,\n        \"效果\": \"减伤:18，气血上限:15｜骨如冰玉，寒气自骨缝里往外冒\"\n      },\n      \"天骄\": \"大天骄\",\n      \"已学本领\": {\n        \"玄技\": {\n          \"霜曜九剑\": {\n            \"玄技名\": \"霜曜九剑\",\n            \"品质\": \"天阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"范围\",\n            \"效果\": {\n              \"伤害\": \"200｜九道剑光同时落下\"\n            },\n            \"消耗\": 1400\n          },\n          \"冰棱锁\": {\n            \"玄技名\": \"冰棱锁\",\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"效果\": {\n              \"减速\": \"3:2｜冰棱封住退路，脚下打滑\"\n            },\n            \"消耗\": 520\n          },\n          \"踏霜步\": {\n            \"玄技名\": \"踏霜步\",\n            \"品质\": \"玄阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"提速\": \"30:3｜一步踏上霜花，身法更快\"\n            },\n            \"消耗\": 170\n          }\n        },\n        \"玄诀\": {\n          \"霜女诀\": {\n            \"玄技名\": \"霜女诀\",\n            \"品质\": \"天阶\",\n            \"类型\": \"被动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"减速\": \"15:3｜寒气入体，被她打中的人动作变慢\"\n            },\n            \"消耗\": 0\n          }\n        }\n      },\n      \"装备武器\": {\n        \"武器名\": \"霜铃曜魄环\",\n        \"品质\": \"地阶\",\n        \"效果\": \"穿防:20｜霜铃一振，曜魄碎甲\"\n      },\n      \"灵宠\": {},\n      \"部位\": {\n        \"私处\": \"正常\",\n        \"奶子\": \"正常\",\n        \"大腿\": \"正常\",\n        \"足部\": \"正常\"\n      },\n      \"在场状态\": true\n    }\n  }\n]\n</JSONPatch>\n</UpdateVariable>\n\n\n<StatusPlaceHolderImpl/>",
         // 5: 05-备选开场.md · 天云雪山·雪庐
-        "<content>\n【开局 · 天云雪山·雪庐】\n天云雪山落在人州·雪域最北的一段断脊上，终年铅云压顶，雪从不下停。\n\n雪庐在峰巅，一进院墙，风雪就断在身后三步——那是一道只罩住这几间屋子的结界，靠后山灵泉里那座小阵眼撑着。墙外是雾，白得发灰，看不见三丈。\n\n你刚结束一轮大周天吐纳，从厚软的蒲团上睁开眼。\n\n身侧的雪白蒲团上，静静跪坐着一道身影。\n\n银灰色的长发中分，垂到腰际，连同纤长的眼睫与修长的眉，都是不染尘的淡色。她穿一袭白黑相配的衣袍：上身与广袖是纯净霜白，外罩一件宽袖长袍；里头是黑底金菱纹的抹胸，胸前一线红系带；下身是深色的长裙，黑白交界利落分明。背后斜负着一柄无垢银白古剑。\n\n看不出年岁。雪域里的人都不显老，她是尤其不显的那一类。\n\n——白长雪。天云雪山的主人，雪域少有的化神境剑仙。\n\n也是你娘。\n\n她那双赤色的眼睛缓缓落到你身上，整张脸上没有半点多余的涟漪，从容、淡漠，是一副无论遇到何等惊天变故都不会破功的三无面瘫脸。\n\n可那只微凉的手已经探过来了，五指扣住你的腕子，运转太玄冰魄真元，一寸一寸替你抚平经脉里躁动的余热。\n\n“……经脉通达，吐纳尚可。”\n\n嗓音清冷如碎玉击冰，音调平得没有起伏。\n\n收回手后，这位威震雪域的冷面剑仙，一本正经地从袖中掏出一只万年玄冰雕的微缩灵物——一只圆滚滚的胖雪兔。她顶着那张清冷肃穆的脸，面不改色地把冰兔塞进你掌心：\n\n“给你的。……奖你今日未曾懈怠。”\n\n说完她起身推门。门一开，风雪就顺着门槛卷进来，又被结界那层看不见的膜挡在院墙外三步。她随手把门掩回，背影笔直、一步不乱——从头到尾，耳根干干净净，半点绯色也无。\n\n三天前那场雾里的事，她一个字也没提。\n\n你只知道醒来时人在雪庐，脚上那双被雾水泡透的靴子不在屋里，院墙外那盏引路灯换了新的灯芯。\n\n她这一辈子没出过雪域。阵眼在这儿，她走不开；你在这儿，她更不走。\n\n如今她待你仍是那副三无的冷淡样子——**尚未越界**，不会脸红，不会耳根发烫。关切只落在动作上：换更补的汤药、把蒲团焐热、把剑谱摊在你桌上，每轮的话不超过一句半。往后能走到哪一档，全看这楼正文里一起经历过什么，不得跳步。\n</content>\n<UpdateVariable>\n<Analysis>\n一、地理：人州·雪域·天云雪山（峰巅雪庐）\n二、时间：1月1号 06:30\n三、开局落点：天云雪山（峰巅雪庐）\n四、主角信息：吐纳初醒，经脉被白长雪以太玄冰魄真元理过一遍；接过她递来的玄冰小兔；昨夜雾里的事她一字未提，泡透的靴子已换、院墙外引路灯换了新灯芯\n五、人物列表：白长雪建档在场（化神中期·天云雪山剑仙·大天骄（灵根定档）），**相处未越界（一律三无淡漠）**；并写入玄技《流霜一剑》《冰河封路》《雪落无声》与玄诀《无垢剑心》\n</Analysis>\n<JSONPatch>\n[\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/大位置\",\n        \"value\": \"人州·雪域·天云雪山\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/小位置\",\n        \"value\": \"天云雪山峰巅\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/日期\",\n        \"value\": \"1年1月1日\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/精确时间\",\n        \"value\": \"06:30\"\n    },\n    {\n        \"op\": \"add\",\n        \"path\": \"/人物列表/白长雪\",\n        \"value\": {\n            \"姓名\": \"白长雪\",\n            \"势力\": \"天云雪山（隐世剑仙）\",\n            \"外貌\": \"银灰长发中分垂至腰际，霜色长睫，赤色眼眸；白宽袖外袍，内衬黑底金菱纹抹胸与红系带，深色长裙，背斜负无垢银白古剑\",\n            \"性格\": \"极致三无面瘫、寡言少语，实则闷得厉害；对骨肉护得极紧，一辈子不肯出雪域一步\",\n            \"好感度\": 80,\n            \"心里话\": \"瘦了。明日汤药再加一味。雾里那三天……不说也罢。\",\n            \"种族\": \"人族\",\n            \"境界\": \"化神中期\",\n            \"气血\": 25626,\n            \"气血上限\": 25626,\n            \"灵力\": 12845,\n            \"灵力上限\": 12845,\n            \"玄元属性\": {\n                \"属性\": \"冰\"\n            },\n            \"四维\": {\n                \"力量\": 6,\n                \"敏捷\": 8,\n                \"体质\": 6,\n                \"智力\": 8\n            },\n            \"灵根\": {\n                \"名称\": \"九幽玄阴\",\n                \"品阶\": \"天灵根\",\n                \"纯度\": 92,\n                \"效果\": \"增伤:15，穿防:15｜阴寒入骨，冰寒之力天生高一等\"\n            },\n            \"天骄\": \"大天骄\",\n            \"已学本领\": {\n                \"玄技\": {\n                    \"流霜一剑\": {\n                        \"玄技名\": \"流霜一剑\",\n                        \"品质\": \"天阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"伤害\": \"200｜一剑递出，寒气随剑而至\"\n                        },\n                        \"消耗\": 1400\n                    },\n                    \"冰河封路\": {\n                        \"玄技名\": \"冰河封路\",\n                        \"品质\": \"地阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"范围\",\n                        \"效果\": {\n                            \"减速\": \"3:2｜冰河自脚下铺开，全场滞步\"\n                        },\n                        \"消耗\": 520\n                    },\n                    \"雪落无声\": {\n                        \"玄技名\": \"雪落无声\",\n                        \"品质\": \"地阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"闪避\": \"20:3｜气息收敛，敌人难以察觉，隐匿气息，敌方无法锁定\"\n                        },\n                        \"消耗\": 520\n                    }\n                },\n                \"玄诀\": {\n                    \"无垢剑心\": {\n                        \"玄技名\": \"无垢剑心\",\n                        \"品质\": \"天阶\",\n                        \"类型\": \"被动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"减伤\": \"10｜心神澄澈，魅惑与幻术无效，心智坚定\"\n                        },\n                        \"消耗\": 0\n                    }\n                }\n            },\n            \"装备武器\": {\n                \"武器名\": \"流霜无垢剑\",\n                \"品质\": \"地阶\",\n                \"效果\": \"增伤:20｜无垢银白古剑，不染尘埃\"\n            },\n            \"灵宠\": {},\n            \"部位\": {\n                \"私处\": \"正常\",\n                \"奶子\": \"正常\",\n                \"大腿\": \"正常\",\n                \"足部\": \"正常\"\n            },\n            \"在场状态\": true\n        }\n    }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
+        "<content>\n【开局 · 天云雪山·雪庐】\n天云雪山在雪域最北一段断脊上，终年铅云压顶。\n雪庐在峰巅，一进院墙风雪就断在身后三步——那道结界靠后山灵泉里一座小阵眼撑着，她这辈子没出过雪域：阵眼在这儿，走不开。\n你从厚软的蒲团上睁眼，她正扣着你的腕子一寸寸理经脉。收回手：「经脉通达，吐纳尚可。」\n然后掏出一只玄冰雕的胖雪兔塞进你掌心：「给你的。」。此人正是你亲娘，无比漂亮的大美人。\n</content>\n\n<UpdateVariable>\n<Analysis>\n一、地理：人州·雪域·天云雪山（峰巅雪庐）\n二、时间：1月1号 06:30\n三、开局落点：天云雪山（峰巅雪庐）\n四、主角信息：吐纳初醒，经脉被白长雪以太玄冰魄真元理过一遍；接过她递来的玄冰小兔；昨夜雾里的事她一字未提，泡透的靴子已换、院墙外引路灯换了新灯芯\n五、人物列表：白长雪建档在场（化神中期·天云雪山剑仙·大天骄（灵根定档）），**相处未越界（一律三无淡漠）**；并写入玄技《流霜一剑》《冰河封路》《雪落无声》与玄诀《无垢剑心》\n</Analysis>\n<JSONPatch>\n[\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/大位置\",\n        \"value\": \"人州·雪域·天云雪山\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/小位置\",\n        \"value\": \"天云雪山峰巅\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/日期\",\n        \"value\": \"1年1月1日\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/精确时间\",\n        \"value\": \"06:30\"\n    },\n    {\n        \"op\": \"add\",\n        \"path\": \"/人物列表/白长雪\",\n        \"value\": {\n            \"姓名\": \"白长雪\",\n            \"势力\": \"天云雪山（隐世剑仙）\",\n            \"外貌\": \"银灰长发中分垂至腰际，霜色长睫，赤色眼眸；白宽袖外袍，内衬黑底金菱纹抹胸与红系带，深色长裙，背斜负无垢银白古剑\",\n            \"性格\": \"极致三无面瘫、寡言少语，实则闷得厉害；对骨肉护得极紧，一辈子不肯出雪域一步\",\n            \"好感度\": 80,\n            \"心里话\": \"瘦了。明日汤药再加一味。雾里那三天……不说也罢。\",\n            \"种族\": \"人族\",\n            \"境界\": \"化神中期\",\n            \"气血\": 25626,\n            \"气血上限\": 25626,\n            \"灵力\": 12845,\n            \"灵力上限\": 12845,\n            \"玄元属性\": {\n                \"属性\": \"冰\"\n            },\n            \"四维\": {\n                \"力量\": 6,\n                \"敏捷\": 8,\n                \"体质\": 6,\n                \"智力\": 8\n            },\n            \"灵根\": {\n                \"名称\": \"九幽玄阴\",\n                \"品阶\": \"天灵根\",\n                \"纯度\": 92,\n                \"效果\": \"增伤:15，穿防:15｜阴寒入骨，冰寒之力天生高一等\"\n            },\n            \"天骄\": \"大天骄\",\n            \"已学本领\": {\n                \"玄技\": {\n                    \"流霜一剑\": {\n                        \"玄技名\": \"流霜一剑\",\n                        \"品质\": \"天阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"伤害\": \"200｜一剑递出，寒气随剑而至\"\n                        },\n                        \"消耗\": 1400\n                    },\n                    \"冰河封路\": {\n                        \"玄技名\": \"冰河封路\",\n                        \"品质\": \"地阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"范围\",\n                        \"效果\": {\n                            \"减速\": \"3:2｜冰河自脚下铺开，全场滞步\"\n                        },\n                        \"消耗\": 520\n                    },\n                    \"雪落无声\": {\n                        \"玄技名\": \"雪落无声\",\n                        \"品质\": \"地阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"闪避\": \"20:3｜气息收敛，敌人难以察觉，隐匿气息，敌方无法锁定\"\n                        },\n                        \"消耗\": 520\n                    }\n                },\n                \"玄诀\": {\n                    \"无垢剑心\": {\n                        \"玄技名\": \"无垢剑心\",\n                        \"品质\": \"天阶\",\n                        \"类型\": \"被动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"减伤\": \"10｜心神澄澈，魅惑与幻术无效，心智坚定\"\n                        },\n                        \"消耗\": 0\n                    }\n                }\n            },\n            \"装备武器\": {\n                \"武器名\": \"流霜无垢剑\",\n                \"品质\": \"地阶\",\n                \"效果\": \"增伤:20｜无垢银白古剑，不染尘埃\"\n            },\n            \"灵宠\": {},\n            \"部位\": {\n                \"私处\": \"正常\",\n                \"奶子\": \"正常\",\n                \"大腿\": \"正常\",\n                \"足部\": \"正常\"\n            },\n            \"在场状态\": true\n        }\n    }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
         // 6: 06-备选开场.md · 幽月仙宫·冷月惊鸿
-        "<content>\n【开局 · 幽月仙宫·冷月惊鸿】\n吱呀——\n\n雕镂着繁复暗纹的紫檀殿门被你从内侧缓缓推开，发出轻微沉闷的摩擦声。\n\n你在沼心那间寝殿里躺了三天。昨夜司幽怜把最后一道淤伤按下去，随手把外袍一拢，说“睡吧，本座守着你”，然后就真在软榻上坐了一整夜——一宗之主，坐着打盹，姿势还端得像在议事。\n\n此刻天光刚亮，沼面上的雾浮得很低。你扶着尚有些发沉的额头，正想辨认方向，脚步却冷不丁在雕花白玉回廊前僵住。\n\n千丈断崖边缘的冷月回廊飞檐下，不知何时，静静立着一道身影。\n\n淡紫的长发中分垂到腰际，两侧各编了一道细辫，鬓边横插一支素金长簪，簪头是一只极简的鸟形；额心垂着一枚小小的银坠。她穿一身白与浅蓝相叠的大袖长袍，交领开得极深，胸前以一枚金色小扣挂住，浅蓝腰带束得极松；下头是素白长裙，裙裾几乎垂到地。\n\n周身绕着几缕不肯散去的淡紫月华，像浮在水里的绸。\n\n她站在那里，像一轮挂在万仞冰峰上的孤月，清冷得不似活人。\n\n——云疏月。幽月仙宫首席客卿，元婴后期，长居冷月峰参悟大道。\n\n也是你姐。\n\n她缓缓转过身来。\n\n那是一张精致清绝到极点的脸。那双宛若万丈寒潭般不见波澜的眸子落到你身上时，没有惊讶，没有惊喜，甚至没有一丝起伏——\n\n只有冷。\n\n比这沼面上的雾还冷。\n\n她的目光在你脸上停了一瞬，又移到你身后那扇刚刚合拢的紫檀殿门，移到你身上那件明显不是自己穿上的、领口还散着的外袍。\n\n“她把你抱回来了。”云疏月开口，声音很轻，很平，像在念一句与自己无关的话，“三日前我下峰，在断道上看过那处。血是散的，人是拖走的。我知道是她。”\n\n她顿了一下。\n\n“我没有追。”\n\n三个字，说完，连眉毛都没动。\n\n“你该谢她。”她抬手，袖口滑下一截，露出一只极瘦的手腕，“若是我先找到你，我会把你送回墙内，然后转身就走，一个字也不留——”\n\n说到这儿，她忽然停了。\n\n停得太久了，久到你能听见远处沼水漫过石阶的声音。\n\n“……我试过。”她的声音低下去，低得几乎不像她，“那三日，我坐在冷月台上，试着把你从心里挪出去。像挪一块石头。”\n\n“挪不动。”\n\n她抬起眼，眸子里那层冰终于裂开一线，露出底下一点极浅、极疲惫的东西。\n\n“所以我要说清楚。这不是姐弟重逢。”她把“姐弟”两个字咬得很轻，轻得像怕惊到什么，“这是我修了八十年的道，被你和她的一个照面，废了一半。”\n\n“……”\n\n“别误会。”她忽然又冷了回来，退回那层壳里，“我没有生气。我只是在重新算。”\n\n话音未落——\n\n嗤！\n\n一道极细微的淡紫色月华神雷自虚空间一闪而逝。她的身影在原地化开，散成一片来不及收拢的月光残影；下一刹那，虚空波纹微荡，她整个人已撕裂长空，径直没入冷月绝巅深处。\n\n回廊上只剩一缕刺骨的寒风。\n\n还有半片没有散尽的月华，慢慢落在你脚边，凉得像一片雪。\n</content>\n<UpdateVariable>\n<Analysis>\n一、地理：人州·中域·万花迷沼·幽月仙宫（冷月回廊）\n二、时间：1月1号 11:00\n三、开局落点：幽月仙宫（冷月回廊）\n四、主角信息：开局一律健康（身受重伤的写法不用）\n五、人物列表：云疏月建档离场（元婴后期·幽月仙宫首席客卿·大天骄（灵根定档）·玩家亲姐，瞬移离去，在场 false）；并写入玄技《月华照影环》《雷遁瞬影》《引雷落》与玄诀《忘情引》\n</Analysis>\n<JSONPatch>\n[\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/大位置\",\n        \"value\": \"人州·中域·幽月仙宫\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/小位置\",\n        \"value\": \"冷月寒潭回廊\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/日期\",\n        \"value\": \"1年1月1日\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/精确时间\",\n        \"value\": \"11:00\"\n    },\n    {\n        \"op\": \"add\",\n        \"path\": \"/人物列表/云疏月\",\n        \"value\": {\n            \"姓名\": \"云疏月\",\n            \"势力\": \"幽月仙宫\",\n            \"外貌\": \"淡紫长发中分垂腰、两侧细辫，鬓边素金鸟形长簪，额心小银坠；白与浅蓝相叠大袖长袍，交领极深，胸前金色小扣，浅蓝腰带，素白长裙；周身淡紫月华不散\",\n            \"性格\": \"超然清冷、一心修太上忘情；对万事都能放下，唯独这一根亲缘断不掉，正因此比谁都冷\",\n            \"好感度\": 0,\n            \"心里话\": \"挪不动。八十年道心，栽在他一个人身上。\",\n            \"种族\": \"人族\",\n            \"境界\": \"元婴后期\",\n            \"气血\": 13771,\n            \"气血上限\": 13771,\n            \"灵力\": 6934,\n            \"灵力上限\": 6934,\n            \"玄元属性\": {\n                \"属性\": \"雷\"\n            },\n            \"四维\": {\n                \"力量\": 7,\n                \"敏捷\": 8,\n                \"体质\": 5,\n                \"智力\": 8\n            },\n            \"灵根\": {\n                \"名称\": \"上古战体\",\n                \"品阶\": \"天灵根\",\n                \"纯度\": 89,\n                \"效果\": \"增伤:18，暴击:10｜天生的打架料子，越战越勇\"\n            },\n            \"天骄\": \"大天骄\",\n            \"已学本领\": {\n                \"玄技\": {\n                    \"月华照影环\": {\n                        \"玄技名\": \"月华照影环\",\n                        \"品质\": \"地阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"伤害\": \"168｜环击落点炸开雷光\"\n                        },\n                        \"消耗\": 520\n                    },\n                    \"雷遁瞬影\": {\n                        \"玄技名\": \"雷遁瞬影\",\n                        \"品质\": \"地阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"提速\": \"30:3｜化作雷光瞬移出三丈，身法陡然加快\"\n                        },\n                        \"消耗\": 520\n                    },\n                    \"引雷落\": {\n                        \"玄技名\": \"引雷落\",\n                        \"品质\": \"天阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"范围\",\n                        \"效果\": {\n                            \"伤害\": \"215｜召一道细雷劈落\"\n                        },\n                        \"消耗\": 1400\n                    }\n                },\n                \"玄诀\": {\n                    \"忘情引\": {\n                        \"玄技名\": \"忘情引\",\n                        \"品质\": \"天阶\",\n                        \"类型\": \"被动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"减伤\": \"10｜七情六欲都被压下，出手更稳，心智坚定，免疫幻术与魅惑\"\n                        },\n                        \"消耗\": 0\n                    }\n                }\n            },\n            \"装备武器\": {\n                \"武器名\": \"月华照影环\",\n                \"品质\": \"地阶\",\n                \"效果\": \"闪避:15｜月华照影，动静无形\"\n            },\n            \"灵宠\": {},\n            \"部位\": {\n                \"私处\": \"正常\",\n                \"奶子\": \"正常\",\n                \"大腿\": \"正常\",\n                \"足部\": \"正常\"\n            },\n            \"在场状态\": false\n        }\n    }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
+        "<content>\n【开局 · 幽月仙宫·冷月惊鸿】\n紫檀殿门被你从内侧推开，冷月的光铺了满地。\n殿中央立着一个白衣女子，正在收剑。她没有回头，可剑尖已经停住了——她听见了你的脚步。\n「谁让你进来的。」转过身，那张脸冷得像结了霜，眼尾一颗小痣，越衬得不可亲近。幽月仙宫首席客卿，云疏月。\n你把名字叫出口。她握剑的手一紧，随即又松开了。\n「不认得。」三个字，硬邦邦的。\n可她没走。她站在原地，隔着满地月光看了你很久，才低声补了一句：「……回去。这儿不是你该来的地方。」\n说得是这样冷，剑却收进了鞘——那是给你让出的路。\n没错，这人是你的二姐。她越冷，越是不肯认；越不肯认，越站在这儿不动。\n</content>\n\n<UpdateVariable>\n<Analysis>\n一、地理：人州·中域·万花迷沼·幽月仙宫（冷月回廊）\n二、时间：1月1号 11:00\n三、开局落点：幽月仙宫（冷月回廊）\n四、主角信息：开局一律健康（身受重伤的写法不用）\n五、人物列表：云疏月建档离场（元婴后期·幽月仙宫首席客卿·大天骄（灵根定档）·玩家亲姐，瞬移离去，在场 false）；并写入玄技《月华照影环》《雷遁瞬影》《引雷落》与玄诀《忘情引》\n</Analysis>\n<JSONPatch>\n[\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/大位置\",\n        \"value\": \"人州·中域·幽月仙宫\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/小位置\",\n        \"value\": \"冷月寒潭回廊\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/日期\",\n        \"value\": \"1年1月1日\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/精确时间\",\n        \"value\": \"11:00\"\n    },\n    {\n        \"op\": \"add\",\n        \"path\": \"/人物列表/云疏月\",\n        \"value\": {\n            \"姓名\": \"云疏月\",\n            \"势力\": \"幽月仙宫\",\n            \"外貌\": \"淡紫长发中分垂腰、两侧细辫，鬓边素金鸟形长簪，额心小银坠；白与浅蓝相叠大袖长袍，交领极深，胸前金色小扣，浅蓝腰带，素白长裙；周身淡紫月华不散\",\n            \"性格\": \"超然清冷、一心修太上忘情；对万事都能放下，唯独这一根亲缘断不掉，正因此比谁都冷\",\n            \"好感度\": 0,\n            \"心里话\": \"挪不动。八十年道心，栽在他一个人身上。\",\n            \"种族\": \"人族\",\n            \"境界\": \"元婴后期\",\n            \"气血\": 13771,\n            \"气血上限\": 13771,\n            \"灵力\": 6934,\n            \"灵力上限\": 6934,\n            \"玄元属性\": {\n                \"属性\": \"雷\"\n            },\n            \"四维\": {\n                \"力量\": 7,\n                \"敏捷\": 8,\n                \"体质\": 5,\n                \"智力\": 8\n            },\n            \"灵根\": {\n                \"名称\": \"上古战体\",\n                \"品阶\": \"天灵根\",\n                \"纯度\": 89,\n                \"效果\": \"增伤:18，暴击:10｜天生的打架料子，越战越勇\"\n            },\n            \"天骄\": \"大天骄\",\n            \"已学本领\": {\n                \"玄技\": {\n                    \"月华照影环\": {\n                        \"玄技名\": \"月华照影环\",\n                        \"品质\": \"地阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"伤害\": \"168｜环击落点炸开雷光\"\n                        },\n                        \"消耗\": 520\n                    },\n                    \"雷遁瞬影\": {\n                        \"玄技名\": \"雷遁瞬影\",\n                        \"品质\": \"地阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"提速\": \"30:3｜化作雷光瞬移出三丈，身法陡然加快\"\n                        },\n                        \"消耗\": 520\n                    },\n                    \"引雷落\": {\n                        \"玄技名\": \"引雷落\",\n                        \"品质\": \"天阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"范围\",\n                        \"效果\": {\n                            \"伤害\": \"215｜召一道细雷劈落\"\n                        },\n                        \"消耗\": 1400\n                    }\n                },\n                \"玄诀\": {\n                    \"忘情引\": {\n                        \"玄技名\": \"忘情引\",\n                        \"品质\": \"天阶\",\n                        \"类型\": \"被动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"减伤\": \"10｜七情六欲都被压下，出手更稳，心智坚定，免疫幻术与魅惑\"\n                        },\n                        \"消耗\": 0\n                    }\n                }\n            },\n            \"装备武器\": {\n                \"武器名\": \"月华照影环\",\n                \"品质\": \"地阶\",\n                \"效果\": \"闪避:15｜月华照影，动静无形\"\n            },\n            \"灵宠\": {},\n            \"部位\": {\n                \"私处\": \"正常\",\n                \"奶子\": \"正常\",\n                \"大腿\": \"正常\",\n                \"足部\": \"正常\"\n            },\n            \"在场状态\": false\n        }\n    }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
         // 7: 07-备选开场.md · 司天监·天枢台遮眼星官
-        "<content>\n【开局 · 司天监·天枢台遮眼星官】\n崖壁上的石梯很长，越往上越窄，窄到只容一人侧身。雾贴着石壁往上淌，走到一半时，身后的灯就成了一个很小的黄点。\n\n再往上，前方豁然开朗。\n\n人州·中域北境的天枢台，是一座巨大的环形悬空石台。底下没有支撑，直接是翻涌的云海；台面上刻满密密麻麻的星位，刻痕里淌着银白的微光。整个台子悬在雾上，靠台心那口星井撑着——那就是司天监的阵眼。\n\n台心站着一个女子。\n\n极浅的蓝发垂到腰下，一丝不乱。她穿一件白底长袍，襟口与袖口压着藏青滚边，胸前几枚藏青盘扣，一条黑色宽腰带束在腰间，其下是藏青的裙摆。身后飘着几卷写满字的符纸，像有风托着，又像本来就在那儿。\n\n她没有看你——或者说，没法看你。一条洗得发软的白布带绕过额际，把双眼蒙得严严实实，布带边缘用银线绣着细小的星点。\n\n听见脚步声，她微微偏过头。\n\n停了半息。\n\n“……你的脚步，右脚比左脚轻。”她忽然说，声音很轻，像怕惊着谁，“左膝旧伤，落地时会先卸半分力。”\n\n你没答。\n\n她也就不问了，抬起手，把托着的璇玑盘摆正，退回到那副公事公办的语气里：\n\n“我是司天监言清漪。掌星弟子，负责接引外客。天枢台不收刀剑，也不过问来历。只要能自己爬上这处悬崖，就可以提问。”\n\n她朝你走近几步。没有拄杖，却准确避开了所有刻着星位的深槽，一步没踩错。\n\n在你面前停下，两手拢回袖中。\n\n“你想问什么？”\n\n——规矩走完了。\n\n她垂在身侧的手指，极轻地蜷了一下。\n\n然后，那个“掌星弟子”的壳子裂了。\n\n“……十一年。”她的声音低下去，低得几乎被云海的风盖掉，“你走的那年，我还在数日子。数到第三年就不数了。”\n\n她抬手，指尖在蒙眼的布带上按了一下，像在确认它还在。\n\n“别怪我不摘。”她说，“摘了也看不见。还不如让它挡着——挡着，我还能假装是它不让我看。”\n\n云海在脚下翻。她站在那里，一动不动，只有袍角被风掀起来一点。\n\n“……回来就好。”她终于说，声音很稳，稳得像在念一句早就练过很多遍的话，“我不问你这十一年去了哪儿。你什么时候想说，什么时候再说。”\n</content>\n<UpdateVariable>\n<Analysis>\n一、地理：人州·中域·天枢台\n二、时间：1月1号 10:30\n三、开局落点：司天监·天枢台（隐世中立势力，观星推演一脉）\n五、人物列表：言清漪建档在场（金丹初期·司天监掌星弟子·遮眼星官·普通天骄·玩家亲姐）；温而不亲，不谈这十一年；玄技写入：《赤羽指》｜水\n</Analysis>\n<JSONPatch>\n[\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/大位置\",\n    \"value\": \"人州·中域·司天监\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/小位置\",\n    \"value\": \"天枢台\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/日期\",\n    \"value\": \"1年1月1日\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/精确时间\",\n    \"value\": \"10:30\"\n  },\n  {\n    \"op\": \"add\",\n    \"path\": \"/人物列表/言清漪\",\n    \"value\": {\n      \"姓名\": \"言清漪\",\n      \"势力\": \"司天监（隐世中立势力）\",\n      \"外貌\": \"极浅蓝长发垂至腰下，素白布带覆眼（缘绣星位）；白底长袍压藏青滚边与盘扣，黑色宽腰带，藏青裙摆；胸悬铜色璇玑盘，身后符纸自浮\",\n      \"性格\": \"长年把话放轻了说的温柔。不与人争，要拒绝只说“这个我算不了”。覆眼一半是看不见，一半是自己上的锁：不看，就不推。是玩家亲姐——她把“接引外客”那套流程当挡板，先走完规矩，才敢叫那声名字；这十一年她一个字不问\",\n      \"好感度\": 78,\n      \"心里话\": \"右脚还是轻的。十一年了，那道旧伤没养好。\",\n      \"种族\": \"人族\",\n      \"境界\": \"金丹初期\",\n      \"气血\": 6559,\n      \"气血上限\": 6559,\n      \"灵力\": 3312,\n      \"灵力上限\": 3312,\n      \"玄元属性\": {\n        \"属性\": \"水\"\n      },\n      \"四维\": {\n        \"力量\": 4,\n        \"敏捷\": 6,\n        \"体质\": 6,\n        \"智力\": 8\n      },\n      \"灵根\": {\n        \"名称\": \"问水知微\",\n        \"品阶\": \"双灵根\",\n        \"纯度\": 61,\n        \"效果\": \"闪避:10，回蓝:4｜水气一动便知吉凶，夜里能看见别人看不见的\"\n      },\n      \"天骄\": \"普通天骄\",\n      \"已学本领\": {\n        \"玄技\": {\n          \"清波引\": {\n            \"玄技名\": \"清波引\",\n            \"品质\": \"玄阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"效果\": {\n              \"伤害\": \"73｜水线穿喉\"\n            },\n            \"消耗\": 170\n          },\n          \"回澜\": {\n            \"玄技名\": \"回澜\",\n            \"品质\": \"玄阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"治疗\": \"73｜退潮时把伤一起带走\"\n            },\n            \"消耗\": 170\n          },\n          \"涟漪散\": {\n            \"玄技名\": \"涟漪散\",\n            \"品质\": \"黄阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"范围\",\n            \"效果\": {\n              \"虚弱\": \"15:2｜涟漪推开，气息一乱\"\n            },\n            \"消耗\": 45\n          }\n        },\n        \"玄诀\": {\n          \"澄波心\": {\n            \"玄技名\": \"澄波心\",\n            \"品质\": \"玄阶\",\n            \"类型\": \"被动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"减伤\": \"10｜心神清明，不受他人威压所慑，心智坚定，免疫幻术与魅惑\"\n            },\n            \"消耗\": 0\n          }\n        }\n      },\n      \"装备武器\": {\n        \"武器名\": \"璇玑镜\",\n        \"品质\": \"玄阶\",\n        \"效果\": \"暴击:15｜司天监星盘，以水为卦；推卦的代价落在她自己五感上\"\n      },\n      \"灵宠\": {},\n      \"部位\": {\n        \"私处\": \"正常\",\n        \"奶子\": \"正常\",\n        \"大腿\": \"正常\",\n        \"足部\": \"正常\"\n      },\n      \"在场状态\": true\n    }\n  }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
+        "<content>\n【开局 · 司天监·天枢台遮眼星官】\n崖壁上的石梯很长，你爬到顶时，风把衣袍吹得猎猎响。\n台上立着个人，白布覆着眼，一身司天监的星官袍。她没有回头，却在你踏上最后一级台阶的一瞬，轻轻开口：\n「你上来了。」\n声音很轻，像在自言自语。你愣住——她眼睛看不见，却认得了你的脚步。\n「十一年了。」她侧过头，白布下隐约能看见眼睫的弧度，「这台阶的响动，我记了十一年。」\n她朝你的方向伸出手，指尖停在你面前一寸，没有真的碰上。\n「别出声。」她说，「让我听完。」\n风从崖边灌上来。她静静立着，像在辨认一件终于失而复得的东西。\n这人，是你的六姐，言清漪。她认人从不用眼睛——你走路的声响，她十年没忘。\n</content>\n\n<UpdateVariable>\n<Analysis>\n一、地理：人州·中域·天枢台\n二、时间：1月1号 10:30\n三、开局落点：司天监·天枢台（隐世中立势力，观星推演一脉）\n五、人物列表：言清漪建档在场（金丹初期·司天监掌星弟子·遮眼星官·普通天骄·玩家亲姐）；温而不亲，不谈这十一年；玄技写入：《赤羽指》｜水\n</Analysis>\n<JSONPatch>\n[\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/大位置\",\n    \"value\": \"人州·中域·司天监\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/小位置\",\n    \"value\": \"天枢台\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/日期\",\n    \"value\": \"1年1月1日\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/精确时间\",\n    \"value\": \"10:30\"\n  },\n  {\n    \"op\": \"add\",\n    \"path\": \"/人物列表/言清漪\",\n    \"value\": {\n      \"姓名\": \"言清漪\",\n      \"势力\": \"司天监（隐世中立势力）\",\n      \"外貌\": \"极浅蓝长发垂至腰下，素白布带覆眼（缘绣星位）；白底长袍压藏青滚边与盘扣，黑色宽腰带，藏青裙摆；胸悬铜色璇玑盘，身后符纸自浮\",\n      \"性格\": \"长年把话放轻了说的温柔。不与人争，要拒绝只说“这个我算不了”。覆眼一半是看不见，一半是自己上的锁：不看，就不推。是玩家亲姐——她把“接引外客”那套流程当挡板，先走完规矩，才敢叫那声名字；这十一年她一个字不问\",\n      \"好感度\": 78,\n      \"心里话\": \"右脚还是轻的。十一年了，那道旧伤没养好。\",\n      \"种族\": \"人族\",\n      \"境界\": \"金丹初期\",\n      \"气血\": 6559,\n      \"气血上限\": 6559,\n      \"灵力\": 3312,\n      \"灵力上限\": 3312,\n      \"玄元属性\": {\n        \"属性\": \"水\"\n      },\n      \"四维\": {\n        \"力量\": 4,\n        \"敏捷\": 6,\n        \"体质\": 6,\n        \"智力\": 8\n      },\n      \"灵根\": {\n        \"名称\": \"问水知微\",\n        \"品阶\": \"双灵根\",\n        \"纯度\": 61,\n        \"效果\": \"闪避:10，回蓝:4｜水气一动便知吉凶，夜里能看见别人看不见的\"\n      },\n      \"天骄\": \"普通天骄\",\n      \"已学本领\": {\n        \"玄技\": {\n          \"清波引\": {\n            \"玄技名\": \"清波引\",\n            \"品质\": \"玄阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"效果\": {\n              \"伤害\": \"73｜水线穿喉\"\n            },\n            \"消耗\": 170\n          },\n          \"回澜\": {\n            \"玄技名\": \"回澜\",\n            \"品质\": \"玄阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"治疗\": \"73｜退潮时把伤一起带走\"\n            },\n            \"消耗\": 170\n          },\n          \"涟漪散\": {\n            \"玄技名\": \"涟漪散\",\n            \"品质\": \"黄阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"范围\",\n            \"效果\": {\n              \"虚弱\": \"15:2｜涟漪推开，气息一乱\"\n            },\n            \"消耗\": 45\n          }\n        },\n        \"玄诀\": {\n          \"澄波心\": {\n            \"玄技名\": \"澄波心\",\n            \"品质\": \"玄阶\",\n            \"类型\": \"被动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"减伤\": \"10｜心神清明，不受他人威压所慑，心智坚定，免疫幻术与魅惑\"\n            },\n            \"消耗\": 0\n          }\n        }\n      },\n      \"装备武器\": {\n        \"武器名\": \"璇玑镜\",\n        \"品质\": \"玄阶\",\n        \"效果\": \"暴击:15｜司天监星盘，以水为卦；推卦的代价落在她自己五感上\"\n      },\n      \"灵宠\": {},\n      \"部位\": {\n        \"私处\": \"正常\",\n        \"奶子\": \"正常\",\n        \"大腿\": \"正常\",\n        \"足部\": \"正常\"\n      },\n      \"在场状态\": true\n    }\n  }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
         // 8: 08-备选开场.md · 战斗专用 · 一线天演武台
         "<content>\n【战斗专用 · 一线天演武台】\n\n人州·中域，苍岚宗的演武台悬在半山一处孤崖平顶上，方圆十丈的青石被历代门人踩得发亮。台下不是云海，是雾——白得发闷，看不见底。风过时，石缝里的松枝簌簌作响，声音传不出三丈就被雾吃掉了。\n\n今日是门下弟子\"试剑\"的日子。你刚踏上石台，对面只站了一个人——按演武台的规矩，试剑不留手，但也不出人命：一方认负、或被护道结界弹出石台，便算输。\n\n那青年剑修负手而立，气息稳稳停在同一层上——**同境相搏**，拼的是谁更稳、谁更狠、谁先露破绽。\n\n\"台上有结界，死不了人。\"青年抬手，腰间长剑嗡然出鞘半寸，寒光映着云海，\"但输了，就得认。\"\n\n他身形一沉，叠层增伤先一步压了过来。\n\n你站定脚步，气机随之提起——这一战，谁也压不了谁的境界。\n\n你识海里那几门玄技都是刚练成的，够用了。\n<人物面板>\n姓名：剑修·萧决\n性格：沉稳自负，重规矩\n外貌：青衫束发，背一柄三尺青锋，气度如出鞘寒刃\n势力：苍岚宗\n境界：练气中期\n玄元属性：【雷】\n四维：【5、5、5、3】\n灵根：【山野遗血】｜【伪灵根】｜【纯度 100】｜【效果 皮实耐造，寻常寒暑与跌打不易落病根；但对瘴气、毒物毫无抗性，中了只能硬扛】\n种族：人族\n玄技：《一剑断江》\n品质：黄阶\n类型：主动\n目标：范围\n效果：{ 伤害: \"32｜剑光横铺，截断来路；一剑横扫，剑气铺成一片\" }\n消耗：45\n\n玄技：《青锋直递》\n品质：黄阶\n类型：主动\n目标：单体\n效果：{ 伤害: \"44｜一剑快刺，直取咽喉；剑锋一转，刺出不留余地\", 穿防: \"20｜剑锋一转，护体被凿开一道口子\" }\n消耗：45\n\n玄技：《踏影》\n品质：黄阶\n类型：主动\n目标：自身\n效果：{ 提速: \"30:3｜身法拔高，先手更稳；足尖一点，人已换位\" }\n消耗：45\n\n玄诀：《剑心通明》\n品质：黄阶\n类型：被动\n目标：自身\n效果：{ 减伤: \"12｜出手不被杂念所扰；心若止水，万念不生\", 抗暴: \"30｜心念澄澈，不被外物所乘\" }\n消耗：0\n\n兵器：《松纹古剑》\n品质：黄阶\n效果：穿防:20｜松纹剑脊，刃口泛青自带破甲\n描述：松纹剑脊，刃口泛青\n</人物面板>\n\n</content>\n<UpdateVariable>\n<Analysis>\n一、地理：人州·中域·苍岚宗（半山孤崖演武台）\n二、时间：1月1号 09:00\n三、本楼是**代码战斗（脚本结算）**：伤害、增益、减益、治疗全部由脚本算，AI 不写战斗过程与数值，写完名单等玩家在浮层里打完再接着写正文\n四、本场用途：**战斗专用一键入场 · 代码战斗纯数值对照场（1v1）**。\n   台上**只有一名对手**：剑修·萧决。\n   敌我**同境界（练气中期）**、**同灵根（山野遗血 · 伪灵根 · 纯度 100）**——\n   本楼把这四项一并写死，两边完全对等，比的就是招式与玄技，不是境界压制、也不是灵根压制。\n   ★ 完全按变量：战斗脚本**绝不改写**敌方境界与灵根，变量里写的就是面板显示的。\n   ★ 铁律：**不存在任何境界改写机制**——本楼不是让脚本去改对手的境界，而是开楼时就把两边写成同一组数值。\n   ★ 本楼会覆盖你存档里的「境界」与「灵根」为这一组对照值（练气中期 / 伪灵根·100%）；\n     若想用自己存档的境界与灵根开局，请选别的开场白，本楼是**专门的验证场**。\n   ★ 纯数值（境界+灵根，不算功法/心法/法宝）保底 30 手；装上功法心法法宝后收敛到 15 手上下。\n五、主角信息：剑修·萧决，练气中期，灵根 山野遗血（伪灵根·纯度100）；四维与装备以你存档为准，本楼不动\n六、**本楼额外给主角两门玄技**（测试用，会覆盖你存档里的「已学本领.玄技」）：\n   · 《赤霄枪》｜黄阶｜主动｜单体｜消耗 45｜效果 `{ 伤害: \"32｜枪出如龙，火光拖尾\" }`\n   · 《踏云步》｜黄阶｜主动｜自身｜消耗 45｜效果 `{ 提速: \"30:3｜足下生云，人已掠出三丈\" }`\n   两门字段按《设定-效果表》写全，效果键名一律用机制名。\n七、人物列表：萧决 一人建档在场（玄技名字自拟（按本事属性与品质现编，配一句效果））\n八、无队友：我方只有主角一人，战前勾选面板为空属正常\n</Analysis>\n<JSONPatch>\n[\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/大位置\",\n        \"value\": \"人州·中域·苍岚宗\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/小位置\",\n        \"value\": \"半山孤崖演武台\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/日期\",\n        \"value\": \"1年1月1日\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/精确时间\",\n        \"value\": \"09:00\"\n    },\n    {\n        \"op\": \"add\",\n        \"path\": \"/人物列表/剑修·萧决\",\n        \"value\": {\n            \"姓名\": \"剑修·萧决\",\n            \"势力\": \"苍岚宗\",\n            \"外貌\": \"青衫束发，背一柄三尺青锋\",\n            \"性格\": \"沉稳自负，重规矩\",\n            \"好感度\": 0,\n            \"心里话\": \"来都来了，打完再说。\",\n            \"种族\": \"人族\",\n            \"境界\": \"练气中期\",\n            \"气血\": 1160,\n            \"气血上限\": 1160,\n            \"灵力\": 548,\n            \"灵力上限\": 548,\n            \"玄元属性\": {\n                \"属性\": \"雷\"\n            },\n            \"四维\": {\n                \"力量\": 5,\n                \"敏捷\": 5,\n                \"体质\": 5,\n                \"智力\": 3\n            },\n            \"灵根\": {\n                \"名称\": \"山野遗血\",\n                \"品阶\": \"伪灵根\",\n                \"纯度\": 100,\n                \"效果\": \"减伤:6｜最常见的凡俗灵根，无先天加成，与主角同一条血；皮实耐造，寻常寒暑与跌打不易落病根\"\n            },\n            \"天骄\": \"非天骄\",\n            \"已学本领\": {\n                \"玄技\": {\n                    \"一剑断江\": {\n                        \"玄技名\": \"一剑断江\",\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"范围\",\n                        \"效果\": {\n                            \"伤害\": \"32｜剑光横铺，截断来路；一剑横扫，剑气铺成一片\"\n                        },\n                        \"消耗\": 45\n                    },\n                    \"青锋直递\": {\n                        \"玄技名\": \"青锋直递\",\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"伤害\": \"44｜一剑快刺，直取咽喉；剑锋一转，刺出不留余地\",\n                            \"穿防\": \"20｜剑锋一转，护体被凿开一道口子\"\n                        },\n                        \"消耗\": 45\n                    },\n                    \"踏影\": {\n                        \"玄技名\": \"踏影\",\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"提速\": \"30:3｜身法拔高，先手更稳；足尖一点，人已换位\"\n                        },\n                        \"消耗\": 45\n                    }\n                },\n                \"玄诀\": {\n                    \"剑心通明\": {\n                        \"玄技名\": \"剑心通明\",\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"被动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"减伤\": \"12｜心若止水，万念不生，出手不被杂念所扰\",\n                            \"抗暴\": \"30｜心念澄澈，不被外物所乘\"\n                        },\n                        \"消耗\": 0\n                    }\n                }\n            },\n            \"装备武器\": {\n                \"武器名\": \"松纹古剑\",\n                \"品质\": \"黄阶\",\n                \"效果\": \"穿防:20｜松纹剑脊，刃口泛青自带破甲\"\n            },\n            \"灵宠\": {},\n            \"部位\": {\n                \"私处\": \"正常\",\n                \"奶子\": \"正常\",\n                \"大腿\": \"正常\",\n                \"足部\": \"正常\"\n            },\n            \"在场状态\": true,\n            \"阵营\": \"敌\"\n        }\n    }\n]\n</JSONPatch>\n</UpdateVariable>\n\n\n<StatusPlaceHolderImpl/>\n<战斗开始>\n敌方人员：[剑修·萧决]\n</战斗开始>",
         // 9: 09-备选开场.md · 霜霄仙阙·素心尊者
-        "<content>\n【开局 · 霜霄仙阙·素心尊者】\n后颈还在发钝。\n\n记忆停在雾道上：灯灭了一盏，有人喊了一声，然后是白。再往后，就是后颈一记破空之声——不重，恰好让你什么都不知道。\n\n再睁眼，头顶是极高极远的藻井，四壁挂着霜色帷幔，空气冷得像含着一口碎冰。\n\n这是一间极宽的静室。窗外云海翻涌，透进来的光被冻成了淡青色。\n\n榻边立着一个人。\n\n乌黑长发一丝不苟地挽成高髻，两侧各插一支金凤头长簪，簪下垂着细金流苏。她穿一袭墨黑宽袖外袍，袖口与襟边压着厚厚的金线纹；里头是藏青抹胸，正中绣着一头张口的金色兽首，其下是墨绿腰带与素白内衬。衣料厚实，却压不住那副沉甸甸的身段——胸前丰盈得近乎奢靡，腰线却收得极利落。\n\n她垂着眼看你，面上一丝波澜也无，仿佛榻上躺着的不是活人，而是一箱待点的账册。\n\n“醒了。”\n\n两个字。声音不高，很平，像念一行批注。\n\n她抬手，两指并拢，隔着半丈虚虚一点。你颈后那处淤青立时透出一层薄霜，寒意直窜骨髓。\n\n“……”\n\n她没有立刻说话。指尖在你腕上停了很久，久到你能听见窗外云海流动的声音。\n\n“你这条玄脉，我看了这些年。”她收回手，垂在身侧，语气平得像在说今日天晴，“一直以为是个累赘。”\n\n她顿了顿。\n\n“压不住了。”\n\n你刚要开口，她已把一盏温热的丹药搁在榻边的小几上，动作不容商量。\n\n“先服丹。”她转身往外走，墨黑袍角在门槛上拂过，“三日后，随我入关。”\n\n走到一半，脚步略停。\n\n“不必问为什么。”她背对着你，声音没有任何起伏，“你问了我也不会答。”\n\n——可她还是停在那儿，没走。\n\n过了片刻，才又开口，声音低得几乎听不见：\n\n“……雾里那三天，是谁把你从墙外抱回来的，你记不记得。”\n</content>\n<UpdateVariable>\n<Analysis>\n一、地理：人州·雪域·霜霄仙阙（霜霄道场·静室）\n二、时间：1月1号 11:00\n三、开局落点：霜霄仙阙（隐世全女宗门，万年天关封压之地）\n四、主角信息：开局被梵清仪跨空打晕掳回，后颈有寒气淤伤，未受内伤；身怀破关玄脉（主线伏笔）\n五、人物列表：梵清仪建档在场（元婴初期·霜霄仙阙前任圣女/尊长·大天骄·玩家奶娘）；首次见面全程三无淡漠、未越界；玄技写入：《霜刃凝华》《玄冰封脉》《冰镜返照》｜冰\n</Analysis>\n<JSONPatch>\n[\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/大位置\",\n    \"value\": \"人州·雪域·霜霄仙阙\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/小位置\",\n    \"value\": \"霜霄道场·静室\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/日期\",\n    \"value\": \"1年1月1日\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/精确时间\",\n    \"value\": \"11:00\"\n  },\n  {\n    \"op\": \"add\",\n    \"path\": \"/人物列表/梵清仪\",\n    \"value\": {\n      \"姓名\": \"梵清仪\",\n      \"势力\": \"霜霄仙阙（隐世全女宗门）\",\n      \"外貌\": \"乌黑长发挽成高髻，两侧各一支金凤头长簪垂细金流苏；墨黑宽袖外袍压厚金线纹，内衬藏青抹胸绣金色兽首，墨绿腰带、素白内衬；神色清冷沉穆，不怒自威\",\n      \"性格\": \"极致三无（面无表情/无情绪波动/极度寡言）。行事只认结果、毫无世俗虚荣，一切为了宗门强大与延续\",\n      \"好感度\": 10,\n      \"心里话\": \"钥匙成色尚可，比预想的好。\",\n      \"种族\": \"人族\",\n      \"境界\": \"元婴初期\",\n      \"气血\": 13877,\n      \"气血上限\": 13877,\n      \"灵力\": 6954,\n      \"灵力上限\": 6954,\n      \"玄元属性\": {\n        \"属性\": \"冰\"\n      },\n      \"四维\": {\n        \"力量\": 7,\n        \"敏捷\": 6,\n        \"体质\": 7,\n        \"智力\": 8\n      },\n      \"灵根\": {\n        \"名称\": \"赤阳真血\",\n        \"品阶\": \"天灵根\",\n        \"纯度\": 91,\n        \"效果\": \"减伤:12｜血里藏着一轮小太阳，暖自己、也灼别人；寒毒与阴邪近体自退，冰属灵力入体会被暖血反噬，越修冰法越受熬煎\"\n      },\n      \"天骄\": \"大天骄\",\n      \"已学本领\": {\n        \"玄技\": {\n          \"霜刃凝华\": {\n            \"玄技名\": \"霜刃凝华\",\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"效果\": {\n              \"伤害\": \"83:2｜剑锋凝霜划开一线冰虹，并在伤口留一层霜（每回合流失 6% 气血，）\"\n            },\n            \"消耗\": 520\n          },\n          \"玄冰封脉\": {\n            \"玄技名\": \"玄冰封脉\",\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"效果\": {\n              \"减速\": \"3:2｜寒气封住经脉，命中后脚步发沉\"\n            },\n            \"消耗\": 520\n          },\n          \"冰镜返照\": {\n            \"玄技名\": \"冰镜返照\",\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"减伤\": \"30:2｜凝一面冰镜护体\"\n            },\n            \"消耗\": 520\n          },\n          \"雪落无声\": {\n            \"玄技名\": \"雪落无声\",\n            \"品质\": \"黄阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"范围\",\n            \"效果\": {\n              \"伤害\": \"26｜细雪无声落下，对范围内每个敌人各伤一击\"\n            },\n            \"消耗\": 45\n          }\n        },\n        \"玄诀\": {\n          \"太上忘情诀\": {\n            \"玄技名\": \"太上忘情诀\",\n            \"品质\": \"天阶\",\n            \"类型\": \"被动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"减伤\": \"25｜心若冰湖，免疫一切心智类控制\"\n            },\n            \"消耗\": 0\n          }\n        }\n      },\n      \"装备武器\": {\n        \"武器名\": \"照雪剑\",\n        \"品质\": \"地阶\",\n        \"效果\": \"穿防:25｜碎甲\"\n      },\n      \"灵宠\": {},\n      \"部位\": {\n        \"私处\": \"正常\",\n        \"奶子\": \"正常\",\n        \"大腿\": \"正常\",\n        \"足部\": \"正常\"\n      },\n      \"在场状态\": true\n    }\n  }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
+        "<content>\n【开局 · 霜霄仙阙·素心尊者】\n后颈还在发钝。记忆停在雾道上：灯灭了一盏，有人喊了一声，然后是白。\n再睁眼，你躺在一间素白的静室里，窗纸透进薄光。\n榻边坐着个人。前任圣女，仙阙尊长，梵清仪。她手里端着一盏温着的药，正用指背试温度。\n见你醒了，她把药搁下，起身替你掖了掖被角——那动作熟稔得不像头一回。\n「醒了就喝。」她的声音客气而克制，像长辈对晚辈该说的话，「凉了就不好了。」\n你想问是谁把你抱回来的，她却已经转过身去，只留一句：\n「别问。」\n十年了，每年那一日她都独自去一趟墙根。她从不提那一夜，所以那句谢，一直欠着没头没尾。\n这人是你的奶娘。十一年前从山外把你抱回来的，是她。\n</content>\n\n<UpdateVariable>\n<Analysis>\n一、地理：人州·雪域·霜霄仙阙（霜霄道场·静室）\n二、时间：1月1号 11:00\n三、开局落点：霜霄仙阙（隐世全女宗门，万年天关封压之地）\n四、主角信息：开局被梵清仪跨空打晕掳回，后颈有寒气淤伤，未受内伤；身怀破关玄脉（主线伏笔）\n五、人物列表：梵清仪建档在场（元婴初期·霜霄仙阙前任圣女/尊长·大天骄·玩家奶娘）；首次见面全程三无淡漠、未越界；玄技写入：《霜刃凝华》《玄冰封脉》《冰镜返照》｜冰\n</Analysis>\n<JSONPatch>\n[\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/大位置\",\n    \"value\": \"人州·雪域·霜霄仙阙\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/小位置\",\n    \"value\": \"霜霄道场·静室\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/日期\",\n    \"value\": \"1年1月1日\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/精确时间\",\n    \"value\": \"11:00\"\n  },\n  {\n    \"op\": \"add\",\n    \"path\": \"/人物列表/梵清仪\",\n    \"value\": {\n      \"姓名\": \"梵清仪\",\n      \"势力\": \"霜霄仙阙（隐世全女宗门）\",\n      \"外貌\": \"乌黑长发挽成高髻，两侧各一支金凤头长簪垂细金流苏；墨黑宽袖外袍压厚金线纹，内衬藏青抹胸绣金色兽首，墨绿腰带、素白内衬；神色清冷沉穆，不怒自威\",\n      \"性格\": \"极致三无（面无表情/无情绪波动/极度寡言）。行事只认结果、毫无世俗虚荣，一切为了宗门强大与延续\",\n      \"好感度\": 10,\n      \"心里话\": \"钥匙成色尚可，比预想的好。\",\n      \"种族\": \"人族\",\n      \"境界\": \"元婴初期\",\n      \"气血\": 13877,\n      \"气血上限\": 13877,\n      \"灵力\": 6954,\n      \"灵力上限\": 6954,\n      \"玄元属性\": {\n        \"属性\": \"冰\"\n      },\n      \"四维\": {\n        \"力量\": 7,\n        \"敏捷\": 6,\n        \"体质\": 7,\n        \"智力\": 8\n      },\n      \"灵根\": {\n        \"名称\": \"赤阳真血\",\n        \"品阶\": \"天灵根\",\n        \"纯度\": 91,\n        \"效果\": \"减伤:12｜血里藏着一轮小太阳，暖自己、也灼别人；寒毒与阴邪近体自退，冰属灵力入体会被暖血反噬，越修冰法越受熬煎\"\n      },\n      \"天骄\": \"大天骄\",\n      \"已学本领\": {\n        \"玄技\": {\n          \"霜刃凝华\": {\n            \"玄技名\": \"霜刃凝华\",\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"效果\": {\n              \"伤害\": \"83:2｜剑锋凝霜划开一线冰虹，并在伤口留一层霜（每回合流失 6% 气血，）\"\n            },\n            \"消耗\": 520\n          },\n          \"玄冰封脉\": {\n            \"玄技名\": \"玄冰封脉\",\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"效果\": {\n              \"减速\": \"3:2｜寒气封住经脉，命中后脚步发沉\"\n            },\n            \"消耗\": 520\n          },\n          \"冰镜返照\": {\n            \"玄技名\": \"冰镜返照\",\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"减伤\": \"30:2｜凝一面冰镜护体\"\n            },\n            \"消耗\": 520\n          },\n          \"雪落无声\": {\n            \"玄技名\": \"雪落无声\",\n            \"品质\": \"黄阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"范围\",\n            \"效果\": {\n              \"伤害\": \"26｜细雪无声落下，对范围内每个敌人各伤一击\"\n            },\n            \"消耗\": 45\n          }\n        },\n        \"玄诀\": {\n          \"太上忘情诀\": {\n            \"玄技名\": \"太上忘情诀\",\n            \"品质\": \"天阶\",\n            \"类型\": \"被动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"减伤\": \"25｜心若冰湖，免疫一切心智类控制\"\n            },\n            \"消耗\": 0\n          }\n        }\n      },\n      \"装备武器\": {\n        \"武器名\": \"照雪剑\",\n        \"品质\": \"地阶\",\n        \"效果\": \"穿防:25｜碎甲\"\n      },\n      \"灵宠\": {},\n      \"部位\": {\n        \"私处\": \"正常\",\n        \"奶子\": \"正常\",\n        \"大腿\": \"正常\",\n        \"足部\": \"正常\"\n      },\n      \"在场状态\": true\n    }\n  }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
         // 10: 10-备选开场.md · 断霜崖·孤峰刀仙
-        "<content>\n【开局 · 断霜崖·孤峰刀仙】\n脚下的雪碴子不对劲。\n\n别人家的雪踩上去就陷，这片雪碴硬得像冻了三天的老面，踩上去只留一个浅印。你顺着山道往上走，转过一道石屏，眼前忽然空了一片——\n\n一整面断崖。\n\n崖顶立着一块界石。界石后头是一片开阔的平石地，平地中央插着一柄刀。刀插得很随意，像插在自家灶台边的锄头。\n\n再往后三步，是她的结界——只罩住崖顶这十丈方圆，靠崖腹里一口小阵眼撑着。结界之外，雾贴着崖壁往上爬，爬到一半就散了。\n\n你走近两步，才看见刀旁边站着一个人。\n\n银白的长发垂到腰后，额前一排刘海剪得极齐，齐到眉骨下沿，左侧垂着一缕黑。山风刮过，那排刘海纹丝不动。她的眼睛是翡翠似的绿，很亮，亮得跟这张冷脸不搭。\n\n她穿一件白底交领上衣，外罩青灰蓝的宽袖长袍，襟口压着墨绿滚边，几枚墨绿盘扣一路扣到胸前；腰上一道暗红的宽腰封，其下是青蓝的百褶长裙，开叉高到膝上。腰侧挂着一柄刀，红穗黑鞘。手上戴着白手套。\n\n她没回头。\n\n“让开。”\n\n声音极短。说完，她才慢慢侧过一点脸——那双绿眼睛先看你的手，再看你的脚步，最后才抬到你脸上。\n\n“踩过界了。”她说。语气里没有责怪，像在陈述今天下了雪。\n\n你刚要开口，她右手已经按上刀柄。\n\n“不必解释。”她往前一步，动作快得你根本没看清，“留在这片石头上、把话说清楚了，我不赶你走。”\n\n刀出鞘一半，寒气顺着刃口漫开，崖上的雪碴齐齐结了一层薄冰。\n\n——然后她停住了。\n\n刀停在半空，停了很久，久到那层薄冰开始化。\n\n“……站住。”她的声音忽然变了，“别动。”\n\n她转过身来，一步、两步，走到你面前。距离近得你能看清她睫毛上那层白霜。\n\n她抬起戴着手套的手，在半空停了一下，最后还是落下来，极轻地碰了碰你的肩。\n\n“……是你。”\n\n刀“当”地一声落回鞘里。\n\n她退开半步，动作有点乱，抬手把那缕黑发往耳后一拨，拨了两次才拨进去。\n\n“界石是我立的。”她说，声音又硬回去了，可比刚才快，“立了十一年。每年往北挪一尺，因为再往外，雾就吃人了。”\n\n她转身往崖顶走，走了几步，忽然停下。\n\n崖壁内侧朝向里的一面，刻着一排很浅的正字。一笔一划，数得清。\n\n“练刀留下的。”她说。\n\n——可那不是刀痕。\n\n那是数日子数出来的。\n</content>\n<UpdateVariable>\n<Analysis>\n一、地理：人州·雪域·天云雪山（城外孤峰断霜崖）\n二、时间：1月1号 08:30\n三、开局落点：断霜崖（散修沈清颜独居之地，踩界即视为外敌）\n四、主角信息：越界登崖，初见未受内伤；沈清颜只拔刀半寸、未真正出手\n五、人物列表：沈清颜建档在场（金丹后期·无宗无派散修·孤峰刀仙·普通天骄·玩家亲姐）；冷壳惜字，刀已回鞘，认出来之后话反而更少；玄技写入：《断霜斩》《回刃旋雪》｜刀\n</Analysis>\n<JSONPatch>\n[\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/大位置\",\n        \"value\": \"人州·雪域·天云雪山\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/小位置\",\n        \"value\": \"断霜崖\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/日期\",\n        \"value\": \"1年1月1日\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/精确时间\",\n        \"value\": \"08:30\"\n    },\n    {\n        \"op\": \"add\",\n        \"path\": \"/人物列表/沈清颜\",\n        \"value\": {\n            \"姓名\": \"沈清颜\",\n            \"势力\": \"无宗无派（散修）\",\n            \"外貌\": \"银白长发垂至腰后、齐刘海剪到眉骨、左垂一缕黑；翡翠绿眼瞳；白底交领上衣，青灰蓝宽袖长袍压墨绿滚边与盘扣，暗红宽腰封，青蓝百褶高开叉长裙，腰侧挂红穗黑鞘长刀，戴白手套；左手终年结霜\",\n            \"性格\": \"冷壳惜字，能点头绝不开口；对外只剩一句「让开」。刀比人快，嘴比刀慢。冷面之下是实打实的别扭。是玩家亲姐——不肯住进任何人的墙里，一个人守着断霜崖这盏小灯；崖壁那排正字她说「练刀留下的」，其实是在数人\",\n            \"好感度\": 5,\n            \"心里话\": \"十一年。这一笔该刻到哪儿了。\",\n            \"种族\": \"人族\",\n            \"境界\": \"金丹后期\",\n            \"气血\": 7830,\n            \"气血上限\": 7830,\n            \"灵力\": 3302,\n            \"灵力上限\": 3302,\n            \"玄元属性\": {\n                \"属性\": \"冰\"\n            },\n            \"四维\": {\n                \"力量\": 7,\n                \"敏捷\": 8,\n                \"体质\": 6,\n                \"智力\": 5\n            },\n            \"灵根\": {\n                \"名称\": \"冰魄玉髓\",\n                \"品阶\": \"双灵根\",\n                \"纯度\": 66,\n                \"效果\": \"减伤:19，气血上限:18｜骨里带寒，冰路走得比同阶更纯；寒暑不侵、百毒不染，专克双灵根的秘毒却毫无抗性。寒脉滞龄，容貌停在二十一\"\n            },\n            \"天骄\": \"普通天骄\",\n            \"已学本领\": {\n                \"玄技\": {\n                    \"断霜斩\": {\n                        \"玄技名\": \"断霜斩\",\n                        \"品质\": \"玄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"减速\": \"3:1｜一刀斜落，刀势先结霜再开刃，附带滞身寒气\",\n                            \"伤害\": \"49\"\n                        },\n                        \"消耗\": 170\n                    },\n                    \"回刃旋雪\": {\n                        \"玄技名\": \"回刃旋雪\",\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"范围\",\n                        \"效果\": {\n                            \"伤害\": \"15｜刀身回旋卷起漫天雪屑，对范围内每个敌人各斩一刀\"\n                        },\n                        \"消耗\": 45\n                    },\n                    \"凝霜护\": {\n                        \"玄技名\": \"凝霜护\",\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"减伤\": \"30:2｜刀气外放凝成霜壳\"\n                        },\n                        \"消耗\": 45\n                    }\n                },\n                \"玄诀\": {\n                    \"寒脉诀\": {\n                        \"玄技名\": \"寒脉诀\",\n                        \"品质\": \"玄阶\",\n                        \"类型\": \"被动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"减伤\": \"15\",\n                            \"增伤\": \"15\"\n                        },\n                        \"消耗\": 0\n                    }\n                }\n            },\n            \"装备武器\": {\n                \"武器名\": \"断霜刀\",\n                \"品质\": \"玄阶\",\n                \"效果\": \"穿防:20｜削锋\"\n            },\n            \"灵宠\": {},\n            \"部位\": {\n                \"私处\": \"正常\",\n                \"奶子\": \"正常\",\n                \"大腿\": \"正常\",\n                \"足部\": \"正常\"\n            },\n            \"在场状态\": true\n        }\n    }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
+        "<content>\n【开局 · 断霜崖·孤峰刀仙】\n脚下的雪碴子硬得像冻了三天的老面。你顺着山道往上走，转过一道石屏，眼前忽然空了一片。\n崖顶那块能坐的石头上，坐着个人。一身半旧的刀客打扮，膝上横着一柄没了鞘的刀，正拿指腹擦刃口上的霜。\n「上来了？」她头也不抬，「说过多少次了，就你真上来了。」\n沈清颜，独居断霜崖的散修。崖壁那一排正字，是她自己刻的。\n她抬眼看你一眼，往旁边挪了挪——让出石头的一半。\n「坐。」就一个字。\n你坐下，她也不看你，只望着崖下的云海：「这崖上没屋檐，住不进谁。你爱来就来，不来拉倒。」\n风很大，她却把刀往你那边挪了半寸，替你挡了一点。\n这人是你的五姐。没人管她，她也不管谁——可那块石头，一直给你留着。\n</content>\n\n<UpdateVariable>\n<Analysis>\n一、地理：人州·雪域·天云雪山（城外孤峰断霜崖）\n二、时间：1月1号 08:30\n三、开局落点：断霜崖（散修沈清颜独居之地，踩界即视为外敌）\n四、主角信息：越界登崖，初见未受内伤；沈清颜只拔刀半寸、未真正出手\n五、人物列表：沈清颜建档在场（金丹后期·无宗无派散修·孤峰刀仙·普通天骄·玩家亲姐）；冷壳惜字，刀已回鞘，认出来之后话反而更少；玄技写入：《断霜斩》《回刃旋雪》｜刀\n</Analysis>\n<JSONPatch>\n[\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/大位置\",\n        \"value\": \"人州·雪域·天云雪山\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/小位置\",\n        \"value\": \"断霜崖\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/日期\",\n        \"value\": \"1年1月1日\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/精确时间\",\n        \"value\": \"08:30\"\n    },\n    {\n        \"op\": \"add\",\n        \"path\": \"/人物列表/沈清颜\",\n        \"value\": {\n            \"姓名\": \"沈清颜\",\n            \"势力\": \"无宗无派（散修）\",\n            \"外貌\": \"银白长发垂至腰后、齐刘海剪到眉骨、左垂一缕黑；翡翠绿眼瞳；白底交领上衣，青灰蓝宽袖长袍压墨绿滚边与盘扣，暗红宽腰封，青蓝百褶高开叉长裙，腰侧挂红穗黑鞘长刀，戴白手套；左手终年结霜\",\n            \"性格\": \"冷壳惜字，能点头绝不开口；对外只剩一句「让开」。刀比人快，嘴比刀慢。冷面之下是实打实的别扭。是玩家亲姐——不肯住进任何人的墙里，一个人守着断霜崖这盏小灯；崖壁那排正字她说「练刀留下的」，其实是在数人\",\n            \"好感度\": 5,\n            \"心里话\": \"十一年。这一笔该刻到哪儿了。\",\n            \"种族\": \"人族\",\n            \"境界\": \"金丹后期\",\n            \"气血\": 7830,\n            \"气血上限\": 7830,\n            \"灵力\": 3302,\n            \"灵力上限\": 3302,\n            \"玄元属性\": {\n                \"属性\": \"冰\"\n            },\n            \"四维\": {\n                \"力量\": 7,\n                \"敏捷\": 8,\n                \"体质\": 6,\n                \"智力\": 5\n            },\n            \"灵根\": {\n                \"名称\": \"冰魄玉髓\",\n                \"品阶\": \"双灵根\",\n                \"纯度\": 66,\n                \"效果\": \"减伤:19，气血上限:18｜骨里带寒，冰路走得比同阶更纯；寒暑不侵、百毒不染，专克双灵根的秘毒却毫无抗性。寒脉滞龄，容貌停在二十一\"\n            },\n            \"天骄\": \"普通天骄\",\n            \"已学本领\": {\n                \"玄技\": {\n                    \"断霜斩\": {\n                        \"玄技名\": \"断霜斩\",\n                        \"品质\": \"玄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"减速\": \"3:1｜一刀斜落，刀势先结霜再开刃，附带滞身寒气\",\n                            \"伤害\": \"49\"\n                        },\n                        \"消耗\": 170\n                    },\n                    \"回刃旋雪\": {\n                        \"玄技名\": \"回刃旋雪\",\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"范围\",\n                        \"效果\": {\n                            \"伤害\": \"15｜刀身回旋卷起漫天雪屑，对范围内每个敌人各斩一刀\"\n                        },\n                        \"消耗\": 45\n                    },\n                    \"凝霜护\": {\n                        \"玄技名\": \"凝霜护\",\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"减伤\": \"30:2｜刀气外放凝成霜壳\"\n                        },\n                        \"消耗\": 45\n                    }\n                },\n                \"玄诀\": {\n                    \"寒脉诀\": {\n                        \"玄技名\": \"寒脉诀\",\n                        \"品质\": \"玄阶\",\n                        \"类型\": \"被动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"减伤\": \"15\",\n                            \"增伤\": \"15\"\n                        },\n                        \"消耗\": 0\n                    }\n                }\n            },\n            \"装备武器\": {\n                \"武器名\": \"断霜刀\",\n                \"品质\": \"玄阶\",\n                \"效果\": \"穿防:20｜削锋\"\n            },\n            \"灵宠\": {},\n            \"部位\": {\n                \"私处\": \"正常\",\n                \"奶子\": \"正常\",\n                \"大腿\": \"正常\",\n                \"足部\": \"正常\"\n            },\n            \"在场状态\": true\n        }\n    }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
         // 11: 11-备选开场.md · 沙洲商道·月牙泉城
-        "<content>\n【开局 · 沙洲商道·月牙泉城】\n日头毒得能拧出水。\n\n你跟着商队走完了最后一段雾道。出雾的那一刻，城墙上的灯一齐照下来，队伍里有人当场跪了下去——三十七人的商队，进雾时四十二个。\n\n城门的风是干的、热的，裹着一层细沙，打在人脸上生疼。这里不像中域：没有飞剑，没有宗门，只有驼铃、货栈、和一街一巷的买卖声。城墙根下堆着一排空水囊，等着明天再进雾的人来领。\n\n商队在一处驿院前停下。你正要去领水囊，一个高挑的女人不知从哪儿转出来，挡在了你面前。\n\n淡紫。她通身上下只有一种颜色。\n\n极薄的淡紫短身衣，细吊带，只遮住该遮的地方；外头罩一层几乎透明的淡紫披纱，从肩头一直垂到脚踝。下身是层层叠叠的淡紫长裙，腰上不束带，只勒着一圈金链，一圈比一圈松地绕下去，正压住裙腰。她个子高挑，肩背薄，腰却细得像被人用两只手掐出来的，暖白的皮肤上隐约透着一层粉青的血管。\n\n一头黑褐色的长卷发高高束成一束马尾，发尾泛着一点酒红，束口缠着一圈细金链。额心垂着一枚红宝石坠子，颈上叠着三四条金链，坠子是一串金币，走一步就撞出一声轻响；两边手臂从肩头套到腕子，是七八只粗细不一的金环。\n\n她走一步，环就响一声——人还没进廊下，声音先进来了。\n\n“生面孔。”她开口，嗓音偏哑，一句话能拖三个弯，“不是这趟货里的人。”\n\n她的目光从你的鞋底一路扫到你的行李，最后落在你腰间，停了两秒。\n\n那双眼睛里是笑，笑意底下却是账房先生拨算盘的手。她身后两个伙计已经不动声色地一左一右站开了，并不凶，但你很清楚，这三息之内你没有第二条路。\n\n“月牙泉城不白养闲人，也不白放生客。”她抬手，指尖在你肩上拂了一下，掸去一片并不存在的沙，顺势把你的领口理了理，然后退开半步，留你自己脸红，“不过——”\n\n她歪头，笑得眼角弯下去。\n\n“你气机不俗，不是商队能压的分量。”指尖在你肩头点了点，一下一下，跟驼铃一个节奏，“我收你。工钱不要，只记你欠我一笔。”\n\n她退开一步，金环又响。\n\n“做不做？”\n\n——她转过身往廊下走，走了三步，忽然停住。\n\n两个伙计还站在原地。\n\n“你们先退下。”她声音没变，还是那副做生意调子，“这人我要亲自盘。”\n\n等脚步声远了，她才回过头来。\n\n那双眼睛里的算盘全收了。\n\n“……十一年。”她说得很轻，轻得几乎被街上的驼铃盖过去，“你知不知道我这十一年，每年都在账本最后添一行。”\n\n她从袖里摸出一本薄薄的册子，翻开，纸边都磨毛了。最后一页上，一行一行全是同一种字迹：\n\n「今年没找到。」\n\n「今年也没找到。」\n\n「今年往北多问了三家。」\n\n“我算过。”她把册子合上，塞回袖里，抬手抹了一下眼角，动作快得像在拂沙，“从沙洲到雪域，走雾道，最快十七天。你从那边过来，用了十一年。”\n\n她忽然笑了一下，笑得有点难看。\n\n“这笔账，你打算怎么还？”\n</content>\n<UpdateVariable>\n<Analysis>\n一、地理：人州·沙洲·月牙泉城\n二、时间：1月1号 15:00\n三、开局落点：月牙泉城驿院外（沙洲商道要冲，商旅云集之地）\n四、主角信息：随商队抵城，被阿依莎拦下\"收货\"，未动手、未受内伤；身上被掸灰理领口（首次接触）\n五、人物列表：阿依莎建档在场（金丹后期·月牙泉城供奉仙姬·无宗无派·大天骄·玩家亲姐）；先按生意规矩谈，伙计退下后才认人；玄技写入：《流沙缠丝》《沙丘移脉》｜土\n</Analysis>\n<JSONPatch>\n[\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/大位置\",\n    \"value\": \"人州·沙洲·月牙泉城\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/小位置\",\n    \"value\": \"月牙泉城驿院外\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/日期\",\n    \"value\": \"1年1月1日\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/精确时间\",\n    \"value\": \"15:00\"\n  },\n  {\n    \"op\": \"add\",\n    \"path\": \"/人物列表/阿依莎\",\n    \"value\": {\n      \"姓名\": \"阿依莎\",\n      \"势力\": \"无宗无派（月牙泉城供奉仙姬，坐镇沙洲商道）\",\n      \"外貌\": \"高挑丰腴，肩背薄腰细；暖白肤色透粉青细血管；黑褐色大波浪长发高高束成马尾、束口缠金链、发尾泛酒红；额心红宝石坠，颈上三四条金链挂金币串；两臂七八只金环；淡紫细吊带短身衣＋透明披纱＋层叠淡紫长裙，腰上一圈金链（实为兵器）\",\n      \"性格\": \"妩媚精明的大姐姐，嗓音偏哑、爱笑。坐镇商道一百年，从不抢货、只定价，每件小事都算得极精。是玩家亲姐——只有这一笔账她算不清；账本最后每年添一行「今年没找到」，从不给人看\",\n      \"好感度\": 25,\n      \"心里话\": \"第十一行。今年总算不用写了。\",\n      \"种族\": \"人族\",\n      \"境界\": \"金丹后期\",\n      \"气血\": 7546,\n      \"气血上限\": 7546,\n      \"灵力\": 3773,\n      \"灵力上限\": 3773,\n      \"玄元属性\": {\n        \"属性\": \"土\"\n      },\n      \"四维\": {\n        \"力量\": 6,\n        \"敏捷\": 8,\n        \"体质\": 6,\n        \"智力\": 6\n      },\n      \"灵根\": {\n        \"名称\": \"瀚海遗脉\",\n        \"品阶\": \"天灵根\",\n        \"纯度\": 92,\n        \"效果\": \"回血:4｜踏沙不陷、旱地能自饮水汽，越在无水之处越觉其利；灵根自成一脉，寻常灵根类压制近不了身，代价是与寻常灵根者双修、结契皆不成\"\n      },\n      \"天骄\": \"大天骄\",\n      \"已学本领\": {\n        \"玄技\": {\n          \"流沙缠丝\": {\n            \"玄技名\": \"流沙缠丝\",\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"效果\": {\n              \"减速\": \"3:1｜金链抖开化作漫天流沙缠住目标，脚下寸步难行\",\n              \"伤害\": \"279\"\n            },\n            \"消耗\": 520\n          },\n          \"沙丘移脉\": {\n            \"玄技名\": \"沙丘移脉\",\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"减伤\": \"25:2｜沙随气脉自移，抢先手\"\n            },\n            \"消耗\": 520\n          },\n          \"裂沙掌\": {\n            \"玄技名\": \"裂沙掌\",\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"效果\": {\n              \"伤害\": \"279｜掌力轰开沙层，并击碎护体气劲\"\n            },\n            \"消耗\": 520\n          }\n        },\n        \"玄诀\": {\n          \"瀚海养脉诀\": {\n            \"玄技名\": \"瀚海养脉诀\",\n            \"品质\": \"天阶\",\n            \"类型\": \"被动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"回蓝\": \"6｜以沙养脉，气脉如沙丘自移：，久战不竭且越战越沉\"\n            },\n            \"消耗\": 0\n          }\n        }\n      },\n      \"装备武器\": {\n        \"武器名\": \"缠沙金链\",\n        \"品质\": \"天阶\",\n        \"效果\": \"减速:3:2｜软时缠人、硬时断骨，出手自带流沙路数：命中后脚步陷进沙里\"\n      },\n      \"灵宠\": {},\n      \"部位\": {\n        \"私处\": \"正常\",\n        \"奶子\": \"正常\",\n        \"大腿\": \"正常\",\n        \"足部\": \"正常\"\n      },\n      \"在场状态\": true\n    }\n  }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
+        "<content>\n【开局 · 沙洲商道·月牙泉城】\n日头毒得能拧出水。你跟着商队走完最后一段雾道，城墙上的灯一齐照下来。\n月牙泉城最大的货栈里，一个卷发碧眼的女人正拨着算盘，见你进来，算盘珠子\"啪\"地停了。\n「哟。」她把账本一合，笑起来，声音又亮又热络，「活了。」\n阿依莎，沙洲供奉仙姬，这条商道要冲上说话最算数的人。\n她上下打量你一遍，转身就吆咐伙计：「这位的账，记我头上。住最好的房，价按最低的算。」\n你张口要谢，她摆手：「别谢。生意人嘛，顺手。」\n可你瞥见她那本账的最后一行——\"今年没找到\"，添了二十年。此刻那行字，被她的袖子盖住了。\n「吃饭了没有？」她把一盘热食推到你面前，算盘珠子又响起来，声音却轻了，「……这么多年，可算找着了。」\n这人是你的大姐。天底下算得清所有账的人，偏偏这一笔，算了二十年。\n</content>\n\n<UpdateVariable>\n<Analysis>\n一、地理：人州·沙洲·月牙泉城\n二、时间：1月1号 15:00\n三、开局落点：月牙泉城驿院外（沙洲商道要冲，商旅云集之地）\n四、主角信息：随商队抵城，被阿依莎拦下\"收货\"，未动手、未受内伤；身上被掸灰理领口（首次接触）\n五、人物列表：阿依莎建档在场（金丹后期·月牙泉城供奉仙姬·无宗无派·大天骄·玩家亲姐）；先按生意规矩谈，伙计退下后才认人；玄技写入：《流沙缠丝》《沙丘移脉》｜土\n</Analysis>\n<JSONPatch>\n[\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/大位置\",\n    \"value\": \"人州·沙洲·月牙泉城\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/小位置\",\n    \"value\": \"月牙泉城驿院外\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/日期\",\n    \"value\": \"1年1月1日\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/精确时间\",\n    \"value\": \"15:00\"\n  },\n  {\n    \"op\": \"add\",\n    \"path\": \"/人物列表/阿依莎\",\n    \"value\": {\n      \"姓名\": \"阿依莎\",\n      \"势力\": \"无宗无派（月牙泉城供奉仙姬，坐镇沙洲商道）\",\n      \"外貌\": \"高挑丰腴，肩背薄腰细；暖白肤色透粉青细血管；黑褐色大波浪长发高高束成马尾、束口缠金链、发尾泛酒红；额心红宝石坠，颈上三四条金链挂金币串；两臂七八只金环；淡紫细吊带短身衣＋透明披纱＋层叠淡紫长裙，腰上一圈金链（实为兵器）\",\n      \"性格\": \"妩媚精明的大姐姐，嗓音偏哑、爱笑。坐镇商道一百年，从不抢货、只定价，每件小事都算得极精。是玩家亲姐——只有这一笔账她算不清；账本最后每年添一行「今年没找到」，从不给人看\",\n      \"好感度\": 25,\n      \"心里话\": \"第十一行。今年总算不用写了。\",\n      \"种族\": \"人族\",\n      \"境界\": \"金丹后期\",\n      \"气血\": 7546,\n      \"气血上限\": 7546,\n      \"灵力\": 3773,\n      \"灵力上限\": 3773,\n      \"玄元属性\": {\n        \"属性\": \"土\"\n      },\n      \"四维\": {\n        \"力量\": 6,\n        \"敏捷\": 8,\n        \"体质\": 6,\n        \"智力\": 6\n      },\n      \"灵根\": {\n        \"名称\": \"瀚海遗脉\",\n        \"品阶\": \"天灵根\",\n        \"纯度\": 92,\n        \"效果\": \"回血:4｜踏沙不陷、旱地能自饮水汽，越在无水之处越觉其利；灵根自成一脉，寻常灵根类压制近不了身，代价是与寻常灵根者双修、结契皆不成\"\n      },\n      \"天骄\": \"大天骄\",\n      \"已学本领\": {\n        \"玄技\": {\n          \"流沙缠丝\": {\n            \"玄技名\": \"流沙缠丝\",\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"效果\": {\n              \"减速\": \"3:1｜金链抖开化作漫天流沙缠住目标，脚下寸步难行\",\n              \"伤害\": \"279\"\n            },\n            \"消耗\": 520\n          },\n          \"沙丘移脉\": {\n            \"玄技名\": \"沙丘移脉\",\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"减伤\": \"25:2｜沙随气脉自移，抢先手\"\n            },\n            \"消耗\": 520\n          },\n          \"裂沙掌\": {\n            \"玄技名\": \"裂沙掌\",\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"效果\": {\n              \"伤害\": \"279｜掌力轰开沙层，并击碎护体气劲\"\n            },\n            \"消耗\": 520\n          }\n        },\n        \"玄诀\": {\n          \"瀚海养脉诀\": {\n            \"玄技名\": \"瀚海养脉诀\",\n            \"品质\": \"天阶\",\n            \"类型\": \"被动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"回蓝\": \"6｜以沙养脉，气脉如沙丘自移：，久战不竭且越战越沉\"\n            },\n            \"消耗\": 0\n          }\n        }\n      },\n      \"装备武器\": {\n        \"武器名\": \"缠沙金链\",\n        \"品质\": \"天阶\",\n        \"效果\": \"减速:3:2｜软时缠人、硬时断骨，出手自带流沙路数：命中后脚步陷进沙里\"\n      },\n      \"灵宠\": {},\n      \"部位\": {\n        \"私处\": \"正常\",\n        \"奶子\": \"正常\",\n        \"大腿\": \"正常\",\n        \"足部\": \"正常\"\n      },\n      \"在场状态\": true\n    }\n  }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
         // 12: 12-备选开场.md · 凡人村落
         "<content>\n【开局 · 凡人村落】\n日头偏西的时候，你顺着那条被牛车碾出两道深辙的土路下了山。\n\n三十里没见过一户人家，路边的草已经长得比膝盖高——没人敢出墙这么远。转过最后一道土坡，前面总算有了人烟：几十间夯土的矮屋散在一片缓坡上，屋顶压着茅草和碎瓦，几缕炊烟被晚风扯得歪歪扭扭。村口立着一株老槐，树身空了一半，树底下垫着几块被人坐得油亮的石头。\n\n一条黄狗先从篱笆后头窜出来，冲你叫了两声，声音虚得很，边叫边往后退。\n\n挑水的老汉在井台边停住了脚。他把扁担往肩上一搁，眯着眼睛把你从头看到脚，又看回你的鞋——那双鞋底已经磨穿了半边。\n\n井台边洗衣的几个妇人抬起头，手里的棒槌停在水面上，谁也没说话。几个半大的孩子从门缝里挤出来，远远围成一圈，最大的那个被推了一把，又赶紧缩回去。\n\n“走错路了吧。”老汉先开的口，声音干巴巴的，“往西三十里才是驿道，这条是死路，通不到别处去。”\n\n他把木桶放下，从桶里舀了一瓢水递过来：“先喝。这条道上，一年也见不着几个外人。”\n\n水是井里刚提的，凉得牙根发紧。\n\n你喝水的时候，老汉靠着井台慢慢说：村子叫石堰，四十几户，一百多口人，靠坡上那几亩薄田和山脚的几眼泉过日子。\n\n“三十年前有个游方的道人路过，说这地方地脉浅，养不出修士。”他往井里指了指，“村里人听了也不恼——养不出就养不出，种地也能活。”\n\n他顿了一下，声音低了些。\n\n“那道人在井底埋了样东西。埋完跟我们说：这口井能护你们二十年，二十年后自己想办法。”\n\n“——今年是第三十一年。”\n\n你顺着他的目光看下去。井水很深，底下有一点极淡的光，很弱，像隔着水看一盏快没油的灯。\n\n老汉接着说：这口井的光罩住的范围，每年小一点。三十年前能罩住整个村子，如今只罩到村口这几十步。村东头早在墙外了。那边的人天一黑就都挪到西头来睡，几户人家挤一间屋。\n\n“不过这几日不太平。”他往村东头抬了抬下巴，“村东头周家的闺女，三天前上山捡柴，没回来。村里十几个后生打着火把找了两个晚上，连只鞋都没找着。”\n\n他把瓢从你手里接回去，在水里涮了涮。\n\n“昨夜又有人听见后山响，像是有什么东西在石头里挪窝。你要真是路过的，就在村口这间空屋将就一晚，天亮赶紧走——往西，别往东。”\n\n他挑起扁担，走出两步又回头补了一句：\n\n“要是你敢往山上去——周家婆娘还在村东头哭，你去跟她说一声，也算积德。”\n\n他走远了。\n\n你低头看那口井。井底那点光，忽然晃了一下。\n\n——像有人在水底下，动了一动。\n</content>\n<UpdateVariable>\n<Analysis>\n一、地理：人州·中域·三剑宗（辖下石堰村，村口老槐树下）\n二、时间：1月1号 17:40\n三、主角信息：开局健康，境界与灵根由创角结果落定\n四、人物列表：无（村口老汉是路人，临时对话即可）\n五、开局落点：凡人村落\n</Analysis>\n<JSONPatch>\n[\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/大位置\",\n        \"value\": \"人州·中域·三剑宗\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/小位置\",\n        \"value\": \"村口老槐树下\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/日期\",\n        \"value\": \"1年1月1日\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/精确时间\",\n        \"value\": \"17:40\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/任务\",\n        \"value\": {\n            \"进行中\": {},\n            \"已完成\": []\n        }\n    }\n]\n</JSONPatch>\n</UpdateVariable>\n\n\n<StatusPlaceHolderImpl/>",
     ];;
@@ -5028,13 +5148,12 @@ d.attrs[a] = v;
         if (doc.getElementById(STYLE_ID)) return;
         /* ★ v593：主题属性必须在**样式注入这一步**挂，不能只在脚本顶部挂一次 ——
            07 是独立文档，样式与文档节点都可能在顶部那段代码之后才就绪。
-           默认日光；localStorage 读不到（沙箱/隐私模式）也按日光，绝不留深色。 */
+           ★ v626：三档，走 `xzStartThemeAttr()`（不再现算 day/night） */
         try {
-            var _day = false;
-            try { _day = (localStorage.getItem('xzTheme') === 'day'); } catch (e1) {}
-            if (_day) doc.documentElement.setAttribute('data-xz-theme', 'day');
+            var _thAttr2 = xzStartThemeAttr();
+            if (_thAttr2) doc.documentElement.setAttribute('data-xz-theme', _thAttr2);
             else doc.documentElement.removeAttribute('data-xz-theme');
-            try { if (window.__XZ_V611__) window.__XZ_V611__.sync(_day ? 'day' : 'night'); } catch (eVS) {}
+            try { if (window.__XZ_V611__) window.__XZ_V611__.sync(xzStartTheme()); } catch (eVS) {}
         } catch (e0) {}
         var s = doc.createElement('style');
         s.id = STYLE_ID;
@@ -5342,11 +5461,12 @@ d.attrs[a] = v;
                    · `::-webkit-scrollbar`        → 宽度 6px（不是 8：8 会盖住最后 2px 文字）
                    · `::-webkit-scrollbar-track`   → 透明（有底色会像多一条边）
                    · `::-webkit-scrollbar-thumb`   → 暖金半透明 + 圆角
-                 ⚠ 别用 `scrollbar-width:thin` 单独兜底就完事：它**只在 Firefox 生效**，
-                   而玩家用的是 Chromium 内核 —— 只写它等于什么都没写（这个坑踩过）。 */
+                 ⚠ 别用 `scrollbar-width:thin` 单独兜底就完事：它现在 Chromium 121+ 也认，
+                   而**认了就让下面这组 `::-webkit-scrollbar` 整组失效** ⇒ 退回原生白杠。
+                   这正是 07 里 `.xz-st-prem` 那个"改了四次没改对"的坑，2026-11-16 一次修完。
+                   这里同样**不许**再写 `scrollbar-width/color`。 */
             '.xz-st-eqscroll{max-height:178px;overflow-y:auto;overscroll-behavior:contain;'
-                + '-webkit-overflow-scrolling:touch;scrollbar-width:thin;'
-                + 'scrollbar-color:rgba(230,189,118,.42) transparent;}',
+                + '-webkit-overflow-scrolling:touch;}',
             '.xz-st-eqscroll::-webkit-scrollbar{width:6px;}',
             '.xz-st-eqscroll::-webkit-scrollbar-track{background:transparent;}',
             '.xz-st-eqscroll::-webkit-scrollbar-thumb{background:rgba(230,189,118,.42);border-radius:3px;}',
@@ -5636,7 +5756,36 @@ d.attrs[a] = v;
                 + 'overscroll-behavior:contain;-webkit-overflow-scrolling:touch;'
                 + 'display:flex;flex-direction:column;gap:5px;margin:2px 0 0;'
                 + 'padding:4px 5px 4px 2px;border:1px solid rgba(230,189,118,.18);'
-                + 'border-radius:6px;scrollbar-width:thin;}',
+                + 'border-radius:6px;}',
+            /* ★★★ v626：滑轮必须**自己画**，而且必须把标准属性删干净 ★★★
+               作者 2026-11-16（第四次报同一处）：「我说了四次滑轮美化掉了，你改了你妈呢。」
+               ── 病根（这是本轮唯一一个"改了四次没改对"的技术原因）──────────────
+                 原来写的是 `scrollbar-width:thin; scrollbar-color:rgba(...)`。
+                 `scrollbar-width` 以前是 **Firefox 专有**，Chromium 121+ 也实现了；
+                 而按 CSS 规范，**只要 `scrollbar-width` 或 `scrollbar-color` 不等于
+                 `auto`，浏览器就走"标准滚动条"渲染路径，`::-webkit-scrollbar` 整组失效**。
+                 ⇒ 下面那些漂亮的伪元素规则一条都不生效，退回原生浅灰槽
+                   —— 在夜墨底上就是截图里那道白杠。
+                 也就是说：**写了 thin 比不写更丑**。不写时 webkit 伪元素还有机会生效。
+               ── 所以现在的口径是「二选一」，不是「两套并存」──────────────────
+                 这两套**互斥**，同时写 = 标准属性赢、伪元素全废。
+                 酒馆跑在 Chromium / Electron / WebView 里 ⇒ **选 webkit 伪元素**，
+                 把 `scrollbar-width` / `scrollbar-color` 从这两个容器上**删掉**。
+                 Firefox 与三星浏览器会退回系统默认滚动条 —— 可接受的降级：
+                 它们的默认条在深色底上至少不是"白杠"（会跟随系统深色方案）。
+               ⚠ 别再"顺手加一句 thin 兜底"：那一句会把这整组规则废掉，
+                 而源码里看着两套都在、像是更保险。这个坑已经骗过四次。
+               ⚠ 三个伪元素必须一起写：只写 thumb 不写 track 的话，Chromium 会给槽
+                 配一层默认浅灰底（就是那道白边的来源）。
+               ⚠ `width` 给 6px 而不是 8：8 会压住右侧 2px 的文字（v613 量过）。
+                 判据就量 `offsetWidth - clientWidth == 6` —— 这个数直接证明
+                 **伪元素规则赢了**（`thin` 赢的话是 11px）。 */
+            '.xz-st-prem::-webkit-scrollbar{width:6px;}',
+            '.xz-st-prem::-webkit-scrollbar-track{background:transparent;}',
+            '.xz-st-prem::-webkit-scrollbar-thumb{background:rgba(230,189,118,.40);'
+                + 'border-radius:3px;}',
+            '.xz-st-prem::-webkit-scrollbar-thumb:hover{background:rgba(230,189,118,.62);}',
+            '.xz-st-prem::-webkit-scrollbar-button{display:none;height:0;width:0;}',
             '.xz-st-prem-i{display:flex;flex-direction:column;align-items:stretch;gap:3px;'
                 + 'width:100%;min-width:0;box-sizing:border-box;text-align:left;'
                 + 'padding:6px 8px 7px;border-radius:5px;overflow:hidden;'
@@ -5650,6 +5799,20 @@ d.attrs[a] = v;
                所以用 `box-shadow` 画外圈而不是改底色，避免与 `.on` 抢同一属性。 */
             '.xz-st-prem-i.open{border-color:rgba(230,189,118,.72);background:rgba(230,189,118,.09);'
                 + 'box-shadow:0 0 0 1px rgba(230,189,118,.28);}',
+            /* ★ v626：整张卡都是热区 ⇒ 整张卡都要给手形光标。
+               ── 为什么这条不能省 ──────────────────────────────────────────────
+                 以前只有卡片头那颗 button 有 `cursor:pointer`，鼠标移到梗概文字或
+                 卡片边角时是**箭头**，而那时点下去确实没反应 —— 光标是诚实的。
+                 v626 把 act 上移到整卡后，行为变了、光标没变 ⇒ 玩家看到箭头就以为
+                 不可点，于是根本不会去点那块已经能点的区域。**能点但看起来不能点，
+                 等于没改。**
+               ⚠ `xz-st-prem-hit` 这个类名是 v626 起才有的（之前只有 act 挂法），
+                 它此前**没有任何样式** —— 被 `_v468_css_cls` 抓成"裸类"。
+                 补这条正好一举两得：消掉裸类，同时把光标补上。
+               ⚠ 展开区 `.xz-st-prem-d` 里的 textarea / select 由 UA 默认值接管
+                 （cursor 属性会继承，但 input/textarea 的 UA 规则是 `text`），
+                 不用在这里排除；写 `> *` 反而会把输入框的手形也改掉。 */
+            '.xz-st-prem-hit{cursor:pointer;}',
             /* ★★★ v613 第二轮：卡片头是一颗**按钮**（点它只展开） ★★★
                `appearance:none` + `font-family:inherit`：不写的话在 iOS Safari 上
                button 会套一层系统字体与内阴影，跟周围的中文完全不搭。
@@ -5682,8 +5845,21 @@ d.attrs[a] = v;
                ⚠ `word-break:break-word` 兜住长串中文/英文混排，别让它在窄屏撑出横向滚动。 */
             '.xz-st-prem-op{font-size:11px;font-weight:400;letter-spacing:0;line-height:1.62;'
                 + 'color:var(--xz-text-2);white-space:pre-wrap;word-break:break-word;'
-                + 'max-height:min(30vh,200px);overflow-y:auto;overscroll-behavior:contain;'
-                + 'scrollbar-width:thin;}',
+                /* ★ v626：「怎么这么扁呢，这也没显示完啊」—— 上限从 min(30vh,200px) 抬到
+                   min(52vh,420px)。原值是按「一条开场白只露个头」定的，但作者的实际用法是
+                   **展开就是要读完**（他不展开时看的是 blurb，不是这段）。
+                   ⚠ 别改回 200：1600 字上限的正文在 200px 里只露四行，等于逼玩家在
+                     一个小窗里滚 --- 那正是他说"没显示完"的样子。 */
+                + 'max-height:min(52vh,420px);overflow-y:auto;overscroll-behavior:contain;}',
+            /* ★ v626：同样**不许**再写 `scrollbar-width/color`（理由见 `.xz-st-prem` 那段：
+               标准属性一写，下面这组伪元素整组作废）。这里删过一次又手滑加回去过，
+               闸里量 `offsetWidth - clientWidth == 6` 就是为了钉住这一点。 */
+            '.xz-st-prem-op::-webkit-scrollbar{width:6px;}',
+            '.xz-st-prem-op::-webkit-scrollbar-track{background:transparent;}',
+            '.xz-st-prem-op::-webkit-scrollbar-thumb{background:rgba(230,189,118,.40);'
+                + 'border-radius:3px;}',
+            '.xz-st-prem-op::-webkit-scrollbar-thumb:hover{background:rgba(230,189,118,.62);}',
+            '.xz-st-prem-op::-webkit-scrollbar-button{display:none;height:0;width:0;}',
             /* 选择按钮：铺满整行、金色实底黑字 —— 展开后视线落点唯一，不会点错。
                ⚠ 底色走 `--xz-gold-fill` 而不是 `--xz-gold`：日光主题把 `--xz-gold` 压成
                  深金 `#7a5510`，黑字压深金只有 1.09:1，全糊（v611 踩过的形状）。 */
@@ -5705,12 +5881,24 @@ d.attrs[a] = v;
                  之间拉开一道缝，读起来才像"入口 / 列表"两段而不是 22 条并列。 */
             '.xz-st-prem-custom{border-style:dashed;margin-bottom:3px;flex:0 0 auto;}',
             /* 窄屏：简介允许折两行（宁可折，也不截成看不懂的半句）；
-               容器降高，把屏底让给「确认开局」；开场白上限也跟着收，否则展开一条就占满全屏。 */
+               容器降高，把屏底让给「确认开局」；开场白上限也跟着收，否则展开一条就占满全屏。
+               ★★★ v626：`.xz-st-prem-op` 的手机上限从 min(26vh,150px) 抬到
+                 min(46vh,300px) ★★★
+                 ── 为什么必须改这一档 ──────────────────────────────────────────
+                   作者报「这也没显示完」时的截图就是 390 宽的手机。桌面那条
+                   （52vh / 420px）在 `max-width:430px` 下被这一条**整条盖掉** ——
+                   只改桌面那条等于没改，他看到的仍是 150px 的小窗。
+                   这类「基础规则改了、媒体查询没改」是最容易漏的形状：
+                   源码里两处都写着 max-height，看着像改了。
+                 ── 为什么不是直接删掉这一档 ────────────────────────────────────
+                   展开一条预设时如果正文占满全屏，「选择此开局」按钮会被挤出可视区，
+                   玩家得先滚过一千多字才点得到 —— 那是另一种"按钮像消失了"。
+                   46vh/300px 是"能读够多"与"按钮还在屏内"的折中。 */
             '@media (max-width:430px){.xz-st-prem{max-height:min(42vh,270px);}'
                 + '.xz-st-prem-n{font-size:11.5px;}'
                 + '.xz-st-prem-b{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;'
                 + '-webkit-box-orient:vertical;}'
-                + '.xz-st-prem-op{max-height:min(26vh,150px);font-size:10.5px;line-height:1.55;}'
+                + '.xz-st-prem-op{max-height:min(46vh,300px);font-size:10.5px;line-height:1.55;}'
                 + '.xz-st-prem-d{margin-left:3px;padding-left:6px;}}',
             /* ★ v470：页码删了之后，翻页条只剩两颗按钮 —— 「下一步」贴右边才不至于两边空荡。
                `margin-left:auto` 只给主按钮，第 1 页没有「上一步」时它仍然靠右。 */
@@ -7443,9 +7631,20 @@ d.attrs[a] = v;
             /* ★ v509：整栏删掉（用户 2026-10-31：「武器哪里有类型，给我他妈删了类型这一栏」）。
                病历：v468 按「武器那边也给被动这俩字加上」加了一个只读框「类型 / 常驻装配」+「被动」标签，
                但游戏里**武器没有类型这个字段**（schema 里武器只是 `背包.*.类型` 的一个枚举值），
-               这一行纯属把实现细节摊给玩家看。 */
+               这一行纯属把实现细节摊给玩家看。
+               ★★★ v626：**「被动」那两个字要留，但不能再带「类型」那一行** ★★★
+               作者 2026-11-16 截图指着武器页签问：「武器这里的被动两个字呢」。
+               ── 病根是 v509 删得太多 ────────────────────────────────────────
+                 他骂的是「类型」这个字段（以及那句「常驻装配」的实现细节），
+                 而「被动」是**玩法信息**：它告诉玩家这件兵器是常驻加成的，
+                 不是在战斗中主动点出来的。把这两个字一起删掉 = 玩家以为武器要手动放。
+               ── 所以现在：不新增整行，只在「效果」的 label 后面挂一枚小标签 ──────
+                 用与玄诀「目标」行**同一个** `.xz-chip-sm` 蓝标签（同语义同视觉：
+                 蓝＝被动），不复用 v509 那个只读输入框（那才是被骂的东西）。
+               ⚠ 别再把它做成一行「类型 / 常驻装配」—— 那正是 v509 的原文案。 */
             var _ph = '60 字内写下这件兵器的效果（可带一句样子，如「寒气森然，增伤 15%」）';
-            h += '<div class="xz-st-row" style="align-items:flex-start"><label>效果</label>' +
+            h += '<div class="xz-st-row" style="align-items:flex-start">'
+                + '<label>效果<span class="xz-chip-sm" style="margin-left:6px;color:#60a5fa;border-color:rgba(59,130,246,0.5);">被动</span></label>' +
                 '<div style="flex:1;min-width:0;display:flex;gap:6px;align-items:flex-start;">' +
                 '<textarea data-xz-tpl="效果" maxlength="80" placeholder="' + esc(_ph) + '" style="flex:1;min-width:0;box-sizing:border-box;background:var(--xz-card,#151a24);border:1px solid rgba(230,189,118,.3);border-radius:6px;padding:7px 9px;color:var(--xz-text);font-size:12.5px;line-height:1.5;resize:vertical;font-family:inherit;">' +
                 text(it.效果 || it.描述) + '</textarea>' +
@@ -7890,14 +8089,28 @@ d.attrs[a] = v;
         var url = sceneImgOf(city);
         if (!url) return '';
         var alt = String(city || '');
-        /* ⚠ `<img>` 必须限高 + `object-fit:cover`：48 张场景图比例不一
-           （有横有竖），不限高的话高的那张会把第 4 页顶长，
-           而作者已拍板「开局脚本就这个高度吧，高度别改了」。
-           `min(140px, 22vh)` —— 手机上 22vh 比 140 小，取它，免得图把整屏占掉。 */
+        /* ★★★ v626：改回**完整显示**（作者 2026-11-16：「这场景图怎么这么小呢…
+           但是他妈怎么这么扁呢，这也没显示完啊」）★★★
+           ── 病根是 v621 的两个属性叠在一起 ──────────────────────────────────
+             `max-height:min(140px,22vh)` + `object-fit:cover`
+             ⇒ 图被强行压到 140px 高、再用 cover **横向裁掉两侧**去填满宽度。
+             实测原图是 832×576（宽高比 1.44），塞进 140px 高只有 202px 宽的内容区时，
+             cover 会按"填满高"放大到 140×(约 202/1.44…) 的实际裁切 —— 竖着只剩中间一条，
+             两边的山头全被切掉。这就是"又扁又没显示完"。
+           ── 现在 ────────────────────────────────────────────────────────────
+             · `object-fit:contain` + `height:auto`：**按原比例**铺满宽度，整张图都在。
+             · 只留一个**上限** `max-height:min(38vh,300px)`：原图 1.44 比例在 320px 宽
+               的手机上是 222px 高、在 640px 宽的面板里是 444px 高 —— 后者会把第 4 页顶长，
+               所以封 300px（那也只会在很宽的屏上触发，且 contain 保证不裁）。
+             · `background` 给一层极淡的底：contain 在极端宽高比下可能留边，
+               留边处不能是刺眼的页面底色。
+           ⚠ 别再用 cover：项目里 cover 是给"头像／缩略图"用的（方形裁切无所谓），
+             而这里玩家要看的就是**这张画的全部**。两件事的裁切语义相反。 */
         return '<div class="xz-st-scene">'
             + '<img src="' + esc(url) + '" alt="' + esc(alt) + ' 场景图"'
             + ' loading="lazy" referrerpolicy="no-referrer"'
-            + ' style="display:block;width:100%;max-height:min(140px,22vh);object-fit:cover;'
+            + ' style="display:block;width:100%;height:auto;max-height:min(38vh,300px);'
+            + 'object-fit:contain;background:rgba(8,10,14,.35);'
             + 'border-radius:7px;border:1px solid rgba(230,189,118,.28);"'
             /* 图上叠城名：单看图认不出是哪座城。`pointer-events:none` 让它不挡点击 */
             + ' onerror="this.style.display=\'none\';var c=this.nextElementSibling;if(c)c.style.display=\'block\';"'
@@ -9283,16 +9496,49 @@ d.attrs[a] = v;
              两套展开态各自为政的话，可能出现"预设开着、自定义也开着"，
              那一屏就是两张全文叠在一起，滑轮的意义直接没了。 */
         var _cOp = (String(state.premOpen || '') === XZ_CUSTOM_OPEN_ID);
+        /* ★★★ v626：`data-xz-act="prem-toggle"` 从卡片头**上移到整张卡** ★★★
+           作者 2026-11-16：「这里，他妈点到字都不算触发交互？？？？…我要点击这个框内
+             任何一个地方都能触发点击。」
+           ── 原来只有那颗 `<button class="xz-st-prem-hd">` 是热区 ─────────────
+             名字、标签、▸ 三角都在按钮里，所以能点；但下面那行梗概
+             （`.xz-st-prem-b`，就是他在截图里点的那句「宫中剑仙在月台上独舞…」）
+             是按钮**外面**的一个 div ⇒ 点它什么都不会发生。
+             而它在视觉上明明还在同一个框里 —— 这就是"点字没用"。
+           ── 做法 ────────────────────────────────────────────────────────────
+             把 `data-xz-act` / `data-xz-prem` 挂到 `.xz-st-prem-i` 这个**整卡容器**上，
+             `handleAction` 走的是 `e.target.closest('[data-xz-act]')` ⇒ 框内任何一处
+             （标题、标签、梗概、空白）都会命中同一张卡。
+           ── ⚠ 三个必须排除的子树，否则会变成新的灾难 ──────────────────────
+             ① 展开区 `.xz-st-prem-d`：里面有 textarea / select / 「选择此开局」按钮。
+                不排除的话，点输入框会被 `preventDefault`（handleAction 里对 button
+                有这条）—— 打字直接打不进去。
+             ② 卡片头那颗 button **保留自己的 data-xz-act**（同名即可）：
+                它本来就在整卡内，留着不影响；留着的好处是语义/无障碍朗读仍在。
+             ③ 展开区内任何带自己 `data-xz-act` 的元素（`prem-pick`）：closest 会
+                先命中更近的那个，天然正确 —— 不用特别写。
+             ⇒ 判据在 handleAction 里：命中卡容器时，若点击源落在 `.xz-st-prem-d`
+                （展开区）之内就忽略（交给里面的控件自己处理）。 */
         h += '<div class="xz-st-prem-i xz-st-prem-custom' + (_cOp ? ' open' : '')
-            + (state.premId ? '' : ' on') + '">';
-        h += '<button type="button" class="xz-st-prem-hd"'
+            + (state.premId ? '' : ' on') + ' xz-st-prem-hit"'
             + ' data-xz-act="prem-toggle" data-xz-prem="' + XZ_CUSTOM_OPEN_ID + '"'
+            + ' role="button" tabindex="0"'
             + ' aria-expanded="' + (_cOp ? 'true' : 'false') + '"'
-            + ' title="' + (_cOp ? '收起' : '展开自己写落点与开场白') + '">'
+            + ' title="' + (_cOp ? '收起' : '展开自己写落点与开场白') + '">';
+        /* ★ v626：卡片头**不再是按钮**，改成纯展示的一行 ——
+           整卡的 `data-xz-act` 已经挂在外层 `.xz-st-prem-i` 上（见上方 v626 那段）。
+           ── 为什么必须拆掉，不能留两层同名 act ──────────────────────────────
+             留着的话：点按钮 → closest 先命中按钮自己 → 处理一次，置 `e.__xzActionHandled`
+             → 冒泡到卡容器 → 再进 handleAction → 被幂等标记挡住。
+             看着"好像能用"，但只要哪天 `stopPropagation` 的顺序变一下，
+             就变成**点一下开、再触发一次关**（静默双触发，本项目最忌讳的形状）。
+           ── 拆掉之后丢掉了什么 ──────────────────────────────────────────────
+             丢掉了 button 自带的键盘可达 —— 由外层补 `role="button" tabindex="0"`
+             与下面 bindHost 里的回车/空格处理，无障碍语义不降级。 */
+        h += '<div class="xz-st-prem-hd">'
             + '<span class="xz-st-prem-n">自定义开局</span>'
             + '<span class="xz-st-prem-t">自己写</span>'
             + '<span class="xz-st-prem-c" aria-hidden="true">' + (_cOp ? '▾' : '▸') + '</span>'
-            + '</button>';
+            + '</div>';
         h += '<div class="xz-st-prem-b">自己挑州、域、城，写一段开场白，再点几位在场人物。</div>';
         if (_cOp) {
             h += '<div class="xz-st-prem-d">';
@@ -9337,16 +9583,18 @@ d.attrs[a] = v;
             var _pOn = (String(d.customBig || '') === _p.big
                      && String(d.customSmall || '') === _p.small);
             var _pOp = (String(state.premOpen || '') === _p.id);
-            h += '<div class="xz-st-prem-i' + (_pOn ? ' on' : '') + (_pOp ? ' open' : '') + '">';
-            /* 卡片头 = 折叠/展开的开关。**不载入**任何东西。 */
-            h += '<button type="button" class="xz-st-prem-hd"'
+            /* ★ v626：整卡可点（与上面「自定义开局」同一套写法，理由见那一段） */
+            h += '<div class="xz-st-prem-i xz-st-prem-hit' + (_pOn ? ' on' : '') + (_pOp ? ' open' : '') + '"'
                 + ' data-xz-act="prem-toggle" data-xz-prem="' + esc(_p.id) + '"'
+                + ' role="button" tabindex="0"'
                 + ' aria-expanded="' + (_pOp ? 'true' : 'false') + '"'
-                + ' title="' + (_pOp ? '收起' : '展开看开场白') + '">'
+                + ' title="' + (_pOp ? '收起' : '展开看开场白') + '">';
+            /* 卡片头 = 纯展示行（开关在整卡上，见上方 v626） */
+            h += '<div class="xz-st-prem-hd">'
                 + '<span class="xz-st-prem-n">' + esc(_p.name) + '</span>'
                 + '<span class="xz-st-prem-t">' + esc(_p.tag) + '</span>'
                 + '<span class="xz-st-prem-c" aria-hidden="true">' + (_pOp ? '▾' : '▸') + '</span>'
-                + '</button>';
+                + '</div>';
             /* 一句梗概：折叠态唯一能看到的"这是什么"，所以**收起时也显示** */
             h += '<div class="xz-st-prem-b">' + esc(_p.blurb) + '</div>';
             if (_pOp) {
@@ -9493,33 +9741,41 @@ d.attrs[a] = v;
     }
 
     /* ★ v595（作者 2026-11-13）：「开局脚本默认深色，能切日光」。
-       默认深色见文件顶部与 injectStyle；这里只负责那颗按钮与切换。 */
+       默认深色见文件顶部与 injectStyle；这里只负责那颗按钮与切换。
+       ★ v626：三档循环 夜墨 → 玄青 → 日光 → 夜墨（与 05 同一个顺序，同一个 themeNext）。 */
     function xzStartThemeBtnHtml() {
-        var day = false;
-        try { day = localStorage.getItem('xzTheme') === 'day'; } catch (e) {}
-        /* 图标语义是"点它会变成什么"：白天显示月亮、夜里显示太阳 */
-        var ico = day
-            ? '<path d="M20.2 14.4A8.4 8.4 0 0 1 9.6 3.8a8.4 8.4 0 1 0 10.6 10.6z"/>'
-            : '<circle cx="12" cy="12" r="4.1"/><path d="M12 2.6v2.6"/><path d="M12 18.8v2.6"/>'
-              + '<path d="M2.6 12h2.6"/><path d="M18.8 12h2.6"/><path d="M5.4 5.4l1.8 1.8"/>'
-              + '<path d="M16.8 16.8l1.8 1.8"/><path d="M18.6 5.4l-1.8 1.8"/><path d="M7.2 16.8l-1.8 1.8"/>';
+        var cur = xzStartTheme();
+        var next = xzStartThemeNext(cur);
+        var NAME = { night: '夜墨', qing: '玄青', day: '日光' };
+        /* 图标语义是"点它会变成什么"，不是"现在是什么" */
+        var ico;
+        if (next === 'day') {
+            ico = '<circle cx="12" cy="12" r="4.1"/><path d="M12 2.6v2.6"/><path d="M12 18.8v2.6"/>'
+                + '<path d="M2.6 12h2.6"/><path d="M18.8 12h2.6"/><path d="M5.4 5.4l1.8 1.8"/>'
+                + '<path d="M16.8 16.8l1.8 1.8"/><path d="M18.6 5.4l-1.8 1.8"/><path d="M7.2 16.8l-1.8 1.8"/>';
+        } else if (next === 'qing') {
+            ico = '<path d="M3.2 17.4c3.6-4.8 6.6-7.2 8.8-7.2s5.2 2.4 8.8 7.2"/>'
+                + '<circle cx="12" cy="6.6" r="2.1"/>';
+        } else {
+            ico = '<path d="M20.2 14.4A8.4 8.4 0 0 1 9.6 3.8a8.4 8.4 0 1 0 10.6 10.6z"/>';
+        }
         return '<button type="button" class="xz-st-theme" data-xz-act="theme"'
-             + ' title="' + (day ? '切到夜墨模式' : '切到日光模式') + '"'
-             + ' aria-label="' + (day ? '切到夜墨模式' : '切到日光模式') + '">'
+             + ' title="' + ('当前' + NAME[cur] + '，点一下切到' + NAME[next]) + '"'
+             + ' aria-label="' + ('当前' + NAME[cur] + '，点一下切到' + NAME[next]) + '">'
              + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"'
              + ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'
-             + ico + '</svg><span>' + (day ? '夜墨' : '日光') + '</span></button>';
+             + ico + '</svg><span>' + NAME[next] + '</span></button>';
     }
     function xzStartThemeToggle() {
-        var cur = 'night';
-        try { cur = localStorage.getItem('xzTheme') === 'day' ? 'day' : 'night'; } catch (e) {}
-        var next = (cur === 'day') ? 'night' : 'day';
-        try { localStorage.setItem('xzTheme', next); } catch (e2) {}
+        var next = xzStartThemeNext(xzStartTheme());
+        /* ⚠ 只写三个合法值 */
+        try { localStorage.setItem('xzTheme', (next === 'day' || next === 'qing') ? next : 'night'); } catch (e2) {}
         /* 即时生效：属性挂在**本面板所在文档**的 html 上（05 的 xzThemeApply 挂的是它自己那份） */
         try { if (window.__XZ_V611__) window.__XZ_V611__.sync(next); } catch (eVS) {}
         try {
             var doc = getDoc();
-            if (next === 'day') doc.documentElement.setAttribute('data-xz-theme', 'day');
+            var _a3 = xzStartThemeAttr(next);
+            if (_a3) doc.documentElement.setAttribute('data-xz-theme', _a3);
             else doc.documentElement.removeAttribute('data-xz-theme');
         } catch (e3) {}
         render(true);   /* 重绘只为换按钮上的图标与文字；色值已经即时切了 */
@@ -10049,6 +10305,40 @@ d.attrs[a] = v;
             if (!hard && focusInside(pre)) { scrubMark(mes); return; }
             state.lastSig = sig;
 
+            /* ★★★ v626：重绘前记住两个滚动位置，重绘后还原 ★★★
+               作者 2026-11-16：「这个点击之后也很恶心，点击一下直接复位到最顶部，妈的逼。」
+               ── 真因：`host.innerHTML = _html` 重建整棵子树 ──────────────────
+                 节点是全新的，浏览器给新节点的 scrollTop 一律 0。
+                 `.xz-st-prem`（22 条预设的滑轮）和 `.xz-st-prem-op`（开场白全文的滑轮）
+                 都是 overflow:auto 的滚动容器 ⇒ 点一条展开，列表"啪"地弹回第一条。
+                 重点：**连点的那一条都滚出视野** —— 玩家要展开第 15 条，
+                 展开完发现自己被弹回顶部，得重新往下找它。这就是"很恶心"的实感。
+               ── 做法：按**内容指纹**存，不能按下标 ────────────────────────────
+                 重绘可能增减卡片（展开一条会变长、同时只展开一条），下标会漂。
+                 ⇒ 用「卡片 id」当键存 `.xz-st-prem` 的滚动位置不合适 ——
+                   它滚的是整个列表、不是某张卡。这里用两个容器各自的**类名 + 序号**
+                   定位，并且用 `data-xz-prem` 记住"展开的是哪条"，
+                   还原时若展开项没变、列表长度没变，就直接贴回 scrollTop。
+                 ⚠ 只在 `mounted`（原先就有）时才存 —— 首次挂载没有"原位"可言。
+                 ⚠ `try/catch` 包住：某些宿主把 scrollTop 设成只读（真见过），
+                   抛出来会让整次渲染失败、面板整个不出现，那比回顶严重得多。
+                 ⚠⚠ **必须读 `pre`（旧节点），不能读 `host`**：`var host = pre;` 在
+                   这段之后才赋值，`var` 提升让 `host` 此刻是 `undefined` ⇒
+                   `host.querySelectorAll` 抛 TypeError ⇒ 被 catch 吞掉 ⇒
+                   `_scrollMemo = null` ⇒ 滚动恢复整段是**死的**（v626 第一版就这样，
+                   闸量 scrollTop 才抓出来：注释写得头头是道，一行业务代码没跑过）。 */
+            var _scrollMemo = null;
+            if (mounted && pre) {
+                try {
+                    _scrollMemo = [];
+                    var _scs = pre.querySelectorAll('.xz-st-prem, .xz-st-prem-op, .xz-st-body');
+                    for (var _sci = 0; _sci < _scs.length; _sci++) {
+                        _scrollMemo.push({ cls: _scs[_sci].className || '', top: _scs[_sci].scrollTop || 0 });
+                    }
+                    _scrollMemo._n = _scs.length;
+                } catch (eSm0) { _scrollMemo = null; }
+            }
+
             var host = pre;
             if (!host || !target.contains(host)) {
                 if (host && host.parentNode) host.parentNode.removeChild(host);
@@ -10078,9 +10368,44 @@ d.attrs[a] = v;
             }
             state.hostEl = host;
             host.innerHTML = _html;
+            /* ★ v626：还原滚动位置（见上面 `_scrollMemo` 那段）。
+               必须在 `bindHost` **之前**贴回，且用一个微任务再补一次：
+               新插入的 DOM 在同一个 tick 里 `scrollHeight` 可能还是 0
+               （Chromium 要等一次布局），只贴一次会静默失败成"还是回顶"。 */
+            if (_scrollMemo && _scrollMemo.length) {
+                try {
+                    var _ncs = host.querySelectorAll('.xz-st-prem, .xz-st-prem-op, .xz-st-body');
+                    for (var _ri = 0; _ri < _scrollMemo.length && _ri < _ncs.length; _ri++) {
+                        var _m = _scrollMemo[_ri];
+                        if (!_m || !_m.top) continue;
+                        /* 只在"同类容器"上还原：展开/收起会让第 2 个以后的序号整体漂移，
+                           拿 A 的位移贴到 B 上等于把玩家扔到奇怪的位置。
+                           同类判据 = className 相同（这三类各自的类名是稳定的）。 */
+                        if (String(_ncs[_ri].className || '') !== String(_m.cls || '')) continue;
+                        _ncs[_ri].scrollTop = _m.top;
+                    }
+                } catch (eSm1) {}
+            }
             bindHost(host);
             updateReadouts();
             syncAddButton(host);
+            /* 第二次贴（等布局完成）：只贴 `.xz-st-prem` 这一个 —— 它是"弹回顶部"最刺眼的那处，
+               而开场白那张小窗本身很短，位置贴不贴准影响不大，少动一次省得抖。 */
+            if (_scrollMemo && _scrollMemo.length) {
+                try {
+                    var _m0 = null;
+                    for (var _mi = 0; _mi < _scrollMemo.length; _mi++) {
+                        if (String(_scrollMemo[_mi].cls || '').indexOf('xz-st-prem') >= 0
+                            && String(_scrollMemo[_mi].cls || '').indexOf('xz-st-prem-') < 0) { _m0 = _scrollMemo[_mi]; break; }
+                    }
+                    if (_m0 && _m0.top) {
+                        var _el0 = host.querySelector('.xz-st-prem');
+                        if (_el0) setTimeout(function () {
+                            try { if (_el0 && _el0.scrollTop !== _m0.top) _el0.scrollTop = _m0.top; } catch (eSm3) {}
+                        }, 0);
+                    }
+                } catch (eSm2) {}
+            }
             scrubMark(mes);
             try { xzMountOvl(); setTimeout(xzMountOvl, 40); } catch (eOV) {}
         } catch (e) {
@@ -10662,6 +10987,33 @@ host.__xzGuard = true;
             ? (e.target.closest('[data-xz-act]') || e.target.closest('[data-xz-startact]'))
             : null;
         if (!t) return;
+        /* ★★★ v626：整卡热区的**排除区** ★★★
+           预设卡现在整张挂着 `data-xz-act="prem-toggle"`（点框内任何地方都能展开），
+           但展开区 `.xz-st-prem-d` 里全是真正的控件：textarea / select /
+           「选择此开局」/ 在场人物那一整块。
+           ⇒ 若点击源落在展开区里，**且它自己没有更近的 act**，就不要当成"点卡片"。
+             判断依据必须是 `closest` 的结果：如果最近的那个 act 元素就是卡片容器本身
+             （`t === 卡容器`），再看点击源是否在它的 `.xz-st-prem-d` 内。
+           ── 为什么不用「有 act 就放过」那种懒写法 ──────────────────────────
+             展开区里点空白处，closest 命中的同样是卡片容器 —— 那种情况**应该**能收起，
+             否则展开一大片之后只能点标题才关得掉。所以只排除"落在具名控件上"的那一类：
+             输入框、下拉、以及自带 act 的按钮（后者最近命中不是容器，天然已经排除）。
+           ⚠ 输入框必须在**这里**挡，不能靠 handleAction 末尾的 preventDefault ——
+             到那里已经太晚，textarea 的焦点/选区已经被打断过一次。 */
+        if (t.classList && t.classList.contains('xz-st-prem-hit')) {
+            var _se = e.target;
+            var _ctr = null;
+            try { _ctr = _se && _se.closest ? _se.closest('.xz-st-prem-d, .xz-st-prem-hd, .xz-st-prem-b') : null; } catch (eC1) { _ctr = null; }
+            /* 落在展开区的**控件**里（输入框/下拉/按钮/链接）⇒ 交给控件自己 */
+            if (_ctr && _ctr.classList.contains('xz-st-prem-d')) {
+                var _tag2 = _se && _se.tagName ? String(_se.tagName).toUpperCase() : '';
+                if (_tag2 === 'INPUT' || _tag2 === 'TEXTAREA' || _tag2 === 'SELECT'
+                    || _tag2 === 'OPTION' || _tag2 === 'LABEL' || _tag2 === 'A'
+                    || (_se.closest && _se.closest('button, input, textarea, select, label, a'))) {
+                    return;
+                }
+            }
+        }
         if (e.__xzActionHandled) return;
         e.__xzActionHandled = true;
         var act = t.getAttribute('data-xz-act') || t.getAttribute('data-xz-startact');
@@ -11081,8 +11433,14 @@ host.__xzGuard = true;
             if (act === 'roll-all') {
                 /* ★ v72：只有武器的「描述」在 roll-all 时保留（玩家手写的一句画面感不该被洗掉） */
                 var keep = (kind === '武器') ? String(state.tpl[kind].效果 || state.tpl[kind].描述 || '') : '';
-                rollAll(state.tpl[kind], kind);
+                /* ★ v626：第三参 true = **连名字一起掷**。这颗按钮的语义就是"整条给我一份能用的"，
+                   名字留空等于没兑现（作者 2026-11-16 点名两次）。
+                   ⚠ 表单初始化 / 锻造台新建那两处**不传**，理由见 rollAll 上方注释。 */
+                rollAll(state.tpl[kind], kind, true);
                 if (kind === '武器') { state.tpl[kind].效果 = keep; state.tpl[kind].描述 = keep; }
+                /* 掷完把名字回给玩家看一眼 —— 否则名字是变了，但他不知道是掷出来的还是自己填的 */
+                var _rn = String(state.tpl[kind].名 || '');
+                state.note = _rn ? ('🎲 已随机：' + kind + '《' + _rn + '》，名字也一起掷了，可以改。') : ('🎲 已随机' + kind + '。');
                 render(true);
                 return;
             }
