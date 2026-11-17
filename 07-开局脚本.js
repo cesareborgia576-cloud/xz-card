@@ -1,3 +1,75 @@
+/* ══════════════════════════════════════════════════════════════════════
+   ★★★ v629：维护开关 —— 全卡唯一开关，「工具/维护开关.mjs」 一键切换 ★★★
+
+   作者 2026-11-17（逐字）：
+     「所有全部推送过的通道，现在改为显示发生故障，正在维修中，
+       也就是不再显示任何脚本，只有这样的一句提示的界面。」
+
+   ── 开着的时候发生什么 ────────────────────────────────────────────────
+     本文件里**每一段顶层 IIFE 的第一行**都有一条 「if (XZ_MAINT) return;」。
+     于是整份脚本一行业务代码都不执行：不挂面板、不挂状态栏、不挂悬浮球、
+     不绑事件、不读变量。页面上只剩下面那段 「xz-maint-card」 一张卡片。
+
+   ── 为什么用「开关 + 逐段 return」而不是「把脚本换成提示」──────────────
+     换内容会把十几万行源码毁掉，恢复只能靠 git；而且跑闸会全线红，
+     没人分得清红的是"维护版"还是"真坏了"。
+     开关只动一个布尔量，「off」 之后逐字回到维护前的形状。
+     这是唯一能安全回滚、且能被现有闸继续验证的做法。
+
+   ── ⚠ 源码里的默认值必须是 false ──────────────────────────────────────
+     「false」 = 正常版 = 闸和探针验的那一版。
+     要出维护版才跑 「node 工具/维护开关.mjs on」，出完立刻 「off」。
+     别把 true 提交进仓库：那会让 289 条闸全部因为"界面不存在"而红，
+     而红的原因跟产品好坏毫无关系 —— 那种红最误导人。
+
+   ── ⚠ 两个文件各有一份这行，必须同步 ──────────────────────────────────
+     05 与 07 是两个独立热更槽，玩家可能只更新到其中一个。
+     只改一个 ⇒ 一半界面消失、一半还在，那比全都不显示更像"卡坏了"。
+     「工具/维护开关.mjs」 一次改两个，并且切完会自检"true/false 不同时出现"。
+   ══════════════════════════════════════════════════════════════════════ */
+var XZ_MAINT = true;
+
+/* 维护卡片：唯一允许出现在页面上的东西。
+   ⚠ 写成 「;(function」 是为了**不被下面那段"给每个顶层 IIFE 插守卫"的注入逻辑误伤** ——
+     它自己要跑起来，不能被自己的守卫挡掉。
+   ⚠ 样式全内联：维护模式下没有任何 CSS 注入，靠 class 是拿不到样式的。
+     颜色走暖金/深底，与卡片本体一致，一眼看得出是"我们的东西在维护"，
+     不是一个野广告（作者最烦"玩家以为卡坏了"。）
+   ⚠ MutationObserver 兜底：宿主可能在后面重绘 .mes_text 把卡片冲掉。
+     这里只在"卡片不在了"时补一张，发现已存在就直接返回 —— 不会打转。 */
+;(function () {
+    'use strict';
+    if (!XZ_MAINT) return;
+    var TEXT = '发生故障，正在维修中';
+    function paint() {
+        try {
+            var doc = document;
+            if (!doc || !doc.body) return;
+            if (doc.getElementById('xz-maint-card')) return;
+            var d = doc.createElement('div');
+            d.id = 'xz-maint-card';
+            d.setAttribute('style', [
+                'margin:14px 0', 'padding:18px 16px',
+                'border:1px solid rgba(230,189,118,.45)', 'border-radius:10px',
+                'background:#141922', 'color:#e8e3d3',
+                'font-family:inherit', 'font-size:15px', 'line-height:1.6',
+                'letter-spacing:.04em', 'text-align:center'
+            ].join(';'));
+            d.textContent = TEXT;
+            doc.body.appendChild(d);
+        } catch (e) {}
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', paint, { once: true });
+    } else {
+        paint();
+    }
+    try {
+        var mo = new MutationObserver(function () { paint(); });
+        mo.observe(document.documentElement, { childList: true, subtree: true });
+    } catch (eMO) {}
+})();
+
 /* >>> XZ_V611_BEGIN >>> 本段由 工具/_v611_build_engine.mjs 生成，勿手改 <<< */
 /* ══════════════════════════════════════════════════════════════════════
    ★★★ v611 主题 / 视口统一引擎（生成器 工具/_v611_build_engine.mjs 产出）★★★
@@ -438,6 +510,7 @@
    字段与规则清单见项目文档，不随卡导出。 */
 (function () {
     'use strict';
+    if (typeof XZ_MAINT === 'boolean' && XZ_MAINT) return;   /* v629 维护中：整段不执行（开关在文件顶部） */
 
     /* ★ v94：跨脚本取 04 的函数，**唯一**合法入口。
        取不到就返回 null，由调用方**如实降级并留痕**，不许静默当没有。 */
@@ -604,18 +677,27 @@
         } catch (e) {}
         return null;
     }
-    function wbVerLabelHtml() {
+    /* ★★★ v629：世界书版本标签 = **只算一份文案**，两处共用 ★★★
+       ── 为什么必须抽出来（作者 2026-11-17 报的病）──────────────────────────
+         「给武器起名，一点击输入框，武器界面就会消失。」
+         ── 真因链（真 Chrome 抓到的调用栈）────────────────────────────────
+           玩家点输入框 ⇒ 焦点进框 ⇒ 1.2 秒后 `wbVerLabelHtml` 里那个重试定时器
+           跑了一次 **`render(true)`** ⇒ `host.innerHTML = …` 整棵子树重建 ⇒
+           **正在编辑的 input 被销毁**（连带光标、选区、刚打的字全部归零）。
+           玩家眼里就是"点一下输入框，这块界面没了"。
+         ── 为什么以前没炸 ─────────────────────────────────────────────────
+           `render()` 里本来有一条守卫：`if (!hard && focusInside(pre)) return;`
+           —— 焦点在面板里就**不重绘**。可这里传的是 `render(true)`，
+           `hard = (force !== false)` ⇒ 守卫**整条被绕过**。
+           也就是说：这条守卫一直在，只是这条调用绕开了它。
+         ── 现在怎么做 ─────────────────────────────────────────────────────
+           不再整块重绘，改成**定点刷新那一个 `<span>` 的 textContent**
+           （见 `xzWbVerRefresh`）。一个标签的文字变了，没有任何理由重建整棵 DOM。
+           ⚠ 文案口径只许在 `wbVerParts()` 里算一次 —— 渲染和定点刷新共用。
+             两处各算一份的最后都漂了（本项目的前科：`_qpTable` 七处副本）。 */
+    function wbVerParts() {
         var st = wbVerState();
-        if (!st || !st.ok) {
-            /* 没读到：**只安排有限次重绘**（最多 3 次）。无限轮询会把这个面板拖卡，
-               而且 04 真没起来时永远等不到 —— 那时应该停在"核对中"，不是死循环。 */
-            if (_wbVerRetry < 3) {
-                _wbVerRetry++;
-                setTimeout(function () { try { render(true); } catch (e) {} }, 1200);
-            }
-            return '<span class="xz-st-ver" style="flex:none;white-space:nowrap;font-size:10px;color:var(--xz-muted);">'
-                + esc(VERSION) + ' · 核对世界书…</span>';
-        }
+        if (!st || !st.ok) return null;
         /* ★★★ 最终口径（用户 2026-11-01 第二轮）：「以我们卡的版本号为主」★★★
            主号永远是卡版本 `st.build`；世界书只作为附加提示（跟上 / 没跟上）。
            与 05 那枚徽章**同一口径**，两处必须印同一个号（否则玩家会以为看到两个版本）。 */
@@ -631,9 +713,47 @@
             ? ('本卡 ' + st.build + '，已是最新版本。脚本与引擎会自动热更新，不需要重新导入卡。')
             : ('本卡 ' + st.build + '。世界书还是 ' + st.ver + '，没跟上 —— 世界书不能热更新，'
                + '请去酒馆「导入卡内世界书」覆盖一次。');
-        return '<span class="xz-st-ver" style="flex:none;white-space:nowrap;font-size:10px;color:'
-            + (same ? '#4ade80' : '#fbbf24') + ';" title="' + esc(tip) + '">'
-            + esc(txt) + '</span>';
+        return { txt: txt, tip: tip, color: same ? '#4ade80' : '#fbbf24' };
+    }
+    function wbVerLabelHtml() {
+        var p = wbVerParts();
+        if (!p) {
+            /* 没读到：**只安排有限次定点刷新**（最多 3 次）。无限轮询会把这个面板拖卡，
+               而且 04 真没起来时永远等不到 —— 那时应该停在"核对中"，不是死循环。
+               ⚠ `_wbVerRetry` 是**实例级**的，别指望它归零：它只在"读到"之后才不该再涨，
+                 而读到之后 `wbVerParts()` 非空 ⇒ 根本不会再排定时器。 */
+            if (_wbVerRetry < 3) {
+                _wbVerRetry++;
+                setTimeout(function () { try { xzWbVerRefresh(); } catch (e) {} }, 1200);
+            }
+            return '<span class="xz-st-ver" data-xz-wbver="1" style="flex:none;white-space:nowrap;font-size:10px;color:var(--xz-muted);">'
+                + esc(VERSION) + ' · 核对世界书…</span>';
+        }
+        return '<span class="xz-st-ver" data-xz-wbver="1" style="flex:none;white-space:nowrap;font-size:10px;color:'
+            + p.color + ';" title="' + esc(p.tip) + '">'
+            + esc(p.txt) + '</span>';
+    }
+    /* 定点刷新：只改那一个标签，**绝不重建 DOM**。
+       ⚠ 拿不到元素就静默返回：面板已经被收起/换页/整块移除时，这里什么都不该做
+         （那种情况下重绘反而是对的，而它自己的渲染路径会处理）。 */
+    function xzWbVerRefresh() {
+        try {
+            var host = getDoc().getElementById(HOST_ID);
+            if (!host) return;
+            var el = host.querySelector('[data-xz-wbver]');
+            if (!el) return;
+            var p = wbVerParts();
+            if (!p) {
+                if (_wbVerRetry < 3) {
+                    _wbVerRetry++;
+                    setTimeout(function () { try { xzWbVerRefresh(); } catch (e) {} }, 1500);
+                }
+                return;
+            }
+            el.textContent = p.txt;
+            el.title = p.tip;
+            el.style.color = p.color;
+        } catch (e) {}
     }
 
     var REV = 'xz-rev-6';
