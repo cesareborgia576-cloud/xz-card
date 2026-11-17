@@ -27,7 +27,7 @@
      只改一个 ⇒ 一半界面消失、一半还在，那比全都不显示更像"卡坏了"。
      「工具/维护开关.mjs」 一次改两个，并且切完会自检"true/false 不同时出现"。
    ══════════════════════════════════════════════════════════════════════ */
-var XZ_MAINT = true;
+var XZ_MAINT = false;
 
 /* 维护卡片：唯一允许出现在页面上的东西。
    ⚠ 写成 「;(function」 是为了**不被下面那段"给每个顶层 IIFE 插守卫"的注入逻辑误伤** ——
@@ -67,7 +67,7 @@ var XZ_MAINT = true;
     try {
         var mo = new MutationObserver(function () { paint(); });
         mo.observe(document.documentElement, { childList: true, subtree: true });
-    } catch (eMO) {}
+    } catch (eM1) {}
 })();
 
 /* >>> XZ_V611_BEGIN >>> 本段由 工具/_v611_build_engine.mjs 生成，勿手改 <<< */
@@ -1522,6 +1522,7 @@ var XZ_MAINT = true;
            玩家想换叫法照样能手打 `蚀骨:5:3` —— 引擎按效果集的键取名字，不查白名单。 */
       { k: '持续伤害', g: '常减', selfOk: false, base: 7, unit: 'dot', txt: '每手掉血（这是机制名本身；想换叫法就手打 灼烧/蚀骨…）' },
       { k: '虚弱', g: '常减', selfOk: false, base: 20, unit: 'pct', txt: '目标出手更弱' },
+      { k: '禁疗', g: '常减', selfOk: false, base: 3, unit: 'n', txt: '封住目标疗愈，N 手内一切回血归零' },
       { k: '易伤', g: '常减', selfOk: false, base: 20, unit: 'pct', txt: '目标更易被打（承伤 +）' },
       { k: '减速', g: '常减', selfOk: false, base: 3, unit: 'flat', txt: '目标速度 -N 点' },
       /* ★ v507：乱序 = **减条**（行动条后退），与「减速」（速度 -N，对应「提速」）
@@ -2847,7 +2848,7 @@ function xzSkeletonOfSkill(skill) {
         /* ★ v506：'持续治疗' = '回血' 的玩家侧显示名（自选器摆这个）。
            两个都要在名单里：AI 写「回血」是历史写法，玩家点选会产出「持续治疗」。 */
         '回血', '持续治疗', '回蓝', '持续回蓝', '气血上限', '灵力上限', '免死', '破盾', '抗暴',
-        '虚弱', '易伤', '减速', '召唤',
+        '虚弱', '易伤', '减速', '禁疗', '召唤',
         /* v448 条件缩放：值 = 加成上限的百分比，必须带手数
            ★ v449：`敌多增伤` → `敌众增伤`（**只改名，枪路层名 `敌多增伤` 原样保留**）。
              撞名的是机制名，而层名写进了 210 门预设的 `st:` 和存档的 `v2stk` 键，
