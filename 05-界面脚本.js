@@ -22078,6 +22078,96 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
 })();
 
 /* ══════════════════════════════════════════════════════════════════════════
+   ★★★ v639 · 战斗界面（#xz-jjb-overlay）三档主题适配层 ★★★
+   作者 2026-11-18：「战斗脚本的美化你他妈也没适配啊，你倒是兼容三套主题的美化啊」
+
+   ── 为什么放在 05，而不是改战斗引擎 ────────────────────────────────────
+     战斗界面的样式真身在 `战斗引擎/核心脚本/index.js`（CDN tag 提供）。
+     改它 = 一次引擎发布（提版本/推 commit/打 tag/改 04 的 tag 号），
+     而这条只是**换皮**，没有任何结算逻辑 ⇒ 走 05 这个热更槽，
+     玩家刷新即生效，也不动引擎的 tag。
+
+   ── 为什么必须写 !important 与 ID 选择器 ────────────────────────────────
+     引擎里 `#xz-jjb-frame{background:linear-gradient(...)}` 是 **ID 选择器**，
+     特异性 (1,0,0)；光写 `:root[data-xz-theme="qing"]` 只有 (0,2,0)，
+     压不过它 —— 这是 v593 那次日光适配踩过的同一个坑。
+
+   ── 覆盖范围（只换材质，不动布局）────────────────────────────────────────
+     ① 外框底：夜墨→中性黑（作者：简约黑）；玄青→玄青底；日光→宣纸
+     ② 角色卡底：同上一套
+     ③ 演武台/编队层（`.xz-jjb-teamwrap` 挂在 body 上，令牌取不到，单独给）
+     ④ 令牌：玄青那档此前**完全没写**，所以玄青下战斗界面一直是夜墨色
+   ══════════════════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+  if (typeof XZ_MAINT === 'boolean' && XZ_MAINT) return;
+
+  var ID = 'xz-jjb-theme-layer';
+  var CSS = [
+    /* ── 夜墨：中性黑（与 v638 的 --xz-card:#141416 同一族）── */
+    '#xz-jjb-frame{background:linear-gradient(180deg,#131315,#0a0a0b 60%)!important;}',
+    /* ── 玄青：玄青底 + 暖金描边（此前这一档一条规则都没有）── */
+    ':root[data-xz-theme="qing"] #xz-jjb-overlay,',
+    '.xz-root[data-xz-theme="qing"] #xz-jjb-overlay,',
+    'body[data-xz-theme="qing"] #xz-jjb-overlay{',
+    '--xz-bg:#061418;--xz-panel:#0a1e24;--xz-panel-2:#0d262e;',
+    '--xz-ink:#f3eee5;--xz-ink-2:#c9c4b8;--xz-ink-3:#8a9496;',
+    '--xz-gold:#e6bd76;--xz-gold-2:#f2c26f;--xz-gold-dim:rgba(227,185,111,.26);',
+    '--xz-line:rgba(213,180,121,.28);--xz-line-2:rgba(242,194,111,.62);',
+    '--xz-me:#68c5b2;--xz-foe:#b5545c;',
+    '--xz-border:rgba(213,180,121,.28);--xz-border-strong:rgba(242,194,111,.62);',
+    '--xz-text:#f3eee5;--xz-text-2:#c9c4b8;--xz-muted:#8a9496;',
+    '--xz-card:linear-gradient(180deg,#0c2229 0%,#071a20 100%);',
+    '--xz-card-hover:linear-gradient(180deg,#102b33 0%,#0a2028 100%);',
+    '--dhl-header:linear-gradient(90deg,#12262c 0%,#0d2027 56%,#0a1a20 100%);',
+    '--dhl-button-active:linear-gradient(180deg,rgba(230,189,118,.22),rgba(8,22,28,.40));',
+    '--dhl-stage:linear-gradient(180deg,#0a1e24 0%,#061418 100%);',
+    '--dhl-reading:linear-gradient(180deg,#0a1e24,#071820);',
+    '--dhl-card:linear-gradient(180deg,#0c2229,#071a20);',
+    'background:rgba(4,12,16,.86);',
+    '}',
+    ':root[data-xz-theme="qing"] #xz-jjb-overlay,',
+    ':root[data-xz-theme="qing"] .xz-jjb-teamwrap{',
+    'background:rgba(4,12,16,.90)!important;',
+    '--xz-void:#061418;--xz-bg:#061418;',
+    '--xz-panel:#0a1e24;--xz-panel-2:#0d262e;',
+    '--xz-card:#0c2229;--xz-card-hover:#102b33;',
+    '--xz-text:#f3eee5;--xz-text-2:#c9c4b8;--xz-muted:#8a9496;',
+    '--xz-border:rgba(213,180,121,.28);--xz-border-strong:rgba(242,194,111,.62);',
+    '--dhl-stage:linear-gradient(180deg,#0a1e24 0%,#061418 100%);',
+    '--dhl-reading:linear-gradient(180deg,#0a1e24,#071820);',
+    '--dhl-header:linear-gradient(90deg,#12262c,#0d2027 50%,#0a1a20);',
+    '--dhl-button-active:linear-gradient(180deg,rgba(230,189,118,.20),rgba(8,22,28,.40));',
+    '}',
+    ':root[data-xz-theme="qing"] #xz-jjb-frame{background:linear-gradient(180deg,#0b1d24,#05121a 60%)!important;}',
+    ':root[data-xz-theme="qing"] #xz-jjb-overlay .xz-jjb-card{',
+    'background:linear-gradient(180deg,#0d232b 0%,#081a20 100%)!important;}',
+    /* ── 日光：引擎已有一套宣纸层，这里只补外框底（它写死在 ID 规则里）── */
+    ':root[data-xz-theme="day"] #xz-jjb-frame{background:linear-gradient(180deg,#fbf7ec,#f2ebdb 60%)!important;}'
+  ].join('');
+
+  function host() {
+    try { if (window.top && window.top.document && window.top.document.body) return window.top; } catch (e) {}
+    return window;
+  }
+  function install() {
+    try {
+      var d = host().document || document;
+      if (d.getElementById(ID)) return;
+      var st = d.createElement('style');
+      st.id = ID;
+      st.textContent = CSS;
+      (d.head || d.documentElement).appendChild(st);
+    } catch (e) {}
+  }
+  install();
+  /* 战斗界面是**后挂**的（点「开战」才创建），所以不能只在启动时装一次：
+     主题切换与 DOM 重建都可能让 head 被换掉，绑定在 chat_changed 与 1.5s 心跳上兜底。 */
+  try { if (window.eventOn) window.eventOn('chat_changed', install); } catch (e2) {}
+  try { setInterval(install, 2000); } catch (e3) {}
+})();
+
+/* ══════════════════════════════════════════════════════════════════════════
    ★★★ v578 · 正文包裹（水墨卷轴）★★★
    作者 2026-11-10：「有两重正文美化，一个是对话头像气泡，一个是包裹正文的。
    注意和图床，立绘，正则美化等东西的兼容。正文美化我们自己做。」
