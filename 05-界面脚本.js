@@ -196,7 +196,8 @@ var XZ_MAINT = false;
        ⚠ 三档共用一个 sync()：属性值 == 'qing'。选择器 [data-xz-theme="qing"]
          特异性高于 NIGHT 的 :root,.xz-root，两者都是 !important ⇒ 玄青能压过夜墨。 */
     var QING_TOKENS =
-        ':root[data-xz-theme="qing"],.xz-root[data-xz-theme="qing"],body[data-xz-theme="qing"]{' +
+        ':root[data-xz-theme="qing"],.xz-root[data-xz-theme="qing"],body[data-xz-theme="qing"],' +
+        ':root[data-xz-theme="qing"] .xz-root,body[data-xz-theme="qing"] .xz-root{' +
         /* ★★★ v638：玄青底**保留**，只有输入框改黑 ★★★
            作者 2026-11-18：「玄青色的输入框别搞青绿色，就搞成深色美化那种黑就行了」。
            ── 为什么底不动 ─────────────────────────────────────────────────────
@@ -211,13 +212,15 @@ var XZ_MAINT = false;
         '--xz-gold-fill:#e6bd76!important;' +
         '--xz-gold-glow:rgba(227,185,111,0.28)!important;' +
         '--xz-jade:#68c5b2!important;--xz-cyan:#7fd2c1!important;' +
+        '--xz-bar-hp:linear-gradient(90deg,#b21f45,#ff8a8a)!important;--xz-bar-mp:linear-gradient(90deg,#2a63bb,#60a5fa)!important;--xz-bar-exp:linear-gradient(90deg,#e6bd76,#f2c26f)!important;' +
         '--xz-purple:#d8899d!important;--xz-crimson:#aa5960!important;' +
         '--xz-text:#f3eee5!important;--xz-text-2:#b7b8b3!important;--xz-muted:#8a9496!important;' +
         /* ★ v635：这里是 QING_DECL（原值），**不是** NIGHT_DECL（去金银）。
            作者：「金色是青玄色专有」⇒ 玄青那一档必须保留全部金色令牌。 */
         QING_DECL + '}';
     var DAY_TOKENS =
-        ':root[data-xz-theme="day"],.xz-root[data-xz-theme="day"],body[data-xz-theme="day"]{' +
+        ':root[data-xz-theme="day"],.xz-root[data-xz-theme="day"],body[data-xz-theme="day"],' +
+        ':root[data-xz-theme="day"] .xz-root,body[data-xz-theme="day"] .xz-root{' +
         '--xz-void:#ffffff!important;--xz-bg:#ffffff!important;--xz-card:#ffffff!important;' +
         '--xz-bar-hp:linear-gradient(90deg,#000000,#000000)!important;--xz-bar-mp:linear-gradient(90deg,#000000,#000000)!important;--xz-bar-exp:linear-gradient(90deg,#000000,#000000)!important;' +
         '--xz-card-hover:#f7f7f7!important;--xz-input:#ffffff!important;--xz-nav:#ffffff!important;' +
@@ -22110,6 +22113,48 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
   } catch (eX) {}
 
   init();
+})();
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ★★★ v639g · 把主题属性**灌进 iframe** ★★★
+   作者 2026-11-18：「弹层倒是跟着美化主题变色啊」。
+   ── 病根：弹层不在本文档里，而在**同源的 iframe 文档**里。
+      令牌是挂在 html/body 上的自定义属性，跨文档**不继承** ⇒
+      弹层只能吃到写死的兜底值（深藏青 + 金边），所以日光/夜墨下都是那副样子。
+   ── 做法：主题一变就把 data-xz-theme 同步写进每个同源 iframe 的
+      documentElement 与 body；1.5s 心跳兜底（弹层是后建的，创建时属性已在）。
+   ⚠ 跨域 iframe 会抛异常，逐个 try —— 一个失败不能拖垮其余。
+   ══════════════════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+  if (typeof XZ_MAINT === 'boolean' && XZ_MAINT) return;
+  function push() {
+    var th = null;
+    try { th = document.documentElement.getAttribute('data-xz-theme'); } catch (e) {}
+    var docs = [document];
+    try {
+      var fr = document.querySelectorAll('iframe');
+      for (var i = 0; i < fr.length; i++) {
+        try { if (fr[i].contentDocument) docs.push(fr[i].contentDocument); } catch (e2) {}
+      }
+    } catch (e3) {}
+    for (var j = 0; j < docs.length; j++) {
+      (function (d) {
+        try {
+          if (th) {
+            d.documentElement.setAttribute('data-xz-theme', th);
+            if (d.body) d.body.setAttribute('data-xz-theme', th);
+          } else {
+            d.documentElement.removeAttribute('data-xz-theme');
+            if (d.body) d.body.removeAttribute('data-xz-theme');
+          }
+        } catch (e4) {}
+      })(docs[j]);
+    }
+  }
+  push();
+  try { setInterval(push, 1500); } catch (e5) {}
+  try { if (window.eventOn) window.eventOn('chat_changed', push); } catch (e6) {}
 })();
 
 /* ══════════════════════════════════════════════════════════════════════════
