@@ -117,21 +117,42 @@ var XZ_MAINT = false;
     var KEY = '__XZ_V611__';
     try { if (window.top && window.top !== window && window.top[KEY]) { window[KEY] = window.top[KEY]; return; } } catch (e0) {}
 
-    var TONE_MAP = {"#10b981":"xz-t0","#22c55e":"xz-t1","#2dd4bf":"xz-t2","#4ade80":"xz-t3","#60a5fa":"xz-t4","#63c08c":"xz-t5","#68c5b2":"xz-t6","#6ee7b7":"xz-t7","#7dd3a0":"xz-t8","#7ddc9a":"xz-t9","#7f9db0":"xz-t10","#7fa593":"xz-t11","#7fb69b":"xz-t12","#7fd2c1":"xz-t13","#7fd4e8":"xz-t14","#7fe0b0":"xz-t15","#8a8478":"xz-t16","#8a8578":"xz-t17","#8a9496":"xz-t18","#8a949e":"xz-t19","#8b8674":"xz-t20","#8b9199":"xz-t21","#8e8778":"xz-t22","#8fa2c0":"xz-t23","#8fae7a":"xz-t24","#929292":"xz-t25","#93c5fd":"xz-t26","#94a3b8":"xz-t27","#9a9a9a":"xz-t28","#9aa0a6":"xz-t29","#9c9686":"xz-t30","#9c968c":"xz-t31","#9ec9e8":"xz-t32","#9fb3c8":"xz-t33","#9fb6c4":"xz-t34","#9fd4a0":"xz-t35","#9fd8c4":"xz-t36","#9fd8f7":"xz-t37","#a5b4fc":"xz-t38","#a78bfa":"xz-t39","#a855f7":"xz-t40","#a9a390":"xz-t41","#b7b1a4":"xz-t42","#b7b8b3":"xz-t43","#b8b0a0":"xz-t44","#b9cde8":"xz-t45","#c084fc":"xz-t46","#c0a97a":"xz-t47","#c4b5fd":"xz-t48","#c7c7c7":"xz-t49","#c8b06a":"xz-t50","#c8b1a8":"xz-t51","#c8c1b2":"xz-t52","#c9a05a":"xz-t53","#c9a86a":"xz-t54","#c9b183":"xz-t55","#c9bfae":"xz-t56","#c9c2b2":"xz-t57","#c9c2b4":"xz-t58","#c9c3b6":"xz-t59","#c9ced7":"xz-t60","#c9f5e4":"xz-t61","#cbd5e1":"xz-t62","#cecece":"xz-t63","#d35400":"xz-t64","#d4af37":"xz-t65","#d8899d":"xz-t66","#d8c48f":"xz-t67","#d98ca8":"xz-t68","#d9b76d":"xz-t69","#dcdcdc":"xz-t70","#df7468":"xz-t71","#e0b96a":"xz-t72","#e2decb":"xz-t73","#e2e8f0":"xz-t74","#e3c98a":"xz-t75","#e6bd76":"xz-t76","#e6dcc4":"xz-t77","#e74c3c":"xz-t78","#e8cb92":"xz-t79","#e8e3d3":"xz-t80","#e8e8e8":"xz-t81","#e9e5dc":"xz-t82","#ef4444":"xz-t83","#efe9dc":"xz-t84","#f08a84":"xz-t85","#f0a6a0":"xz-t86","#f0b090":"xz-t87","#f0b45a":"xz-t88","#f0b46a":"xz-t89","#f0d49a":"xz-t90","#f0d98a":"xz-t91","#f0d9a4":"xz-t92","#f0e2b0":"xz-t93","#f1ede4":"xz-t94","#f1f1f1":"xz-t95","#f2c26f":"xz-t96","#f2ecdd":"xz-t97","#f39c12":"xz-t98","#f3d999":"xz-t99","#f3eee5":"xz-t100","#f43f5e":"xz-t101","#f4ece0":"xz-t102","#f4efe2":"xz-t103","#f4f1e8":"xz-t104","#f59e0b":"xz-t105","#f5efe2":"xz-t106","#f5f5f5":"xz-t107","#f6dc9c":"xz-t108","#f6eee1":"xz-t109","#f6f1e6":"xz-t110","#f7d7d4":"xz-t111","#f7e6b6":"xz-t112","#f7f4ec":"xz-t113","#f87171":"xz-t114","#f8f3e7":"xz-t115","#f9f6ee":"xz-t116","#fbbf24":"xz-t117","#fbf8f0":"xz-t118","#fca5a5":"xz-t119","#fcd34d":"xz-t120","#fde68a":"xz-t121","#ff5252":"xz-t122","#ff6b6b":"xz-t123","#ff8a8a":"xz-t124","#ffd88a":"xz-t125","#ffeec2":"xz-t126","#fff":"xz-t127","#fff6dc":"xz-t128","#fff6e2":"xz-t129","#fff8e6":"xz-t130","#fffaf0":"xz-t131","#fffdf6":"xz-t132","#fffdf8":"xz-t133","#ffffff":"xz-t134","rgba(150,158,168,.8)":"xz-t135","rgba(230,189,118,.7)":"xz-t136","rgba(230,189,118,.85)":"xz-t137","rgba(230,189,118,.92)":"xz-t138","rgba(230,189,118,.95)":"xz-t139","rgba(240,234,216,0.66)":"xz-t140","rgba(255,255,255,.72)":"xz-t141","rgba(255,255,255,.74)":"xz-t142"};
-    var DAY_DECL = "--xz-t0:#0a7552!important;--xz-t1:#147136!important;--xz-t2:#177065!important;--xz-t3:#157438!important;--xz-t4:#0762d2!important;--xz-t5:#2e734d!important;--xz-t6:#2b7062!important;--xz-t7:#13754e!important;--xz-t8:#277446!important;--xz-t9:#20753a!important;--xz-t10:#4c687a!important;--xz-t11:#4d6d5e!important;--xz-t12:#3f6e57!important;--xz-t13:#276e60!important;--xz-t14:#186f83!important;--xz-t15:#1c7348!important;--xz-t16:#6c6659!important;--xz-t17:#696456!important;--xz-t18:#566669!important;--xz-t19:#5c6670!important;--xz-t20:#6b6657!important;--xz-t21:#5c6570!important;--xz-t22:#6b6558!important;--xz-t23:#4e658a!important;--xz-t24:#536c42!important;--xz-t25:#776161!important;--xz-t26:#0463ce!important;--xz-t27:#54667e!important;--xz-t28:#776161!important;--xz-t29:#5c6670!important;--xz-t30:#696456!important;--xz-t31:#6d6559!important;--xz-t32:#25699b!important;--xz-t33:#4d6886!important;--xz-t34:#4b697b!important;--xz-t35:#326f33!important;--xz-t36:#2d6e57!important;--xz-t37:#0d6ca0!important;--xz-t38:#123af7!important;--xz-t39:#4d14f5!important;--xz-t40:#8715f4!important;--xz-t41:#6c6654!important;--xz-t42:#6b6455!important;--xz-t43:#626654!important;--xz-t44:#6e6552!important;--xz-t45:#3767a7!important;--xz-t46:#8510f9!important;--xz-t47:#766138!important;--xz-t48:#4111f9!important;--xz-t49:#776161!important;--xz-t50:#76632b!important;--xz-t51:#7d5c4f!important;--xz-t52:#6c624d!important;--xz-t53:#7e5f29!important;--xz-t54:#7b602c!important;--xz-t55:#796135!important;--xz-t56:#6f624a!important;--xz-t57:#6d634d!important;--xz-t58:#6f6550!important;--xz-t59:#6e6552!important;--xz-t60:#596579!important;--xz-t61:#15734f!important;--xz-t62:#4d6685!important;--xz-t63:#776161!important;--xz-t64:#ae4500!important;--xz-t65:#7b641a!important;--xz-t66:#b03a58!important;--xz-t67:#78622a!important;--xz-t68:#b03a65!important;--xz-t69:#806221!important;--xz-t70:#776161!important;--xz-t71:#b73527!important;--xz-t72:#805f1b!important;--xz-t73:#6f673e!important;--xz-t74:#4a678f!important;--xz-t75:#7d611e!important;--xz-t76:#835c18!important;--xz-t77:#756232!important;--xz-t78:#c12718!important;--xz-t79:#805e1b!important;--xz-t80:#72653c!important;--xz-t81:#776161!important;--xz-t82:#726548!important;--xz-t83:#c71111!important;--xz-t84:#776336!important;--xz-t85:#c62218!important;--xz-t86:#c02a1e!important;--xz-t87:#a94817!important;--xz-t88:#8e5a0d!important;--xz-t89:#92570f!important;--xz-t90:#825e13!important;--xz-t91:#796110!important;--xz-t92:#806015!important;--xz-t93:#786317!important;--xz-t94:#72613b!important;--xz-t95:#776161!important;--xz-t96:#895b0c!important;--xz-t97:#79642e!important;--xz-t98:#905b07!important;--xz-t99:#805f0f!important;--xz-t100:#7b6339!important;--xz-t101:#cd0c2d!important;--xz-t102:#805f2d!important;--xz-t103:#79642e!important;--xz-t104:#716236!important;--xz-t105:#8c5a06!important;--xz-t106:#7c632b!important;--xz-t107:#776161!important;--xz-t108:#83610c!important;--xz-t109:#815e27!important;--xz-t110:#7b622c!important;--xz-t111:#bb3023!important;--xz-t112:#7b5e0d!important;--xz-t113:#766332!important;--xz-t114:#ce0a0a!important;--xz-t115:#7d6324!important;--xz-t116:#77622a!important;--xz-t117:#805d02!important;--xz-t118:#7a6221!important;--xz-t119:#cb0707!important;--xz-t120:#7a5e02!important;--xz-t121:#7a6202!important;--xz-t122:#cc0000!important;--xz-t123:#cc0000!important;--xz-t124:#cc0000!important;--xz-t125:#895b00!important;--xz-t126:#835e00!important;--xz-t127:#776161!important;--xz-t128:#836100!important;--xz-t129:#895e00!important;--xz-t130:#835e00!important;--xz-t131:#895b00!important;--xz-t132:#7c6100!important;--xz-t133:#835d00!important;--xz-t134:#776161!important;--xz-t135:rgba(92,101,112,0.8)!important;--xz-t136:rgba(131,92,24,0.7)!important;--xz-t137:rgba(131,92,24,0.85)!important;--xz-t138:rgba(131,92,24,0.92)!important;--xz-t139:rgba(131,92,24,0.95)!important;--xz-t140:rgba(116,98,45,0.66)!important;--xz-t141:rgba(119,97,97,0.72)!important;--xz-t142:rgba(119,97,97,0.74)!important;";
-    var NIGHT_DECL = "--xz-t0:#10b981!important;--xz-t1:#22c55e!important;--xz-t2:#2dd4bf!important;--xz-t3:#4ade80!important;--xz-t4:#60a5fa!important;--xz-t5:#63c08c!important;--xz-t6:#68c5b2!important;--xz-t7:#6ee7b7!important;--xz-t8:#7dd3a0!important;--xz-t9:#7ddc9a!important;--xz-t10:#7f9db0!important;--xz-t11:#7fa593!important;--xz-t12:#7fb69b!important;--xz-t13:#7fd2c1!important;--xz-t14:#7fd4e8!important;--xz-t15:#7fe0b0!important;--xz-t16:#8a8478!important;--xz-t17:#8a8578!important;--xz-t18:#8a9496!important;--xz-t19:#8a949e!important;--xz-t20:#8b8674!important;--xz-t21:#8b9199!important;--xz-t22:#8e8778!important;--xz-t23:#8fa2c0!important;--xz-t24:#8fae7a!important;--xz-t25:#929292!important;--xz-t26:#93c5fd!important;--xz-t27:#94a3b8!important;--xz-t28:#9a9a9a!important;--xz-t29:#9aa0a6!important;--xz-t30:#9c9686!important;--xz-t31:#9c968c!important;--xz-t32:#9ec9e8!important;--xz-t33:#9fb3c8!important;--xz-t34:#9fb6c4!important;--xz-t35:#9fd4a0!important;--xz-t36:#9fd8c4!important;--xz-t37:#9fd8f7!important;--xz-t38:#a5b4fc!important;--xz-t39:#a78bfa!important;--xz-t40:#a855f7!important;--xz-t41:#a9a390!important;--xz-t42:#b7b1a4!important;--xz-t43:#b7b8b3!important;--xz-t44:#b8b0a0!important;--xz-t45:#b9cde8!important;--xz-t46:#c084fc!important;--xz-t47:#c0a97a!important;--xz-t48:#c4b5fd!important;--xz-t49:#c7c7c7!important;--xz-t50:#c8b06a!important;--xz-t51:#c8b1a8!important;--xz-t52:#c8c1b2!important;--xz-t53:#c9a05a!important;--xz-t54:#c9a86a!important;--xz-t55:#c9b183!important;--xz-t56:#c9bfae!important;--xz-t57:#c9c2b2!important;--xz-t58:#c9c2b4!important;--xz-t59:#c9c3b6!important;--xz-t60:#c9ced7!important;--xz-t61:#c9f5e4!important;--xz-t62:#cbd5e1!important;--xz-t63:#cecece!important;--xz-t64:#d35400!important;--xz-t65:#d4af37!important;--xz-t66:#d8899d!important;--xz-t67:#d8c48f!important;--xz-t68:#d98ca8!important;--xz-t69:#d9b76d!important;--xz-t70:#dcdcdc!important;--xz-t71:#df7468!important;--xz-t72:#e0b96a!important;--xz-t73:#e2decb!important;--xz-t74:#e2e8f0!important;--xz-t75:#e3c98a!important;--xz-t76:#e6bd76!important;--xz-t77:#e6dcc4!important;--xz-t78:#e74c3c!important;--xz-t79:#e8cb92!important;--xz-t80:#e8e3d3!important;--xz-t81:#e8e8e8!important;--xz-t82:#e9e5dc!important;--xz-t83:#ef4444!important;--xz-t84:#efe9dc!important;--xz-t85:#f08a84!important;--xz-t86:#f0a6a0!important;--xz-t87:#f0b090!important;--xz-t88:#f0b45a!important;--xz-t89:#f0b46a!important;--xz-t90:#f0d49a!important;--xz-t91:#f0d98a!important;--xz-t92:#f0d9a4!important;--xz-t93:#f0e2b0!important;--xz-t94:#f1ede4!important;--xz-t95:#f1f1f1!important;--xz-t96:#f2c26f!important;--xz-t97:#f2ecdd!important;--xz-t98:#f39c12!important;--xz-t99:#f3d999!important;--xz-t100:#f3eee5!important;--xz-t101:#f43f5e!important;--xz-t102:#f4ece0!important;--xz-t103:#f4efe2!important;--xz-t104:#f4f1e8!important;--xz-t105:#f59e0b!important;--xz-t106:#f5efe2!important;--xz-t107:#f5f5f5!important;--xz-t108:#f6dc9c!important;--xz-t109:#f6eee1!important;--xz-t110:#f6f1e6!important;--xz-t111:#f7d7d4!important;--xz-t112:#f7e6b6!important;--xz-t113:#f7f4ec!important;--xz-t114:#f87171!important;--xz-t115:#f8f3e7!important;--xz-t116:#f9f6ee!important;--xz-t117:#fbbf24!important;--xz-t118:#fbf8f0!important;--xz-t119:#fca5a5!important;--xz-t120:#fcd34d!important;--xz-t121:#fde68a!important;--xz-t122:#ff5252!important;--xz-t123:#ff6b6b!important;--xz-t124:#ff8a8a!important;--xz-t125:#ffd88a!important;--xz-t126:#ffeec2!important;--xz-t127:#fff!important;--xz-t128:#fff6dc!important;--xz-t129:#fff6e2!important;--xz-t130:#fff8e6!important;--xz-t131:#fffaf0!important;--xz-t132:#fffdf6!important;--xz-t133:#fffdf8!important;--xz-t134:#ffffff!important;--xz-t135:rgba(150,158,168,.8)!important;--xz-t136:rgba(230,189,118,.7)!important;--xz-t137:rgba(230,189,118,.85)!important;--xz-t138:rgba(230,189,118,.92)!important;--xz-t139:rgba(230,189,118,.95)!important;--xz-t140:rgba(240,234,216,0.66)!important;--xz-t141:rgba(255,255,255,.72)!important;--xz-t142:rgba(255,255,255,.74)!important;";
+    var TONE_MAP = {"#10b981":"xz-t0","#22c55e":"xz-t1","#2dd4bf":"xz-t2","#4ade80":"xz-t3","#60a5fa":"xz-t4","#63c08c":"xz-t5","#68c5b2":"xz-t6","#6ee7b7":"xz-t7","#7dd3a0":"xz-t8","#7ddc9a":"xz-t9","#7f9db0":"xz-t10","#7fa593":"xz-t11","#7fb69b":"xz-t12","#7fd2c1":"xz-t13","#7fd4e8":"xz-t14","#7fe0b0":"xz-t15","#8a8478":"xz-t16","#8a8578":"xz-t17","#8a9496":"xz-t18","#8a949e":"xz-t19","#8b8674":"xz-t20","#8b9199":"xz-t21","#8e8778":"xz-t22","#8fa2c0":"xz-t23","#8fae7a":"xz-t24","#929292":"xz-t25","#93c5fd":"xz-t26","#94a3b8":"xz-t27","#9a9a9a":"xz-t28","#9aa0a6":"xz-t29","#9c9686":"xz-t30","#9c968c":"xz-t31","#9ec9e8":"xz-t32","#9fb3c8":"xz-t33","#9fb6c4":"xz-t34","#9fd4a0":"xz-t35","#9fd8c4":"xz-t36","#9fd8f7":"xz-t37","#a5b4fc":"xz-t38","#a78bfa":"xz-t39","#a855f7":"xz-t40","#a9a390":"xz-t41","#b7b1a4":"xz-t42","#b7b8b3":"xz-t43","#b8b0a0":"xz-t44","#b9cde8":"xz-t45","#c084fc":"xz-t46","#c0a97a":"xz-t47","#c4b5fd":"xz-t48","#c7c7c7":"xz-t49","#c8b06a":"xz-t50","#c8b1a8":"xz-t51","#c8c1b2":"xz-t52","#c9a05a":"xz-t53","#c9a86a":"xz-t54","#c9b183":"xz-t55","#c9bfae":"xz-t56","#c9c2b2":"xz-t57","#c9c2b4":"xz-t58","#c9c3b6":"xz-t59","#c9ced7":"xz-t60","#c9f5e4":"xz-t61","#cbd5e1":"xz-t62","#cecece":"xz-t63","#d35400":"xz-t64","#d4af37":"xz-t65","#d8899d":"xz-t66","#d8c48f":"xz-t67","#d98ca8":"xz-t68","#d9b76d":"xz-t69","#dcdcdc":"xz-t70","#df7468":"xz-t71","#e0b96a":"xz-t72","#e2decb":"xz-t73","#e2e8f0":"xz-t74","#e3c98a":"xz-t75","#e6bd76":"xz-t76","#e6dcc4":"xz-t77","#e74c3c":"xz-t78","#e8cb92":"xz-t79","#e8e3d3":"xz-t80","#e8e8e8":"xz-t81","#e9e5dc":"xz-t82","#ef4444":"xz-t83","#efe9dc":"xz-t84","#f08a84":"xz-t85","#f0a6a0":"xz-t86","#f0b090":"xz-t87","#f0b45a":"xz-t88","#f0b46a":"xz-t89","#f0d49a":"xz-t90","#f0d98a":"xz-t91","#f0d9a4":"xz-t92","#f0e2b0":"xz-t93","#f1ede4":"xz-t94","#f1f1f1":"xz-t95","#f2c26f":"xz-t96","#f2ecdd":"xz-t97","#f39c12":"xz-t98","#f3d999":"xz-t99","#f3eee5":"xz-t100","#f43f5e":"xz-t101","#f4ece0":"xz-t102","#f4efe2":"xz-t103","#f4f1e8":"xz-t104","#f59e0b":"xz-t105","#f5efe2":"xz-t106","#f5f5f5":"xz-t107","#f6dc9c":"xz-t108","#f6eee1":"xz-t109","#f6f1e6":"xz-t110","#f7d7d4":"xz-t111","#f7e6b6":"xz-t112","#f7f4ec":"xz-t113","#f87171":"xz-t114","#f8f3e7":"xz-t115","#f9f6ee":"xz-t116","#fbbf24":"xz-t117","#fbf8f0":"xz-t118","#fca5a5":"xz-t119","#fcd34d":"xz-t120","#fde68a":"xz-t121","#ff5252":"xz-t122","#ff6b6b":"xz-t123","#ff8a8a":"xz-t124","#ffd88a":"xz-t125","#ffeec2":"xz-t126","#fff":"xz-t127","#fff6dc":"xz-t128","#fff6e2":"xz-t129","#fff8e6":"xz-t130","#fffaf0":"xz-t131","#fffdf6":"xz-t132","#fffdf8":"xz-t133","#ffffff":"xz-t134","rgba(126, 78, 42, 0.45)":"xz-t135","rgba(138,95,20,.16)":"xz-t136","rgba(138,95,20,.20)":"xz-t137","rgba(138,95,20,.24)":"xz-t138","rgba(138,95,20,.28)":"xz-t139","rgba(138,95,20,.32)":"xz-t140","rgba(138,95,20,.34)":"xz-t141","rgba(138,95,20,.42)":"xz-t142","rgba(138,95,20,.55)":"xz-t143","rgba(138,95,20,.56)":"xz-t144","rgba(138,95,20,.60)":"xz-t145","rgba(138,95,20,0.16)":"xz-t146","rgba(138,95,20,0.20)":"xz-t147","rgba(138,95,20,0.22)":"xz-t148","rgba(138,95,20,0.24)":"xz-t149","rgba(138,95,20,0.30)":"xz-t150","rgba(138,95,20,0.56)":"xz-t151","rgba(150,120,40,0.10)":"xz-t152","rgba(150,120,40,0.32)":"xz-t153","rgba(150,158,168,.8)":"xz-t154","rgba(160,111,18,.10)":"xz-t155","rgba(160,111,18,.12)":"xz-t156","rgba(160,111,18,.15)":"xz-t157","rgba(160,111,18,.16)":"xz-t158","rgba(160,111,18,0.08)":"xz-t159","rgba(160,111,18,0.15)":"xz-t160","rgba(160,111,18,0.16)":"xz-t161","rgba(166,130,30,.95)":"xz-t162","rgba(201,168,106,.10)":"xz-t163","rgba(201,168,106,.12)":"xz-t164","rgba(201,168,106,.14)":"xz-t165","rgba(201,168,106,.22)":"xz-t166","rgba(201,168,106,.25)":"xz-t167","rgba(201,168,106,.3)":"xz-t168","rgba(201,168,106,.30)":"xz-t169","rgba(201,168,106,.34)":"xz-t170","rgba(201,168,106,.35)":"xz-t171","rgba(201,168,106,.38)":"xz-t172","rgba(201,168,106,.42)":"xz-t173","rgba(201,168,106,.45)":"xz-t174","rgba(201,168,106,.5)":"xz-t175","rgba(201,168,106,.55)":"xz-t176","rgba(201,168,106,.6)":"xz-t177","rgba(201,168,106,.8)":"xz-t178","rgba(201,168,106,.85)":"xz-t179","rgba(201,168,106,.9)":"xz-t180","rgba(212,175,55,.10)":"xz-t181","rgba(212,175,55,.12)":"xz-t182","rgba(212,175,55,.15)":"xz-t183","rgba(212,175,55,.16)":"xz-t184","rgba(212,175,55,.18)":"xz-t185","rgba(212,175,55,.2)":"xz-t186","rgba(212,175,55,.22)":"xz-t187","rgba(212,175,55,.24)":"xz-t188","rgba(212,175,55,.25)":"xz-t189","rgba(212,175,55,.28)":"xz-t190","rgba(212,175,55,.3)":"xz-t191","rgba(212,175,55,.30)":"xz-t192","rgba(212,175,55,.35)":"xz-t193","rgba(212,175,55,.38)":"xz-t194","rgba(212,175,55,.45)":"xz-t195","rgba(212,175,55,.5)":"xz-t196","rgba(212,175,55,.55)":"xz-t197","rgba(212,175,55,.6)":"xz-t198","rgba(212,175,55,0.06)":"xz-t199","rgba(212,175,55,0.07)":"xz-t200","rgba(212,175,55,0.08)":"xz-t201","rgba(212,175,55,0.1)":"xz-t202","rgba(212,175,55,0.10)":"xz-t203","rgba(212,175,55,0.12)":"xz-t204","rgba(212,175,55,0.14)":"xz-t205","rgba(212,175,55,0.15)":"xz-t206","rgba(212,175,55,0.18)":"xz-t207","rgba(212,175,55,0.2)":"xz-t208","rgba(212,175,55,0.22)":"xz-t209","rgba(212,175,55,0.25)":"xz-t210","rgba(212,175,55,0.28)":"xz-t211","rgba(212,175,55,0.3)":"xz-t212","rgba(212,175,55,0.30)":"xz-t213","rgba(212,175,55,0.34)":"xz-t214","rgba(212,175,55,0.35)":"xz-t215","rgba(212,175,55,0.4)":"xz-t216","rgba(212,175,55,0.5)":"xz-t217","rgba(212,175,55,0.55)":"xz-t218","rgba(212,175,55,0.6)":"xz-t219","rgba(212,175,55,0.62)":"xz-t220","rgba(212,175,55,0.75)":"xz-t221","rgba(213, 180, 121, 0.28)":"xz-t222","rgba(213,180,121,0.12)":"xz-t223","rgba(213,180,121,0.15)":"xz-t224","rgba(213,180,121,0.28)":"xz-t225","rgba(213,180,121,0.35)":"xz-t226","rgba(213,180,121,0.4)":"xz-t227","rgba(214,178,58,.95)":"xz-t228","rgba(217,119,6,.96)":"xz-t229","rgba(217,164,65,0.1)":"xz-t230","rgba(217,164,65,0.3)":"xz-t231","rgba(217,183,109,.07)":"xz-t232","rgba(217,183,109,.16)":"xz-t233","rgba(217,183,109,.28)":"xz-t234","rgba(217,183,109,.5)":"xz-t235","rgba(217,183,109,0.2)":"xz-t236","rgba(217,183,109,0.22)":"xz-t237","rgba(217,183,109,0.3)":"xz-t238","rgba(226,180,96,.20)":"xz-t239","rgba(227, 185, 111, 0.22)":"xz-t240","rgba(227, 185, 111, 0.28)":"xz-t241","rgba(230,189,118,.06)":"xz-t242","rgba(230,189,118,.08)":"xz-t243","rgba(230,189,118,.09)":"xz-t244","rgba(230,189,118,.1)":"xz-t245","rgba(230,189,118,.10)":"xz-t246","rgba(230,189,118,.12)":"xz-t247","rgba(230,189,118,.14)":"xz-t248","rgba(230,189,118,.16)":"xz-t249","rgba(230,189,118,.18)":"xz-t250","rgba(230,189,118,.2)":"xz-t251","rgba(230,189,118,.20)":"xz-t252","rgba(230,189,118,.22)":"xz-t253","rgba(230,189,118,.24)":"xz-t254","rgba(230,189,118,.25)":"xz-t255","rgba(230,189,118,.26)":"xz-t256","rgba(230,189,118,.28)":"xz-t257","rgba(230,189,118,.3)":"xz-t258","rgba(230,189,118,.30)":"xz-t259","rgba(230,189,118,.32)":"xz-t260","rgba(230,189,118,.34)":"xz-t261","rgba(230,189,118,.35)":"xz-t262","rgba(230,189,118,.4)":"xz-t263","rgba(230,189,118,.40)":"xz-t264","rgba(230,189,118,.42)":"xz-t265","rgba(230,189,118,.45)":"xz-t266","rgba(230,189,118,.5)":"xz-t267","rgba(230,189,118,.55)":"xz-t268","rgba(230,189,118,.6)":"xz-t269","rgba(230,189,118,.62)":"xz-t270","rgba(230,189,118,.7)":"xz-t271","rgba(230,189,118,.72)":"xz-t272","rgba(230,189,118,.85)":"xz-t273","rgba(230,189,118,.92)":"xz-t274","rgba(230,189,118,.95)":"xz-t275","rgba(230,189,118,0.12)":"xz-t276","rgba(230,189,118,0.15)":"xz-t277","rgba(230,189,118,0.25)":"xz-t278","rgba(230,189,118,0.35)":"xz-t279","rgba(230,189,118,0.4)":"xz-t280","rgba(230,189,118,0.45)":"xz-t281","rgba(232,203,146,.92)":"xz-t282","rgba(234,179,8,.10)":"xz-t283","rgba(234,179,8,.45)":"xz-t284","rgba(240,180,90,.55)":"xz-t285","rgba(240,234,216,0.66)":"xz-t286","rgba(242, 194, 111, 0.72)":"xz-t287","rgba(242,194,111,.3)":"xz-t288","rgba(242,194,111,.45)":"xz-t289","rgba(242,194,111,.85)":"xz-t290","rgba(243,217,153,.22)":"xz-t291","rgba(243,217,153,.34)":"xz-t292","rgba(243,217,153,.45)":"xz-t293","rgba(243,217,153,.5)":"xz-t294","rgba(243,217,153,.72)":"xz-t295","rgba(243,217,153,.85)":"xz-t296","rgba(243,217,153,0.42)":"xz-t297","rgba(243,217,153,0.7)":"xz-t298","rgba(243,217,153,0.95)":"xz-t299","rgba(244, 157, 58, 0.10)":"xz-t300","rgba(245,158,11,.18)":"xz-t301","rgba(245,158,11,.85)":"xz-t302","rgba(245,158,11,.9)":"xz-t303","rgba(245,158,11,0.08)":"xz-t304","rgba(245,158,11,0.12)":"xz-t305","rgba(245,158,11,0.2)":"xz-t306","rgba(245,158,11,0.28)":"xz-t307","rgba(245,158,11,0.5)":"xz-t308","rgba(245,158,11,0.55)":"xz-t309","rgba(245,158,11,0.6)":"xz-t310","rgba(246,224,168,0.62)":"xz-t311","rgba(251,191,36,.25)":"xz-t312","rgba(251,191,36,0.12)":"xz-t313","rgba(251,191,36,0.4)":"xz-t314","rgba(255, 157, 52, 0.08)":"xz-t315","rgba(255, 177, 73, 0.16)":"xz-t316","rgba(255, 178, 72, 0.14)":"xz-t317","rgba(255,238,190,0.95)":"xz-t318","rgba(255,242,207,1)":"xz-t319","rgba(255,255,255,.72)":"xz-t320","rgba(255,255,255,.74)":"xz-t321","rgba(48,34,8,.7)":"xz-t322","rgba(48,34,8,.78)":"xz-t323","rgba(60,44,16,0.62)":"xz-t324","rgba(96,74,28,.22)":"xz-t325","rgba(96,74,28,0.07)":"xz-t326","rgba(96,74,28,0.14)":"xz-t327"};
+    var DAY_DECL = "--xz-t0:#0a7552!important;--xz-t1:#147136!important;--xz-t2:#177065!important;--xz-t3:#157438!important;--xz-t4:#0762d2!important;--xz-t5:#2e734d!important;--xz-t6:#2b7062!important;--xz-t7:#13754e!important;--xz-t8:#277446!important;--xz-t9:#20753a!important;--xz-t10:#4c687a!important;--xz-t11:#4d6d5e!important;--xz-t12:#3f6e57!important;--xz-t13:#276e60!important;--xz-t14:#186f83!important;--xz-t15:#1c7348!important;--xz-t16:#6c6659!important;--xz-t17:#696456!important;--xz-t18:#566669!important;--xz-t19:#5c6670!important;--xz-t20:#6b6657!important;--xz-t21:#5c6570!important;--xz-t22:#6b6558!important;--xz-t23:#4e658a!important;--xz-t24:#536c42!important;--xz-t25:#776161!important;--xz-t26:#0463ce!important;--xz-t27:#54667e!important;--xz-t28:#776161!important;--xz-t29:#5c6670!important;--xz-t30:#696456!important;--xz-t31:#6d6559!important;--xz-t32:#25699b!important;--xz-t33:#4d6886!important;--xz-t34:#4b697b!important;--xz-t35:#326f33!important;--xz-t36:#2d6e57!important;--xz-t37:#0d6ca0!important;--xz-t38:#123af7!important;--xz-t39:#4d14f5!important;--xz-t40:#8715f4!important;--xz-t41:#6c6654!important;--xz-t42:#6b6455!important;--xz-t43:#626654!important;--xz-t44:#6e6552!important;--xz-t45:#3767a7!important;--xz-t46:#8510f9!important;--xz-t47:#766138!important;--xz-t48:#4111f9!important;--xz-t49:#776161!important;--xz-t50:#76632b!important;--xz-t51:#7d5c4f!important;--xz-t52:#6c624d!important;--xz-t53:#7e5f29!important;--xz-t54:#7b602c!important;--xz-t55:#796135!important;--xz-t56:#6f624a!important;--xz-t57:#6d634d!important;--xz-t58:#6f6550!important;--xz-t59:#6e6552!important;--xz-t60:#596579!important;--xz-t61:#15734f!important;--xz-t62:#4d6685!important;--xz-t63:#776161!important;--xz-t64:#ae4500!important;--xz-t65:#7b641a!important;--xz-t66:#b03a58!important;--xz-t67:#78622a!important;--xz-t68:#b03a65!important;--xz-t69:#806221!important;--xz-t70:#776161!important;--xz-t71:#b73527!important;--xz-t72:#805f1b!important;--xz-t73:#6f673e!important;--xz-t74:#4a678f!important;--xz-t75:#7d611e!important;--xz-t76:#835c18!important;--xz-t77:#756232!important;--xz-t78:#c12718!important;--xz-t79:#805e1b!important;--xz-t80:#72653c!important;--xz-t81:#776161!important;--xz-t82:#726548!important;--xz-t83:#c71111!important;--xz-t84:#776336!important;--xz-t85:#c62218!important;--xz-t86:#c02a1e!important;--xz-t87:#a94817!important;--xz-t88:#8e5a0d!important;--xz-t89:#92570f!important;--xz-t90:#825e13!important;--xz-t91:#796110!important;--xz-t92:#806015!important;--xz-t93:#786317!important;--xz-t94:#72613b!important;--xz-t95:#776161!important;--xz-t96:#895b0c!important;--xz-t97:#79642e!important;--xz-t98:#905b07!important;--xz-t99:#805f0f!important;--xz-t100:#7b6339!important;--xz-t101:#cd0c2d!important;--xz-t102:#805f2d!important;--xz-t103:#79642e!important;--xz-t104:#716236!important;--xz-t105:#8c5a06!important;--xz-t106:#7c632b!important;--xz-t107:#776161!important;--xz-t108:#83610c!important;--xz-t109:#815e27!important;--xz-t110:#7b622c!important;--xz-t111:#bb3023!important;--xz-t112:#7b5e0d!important;--xz-t113:#766332!important;--xz-t114:#ce0a0a!important;--xz-t115:#7d6324!important;--xz-t116:#77622a!important;--xz-t117:#805d02!important;--xz-t118:#7a6221!important;--xz-t119:#cb0707!important;--xz-t120:#7a5e02!important;--xz-t121:#7a6202!important;--xz-t122:#cc0000!important;--xz-t123:#cc0000!important;--xz-t124:#cc0000!important;--xz-t125:#895b00!important;--xz-t126:#835e00!important;--xz-t127:#776161!important;--xz-t128:#836100!important;--xz-t129:#895e00!important;--xz-t130:#835e00!important;--xz-t131:#895b00!important;--xz-t132:#7c6100!important;--xz-t133:#835d00!important;--xz-t134:#776161!important;--xz-t135:rgba(126,78,42,0.45)!important;--xz-t136:rgba(133,91,19,0.16)!important;--xz-t137:rgba(133,91,19,0.2)!important;--xz-t138:rgba(133,91,19,0.24)!important;--xz-t139:rgba(133,91,19,0.28)!important;--xz-t140:rgba(133,91,19,0.32)!important;--xz-t141:rgba(133,91,19,0.34)!important;--xz-t142:rgba(133,91,19,0.42)!important;--xz-t143:rgba(133,91,19,0.55)!important;--xz-t144:rgba(133,91,19,0.56)!important;--xz-t145:rgba(133,91,19,0.6)!important;--xz-t146:rgba(133,91,19,0.16)!important;--xz-t147:rgba(133,91,19,0.2)!important;--xz-t148:rgba(133,91,19,0.22)!important;--xz-t149:rgba(133,91,19,0.24)!important;--xz-t150:rgba(133,91,19,0.3)!important;--xz-t151:rgba(133,91,19,0.56)!important;--xz-t152:rgba(121,97,32,0.1)!important;--xz-t153:rgba(121,97,32,0.32)!important;--xz-t154:rgba(92,101,112,0.8)!important;--xz-t155:rgba(132,92,15,0.1)!important;--xz-t156:rgba(132,92,15,0.12)!important;--xz-t157:rgba(132,92,15,0.15)!important;--xz-t158:rgba(132,92,15,0.16)!important;--xz-t159:rgba(132,92,15,0.08)!important;--xz-t160:rgba(132,92,15,0.15)!important;--xz-t161:rgba(132,92,15,0.16)!important;--xz-t162:rgba(125,98,23,0.95)!important;--xz-t163:rgba(123,96,44,0.1)!important;--xz-t164:rgba(123,96,44,0.12)!important;--xz-t165:rgba(123,96,44,0.14)!important;--xz-t166:rgba(123,96,44,0.22)!important;--xz-t167:rgba(123,96,44,0.25)!important;--xz-t168:rgba(123,96,44,0.3)!important;--xz-t169:rgba(123,96,44,0.3)!important;--xz-t170:rgba(123,96,44,0.34)!important;--xz-t171:rgba(123,96,44,0.35)!important;--xz-t172:rgba(123,96,44,0.38)!important;--xz-t173:rgba(123,96,44,0.42)!important;--xz-t174:rgba(123,96,44,0.45)!important;--xz-t175:rgba(123,96,44,0.5)!important;--xz-t176:rgba(123,96,44,0.55)!important;--xz-t177:rgba(123,96,44,0.6)!important;--xz-t178:rgba(123,96,44,0.8)!important;--xz-t179:rgba(123,96,44,0.85)!important;--xz-t180:rgba(123,96,44,0.9)!important;--xz-t181:rgba(123,100,26,0.1)!important;--xz-t182:rgba(123,100,26,0.12)!important;--xz-t183:rgba(123,100,26,0.15)!important;--xz-t184:rgba(123,100,26,0.16)!important;--xz-t185:rgba(123,100,26,0.18)!important;--xz-t186:rgba(123,100,26,0.2)!important;--xz-t187:rgba(123,100,26,0.22)!important;--xz-t188:rgba(123,100,26,0.24)!important;--xz-t189:rgba(123,100,26,0.25)!important;--xz-t190:rgba(123,100,26,0.28)!important;--xz-t191:rgba(123,100,26,0.3)!important;--xz-t192:rgba(123,100,26,0.3)!important;--xz-t193:rgba(123,100,26,0.35)!important;--xz-t194:rgba(123,100,26,0.38)!important;--xz-t195:rgba(123,100,26,0.45)!important;--xz-t196:rgba(123,100,26,0.5)!important;--xz-t197:rgba(123,100,26,0.55)!important;--xz-t198:rgba(123,100,26,0.6)!important;--xz-t199:rgba(123,100,26,0.06)!important;--xz-t200:rgba(123,100,26,0.07)!important;--xz-t201:rgba(123,100,26,0.08)!important;--xz-t202:rgba(123,100,26,0.1)!important;--xz-t203:rgba(123,100,26,0.1)!important;--xz-t204:rgba(123,100,26,0.12)!important;--xz-t205:rgba(123,100,26,0.14)!important;--xz-t206:rgba(123,100,26,0.15)!important;--xz-t207:rgba(123,100,26,0.18)!important;--xz-t208:rgba(123,100,26,0.2)!important;--xz-t209:rgba(123,100,26,0.22)!important;--xz-t210:rgba(123,100,26,0.25)!important;--xz-t211:rgba(123,100,26,0.28)!important;--xz-t212:rgba(123,100,26,0.3)!important;--xz-t213:rgba(123,100,26,0.3)!important;--xz-t214:rgba(123,100,26,0.34)!important;--xz-t215:rgba(123,100,26,0.35)!important;--xz-t216:rgba(123,100,26,0.4)!important;--xz-t217:rgba(123,100,26,0.5)!important;--xz-t218:rgba(123,100,26,0.55)!important;--xz-t219:rgba(123,100,26,0.6)!important;--xz-t220:rgba(123,100,26,0.62)!important;--xz-t221:rgba(123,100,26,0.75)!important;--xz-t222:rgba(127,96,40,0.28)!important;--xz-t223:rgba(127,96,40,0.12)!important;--xz-t224:rgba(127,96,40,0.15)!important;--xz-t225:rgba(127,96,40,0.28)!important;--xz-t226:rgba(127,96,40,0.35)!important;--xz-t227:rgba(127,96,40,0.4)!important;--xz-t228:rgba(118,97,25,0.95)!important;--xz-t229:rgba(151,83,4,0.96)!important;--xz-t230:rgba(129,93,26,0.1)!important;--xz-t231:rgba(129,93,26,0.3)!important;--xz-t232:rgba(128,98,33,0.07)!important;--xz-t233:rgba(128,98,33,0.16)!important;--xz-t234:rgba(128,98,33,0.28)!important;--xz-t235:rgba(128,98,33,0.5)!important;--xz-t236:rgba(128,98,33,0.2)!important;--xz-t237:rgba(128,98,33,0.22)!important;--xz-t238:rgba(128,98,33,0.3)!important;--xz-t239:rgba(131,93,24,0.2)!important;--xz-t240:rgba(130,92,25,0.22)!important;--xz-t241:rgba(130,92,25,0.28)!important;--xz-t242:rgba(131,92,24,0.06)!important;--xz-t243:rgba(131,92,24,0.08)!important;--xz-t244:rgba(131,92,24,0.09)!important;--xz-t245:rgba(131,92,24,0.1)!important;--xz-t246:rgba(131,92,24,0.1)!important;--xz-t247:rgba(131,92,24,0.12)!important;--xz-t248:rgba(131,92,24,0.14)!important;--xz-t249:rgba(131,92,24,0.16)!important;--xz-t250:rgba(131,92,24,0.18)!important;--xz-t251:rgba(131,92,24,0.2)!important;--xz-t252:rgba(131,92,24,0.2)!important;--xz-t253:rgba(131,92,24,0.22)!important;--xz-t254:rgba(131,92,24,0.24)!important;--xz-t255:rgba(131,92,24,0.25)!important;--xz-t256:rgba(131,92,24,0.26)!important;--xz-t257:rgba(131,92,24,0.28)!important;--xz-t258:rgba(131,92,24,0.3)!important;--xz-t259:rgba(131,92,24,0.3)!important;--xz-t260:rgba(131,92,24,0.32)!important;--xz-t261:rgba(131,92,24,0.34)!important;--xz-t262:rgba(131,92,24,0.35)!important;--xz-t263:rgba(131,92,24,0.4)!important;--xz-t264:rgba(131,92,24,0.4)!important;--xz-t265:rgba(131,92,24,0.42)!important;--xz-t266:rgba(131,92,24,0.45)!important;--xz-t267:rgba(131,92,24,0.5)!important;--xz-t268:rgba(131,92,24,0.55)!important;--xz-t269:rgba(131,92,24,0.6)!important;--xz-t270:rgba(131,92,24,0.62)!important;--xz-t271:rgba(131,92,24,0.7)!important;--xz-t272:rgba(131,92,24,0.72)!important;--xz-t273:rgba(131,92,24,0.85)!important;--xz-t274:rgba(131,92,24,0.92)!important;--xz-t275:rgba(131,92,24,0.95)!important;--xz-t276:rgba(131,92,24,0.12)!important;--xz-t277:rgba(131,92,24,0.15)!important;--xz-t278:rgba(131,92,24,0.25)!important;--xz-t279:rgba(131,92,24,0.35)!important;--xz-t280:rgba(131,92,24,0.4)!important;--xz-t281:rgba(131,92,24,0.45)!important;--xz-t282:rgba(128,94,27,0.92)!important;--xz-t283:rgba(127,98,4,0.1)!important;--xz-t284:rgba(127,98,4,0.45)!important;--xz-t285:rgba(142,90,13,0.55)!important;--xz-t286:rgba(116,98,45,0.66)!important;--xz-t287:rgba(137,91,12,0.72)!important;--xz-t288:rgba(137,91,12,0.3)!important;--xz-t289:rgba(137,91,12,0.45)!important;--xz-t290:rgba(137,91,12,0.85)!important;--xz-t291:rgba(128,95,15,0.22)!important;--xz-t292:rgba(128,95,15,0.34)!important;--xz-t293:rgba(128,95,15,0.45)!important;--xz-t294:rgba(128,95,15,0.5)!important;--xz-t295:rgba(128,95,15,0.72)!important;--xz-t296:rgba(128,95,15,0.85)!important;--xz-t297:rgba(128,95,15,0.42)!important;--xz-t298:rgba(128,95,15,0.7)!important;--xz-t299:rgba(128,95,15,0.95)!important;--xz-t300:rgba(153,85,9,0.1)!important;--xz-t301:rgba(140,90,6,0.18)!important;--xz-t302:rgba(140,90,6,0.85)!important;--xz-t303:rgba(140,90,6,0.9)!important;--xz-t304:rgba(140,90,6,0.08)!important;--xz-t305:rgba(140,90,6,0.12)!important;--xz-t306:rgba(140,90,6,0.2)!important;--xz-t307:rgba(140,90,6,0.28)!important;--xz-t308:rgba(140,90,6,0.5)!important;--xz-t309:rgba(140,90,6,0.55)!important;--xz-t310:rgba(140,90,6,0.6)!important;--xz-t311:rgba(129,97,13,0.62)!important;--xz-t312:rgba(128,93,2,0.25)!important;--xz-t313:rgba(128,93,2,0.12)!important;--xz-t314:rgba(128,93,2,0.4)!important;--xz-t315:rgba(155,80,0,0.08)!important;--xz-t316:rgba(149,85,0,0.16)!important;--xz-t317:rgba(149,86,0,0.14)!important;--xz-t318:rgba(131,96,0,0.95)!important;--xz-t319:#835f00!important;--xz-t320:rgba(119,97,97,0.72)!important;--xz-t321:rgba(119,97,97,0.74)!important;--xz-t322:rgba(48,34,8,0.7)!important;--xz-t323:rgba(48,34,8,0.78)!important;--xz-t324:rgba(60,44,16,0.62)!important;--xz-t325:rgba(96,74,28,0.22)!important;--xz-t326:rgba(96,74,28,0.07)!important;--xz-t327:rgba(96,74,28,0.14)!important;";
+    var NIGHT_DECL = "--xz-t0:#10b981!important;--xz-t1:#22c55e!important;--xz-t2:#2dd4bf!important;--xz-t3:#4ade80!important;--xz-t4:#60a5fa!important;--xz-t5:#63c08c!important;--xz-t6:#68c5b2!important;--xz-t7:#6ee7b7!important;--xz-t8:#7dd3a0!important;--xz-t9:#7ddc9a!important;--xz-t10:#7f9db0!important;--xz-t11:#7fa593!important;--xz-t12:#7fb69b!important;--xz-t13:#7fd2c1!important;--xz-t14:#7fd4e8!important;--xz-t15:#7fe0b0!important;--xz-t16:#8a8478!important;--xz-t17:#8a8578!important;--xz-t18:#8a9496!important;--xz-t19:#8a949e!important;--xz-t20:#8b8674!important;--xz-t21:#8b9199!important;--xz-t22:#8e8778!important;--xz-t23:#8fa2c0!important;--xz-t24:#8fae7a!important;--xz-t25:#929292!important;--xz-t26:#93c5fd!important;--xz-t27:#94a3b8!important;--xz-t28:#9a9a9a!important;--xz-t29:#9aa0a6!important;--xz-t30:#9c9686!important;--xz-t31:#9c968c!important;--xz-t32:#9ec9e8!important;--xz-t33:#9fb3c8!important;--xz-t34:#9fb6c4!important;--xz-t35:#9fd4a0!important;--xz-t36:#9fd8c4!important;--xz-t37:#9fd8f7!important;--xz-t38:#a5b4fc!important;--xz-t39:#a78bfa!important;--xz-t40:#a855f7!important;--xz-t41:#a19f98!important;--xz-t42:#b7b1a4!important;--xz-t43:#b7b8b3!important;--xz-t44:#b0ada8!important;--xz-t45:#b9cde8!important;--xz-t46:#c084fc!important;--xz-t47:#a29f98!important;--xz-t48:#c4b5fd!important;--xz-t49:#c7c7c7!important;--xz-t50:#9e9b94!important;--xz-t51:#c8b1a8!important;--xz-t52:#c8c1b2!important;--xz-t53:#97938c!important;--xz-t54:#9f9b94!important;--xz-t55:#aaa7a2!important;--xz-t56:#bfbcb8!important;--xz-t57:#c9c2b2!important;--xz-t58:#c9c2b4!important;--xz-t59:#c9c3b6!important;--xz-t60:#c9ced7!important;--xz-t61:#c9f5e4!important;--xz-t62:#cbd5e1!important;--xz-t63:#cecece!important;--xz-t64:#6f6864!important;--xz-t65:#8c897f!important;--xz-t66:#d8899d!important;--xz-t67:#b7b5b0!important;--xz-t68:#d98ca8!important;--xz-t69:#a8a59e!important;--xz-t70:#dcdcdc!important;--xz-t71:#df7468!important;--xz-t72:#aaa7a1!important;--xz-t73:#e2decb!important;--xz-t74:#e2e8f0!important;--xz-t75:#bab8b3!important;--xz-t76:#b2afaa!important;--xz-t77:#d7d6d3!important;--xz-t78:#e74c3c!important;--xz-t79:#c0beba!important;--xz-t80:#e8e3d3!important;--xz-t81:#e8e8e8!important;--xz-t82:#e9e5dc!important;--xz-t83:#ef4444!important;--xz-t84:#efe9dc!important;--xz-t85:#f08a84!important;--xz-t86:#f0a6a0!important;--xz-t87:#c3bfbd!important;--xz-t88:#aaa6a1!important;--xz-t89:#b1ada9!important;--xz-t90:#c8c6c2!important;--xz-t91:#c0bfba!important;--xz-t92:#cdcbc7!important;--xz-t93:#d2d1ce!important;--xz-t94:#f1ede4!important;--xz-t95:#f1f1f1!important;--xz-t96:#b4b2ad!important;--xz-t97:#f2ecdd!important;--xz-t98:#89847c!important;--xz-t99:#c9c7c3!important;--xz-t100:#f3eee5!important;--xz-t101:#f43f5e!important;--xz-t102:#f4ece0!important;--xz-t103:#f4efe2!important;--xz-t104:#f4f1e8!important;--xz-t105:#86827a!important;--xz-t106:#f5efe2!important;--xz-t107:#f5f5f5!important;--xz-t108:#cccac6!important;--xz-t109:#f6eee1!important;--xz-t110:#f6f1e6!important;--xz-t111:#f7d7d4!important;--xz-t112:#d9d7d4!important;--xz-t113:#f7f4ec!important;--xz-t114:#f87171!important;--xz-t115:#f8f3e7!important;--xz-t116:#f9f6ee!important;--xz-t117:#95928a!important;--xz-t118:#fbf8f0!important;--xz-t119:#fca5a5!important;--xz-t120:#a9a7a0!important;--xz-t121:#c6c5c1!important;--xz-t122:#ff5252!important;--xz-t123:#ff6b6b!important;--xz-t124:#ff8a8a!important;--xz-t125:#c7c5c2!important;--xz-t126:#e2e1df!important;--xz-t127:#ffffff!important;--xz-t128:#eeeeed!important;--xz-t129:#f1f1f0!important;--xz-t130:#f3f3f2!important;--xz-t131:#fffaf0!important;--xz-t132:#fffdf6!important;--xz-t133:#fffdf8!important;--xz-t134:#ffffff!important;--xz-t135:rgba(88,83,80,0.45)!important;--xz-t136:rgba(83,80,75,0.16)!important;--xz-t137:rgba(83,80,75,0.2)!important;--xz-t138:rgba(83,80,75,0.24)!important;--xz-t139:rgba(83,80,75,0.28)!important;--xz-t140:rgba(83,80,75,0.32)!important;--xz-t141:rgba(83,80,75,0.34)!important;--xz-t142:rgba(83,80,75,0.42)!important;--xz-t143:rgba(83,80,75,0.55)!important;--xz-t144:rgba(83,80,75,0.56)!important;--xz-t145:rgba(83,80,75,0.6)!important;--xz-t146:rgba(83,80,75,0.16)!important;--xz-t147:rgba(83,80,75,0.2)!important;--xz-t148:rgba(83,80,75,0.22)!important;--xz-t149:rgba(83,80,75,0.24)!important;--xz-t150:rgba(83,80,75,0.3)!important;--xz-t151:rgba(83,80,75,0.56)!important;--xz-t152:rgba(100,97,90,0.1)!important;--xz-t153:rgba(100,97,90,0.32)!important;--xz-t154:rgba(150,158,168,0.8)!important;--xz-t155:rgba(93,90,85,0.1)!important;--xz-t156:rgba(93,90,85,0.12)!important;--xz-t157:rgba(93,90,85,0.15)!important;--xz-t158:rgba(93,90,85,0.16)!important;--xz-t159:rgba(93,90,85,0.08)!important;--xz-t160:rgba(93,90,85,0.15)!important;--xz-t161:rgba(93,90,85,0.16)!important;--xz-t162:rgba(103,100,93,0.95)!important;--xz-t163:rgba(159,155,148,0.1)!important;--xz-t164:rgba(159,155,148,0.12)!important;--xz-t165:rgba(159,155,148,0.14)!important;--xz-t166:rgba(159,155,148,0.22)!important;--xz-t167:rgba(159,155,148,0.25)!important;--xz-t168:rgba(159,155,148,0.3)!important;--xz-t169:rgba(159,155,148,0.3)!important;--xz-t170:rgba(159,155,148,0.34)!important;--xz-t171:rgba(159,155,148,0.35)!important;--xz-t172:rgba(159,155,148,0.38)!important;--xz-t173:rgba(159,155,148,0.42)!important;--xz-t174:rgba(159,155,148,0.45)!important;--xz-t175:rgba(159,155,148,0.5)!important;--xz-t176:rgba(159,155,148,0.55)!important;--xz-t177:rgba(159,155,148,0.6)!important;--xz-t178:rgba(159,155,148,0.8)!important;--xz-t179:rgba(159,155,148,0.85)!important;--xz-t180:rgba(159,155,148,0.9)!important;--xz-t181:rgba(140,137,127,0.1)!important;--xz-t182:rgba(140,137,127,0.12)!important;--xz-t183:rgba(140,137,127,0.15)!important;--xz-t184:rgba(140,137,127,0.16)!important;--xz-t185:rgba(140,137,127,0.18)!important;--xz-t186:rgba(140,137,127,0.2)!important;--xz-t187:rgba(140,137,127,0.22)!important;--xz-t188:rgba(140,137,127,0.24)!important;--xz-t189:rgba(140,137,127,0.25)!important;--xz-t190:rgba(140,137,127,0.28)!important;--xz-t191:rgba(140,137,127,0.3)!important;--xz-t192:rgba(140,137,127,0.3)!important;--xz-t193:rgba(140,137,127,0.35)!important;--xz-t194:rgba(140,137,127,0.38)!important;--xz-t195:rgba(140,137,127,0.45)!important;--xz-t196:rgba(140,137,127,0.5)!important;--xz-t197:rgba(140,137,127,0.55)!important;--xz-t198:rgba(140,137,127,0.6)!important;--xz-t199:rgba(140,137,127,0.06)!important;--xz-t200:rgba(140,137,127,0.07)!important;--xz-t201:rgba(140,137,127,0.08)!important;--xz-t202:rgba(140,137,127,0.1)!important;--xz-t203:rgba(140,137,127,0.1)!important;--xz-t204:rgba(140,137,127,0.12)!important;--xz-t205:rgba(140,137,127,0.14)!important;--xz-t206:rgba(140,137,127,0.15)!important;--xz-t207:rgba(140,137,127,0.18)!important;--xz-t208:rgba(140,137,127,0.2)!important;--xz-t209:rgba(140,137,127,0.22)!important;--xz-t210:rgba(140,137,127,0.25)!important;--xz-t211:rgba(140,137,127,0.28)!important;--xz-t212:rgba(140,137,127,0.3)!important;--xz-t213:rgba(140,137,127,0.3)!important;--xz-t214:rgba(140,137,127,0.34)!important;--xz-t215:rgba(140,137,127,0.35)!important;--xz-t216:rgba(140,137,127,0.4)!important;--xz-t217:rgba(140,137,127,0.5)!important;--xz-t218:rgba(140,137,127,0.55)!important;--xz-t219:rgba(140,137,127,0.6)!important;--xz-t220:rgba(140,137,127,0.62)!important;--xz-t221:rgba(140,137,127,0.75)!important;--xz-t222:rgba(171,168,163,0.28)!important;--xz-t223:rgba(171,168,163,0.12)!important;--xz-t224:rgba(171,168,163,0.15)!important;--xz-t225:rgba(171,168,163,0.28)!important;--xz-t226:rgba(171,168,163,0.35)!important;--xz-t227:rgba(171,168,163,0.4)!important;--xz-t228:rgba(142,139,130,0.95)!important;--xz-t229:rgba(117,112,106,0.96)!important;--xz-t230:rgba(147,143,135,0.1)!important;--xz-t231:rgba(147,143,135,0.3)!important;--xz-t232:rgba(168,165,158,0.07)!important;--xz-t233:rgba(168,165,158,0.16)!important;--xz-t234:rgba(168,165,158,0.28)!important;--xz-t235:rgba(168,165,158,0.5)!important;--xz-t236:rgba(168,165,158,0.2)!important;--xz-t237:rgba(168,165,158,0.22)!important;--xz-t238:rgba(168,165,158,0.3)!important;--xz-t239:rgba(166,162,156,0.2)!important;--xz-t240:rgba(173,170,165,0.22)!important;--xz-t241:rgba(173,170,165,0.28)!important;--xz-t242:rgba(178,175,170,0.06)!important;--xz-t243:rgba(178,175,170,0.08)!important;--xz-t244:rgba(178,175,170,0.09)!important;--xz-t245:rgba(178,175,170,0.1)!important;--xz-t246:rgba(178,175,170,0.1)!important;--xz-t247:rgba(178,175,170,0.12)!important;--xz-t248:rgba(178,175,170,0.14)!important;--xz-t249:rgba(178,175,170,0.16)!important;--xz-t250:rgba(178,175,170,0.18)!important;--xz-t251:rgba(178,175,170,0.2)!important;--xz-t252:rgba(178,175,170,0.2)!important;--xz-t253:rgba(178,175,170,0.22)!important;--xz-t254:rgba(178,175,170,0.24)!important;--xz-t255:rgba(178,175,170,0.25)!important;--xz-t256:rgba(178,175,170,0.26)!important;--xz-t257:rgba(178,175,170,0.28)!important;--xz-t258:rgba(178,175,170,0.3)!important;--xz-t259:rgba(178,175,170,0.3)!important;--xz-t260:rgba(178,175,170,0.32)!important;--xz-t261:rgba(178,175,170,0.34)!important;--xz-t262:rgba(178,175,170,0.35)!important;--xz-t263:rgba(178,175,170,0.4)!important;--xz-t264:rgba(178,175,170,0.4)!important;--xz-t265:rgba(178,175,170,0.42)!important;--xz-t266:rgba(178,175,170,0.45)!important;--xz-t267:rgba(178,175,170,0.5)!important;--xz-t268:rgba(178,175,170,0.55)!important;--xz-t269:rgba(178,175,170,0.6)!important;--xz-t270:rgba(178,175,170,0.62)!important;--xz-t271:rgba(178,175,170,0.7)!important;--xz-t272:rgba(178,175,170,0.72)!important;--xz-t273:rgba(178,175,170,0.85)!important;--xz-t274:rgba(178,175,170,0.92)!important;--xz-t275:rgba(178,175,170,0.95)!important;--xz-t276:rgba(178,175,170,0.12)!important;--xz-t277:rgba(178,175,170,0.15)!important;--xz-t278:rgba(178,175,170,0.25)!important;--xz-t279:rgba(178,175,170,0.35)!important;--xz-t280:rgba(178,175,170,0.4)!important;--xz-t281:rgba(178,175,170,0.45)!important;--xz-t282:rgba(192,190,186,0.92)!important;--xz-t283:rgba(127,124,115,0.1)!important;--xz-t284:rgba(127,124,115,0.45)!important;--xz-t285:rgba(170,166,161,0.55)!important;--xz-t286:rgba(229,229,227,0.66)!important;--xz-t287:rgba(180,178,173,0.72)!important;--xz-t288:rgba(180,178,173,0.3)!important;--xz-t289:rgba(180,178,173,0.45)!important;--xz-t290:rgba(180,178,173,0.85)!important;--xz-t291:rgba(201,199,195,0.22)!important;--xz-t292:rgba(201,199,195,0.34)!important;--xz-t293:rgba(201,199,195,0.45)!important;--xz-t294:rgba(201,199,195,0.5)!important;--xz-t295:rgba(201,199,195,0.72)!important;--xz-t296:rgba(201,199,195,0.85)!important;--xz-t297:rgba(201,199,195,0.42)!important;--xz-t298:rgba(201,199,195,0.7)!important;--xz-t299:rgba(201,199,195,0.95)!important;--xz-t300:rgba(156,151,146,0.1)!important;--xz-t301:rgba(134,130,122,0.18)!important;--xz-t302:rgba(134,130,122,0.85)!important;--xz-t303:rgba(134,130,122,0.9)!important;--xz-t304:rgba(134,130,122,0.08)!important;--xz-t305:rgba(134,130,122,0.12)!important;--xz-t306:rgba(134,130,122,0.2)!important;--xz-t307:rgba(134,130,122,0.28)!important;--xz-t308:rgba(134,130,122,0.5)!important;--xz-t309:rgba(134,130,122,0.55)!important;--xz-t310:rgba(134,130,122,0.6)!important;--xz-t311:rgba(209,208,205,0.62)!important;--xz-t312:rgba(149,146,138,0.25)!important;--xz-t313:rgba(149,146,138,0.12)!important;--xz-t314:rgba(149,146,138,0.4)!important;--xz-t315:rgba(159,154,148,0.08)!important;--xz-t316:rgba(169,165,159,0.16)!important;--xz-t317:rgba(168,164,159,0.14)!important;--xz-t318:rgba(224,223,221,0.95)!important;--xz-t319:#e8e8e6!important;--xz-t320:rgba(255,255,255,0.72)!important;--xz-t321:rgba(255,255,255,0.74)!important;--xz-t322:rgba(29,28,27,0.7)!important;--xz-t323:rgba(29,28,27,0.78)!important;--xz-t324:rgba(40,39,36,0.62)!important;--xz-t325:rgba(65,63,59,0.22)!important;--xz-t326:rgba(65,63,59,0.07)!important;--xz-t327:rgba(65,63,59,0.14)!important;";
+    var QING_DECL = "--xz-t0:#10b981!important;--xz-t1:#22c55e!important;--xz-t2:#2dd4bf!important;--xz-t3:#4ade80!important;--xz-t4:#60a5fa!important;--xz-t5:#63c08c!important;--xz-t6:#68c5b2!important;--xz-t7:#6ee7b7!important;--xz-t8:#7dd3a0!important;--xz-t9:#7ddc9a!important;--xz-t10:#7f9db0!important;--xz-t11:#7fa593!important;--xz-t12:#7fb69b!important;--xz-t13:#7fd2c1!important;--xz-t14:#7fd4e8!important;--xz-t15:#7fe0b0!important;--xz-t16:#8a8478!important;--xz-t17:#8a8578!important;--xz-t18:#8a9496!important;--xz-t19:#8a949e!important;--xz-t20:#8b8674!important;--xz-t21:#8b9199!important;--xz-t22:#8e8778!important;--xz-t23:#8fa2c0!important;--xz-t24:#8fae7a!important;--xz-t25:#929292!important;--xz-t26:#93c5fd!important;--xz-t27:#94a3b8!important;--xz-t28:#9a9a9a!important;--xz-t29:#9aa0a6!important;--xz-t30:#9c9686!important;--xz-t31:#9c968c!important;--xz-t32:#9ec9e8!important;--xz-t33:#9fb3c8!important;--xz-t34:#9fb6c4!important;--xz-t35:#9fd4a0!important;--xz-t36:#9fd8c4!important;--xz-t37:#9fd8f7!important;--xz-t38:#a5b4fc!important;--xz-t39:#a78bfa!important;--xz-t40:#a855f7!important;--xz-t41:#a9a390!important;--xz-t42:#b7b1a4!important;--xz-t43:#b7b8b3!important;--xz-t44:#b8b0a0!important;--xz-t45:#b9cde8!important;--xz-t46:#c084fc!important;--xz-t47:#c0a97a!important;--xz-t48:#c4b5fd!important;--xz-t49:#c7c7c7!important;--xz-t50:#c8b06a!important;--xz-t51:#c8b1a8!important;--xz-t52:#c8c1b2!important;--xz-t53:#c9a05a!important;--xz-t54:#c9a86a!important;--xz-t55:#c9b183!important;--xz-t56:#c9bfae!important;--xz-t57:#c9c2b2!important;--xz-t58:#c9c2b4!important;--xz-t59:#c9c3b6!important;--xz-t60:#c9ced7!important;--xz-t61:#c9f5e4!important;--xz-t62:#cbd5e1!important;--xz-t63:#cecece!important;--xz-t64:#d35400!important;--xz-t65:#d4af37!important;--xz-t66:#d8899d!important;--xz-t67:#d8c48f!important;--xz-t68:#d98ca8!important;--xz-t69:#d9b76d!important;--xz-t70:#dcdcdc!important;--xz-t71:#df7468!important;--xz-t72:#e0b96a!important;--xz-t73:#e2decb!important;--xz-t74:#e2e8f0!important;--xz-t75:#e3c98a!important;--xz-t76:#e6bd76!important;--xz-t77:#e6dcc4!important;--xz-t78:#e74c3c!important;--xz-t79:#e8cb92!important;--xz-t80:#e8e3d3!important;--xz-t81:#e8e8e8!important;--xz-t82:#e9e5dc!important;--xz-t83:#ef4444!important;--xz-t84:#efe9dc!important;--xz-t85:#f08a84!important;--xz-t86:#f0a6a0!important;--xz-t87:#f0b090!important;--xz-t88:#f0b45a!important;--xz-t89:#f0b46a!important;--xz-t90:#f0d49a!important;--xz-t91:#f0d98a!important;--xz-t92:#f0d9a4!important;--xz-t93:#f0e2b0!important;--xz-t94:#f1ede4!important;--xz-t95:#f1f1f1!important;--xz-t96:#f2c26f!important;--xz-t97:#f2ecdd!important;--xz-t98:#f39c12!important;--xz-t99:#f3d999!important;--xz-t100:#f3eee5!important;--xz-t101:#f43f5e!important;--xz-t102:#f4ece0!important;--xz-t103:#f4efe2!important;--xz-t104:#f4f1e8!important;--xz-t105:#f59e0b!important;--xz-t106:#f5efe2!important;--xz-t107:#f5f5f5!important;--xz-t108:#f6dc9c!important;--xz-t109:#f6eee1!important;--xz-t110:#f6f1e6!important;--xz-t111:#f7d7d4!important;--xz-t112:#f7e6b6!important;--xz-t113:#f7f4ec!important;--xz-t114:#f87171!important;--xz-t115:#f8f3e7!important;--xz-t116:#f9f6ee!important;--xz-t117:#fbbf24!important;--xz-t118:#fbf8f0!important;--xz-t119:#fca5a5!important;--xz-t120:#fcd34d!important;--xz-t121:#fde68a!important;--xz-t122:#ff5252!important;--xz-t123:#ff6b6b!important;--xz-t124:#ff8a8a!important;--xz-t125:#ffd88a!important;--xz-t126:#ffeec2!important;--xz-t127:#fff!important;--xz-t128:#fff6dc!important;--xz-t129:#fff6e2!important;--xz-t130:#fff8e6!important;--xz-t131:#fffaf0!important;--xz-t132:#fffdf6!important;--xz-t133:#fffdf8!important;--xz-t134:#ffffff!important;--xz-t135:rgba(126, 78, 42, 0.45)!important;--xz-t136:rgba(138,95,20,.16)!important;--xz-t137:rgba(138,95,20,.20)!important;--xz-t138:rgba(138,95,20,.24)!important;--xz-t139:rgba(138,95,20,.28)!important;--xz-t140:rgba(138,95,20,.32)!important;--xz-t141:rgba(138,95,20,.34)!important;--xz-t142:rgba(138,95,20,.42)!important;--xz-t143:rgba(138,95,20,.55)!important;--xz-t144:rgba(138,95,20,.56)!important;--xz-t145:rgba(138,95,20,.60)!important;--xz-t146:rgba(138,95,20,0.16)!important;--xz-t147:rgba(138,95,20,0.20)!important;--xz-t148:rgba(138,95,20,0.22)!important;--xz-t149:rgba(138,95,20,0.24)!important;--xz-t150:rgba(138,95,20,0.30)!important;--xz-t151:rgba(138,95,20,0.56)!important;--xz-t152:rgba(150,120,40,0.10)!important;--xz-t153:rgba(150,120,40,0.32)!important;--xz-t154:rgba(150,158,168,.8)!important;--xz-t155:rgba(160,111,18,.10)!important;--xz-t156:rgba(160,111,18,.12)!important;--xz-t157:rgba(160,111,18,.15)!important;--xz-t158:rgba(160,111,18,.16)!important;--xz-t159:rgba(160,111,18,0.08)!important;--xz-t160:rgba(160,111,18,0.15)!important;--xz-t161:rgba(160,111,18,0.16)!important;--xz-t162:rgba(166,130,30,.95)!important;--xz-t163:rgba(201,168,106,.10)!important;--xz-t164:rgba(201,168,106,.12)!important;--xz-t165:rgba(201,168,106,.14)!important;--xz-t166:rgba(201,168,106,.22)!important;--xz-t167:rgba(201,168,106,.25)!important;--xz-t168:rgba(201,168,106,.3)!important;--xz-t169:rgba(201,168,106,.30)!important;--xz-t170:rgba(201,168,106,.34)!important;--xz-t171:rgba(201,168,106,.35)!important;--xz-t172:rgba(201,168,106,.38)!important;--xz-t173:rgba(201,168,106,.42)!important;--xz-t174:rgba(201,168,106,.45)!important;--xz-t175:rgba(201,168,106,.5)!important;--xz-t176:rgba(201,168,106,.55)!important;--xz-t177:rgba(201,168,106,.6)!important;--xz-t178:rgba(201,168,106,.8)!important;--xz-t179:rgba(201,168,106,.85)!important;--xz-t180:rgba(201,168,106,.9)!important;--xz-t181:rgba(212,175,55,.10)!important;--xz-t182:rgba(212,175,55,.12)!important;--xz-t183:rgba(212,175,55,.15)!important;--xz-t184:rgba(212,175,55,.16)!important;--xz-t185:rgba(212,175,55,.18)!important;--xz-t186:rgba(212,175,55,.2)!important;--xz-t187:rgba(212,175,55,.22)!important;--xz-t188:rgba(212,175,55,.24)!important;--xz-t189:rgba(212,175,55,.25)!important;--xz-t190:rgba(212,175,55,.28)!important;--xz-t191:rgba(212,175,55,.3)!important;--xz-t192:rgba(212,175,55,.30)!important;--xz-t193:rgba(212,175,55,.35)!important;--xz-t194:rgba(212,175,55,.38)!important;--xz-t195:rgba(212,175,55,.45)!important;--xz-t196:rgba(212,175,55,.5)!important;--xz-t197:rgba(212,175,55,.55)!important;--xz-t198:rgba(212,175,55,.6)!important;--xz-t199:rgba(212,175,55,0.06)!important;--xz-t200:rgba(212,175,55,0.07)!important;--xz-t201:rgba(212,175,55,0.08)!important;--xz-t202:rgba(212,175,55,0.1)!important;--xz-t203:rgba(212,175,55,0.10)!important;--xz-t204:rgba(212,175,55,0.12)!important;--xz-t205:rgba(212,175,55,0.14)!important;--xz-t206:rgba(212,175,55,0.15)!important;--xz-t207:rgba(212,175,55,0.18)!important;--xz-t208:rgba(212,175,55,0.2)!important;--xz-t209:rgba(212,175,55,0.22)!important;--xz-t210:rgba(212,175,55,0.25)!important;--xz-t211:rgba(212,175,55,0.28)!important;--xz-t212:rgba(212,175,55,0.3)!important;--xz-t213:rgba(212,175,55,0.30)!important;--xz-t214:rgba(212,175,55,0.34)!important;--xz-t215:rgba(212,175,55,0.35)!important;--xz-t216:rgba(212,175,55,0.4)!important;--xz-t217:rgba(212,175,55,0.5)!important;--xz-t218:rgba(212,175,55,0.55)!important;--xz-t219:rgba(212,175,55,0.6)!important;--xz-t220:rgba(212,175,55,0.62)!important;--xz-t221:rgba(212,175,55,0.75)!important;--xz-t222:rgba(213, 180, 121, 0.28)!important;--xz-t223:rgba(213,180,121,0.12)!important;--xz-t224:rgba(213,180,121,0.15)!important;--xz-t225:rgba(213,180,121,0.28)!important;--xz-t226:rgba(213,180,121,0.35)!important;--xz-t227:rgba(213,180,121,0.4)!important;--xz-t228:rgba(214,178,58,.95)!important;--xz-t229:rgba(217,119,6,.96)!important;--xz-t230:rgba(217,164,65,0.1)!important;--xz-t231:rgba(217,164,65,0.3)!important;--xz-t232:rgba(217,183,109,.07)!important;--xz-t233:rgba(217,183,109,.16)!important;--xz-t234:rgba(217,183,109,.28)!important;--xz-t235:rgba(217,183,109,.5)!important;--xz-t236:rgba(217,183,109,0.2)!important;--xz-t237:rgba(217,183,109,0.22)!important;--xz-t238:rgba(217,183,109,0.3)!important;--xz-t239:rgba(226,180,96,.20)!important;--xz-t240:rgba(227, 185, 111, 0.22)!important;--xz-t241:rgba(227, 185, 111, 0.28)!important;--xz-t242:rgba(230,189,118,.06)!important;--xz-t243:rgba(230,189,118,.08)!important;--xz-t244:rgba(230,189,118,.09)!important;--xz-t245:rgba(230,189,118,.1)!important;--xz-t246:rgba(230,189,118,.10)!important;--xz-t247:rgba(230,189,118,.12)!important;--xz-t248:rgba(230,189,118,.14)!important;--xz-t249:rgba(230,189,118,.16)!important;--xz-t250:rgba(230,189,118,.18)!important;--xz-t251:rgba(230,189,118,.2)!important;--xz-t252:rgba(230,189,118,.20)!important;--xz-t253:rgba(230,189,118,.22)!important;--xz-t254:rgba(230,189,118,.24)!important;--xz-t255:rgba(230,189,118,.25)!important;--xz-t256:rgba(230,189,118,.26)!important;--xz-t257:rgba(230,189,118,.28)!important;--xz-t258:rgba(230,189,118,.3)!important;--xz-t259:rgba(230,189,118,.30)!important;--xz-t260:rgba(230,189,118,.32)!important;--xz-t261:rgba(230,189,118,.34)!important;--xz-t262:rgba(230,189,118,.35)!important;--xz-t263:rgba(230,189,118,.4)!important;--xz-t264:rgba(230,189,118,.40)!important;--xz-t265:rgba(230,189,118,.42)!important;--xz-t266:rgba(230,189,118,.45)!important;--xz-t267:rgba(230,189,118,.5)!important;--xz-t268:rgba(230,189,118,.55)!important;--xz-t269:rgba(230,189,118,.6)!important;--xz-t270:rgba(230,189,118,.62)!important;--xz-t271:rgba(230,189,118,.7)!important;--xz-t272:rgba(230,189,118,.72)!important;--xz-t273:rgba(230,189,118,.85)!important;--xz-t274:rgba(230,189,118,.92)!important;--xz-t275:rgba(230,189,118,.95)!important;--xz-t276:rgba(230,189,118,0.12)!important;--xz-t277:rgba(230,189,118,0.15)!important;--xz-t278:rgba(230,189,118,0.25)!important;--xz-t279:rgba(230,189,118,0.35)!important;--xz-t280:rgba(230,189,118,0.4)!important;--xz-t281:rgba(230,189,118,0.45)!important;--xz-t282:rgba(232,203,146,.92)!important;--xz-t283:rgba(234,179,8,.10)!important;--xz-t284:rgba(234,179,8,.45)!important;--xz-t285:rgba(240,180,90,.55)!important;--xz-t286:rgba(240,234,216,0.66)!important;--xz-t287:rgba(242, 194, 111, 0.72)!important;--xz-t288:rgba(242,194,111,.3)!important;--xz-t289:rgba(242,194,111,.45)!important;--xz-t290:rgba(242,194,111,.85)!important;--xz-t291:rgba(243,217,153,.22)!important;--xz-t292:rgba(243,217,153,.34)!important;--xz-t293:rgba(243,217,153,.45)!important;--xz-t294:rgba(243,217,153,.5)!important;--xz-t295:rgba(243,217,153,.72)!important;--xz-t296:rgba(243,217,153,.85)!important;--xz-t297:rgba(243,217,153,0.42)!important;--xz-t298:rgba(243,217,153,0.7)!important;--xz-t299:rgba(243,217,153,0.95)!important;--xz-t300:rgba(244, 157, 58, 0.10)!important;--xz-t301:rgba(245,158,11,.18)!important;--xz-t302:rgba(245,158,11,.85)!important;--xz-t303:rgba(245,158,11,.9)!important;--xz-t304:rgba(245,158,11,0.08)!important;--xz-t305:rgba(245,158,11,0.12)!important;--xz-t306:rgba(245,158,11,0.2)!important;--xz-t307:rgba(245,158,11,0.28)!important;--xz-t308:rgba(245,158,11,0.5)!important;--xz-t309:rgba(245,158,11,0.55)!important;--xz-t310:rgba(245,158,11,0.6)!important;--xz-t311:rgba(246,224,168,0.62)!important;--xz-t312:rgba(251,191,36,.25)!important;--xz-t313:rgba(251,191,36,0.12)!important;--xz-t314:rgba(251,191,36,0.4)!important;--xz-t315:rgba(255, 157, 52, 0.08)!important;--xz-t316:rgba(255, 177, 73, 0.16)!important;--xz-t317:rgba(255, 178, 72, 0.14)!important;--xz-t318:rgba(255,238,190,0.95)!important;--xz-t319:rgba(255,242,207,1)!important;--xz-t320:rgba(255,255,255,.72)!important;--xz-t321:rgba(255,255,255,.74)!important;--xz-t322:rgba(48,34,8,.7)!important;--xz-t323:rgba(48,34,8,.78)!important;--xz-t324:rgba(60,44,16,0.62)!important;--xz-t325:rgba(96,74,28,.22)!important;--xz-t326:rgba(96,74,28,0.07)!important;--xz-t327:rgba(96,74,28,0.14)!important;";
 
-    /* 夜墨＝暖金修仙（归档/v611-主题与视口重构前 的备份值）。
-       用 !important 钉死，避免被后注入的基础 CSS 覆盖掉。 */
+    /* ══════════════════════════════════════════════════════════════════════
+       ★★★ v635：夜墨 = **黑白**（作者 2026-11-18）★★★
+       作者原话：「还有，黑色的美化，就黑白，不要黑金。金色是青玄色专有。」
+       ── 改了什么 ────────────────────────────────────────────────────────
+         `--xz-gold` 一族（gold / gold-bright / gold-fill / gold-glow / border /
+         border-strong / jade）在夜墨下全部换成**银白**（色相 0、饱和度 ~0.04）。
+         明度保持原档（金 #d4af37 l=.52 → 银 #a8a8a8 附近）⇒
+         按钮亮、边框暗的**层次**不变，只是没了黄。
+       ── 为什么必须在令牌这层改 ────────────────────────────────────────────
+         全项目 239 处 `var(--xz-gold…)` 引用、153 处金色 rgba 边框。
+         逐个改源码等于改 400 处且必然漏；令牌是唯一的旋钮。
+         金色 rgba 那 153 处在 NIGHT_DECL 那一侧按明度去饱和（见生成器 nightValue），
+         玄青走 QING_DECL（原值）⇒ 金色只在玄青下出现。
+       ── ⚠ 三条不许动 ──────────────────────────────────────────────────────
+         ① `--xz-card` / `--xz-bg` / `--xz-void` 保持原冷黑，不动（作者要的是"黑色"，
+            换成中性灰底会整屏发白，那不是"黑白"而是"灰"）。
+         ② 日光那份一个字节不动。
+         ③ 玄青那份一个字节不动（它就是"金色专有"的那一档）。
+       ══════════════════════════════════════════════════════════════════════ */
     var NIGHT_TOKENS =
         ':root,.xz-root{' +
         '--xz-void:#090b10!important;--xz-bg:#0e1219!important;--xz-card:#151a24!important;' +
         '--xz-card-hover:#1c2331!important;' +
-        '--xz-border:rgba(212,175,55,0.22)!important;--xz-border-strong:rgba(212,175,55,0.55)!important;' +
-        '--xz-gold:#d4af37!important;--xz-gold-bright:#ffd700!important;' +
-        '--xz-gold-fill:#d4af37!important;' +
-        '--xz-gold-glow:rgba(212,175,55,0.25)!important;' +
-        '--xz-jade:#d4af37!important;--xz-cyan:#7fd2c1!important;' +
+        '--xz-border:rgba(206,206,206,0.20)!important;--xz-border-strong:rgba(206,206,206,0.52)!important;' +
+        '--xz-gold:#b9b9b9!important;--xz-gold-bright:#e8e8e8!important;' +
+        '--xz-gold-fill:#c9c9c9!important;' +
+        '--xz-gold-glow:rgba(206,206,206,0.20)!important;' +
+        '--xz-jade:#c9c9c9!important;--xz-cyan:#7fd2c1!important;' +
+        /* ⚠ purple / crimson 是**语义色**（玄阶紫、伤害红），不是"金"。
+           v635 第一版把它们一起洗成灰，等于把品阶与伤害提示抹平 —— 那不是"黑白"，
+           是"没信息"。作者要的是去掉黄色调，不是去掉一切着色。 */
         '--xz-purple:#a855f7!important;--xz-crimson:#e11d48!important;' +
         '--xz-text:#f1ede4!important;--xz-text-2:#c8c1b2!important;--xz-muted:#7e7769!important;' +
         NIGHT_DECL + '}';
@@ -160,7 +181,9 @@ var XZ_MAINT = false;
         '--xz-jade:#68c5b2!important;--xz-cyan:#7fd2c1!important;' +
         '--xz-purple:#d8899d!important;--xz-crimson:#aa5960!important;' +
         '--xz-text:#f3eee5!important;--xz-text-2:#b7b8b3!important;--xz-muted:#8a9496!important;' +
-        NIGHT_DECL + '}';
+        /* ★ v635：这里是 QING_DECL（原值），**不是** NIGHT_DECL（去金银）。
+           作者：「金色是青玄色专有」⇒ 玄青那一档必须保留全部金色令牌。 */
+        QING_DECL + '}';
     var DAY_TOKENS =
         ':root[data-xz-theme="day"],.xz-root[data-xz-theme="day"],body[data-xz-theme="day"]{' +
         '--xz-void:#efe9dc!important;--xz-bg:#f7f4ec!important;--xz-card:#fffdf8!important;' +
@@ -205,11 +228,18 @@ var XZ_MAINT = false;
         '[data-xz-ovl-wrap] > *{max-width:100%!important;' +
         'max-height:calc(var(--xz-vh) - 2*var(--xz-gap))!important;' +
         'box-sizing:border-box!important;}' +
-        '[data-xz-ovl-box]' +
-        '{max-width:calc(var(--xz-vw) - 2*var(--xz-gap))!important;' +
-        'max-height:calc(var(--xz-vh) - 2*var(--xz-gap))!important;' +
+        /* ⚠ 选择器必须**同时**写 class：「[data-xz-ovl-box]」是 tag() 自动打的标记，
+           .xz-st-ovl-box 那批弹层卡片身上根本没有这个属性 ⇒ 只写属性选择器
+           = 这条规则从来没生效过（v634 查明，别删 class 那一半）。
+           ⚠ max-width 用 min(视口, 业务上限)：业务上限由各卡自己用行内
+           --xz-ovl-maxw 给，没给就落 100vw。**兜底绝不能写百分比** ——
+           min() 里长度与百分比混用会让整条声明静默失效、回退 none ⇒ 拉满整屏。 */
+        '[data-xz-ovl-box],.xz-st-ovl-box' +
+        '{max-width:min(calc(var(--xz-vw) - 2*var(--xz-gap)), var(--xz-ovl-maxw, 100vw))!important;' +
+        'max-height:min(calc(var(--xz-vh) - 2*var(--xz-gap)), var(--xz-ovl-maxh, 100vh))!important;' +
         'box-sizing:border-box!important;overflow:auto!important;overscroll-behavior:contain;}' +
-        '[data-xz-ovl-box] [data-xz-ovl-body]{min-height:0!important;overflow:auto!important;}' +
+        '[data-xz-ovl-box] [data-xz-ovl-body],.xz-st-ovl-box [data-xz-ovl-body]' +
+        '{min-height:0!important;overflow:auto!important;}' +
         '@supports not (height:100dvh){:root{--xz-vh:100vh!important;}}';
 
     var LAYER_ID = 'xz-v611-layer';
@@ -295,6 +325,26 @@ var XZ_MAINT = false;
             return Math.min(h, Math.max(0, Math.min(ph, r.bottom) - Math.max(0, r.top)));
         } catch (e1) { return h; }
     }
+    /* ── 同一套算法算宽度（v634）─────────────────────────────────────────
+       只取 self 会踩两个坑：一是脚本 iframe 常是 0 宽（隐藏探针位 / display:none），
+       于是落到下面的 "if (vw < 200) vw = 360" 保底 ⇒ 390 宽的手机上弹层只有
+       360、右边空一条；二是卡内 iframe 被裁窄时 self.innerWidth 反而更小。
+       所以三份窗口都量一遍、取**可见宽最大**的那个；仍按 frameElement 裁掉
+       掉到父窗口外面的那部分（与 visibleH 同源，别只改一边）。 */
+    function visibleW(w) {
+        var v = 0;
+        try { v = w.innerWidth || (w.document && w.document.documentElement
+            && w.document.documentElement.clientWidth) || 0; } catch (e0) { return 0; }
+        if (!v) return 0;
+        try { if (w === w.top || w === w.parent) return v; } catch (eT) { return v; }
+        try {
+            var fe = w.frameElement; if (!fe) return v;
+            var r = fe.getBoundingClientRect(), pw = 0;
+            try { pw = w.parent.innerWidth || 0; } catch (eP) {}
+            if (!pw) return v;
+            return Math.min(v, Math.max(0, Math.min(pw, r.right) - Math.max(0, r.left)));
+        } catch (e1) { return v; }
+    }
     function measure() {
         var w = window, vv = null, vw = 0, vh = 0, top = 0, left = 0;
         try { vv = w.visualViewport || null; } catch (e0) {}
@@ -310,6 +360,9 @@ var XZ_MAINT = false;
         for (var k = 0; k < cand.length; k++) {
             var h = visibleH(cand[k]);
             if (h > 0 && (!vh || h < vh)) vh = h;
+            /* 宽取**最大**（见 visibleW 注释：0 宽 iframe 会把弹层保底成 360）。 */
+            var _cw = visibleW(cand[k]);
+            if (_cw > vw) vw = _cw;
         }
         try { if (vv && vv.height && vv.height < vh) vh = vv.height; } catch (e4) {}  // 软键盘
         if (vw < 200) vw = 360; if (vh < 240) vh = 640;
@@ -344,25 +397,66 @@ var XZ_MAINT = false;
             return n >= 0.999 && n <= 1.001 ? 'var(--xz-vh)' : 'calc(var(--xz-vh) * ' + n + ')';
         });
     }
+    /* ★★★ v635：颜色收编的**唯一实现**（样式表与内联 style 共用）★★★
+       作者：「还有，黑色的美化，就黑白，不要黑金。金色是青玄色专有。」
+       ── 为什么需要它（旧代码只管 `color:`）────────────────────────────────
+         全库金色字面量 230 处，**绝大多数是 `border:1px solid rgba(230,189,118,.28)`
+         或 `background:rgba(230,189,118,.10)`**，写成 `color:` 的只是一部分。
+         只改 `color` ⇒ 文字变银了、**框子还是金的** ⇒ 看着依旧是"黑金"。
+       ── ⚠⚠ 第一版写错了，留档防止再犯 ⚠⚠ ────────────────────────────────
+         第一版是「列一张属性名清单（border|background|…），匹配 `属性:颜色`」。
+         它漏掉了最要紧的一类：**简写属性**。
+           `border:1px solid rgba(230,189,118,.28)` —— 颜色前面还有宽度和线型，
+           紧跟在属性名后面的不是颜色 ⇒ 正则一条都匹配不到（探针 A2 实测红）。
+         而项目里绝大多数金边正是这种简写写法 ⇒ 那个版本等于没改，还全绿。
+       ── 现在：按**整条声明体**扫颜色，不看属性名 ────────────────────────
+         `border:1px solid rgba(...)`、`box-shadow:0 0 8px rgba(...)`、
+         `background:linear-gradient(...,rgba(...))` 这类"颜色藏在值中间"
+         的写法全都覆盖到了。
+       ── ⚠ 幂等必须靠位置断言 ──────────────────────────────────────────────
+         换完是 `var(--xz-tN,rgba(230,189,118,.28))`。再跑一遍时那个 rgba 仍在
+         TONE_MAP 里 ⇒ 如果不挡，就会套成 `var(--tA,var(--tB,#x))`，越滚越长。
+         判据：颜色**前面那个非空白字符**是 `(` 或 `,` ⇒ 它在 var() 的 fallback 里
+         （fallback 形如 `--xz-tN,rgba(` 或 `--xz-tN,#x`）⇒ 跳过。
+         而 `solid rgba(` 前面是空格 ⇒ 放行。
+       ⚠ 只收 `TONE_MAP` 里登记过的颜色：未登记的新色**保持原样**，不静默改
+          （本项目铁律：判不出来的东西不许猜）。
+       ⚠⚠ 本函数给 `patchRule`（样式表）和 `ink`（内联 style）**共用**。
+          两处各写一份判定必然漂，"样式表变银、内联还金"极难查。 */
+    function xzToneize(s) {
+        return String(s).replace(/(#[0-9a-fA-F]{3,8}|rgba?\([^)]*\))/g,
+            function (val, _g, off, whole) {
+                /* 前一个非空白字符：`(` / `,` ⇒ 在 var() 的 fallback 里，跳过 */
+                var k = off - 1;
+                while (k >= 0 && (whole[k] === ' ' || whole[k] === '\t')) k--;
+                var prev = k >= 0 ? whole[k] : '';
+                if (prev === '(' || prev === ',') return val;
+                var name = TONE_MAP[String(val).toLowerCase()];
+                if (!name) return val;
+                return 'var(--' + name + ',' + val + ')';
+            });
+    }
     function patchRule(chunk) {
         var brace = chunk.indexOf('{');
         if (brace < 0) return chunk;
         var sel = chunk.slice(0, brace);
         if (sel.indexOf('data-xz-theme') >= 0) return chunk;      // 日光覆写，跳过
         var decl = chunk.slice(brace + 1);
-        decl = decl.replace(/(?<![-\w])color(\s*):(\s*)(#[0-9a-fA-F]{3,8}|rgba?\([^)]*\))/gi,
-            function (all, s1, s2, val) {
-                var name = TONE_MAP[String(val).toLowerCase()];
-                if (!name) return all;                   // 未登记的新色保持原样，不静默改
-                return 'color' + s1 + ':' + s2 + 'var(--' + name + ',' + val + ')';
-            });
+        /* ★ v635：原来这里先有一条「只收 `color:`」的替换，现在**删了** ——
+           `xzToneize` 扫的是整条声明体，`color:#x` 当然也在里面，一条就够。
+           两条都留会**顺序敏感**：只要有一条放宽了断言，就套成
+           `var(--tA,var(--tB,#x))`，值越滚越长。留一份就永不漂。 */
         /* ★ 金底黑字（根因⑧）：日光下 --xz-gold 被压成深金 #7a5510，而这类按钮的
            文字是极暗色 #0a0c10/#0b0f17（生成器不收编极暗色）⇒ 黑压深金 = 1.09:1，
            实测「调 AI 生成 5 条」「进入此州 ▸」「在此」全糊成一片。
            源码里 background:var(--xz-gold) 共 5+1 处，**逐条核过全是配极暗字**，
-           底色统一换 --xz-gold-fill（夜墨同值、日光保持亮金 #e2bd63）⇒ 黑字始终可读。 */
+           底色统一换 --xz-gold-fill（夜墨同值、日光保持亮金 #e2bd63）⇒ 黑字始终可读。
+           ⚠ 顺序：必须在 `xzToneize` **之前**跑。它匹配的是 `var(--xz-gold)`，
+             不涉及裸色；放后面也成立，但前面更安全（避免被 var 替换插进中间）。 */
         decl = decl.replace(/background(\s*):(\s*)var\(--xz-gold\)/gi,
             'background$1:$2var(--xz-gold-fill)');
+        /* ★★★ v635：边框/底纹里的金色也在这里收（规则见 xzToneize 上方那段长注释）★★★ */
+        decl = xzToneize(decl);
         return sel + '{' + vhFix(decl);
     }
     function patch(css) {
@@ -380,7 +474,15 @@ var XZ_MAINT = false;
                判定 = id 以 xz 开头，或文本里出现 .xz- / #xz- 选择器。 */
             var txt = s.textContent || '';
             var ours = /^xz/i.test(s.id || '') || /\.(xz-|thdl-)|#xz-/i.test(txt.slice(0, 4000));
-            if (!ours || !txt || txt.indexOf('color') < 0) continue;
+            /* ★ v635：入口判据从「含 color」放宽到「含任意可收编色」。
+               原来只放 `color` 进去，于是**只有边框/底纹金色**的样式表被整张跳过
+               （`.xz-st-ovl-box{border:1px solid rgba(230,189,118,.28)}` 就是这种）
+               ⇒ 文字变银、框子照旧金，作者看到的就是"还是黑金"。
+               ⚠ 别放宽成"什么都过"：`#` 和 `rgba` 至少要有其一，
+                 否则每张样式表都要整表正反替换一遍，白烧 CPU。 */
+            if (!ours || !txt) continue;
+            if (txt.indexOf('color') < 0 && txt.indexOf('rgba') < 0
+                && !/#[0-9a-fA-F]{3,8}/.test(txt)) continue;
             var out = patch(txt); if (out !== txt) s.textContent = out;
             s.setAttribute('data-xz-v611', '1');
         } } catch (e) {}
@@ -401,12 +503,21 @@ var XZ_MAINT = false;
             for (i = 0; i < sub.length; i++) els.push(sub[i]); } catch (e1) {}
         for (i = 0; i < els.length; i++) {
             var st; try { st = els[i].getAttribute('style'); } catch (e2) { continue; }
-            if (!st || (st.indexOf('color') < 0 && st.indexOf('vh') < 0)) continue;
-            var out = st.replace(/(?<![-\w])color(\s*):(\s*)(#[0-9a-fA-F]{3,8}|rgba?\([^)]*\))/gi,
-                function (all, s1, s2, val) {
-                    var name = TONE_MAP[String(val).toLowerCase()];
-                    return name ? 'color' + s1 + ':' + s2 + 'var(--' + name + ',' + val + ')' : all;
-                });
+            /* ★ v635：入口判据同步放宽（原来只认 color/vh）——
+               只有 `border:1px solid rgba(230,189,118,.28)` 的内联样式
+               （弹层卡片、场景图框就是这种）原来被整条跳过 ⇒ 框子永远是金的。 */
+            if (!st || (st.indexOf('color') < 0 && st.indexOf('vh') < 0
+                && st.indexOf('rgba') < 0 && st.indexOf('#') < 0)) continue;
+            var out = st;
+            /* ★★★ v635：内联的金色（含边框/底纹）全部交给 `xzToneize` ★★★
+               病历：`style="border:1px solid rgba(230,189,118,.28)"` 这类内联串在
+               07 里就有几十处（弹层卡片、场景图框、按钮），原来只改 `color:`，
+               结果文字是银的、框是金的 ⇒ 作者要的"黑白"根本没做到。
+               ⚠ **必须用同一个函数**：两处各写一份判定时必然漂，
+                 漂出来的症状是"样式表里的框变银了、内联的框还是金"，比对错还难查。
+               ⚠ 原来这里那条 `color:` 专用替换已删：`xzToneize` 完全覆盖它，
+                 两条并存会顺序敏感地套成两层 var。 */
+            out = xzToneize(out);
             out = vhFix(out);   // 内联 style="max-height:56vh" 同样要按真视口算
             if (out !== st) { try { els[i].setAttribute('style', out); } catch (e3) {} }
         }
@@ -592,6 +703,11 @@ var XZ_MAINT = false;
 
     var TAG = '[天元录·开局创角]';
     var HOST_ID = 'xz-start-host';
+    /* ★ v634：弹层代理容器的 id（见 xzOvlHome）。
+       它必须与 HOST_ID **不同名**：同名会让 getElementById 有机会先返回代理、
+       面板那边拿到空壳 ⇒ `host.innerHTML = _html` 写进代理 ⇒ 面板整个不显示。
+       而 insideHost 两个都认，所以事件照常。 */
+    var OVL_PROXY_ID = 'xz-start-ovl-host';
     var STYLE_ID = 'xz-start-style';
     /* ★ v595（作者 2026-11-13）：「开局脚本默认深色，能切日光」。
        ★★★ v626：三档（玄青 / 夜墨 / 日光），真源只有一处：`xzStartTheme()` ★★★
@@ -837,6 +953,90 @@ var XZ_MAINT = false;
     }
     /* 把已渲染出来的浮层（.xz-st-ovl-bg）重新钉到真视口上；渲染后调用 */
     var _xzOvWin = null, _xzOvFit = null;
+    /* ★★★ v634：弹层必须**搬出 .mes_text**（作者 2026-11-18 第 N 次骂这一点）★★★
+       ── 改前只改样式、不搬节点，所以怎么调都会出屏 ──────────────────────
+         `.xz-st-ovl-bg` 是 `position:fixed`，但 fixed 的 containing block
+         **不一定是真视口**：任何祖先只要带 `transform` / `filter` / `perspective` /
+         `contain` / `will-change`，就会把它变成"那个祖先"的包含块。
+         而本面板渲染在 `.mes_text` 里，酒馆的 `.mes_text` 上恰好常见 `transform`
+         （流式输出的动画、气泡缩放都用它）⇒ fixed 的 0/0 变成 `.mes_text` 的左上角。
+       ── 实测（_ovl_repro，390x844 手机档，.mes_text 带 translateZ(0)）─────
+         改前：遮罩 top=8 left=8 bottom=852 right=368
+               ⇒ **下溢出 8px、上溢出 8px**（已经比视口大），
+               `data-xz-ovl-wrap` 的 `height:var(--xz-vh)`=844 是从 top=8 起算的，
+               于是整块比屏幕低 8px、底边被裁掉。消息越长、.mes_text 越高，偏得越多。
+       ── 为什么以前"看着还行"──────────────────────────────────────────────
+         在**纯文本楼层、没有 transform** 的情况下 containing block 就是视口，
+         fixed 恰好正确。所以这个 bug 只在"酒馆真环境 + 有 transform"时出现，
+         本地夹具不带 transform 就永远复现不出来（这正是它拖到现在的原因）。
+       ── 修法：搬出去，而不是接着调样式 ────────────────────────────────────
+         把 `.xz-st-ovl-bg` 挪到 `document.body` 下，外面套一层代理容器
+         `#xz-start-ovl-host`（`display:contents`，不占位、不建层）。必须套这一层：
+           `insideHost()` 是靠**向上找归属节点**判"这个节点归我管"的
+           （见 insideHost / installDocGuards），搬出去的节点若不在归属容器里，
+           所有点击都会被当成"不是我的"而忽略 ⇒ 弹层能看见但一个按钮都点不动。
+         ⚠⚠ 代理容器的 id **必须与 HOST_ID 不同名** ⚠⚠
+           同名的话 `getElementById(HOST_ID)` 有可能先返回代理、面板那边拿到空壳
+           ⇒ `host.innerHTML = _html` 写进代理 ⇒ 面板整个不显示。
+           `insideHost` 两个 id 都认（见那里 v634 那句），所以事件照常。
+         ⚠ 搬完必须重新算几何（下面那段），因为搬动会重置祖先链。
+         ⚠ 只搬一次：已经挂在代理下就直接返回，避免每次 1.5 秒轮询都摘挂一遍
+           （摘挂会打断弹层内部滚动位置，还会让正在按的按钮丢掉 pointer 状态）。 */
+    function xzOvlHome(wrap) {
+        /* 已经搬过（父就是代理容器）⇒ 什么都不做，避免每次渲染都摘挂一遍 */
+        try {
+            var p = wrap.parentNode;
+            if (p && p.id === OVL_PROXY_ID && p.__xzOvlProxy) return true;
+        } catch (e0) {}
+        var d = getDoc();
+        if (!d || !d.body) return false;
+        try {
+            var box = d.getElementById(OVL_PROXY_ID);
+            if (!box) {
+                box = d.createElement('div');
+                box.id = OVL_PROXY_ID;
+                box.__xzOvlProxy = true;
+                /* 代理容器本身**不占位、不建层**：只是一个"归属凭证"，
+                   布局全部交给里面的 fixed 遮罩。写成零尺寸 + 不参与流式布局。 */
+                box.setAttribute('style', 'display:contents;');
+                d.body.appendChild(box);
+            }
+            box.appendChild(wrap);   /* appendChild 自带"从原父摘掉" */
+            return true;
+        } catch (e1) { return false; }
+    }
+    /* ★★★ v636：清掉代理容器里**上一轮**的弹层 ★★★
+       作者 2026-11-18：「准确来说是**所有**弹层都无法交互」
+       ── 真因（上一版只修了一个弹层，所以怎么修都不对）────────────────────
+         `xzOvlHome()` 把 `.xz-st-ovl-bg` 从 host **搬**到 `body > 代理容器` 下。
+         而 `render()` 重建的只是 `host.innerHTML` —— 弹层已经不在 host 里了，
+         ⇒ **旧弹层永远清不掉**，一直以 82% 黑遮罩 + z-index:999999 钉在屏幕上。
+         症状链：打开过一次弹层 → 关它（`render` 重建 host）→ 遮罩还在 →
+         玩家以为弹层关了，实际上整屏被那块**已经没人管**的遮罩盖着 ⇒
+         点什么都被它吃掉 ⇒「所有弹层、任何按钮都点不了」。
+       也解释了为什么"每个弹层单独修"永远不会好：病不在弹层内部，在它们的**生命周期**。
+       ── 修法 ──────────────────────────────────────────────────────────────
+         每次重建 host 之前，把代理容器里的弹层全摘掉；新弹层由本次 `buildHtml()`
+         在本轮重新生成，随后 `xzMountOvl()` 再搬进来。
+         ⇒ 弹层的存在性回归到**唯一真相源 `state`**（buildHtml 画不画它）。
+       ⚠ 不能改成"渲染后按需删"：那时新弹层已经搬进代理，分不清新旧。
+       ⚠ 不留 `__xzOvlProxy` 之外的状态：代理容器本身留着（display:contents 不占位），
+         摘光了也只是空壳，重建时直接复用，不反复建删节点。 */
+    function xzOvlPurge() {
+        var d = null;
+        try { d = getDoc(); } catch (e0) { d = null; }
+        var box = null;
+        try { box = d && d.getElementById(OVL_PROXY_ID); } catch (e1) { box = null; }
+        if (!box) return 0;
+        var n = 0;
+        try {
+            var olds = box.querySelectorAll('.xz-st-ovl-bg');
+            for (var i = olds.length - 1; i >= 0; i--) {
+                try { olds[i].parentNode.removeChild(olds[i]); n++; } catch (e2) {}
+            }
+        } catch (e3) {}
+        return n;
+    }
     function xzMountOvl() {
         var win = xzOvPickWin();
         var doc = (win && win.document) || getDoc();
@@ -849,7 +1049,15 @@ var XZ_MAINT = false;
             return;
         }
         try {
+            /* ★ v634：先搬家，再量几何。顺序不能反 ——
+               搬家会换 containing block，搬之前量到的 top/left 是错的。 */
+            xzOvlHome(wrap);
             var g = xzOvGeom(win, doc);
+            /* ★ v634：搬家之后 fixed 的 containing block 就是视口了，
+               但**不能因此改用 inset:0**：这份脚本还可能跑在 iframe 里
+               （酒馆助手把脚本塞进 iframe），那时 fixed 相对的是 iframe 的视口，
+               而玩家看的是 iframe 外面那个大页面 ⇒ 必须显式写像素。
+               下面这些值全部来自 V611 引擎量到的"最小可见区"，与状态栏同一真相源。 */
             wrap.style.position = 'fixed';
             wrap.style.top = g.top + 'px';
             wrap.style.left = g.left + 'px';
@@ -865,8 +1073,34 @@ var XZ_MAINT = false;
             wrap.style.overflow = 'hidden';
             var boxEl = wrap.querySelector('.xz-st-ovl-box');
             if (boxEl) {
-                boxEl.style.maxWidth = Math.min(560, g.vw - 16) + 'px';
-                boxEl.style.maxHeight = Math.min(Math.round(g.vh * 0.86), 680) + 'px';
+                /* ★ v634：这里设的是**变量**，不是 max-width 本身。
+                   裁决层那条 `!important` 会压掉内联 max-width，但压不掉变量 ——
+                   变量最终由 `max-width:min(视口, var(--xz-ovl-maxw))` 消费。
+                   设内联 max-width 的话，桌面 1280 下弹层会被拉满整屏。
+                   ⚠ 宽度上限取 min(560, 视口-16)：手机上视口比 560 窄，必须跟着收。 */
+                boxEl.style.setProperty('--xz-ovl-maxw', Math.min(560, g.vw - 16) + 'px');
+                boxEl.style.setProperty('--xz-ovl-maxh', Math.min(Math.round(g.vh * 0.86), 680) + 'px');
+                boxEl.style.width = '100%';
+                boxEl.style.boxSizing = 'border-box';
+                /* ★★★ v637：给"选效果"这类弹层一个**确定高度** ★★★
+                   作者 2026-11-18：「改了之后是可以交互了但是，扁的超级扁」
+                   ── 真因 ──────────────────────────────────────────────────────
+                     上面只给了 `--xz-ovl-maxh`（上限），没给 `height`。
+                     而 `.xz-st-ovl-box` 自身是 `height:auto` —— flex 子项
+                     （`.xz-st-body` / `.xz-st-pickpanel` / `.xz-st-pickscroll`）
+                     全部 `flex:1 1 auto` 却**没有确定的父高可分配** ⇒ 谁也撑不开，
+                     整块塌成内容高度 ≈ 300px、效果网格只剩 53px。
+                     ⇒ 光写 `flex:1` 是没用的：flex 分配需要父级有确定高度。
+                   ── 修法 ──────────────────────────────────────────────────────
+                     对带 `.xz-st-body-pick`（选效果类）的弹层，把高度**钉到上限**。
+                     其余弹层（玩法说明 / 灰雾总纲）内容长短差很大，维持 auto 随内容。
+                   ⚠ 必须写在 `xzMountOvl()` 里、而不是 `overlayShell` 的内联 style：
+                     每次 `render(true)` 都会整棵重建弹层，内联那份会被重建冲掉
+                     （我第一版就是手注入内联高度，一切类别立刻缩回 379px）。
+                     这里随每次 mount 重设，才是活的。 */
+                if (boxEl.querySelector('.xz-st-body-pick')) {
+                    boxEl.style.height = Math.min(Math.round(g.vh * 0.86), 680) + 'px';
+                }
             }
             if (_xzOvWin !== win || !_xzOvFit) {
                 try { if (_xzOvWin && _xzOvFit) { _xzOvWin.removeEventListener('resize', _xzOvFit); _xzOvWin.removeEventListener('orientationchange', _xzOvFit); } } catch (e2) {}
@@ -1084,7 +1318,7 @@ var XZ_MAINT = false;
         return REALM_AGE_RANGE[bigOf(realm)] || REALM_AGE_RANGE['练气'];
     }
     /* 境界规则：四维单项上限 cap、**一个境界加 2 点**（凡人8→练气10→…→炼虚20）、
-   四维合计上限 total、可装玄技门数 slots。
+   四维合计上限 total、可装法术门数 slots。
    ★ v73：另加「只能有一项是满的」——多人顶到 cap 时只留一项满，其余压到 cap-1，
      防止把四项全拉满（如四个20）。
    ★★★ v376：`total` 从 `cap × 2` 改成 `cap × 2 − 2` ★★★
@@ -1113,9 +1347,9 @@ var XZ_MAINT = false;
     };
     /* ══════════════════════════════════════════════════════════════
        预设技能库（v71）：玩家懒得自己打字时，点一下直接填进表单。
-       每个属性（木水火土风雷冰）配 4 个玄技 + 1 个玄诀；另配 3 个兵器。
+       每个属性（木水火土风雷冰）配 4 个法术 + 1 个心法；另配 3 个兵器。
        点「用这个」→ 名字/品质/目标/消耗/效果**一次性全填好**，
-       玩家想改哪项改哪项，不想改就直接点「添加到玄技」。
+       玩家想改哪项改哪项，不想改就直接点「添加到法术」。
        ══════════════════════════════════════════════════════════════ */
     /* ══════════ 预设玄技：属性 × 品质（v410 重构）══════════
        用户 2026-10-27 原话：
@@ -1133,9 +1367,9 @@ var XZ_MAINT = false;
        ★★★ 两条硬约束，别好心加回去 ★★★
          ① **`定身` / `禁锢` 一律不进预设**（用户原话：「定身类的，全部删掉」）。
             预设是给新手的快捷入口，塞一把控制会让人没法出手；要控场让玩家自己写。
-         ② **`气血上限` / `灵力上限` 一个字都不许出现在玄技里**
-            ——《设定-效果表》明文：这两条只能写在玄诀 / 兵器 / 灵根上。
-            所以它们只出现在下面的玄诀预设（PRESET_HEARTS）里。
+         ② **`气血上限` / `灵力上限` 一个字都不许出现在法术里**
+            ——《设定-效果表》明文：这两条只能写在心法 / 兵器 / 灵根上。
+            所以它们只出现在下面的心法预设（PRESET_HEARTS）里。
        ★ 覆盖表：30 个可用机制各出现一次，**没有哪个被堆三份**
          （这正是用户骂的「不能三四个都是减伤」）——
            伤害：全部 84 门都有；
@@ -1144,7 +1378,7 @@ var XZ_MAINT = false;
            流血/减速/闪避/提速（风）｜中毒/易伤/暴击/速度/暴伤（雷）
            腐蚀/减速/暴伤/抗暴/回复（冰）
        ⚠ 改这张表之前先数一遍：`_v410_preset_cover.mjs` 会核对「每个机制都在、且不止一个」。
-         别看漏——玄技里出现 `气血上限` 会被 v350 那条「玄技不许写上限」的闸当场抓。 */
+         别看漏——法术里出现 `气血上限` 会被 v350 那条「法术不许写上限」的闸当场抓。 */
     var PRESET_ATTRS = ['火', '水', '木', '土', '风', '雷', '冰'];
     var PRESET_QUAL = ['凡阶', '黄阶', '玄阶', '地阶', '天阶', '神阶'];
     /* 三个类别 —— 这就是用户要的「不用一个个点」那一层（2026-10-27）：
@@ -1242,7 +1476,7 @@ var XZ_MAINT = false;
          想让高品阶挂更多，先往池子里加行，再把这里的数改大 —— 别只改这里。 */
     var PRESET_TPL = {
       /* 凡阶的「持续」表里写 1 回合，但用户 2026-10-26 定过一条更硬的底线：
-         「玄技的非即时效果必带手数，**最低 2 手**，哪怕玩家不说也要视为 2 手」
+         「法术的非即时效果必带手数，**最低 2 手**，哪怕玩家不说也要视为 2 手」
          ⇒ 凡阶取 2（floor 优先于表里的名义值）。`_v410_preset_cover` 的判据
            也按 max(表持续, 2) 卡上限，不是拿 1 去卡。 */
       '凡阶': { 攻: [8, 12], 减: [7, 11], 身: [6], 手: 2, 攻副: 0, 减条: 1, 身条: 1 },
@@ -1256,7 +1490,7 @@ var XZ_MAINT = false;
        特殊值（免死 / 破盾 / ~~抢先手~~ / 召唤）不按手数走，别硬加 `:n`。
        ★ v449：~~抢先手~~ 已下架，这行只剩三个例子，不影响判据（PRESET_HANDS 才是真名单）。 */
     /* ★★★ v509：玄技「消耗」按品质推导 —— 与引擎**逐字同源** ★★★
-       用户 2026-10-31：「为什么玄技耗蓝都是0？你倒是根据玩家选的境界和品质去弄啊，
+       用户 2026-10-31：「为什么法术耗蓝都是0？你倒是根据玩家选的境界和品质去弄啊，
                        随时变化啊，灵力怎么能他妈随机呢。」
        ── 病根 ──────────────────────────────────────────────────────────
        表单里 `消耗` 的初值是 0，玩家不手填就一直 0 —— 而引擎每次出手按值扣，
@@ -1346,7 +1580,7 @@ var XZ_MAINT = false;
     })();
 
     /* ══════════════════════════════════════════════════════════════════════
-       ★★★ v447 · 玄技「效果自选」（用户 2026-10-29：
+       ★★★ v447 · 法术「效果自选」（用户 2026-10-29：
          「开局脚本里面的技能预设，重新改为效果自选」）
 
        ── 为什么不是"再补一批预设" ─────────────────────────────────────────
@@ -1360,7 +1594,7 @@ var XZ_MAINT = false;
           ⇒ 整行走自然语言兜底 ⇒ 玩家的勾选**静默失效**。所以本表
           **一个自造名字都不许有**，`_v447_eff_picker.mjs` 会拿真身机制名表来核。
        ② `定身` / `禁锢` 不进（用户定过「定身类的全部删掉」）；
-          `气血上限` / `灵力上限` 不进玄技（《设定-效果表》：只能写在玄诀/兵器/灵根上）。
+          `气血上限` / `灵力上限` 不进法术（《设定-效果表》：只能写在心法/兵器/灵根上）。
 
        ── 为什么每条都带「尺」而不是让玩家填数字 ──────────────────────────
        数字填多少本来就该由品质决定（《设定-数值表》品质档）。玩家勾了「灼烧」，
@@ -1601,25 +1835,25 @@ var XZ_MAINT = false;
     var EFF_RAW_UNIT = { '拉条': 1, '乱序': 1, '换命': 1 };
 
     /* ══════════════════════════════════════════════════════════════════════
-       ★★★ v468：被动池 —— 玄诀 / 武器 / 灵根 能选的效果 ═★★
+       ★★★ v468：被动池 —— 心法 / 武器 / 灵根 能选的效果 ═★★
        ── 用户原话 ──────────────────────────────────────────────────────────
-       「玄技和武器怎么不tm也改成玄技这样，但是切记，灵根和玄诀和武器的效果
-         本质上来说就是被动，所以有一些效果不能选，相同的，玄技有一些效果也不能选，
+       「法术和武器怎么不tm也改成法术这样，但是切记，灵根和心法和武器的效果
+         本质上来说就是被动，所以有一些效果不能选，相同的，法术有一些效果也不能选，
          比如说法气血上限，懂了吧，你来判断」
 
        ── 「你来判断」的判断依据（不是凭感觉，是引擎的两条真通道）──────────
-       玄诀 / 武器 / 灵根的 `效果` 在引擎里**只走一条路**：
+       心法 / 武器 / 灵根的 `效果` 在引擎里**只走一条路**：
          `parseSpiritRootEffect()` → `SPIRIT_ROOT_EFFECT_KEYS` 关键词表 → `buildSpiritRootBuffs()`
          → `mechBuffsOf()` → 各消费点。
        这条通道是**常驻机制**：算一次、挂一整场，没有"这一击"、没有手数、没有目标。
        （证据：`heartBuffs` / `artifactBuffs` / 灵根三条在 mechBuffsOf 里逐字同构，
          都只做 `for (k in buff) 克隆`，不看回合。）
 
-       玄技的 `效果` 走**另一条路**：
+       法术的 `效果` 走**另一条路**：
          `_v75ParseEffect()` → `XZ_ATOM_TYPES`（62 条）→ `applyV75Effects()`。
        它按"这一击/这几手"结算，有目标、有手数、能挂到对方身上。
 
-       ⇒ **两条通道认的名字不是同一套**。把玄技的机制名写进玄诀，
+       ⇒ **两条通道认的名字不是同一套**。把法术的机制名写进心法，
          引擎的关键词表一条都认不出来（既不报错也不生效）—— 这正是本项目
          「写了毫无反应」那一类最贵的 bug。所以被动池**必须**是独立的一张表，
          不能直接复用 EFF_POOL。判据 `工具/_v468_pas_probe.mjs` 会拿这张表逐个
@@ -1683,8 +1917,8 @@ var XZ_MAINT = false;
     /* 取一条被动在某个品质下的最终值。
        ★ 与 `effValOf` 分开写：被动池用的是**引擎 cap** 当基准，
          不走 `EFF_QUAL_K` 那套招式系数（那是"招式随品质变强"的口径，
-         而被动本身没有品质档位 —— 玄诀/武器有品质，但它调的是"几条"，
-         不是"每条多强"。混用会让同一句话在玄诀上比在武器上更弱，玩家会问为什么）。 */
+         而被动本身没有品质档位 —— 心法/武器有品质，但它调的是"几条"，
+         不是"每条多强"。混用会让同一句话在心法上比在武器上更弱，玩家会问为什么）。 */
     function effPasValOf(mech) {
         var def = EFF_PAS_BY_KEY[mech];
         if (!def) return '';
@@ -1692,7 +1926,7 @@ var XZ_MAINT = false;
     }
     /* 拼一行被动效果。格式与招式**同源**（`机制:数值｜描写`），
        因为引擎两条通道都用同一个 `｜` 切分约定（`_v75ParseEffect` 与 `parseSpiritRootEffect`
-       各自都先切竖线）。统一格式的好处是：玩家把玄诀的效果抄到玄技上，也能跑。 */
+       各自都先切竖线）。统一格式的好处是：玩家把心法的效果抄到法术上，也能跑。 */
     function effPasLineFor(mech, note) {
         var def = EFF_PAS_BY_KEY[mech];
         if (!def) return '';
@@ -1809,7 +2043,7 @@ var XZ_MAINT = false;
     var PRESET_HEARTS = {
       '火': { 名:'燎原心典', 品质:'天阶', 效果:{ '增伤': '20｜一气混元攻守渐长', '回蓝': '6｜心火自生' } },
       /* ★ v410：`灵力上限` 只能写在玄诀 / 兵器 / 灵根上（《设定-效果表》明文，玄技里一个字都不许有），
-         所以它只在这张玄诀表里出现 —— 玄技预设那边由 `_v410_preset_cover.mjs` 守着。 */
+         所以它只在这张心法表里出现 —— 法术预设那边由 `_v410_preset_cover.mjs` 守着。 */
       '水': { 名:'澄波心', 品质:'地阶', 效果:{ '减伤': '15｜心湖不起波澜', '回蓝': '5｜水气自养', '灵力上限': '15｜气海如湖，蓄得住' } },
       '木': { 名:'百草经', 品质:'玄阶', 效果:{ '气血上限': '15｜识得三千草就少一半病', '回蓝': '5｜草木养元' } },
       '土': { 名:'厚土身', 品质:'玄阶', 效果:{ '减伤': '30｜常年挨打练出来的骨架' } },
@@ -1836,8 +2070,8 @@ var XZ_MAINT = false;
          必须用**同一组参数**调它，否则点了 A、填进去的是 B。这类错不报错，
          只会让人觉得"预设乱套了" —— 所以两处都走 presetAttrOf(state.draft) + 表单品质。 */
     function presetsOf(kind, attr, quality, cls) {
-      if (kind === '武器') return PRESET_ARTS;
-      if (kind === '玄诀') {
+      if (kind === '法宝') return PRESET_ARTS;
+      if (kind === '心法') {
         var out = [];
         for (var k in PRESET_HEARTS) out.push(PRESET_HEARTS[k]);
         return out;
@@ -1866,7 +2100,7 @@ var XZ_MAINT = false;
     function presetAttrOf(d) {
       var a = state.psAttr;
       if (!a && d && d.主角信息) {
-        var e = d.主角信息.玄元属性;
+        var e = d.主角信息.灵根;
         a = (e && typeof e === 'object') ? (e.属性 || '') : (typeof e === 'string' ? e : '');
       }
       a = String(a || '').trim();
@@ -1949,7 +2183,7 @@ var XZ_MAINT = false;
 /* ④ 技能骨架（表达层，点开看说明）
    ★ v62 重建：**只写引擎真的按位次做的那件事**（用户点名：「追加一击没反应，纯文本，
      直接删了，反正也没这个机制；叠层加速也是纯文本，也删了；单体一击不用写啊，
-     玄技类型不早说了是单体还是范围了吗？标上就行，不要再拆细机制；
+     法术类型不早说了是单体还是范围了吗？标上就行，不要再拆细机制；
      挂层又和堆层·灼烧 ×1 重复了」）。
    位次的真机制只有四处，每处都能在 04-核心脚本.js 里指出读取点：
      终结式   → 兑付全部层数，每层 +12%
@@ -1960,7 +2194,7 @@ var XZ_MAINT = false;
      · 「单体一击 / 群体一击」—— 攻击类型早就标了（单体/范围），写进骨架只是重复；
      · 「追加一击」「叠层加速」—— 引擎里压根没有这两个机制（连击式不会追打）；
      · 「挂层×1」—— 与「堆层·X」机制重复，而且说不出挂的是哪一种层；
-     · 「濒死强留1点气血」—— 那是**玄诀**（体·沙走龙）的机制，不是位次机制。
+     · 「濒死强留1点气血」—— 那是**心法**（体·沙走龙）的机制，不是位次机制。
    ⚠ 本表在 04 / 05 / 07 各有一份（04 名 SKILL_SKELETON），三份必须逐字同源；
      由 工具/verify_stack_atoms.mjs 的「骨架三副本一致性」守着。 */
 var XZ_SKILL_SKELETON = {
@@ -2010,8 +2244,8 @@ function xzSkeletonOfSkill(skill) {
 }
 
     /* 玄幻术语改名 · 老档兼容层（与 04 同款，各脚本作用域隔离故各存一份）
-       ★★★ v283：只剩**改过名、但字段还在**的：装备法宝 → 装备武器
-       原来还有 `装备功法 → 玄技`、`装备心法 → 玄诀` 两条 —— 那两条是把旧值搬到
+       ★★★ v283：只剩**改过名、但字段还在**的：装备法宝 → 装备法宝
+       原来还有 `装备功法 → 法术`、`装备心法 → 心法` 两条 —— 那两条是把旧值搬到
        **新名字、但语义完全不同的记录型字段**上（玄技/玄诀 是 键＝名字 的记录，
        不是「一件装备」），而且目标字段本身在 v70 起就换成了 `已学本领`。
        结果只有一个：让废止字段名永远留在源码里。已删。
@@ -2019,14 +2253,14 @@ function xzSkeletonOfSkill(skill) {
        ★★★ v551：`玄元属性 ↔ 灵根` 那条也删了 —— 灵根现在是一个独立对象字段，
        不再是玄元属性的旧别名；留着它会把对象搬到字符串字段上（详见 04 同名注释）。 */
     /* ★★★ v314：别名表必须与 04（2316 行）**逐字一致** ★★★
-       原来这里写的是 `['武器','装备法宝']` / `['武器','法宝']` —— 目标字段是 `武器`。
+       原来这里写的是 `['法宝','装备法宝']` / `['法宝','法宝']` —— 目标字段是 `武器`。
        而 `武器` 在 schema 里**根本不是顶层字段**：它只是 `背包.*.类型` 的一个枚举值
-       （21-变量结构.js:328 `pick(["道具","玄技","玄诀","武器","材料"])`）。
+       （21-变量结构.js:328 `pick(["道具","法术","心法","法宝","材料"])`）。
        ⇒ 老存档带 `法宝` 时，这里会往一个 schema 不认识的键 `武器` 上写，
          那条数据既不会被任何界面读到，又会在变量树里长出一个叫「武器」的野字段
          （本项目「写一个 schema 不认识的键会把它重新长回变量树」那条老坑）。
 
-       正确目标与 04 一致：`装备武器`（schema 154 / 270 行确有这个 obj）。
+       正确目标与 04 一致：`装备法宝`（schema 154 / 270 行确有这个 obj）。
        为什么会分成两份：07 是独立 IIFE、不能直接调 04 的函数，
        而 04 的 `xzNormTermKeys` 又没登记进 `XZ_SHARED_FNS`。
        ⚠ 两份副本**仍是隐患**（改一处忘另一处）；本次先对齐内容，
@@ -2045,7 +2279,13 @@ function xzSkeletonOfSkill(skill) {
             }
         } catch (eSh) {}
         if (!o || typeof o !== 'object') return o;
-        var A = [['装备武器','装备法宝'],['装备武器','法宝']];
+        /* ★ 2026-11-18：原来这里是 `[['装备法宝','装备法宝'],['装备法宝','法宝']]` ——
+           第一条左列＝右列，**恒不生效**（自己搬给自己），是 v551 改名留下的化石。
+           ⇒ 只留真正的别名。与 04 那份（`['装备法宝','装备武器'] / ['装备法宝','武器']`）
+             同口径：**新结构缺了才补，绝不反向覆盖**。
+           ⚠ 这里仍然只做「扁平键补齐」这一件事；三槽的真身是 `装备.法宝`，
+             由 04 的 `xzNormTermKeys` 负责从三槽推出扁平键。 */
+        var A = [['装备法宝', '装备武器'], ['装备法宝', '法宝'], ['装备法宝', '武器']];
         for (var i = 0; i < A.length; i++) {
             try { if (o[A[i][0]] === undefined && o[A[i][1]] !== undefined) o[A[i][0]] = o[A[i][1]]; } catch (e) {}
         }
@@ -2056,7 +2296,7 @@ function xzSkeletonOfSkill(skill) {
             var _nE = !_nR || typeof _nR !== 'object'
                 || (String(_nR.品阶 || '') === '' && String(_nR.名称 || '') === '');
             if (_oR && typeof _oR === 'object' && _nE) {
-                var _MAP = { '凡血':'伪灵根','灵血':'四灵根','王血':'三灵根','圣血':'双灵根','帝血':'天灵根','神血':'圣灵根' };
+                var _MAP = { '凡血':'伪灵根','灵血':'四灵根','王血':'三灵根','圣血':'双灵根','帝血':'天灵根','神血':'至高灵根' };
                 var _rk = String(_oR.品阶 === undefined || _oR.品阶 === null ? '' : _oR.品阶).trim();
                 o.灵根 = {
                     名称: String(_oR.名称 || '山野散根'),
@@ -2072,7 +2312,7 @@ function xzSkeletonOfSkill(skill) {
     var ATTRS = ['力量', '敏捷', '体质', '智力'];
     var RANKS = ['凡阶', '黄阶', '玄阶', '地阶', '天阶', '神阶'];
     /* ★ v10（用户口径）：卡里**没有技能表、没有路线、没有位次**。
-       玄技／玄诀的名字与效果内容一律现编；目标、消耗由玩家定、掷骰或用预设。
+       法术／心法的名字与效果内容一律现编；目标、消耗由玩家定、掷骰或用预设。
        下面这几个函数只为兼容旧调用点保留，一律返回空。 */
     var V2_ROUTES = {}, V2_XINFA = [], V2_POS_DESC = {}, V2_POS_HOWTO = {}, V2_POS_ORDER = [], V2_DESC_POOL = {};
                         /* ═══════ 描述素材池（只为「🎲 描述」按钮服务）═══════
@@ -2093,15 +2333,15 @@ function xzSkeletonOfSkill(skill) {
         return pool[Math.floor(Math.random() * pool.length)];
     }
     /* ★ v70：造化锻造台 = 玩家在创角时给主角添加本领的地方，**三类都能添加**：
-       玄技（主动）/ 玄诀（被动）写入「已学本领」，武器写入「装备武器」（二者分离；装备台只管武器穿戴）。
-       两类**字段完全同构**（玄技名/品质/类型/目标/效果/消耗 **六字段**），
-       类型字段是机器可读标记：玄技恒「主动」、玄诀恒「被动」，由 kind 决定，不由玩家填。
-       ★ v99：四源（玄技/玄诀/灵根/武器）的效果字段**一律叫「效果」**，不再叫「功能」。
+       法术（主动）/ 心法（被动）写入「已学本领」，武器写入「装备法宝」（二者分离；装备台只管武器穿戴）。
+       两类**字段完全同构**（法术名/品质/类型/目标/效果/消耗 **六字段**），
+       类型字段是机器可读标记：法术恒「主动」、心法恒「被动」，由 kind 决定，不由玩家填。
+       ★ v99：四源（法术/心法/灵根/武器）的效果字段**一律叫「效果」**，不再叫「功能」。
        「效果」是**效果集** `{ 效果名: "效果串" }`；名字、品质、效果串全部玩家自己编自己填，卡里没有技能总表。 */
-    var KINDS = ['玄技', '玄诀', '武器'];
+    var KINDS = ['法术', '心法', '法宝'];
     /* ★ v397b：删掉了 GONGFA_SLOTS_BY_REALM（60 行境界→门数表）。
        ⚠ 为什么删：v73 就取消了「按境界限门数」——  `maxSlots()` 现在只看 kind
-         （武器 1 / 玄诀 15 / 玄技 30，那三个数是变量 schema 的 record 上限，不是境界给的）。
+         （武器 1 / 心法 15 / 法术 30，那三个数是变量 schema 的 record 上限，不是境界给的）。
          所以这张表**全卡零读取**。
        ⚠ 更要紧的是上面那句旧注释「唯一的门数真相源是下面的 GONGFA_SLOTS_BY_REALM」——
          它是 v77 写的，当时对；v73 之后就成了**替死代码作保的假依据**。
@@ -2140,7 +2380,7 @@ function xzSkeletonOfSkill(skill) {
     function ruleOf(realm) { return REALM_RULE[bigOf(realm)] || REALM_RULE['练气']; }
     function qualityOptions() { return RANKS.slice(); }
     // v5：武器只分 ★（黄阶）与 ★★（地阶），有效档硬封顶 ★★
-    function qualityOptionsFor(kind) { return kind === '武器' ? ['凡阶', '黄阶', '玄阶', '地阶'] : RANKS.slice(); }
+    function qualityOptionsFor(kind) { return kind === '法宝' ? ['凡阶', '黄阶', '玄阶', '地阶'] : RANKS.slice(); }
     function vfail(m) { var e = new Error(m); e.__xzPlayerMsg = true; return e; }
 
     /* ============================ 落点选项 ============================ */
@@ -2467,7 +2707,7 @@ function xzSkeletonOfSkill(skill) {
              · ⚠ `place` 只能填一处，所以她的「启程之地」卡也落在鸣神无想阁。
                这是界面层的取舍，不是设定层：她是至冬之主，住的是至冬宫。
                总览里把她的住处单独写清楚（「至冬宫」），模型照总览写就不会串。
-             · 她是速度型：敏捷 15（全卡炼虚档最高）、圣灵根、提速 60（引擎封顶）。 */
+             · 她是速度型：敏捷 15（全卡炼虚档最高）、至高灵根、提速 60（引擎封顶）。 */
         {
             id: '原神', label: '原神 DLC',
             sects: [], place: '魔州·焦雷域·鸣神无想阁',
@@ -2638,22 +2878,22 @@ function xzSkeletonOfSkill(skill) {
 
     /* ============================ 先天气运已正式下线：现为单一「灵根」（随机🎲或自选，仅一条，见下方灵根区块） ============================ */
     /* ============================ 天骄预览（与脚本同规则） ============================ */
-    var SPIRIT_ROOT_RANK_UI = { '无': 0, '伪灵根': 1, '四灵根': 2, '三灵根': 3, '双灵根': 4, '天灵根': 5, '圣灵根': 6 };  // 灵根品阶 -> 先天档（天灵根 / 圣灵根 为顶二档；用户口径：圣灵根 > 天灵根）
+    var SPIRIT_ROOT_RANK_UI = { '无': 0, '伪灵根': 1, '四灵根': 2, '三灵根': 3, '双灵根': 4, '天灵根': 5, '至高灵根': 6 };  // 灵根品阶 -> 先天档（天灵根 / 至高灵根 为顶二档；用户口径：至高灵根 > 天灵根）
 
     /* ★★★ v330：灵根「效果」随机池 —— **全部改成 v296 那套「机制:数值[:手数]｜描写」** ★★★
-       用户 2026-10-22：「开局脚本的所有预设的玄技玄诀武器灵根的效果改一下，同步更新，
+       用户 2026-10-22：「开局脚本的所有预设的法术心法武器灵根的效果改一下，同步更新，
                      我们的最新不用翻译的格式。」
 
        为什么必须改（旧写法不是"风格问题"，是**同一件事两套词**）：
          旧池写的是中文句子（「受到伤害降低 15%」），靠 SPIRIT_ROOT_EFFECT_KEYS 那 19 条正则**猜**；
-         而玄技/玄诀/武器从 v296 起写的是 `机制:数值｜描写`，引擎按机制名直读。
+         而法术/心法/武器从 v296 起写的是 `机制:数值｜描写`，引擎按机制名直读。
          两套词并存的结果：灵根这一路的数值看起来"能生效"，其实全靠关键词命中，
          一旦有人写「护体之气挡住三成」这种自然语言，就静默归零、面板还写着这条效果。
          ⇒ 池里每一条**第一个词就是机制名**，`｜` 之后只写来历与画面（脚本一个字不读）。
 
        数值、条数、品阶梯度**一个都没动**（只换写法），所以掷出来的强度与之前完全一致：
          减伤 5 / 4+吸血 3 / 气血上限 6 / 减伤 5+回蓝 3 …（逐条对应旧池）。
-       品阶越高 → 数值越大、条目越多（伪灵根一条，圣灵根三条）。
+       品阶越高 → 数值越大、条目越多（伪灵根一条，至高灵根三条）。
        玩家仍可手改或清空（手写的那句永远优先）。 */
     var SPIRIT_ROOT_EFFECT_POOL = {
         '伪灵根': [
@@ -2688,13 +2928,13 @@ function xzSkeletonOfSkill(skill) {
             '增伤:20，减伤:20，气血上限:25｜血如江海，愈战愈盛',
             '穿防:22，暴伤:25，减伤:18，回蓝:7｜天灵根之下，护体如纸'
         ],
-        '圣灵根': [
-            '减伤:28｜圣灵根护体，几近不伤',
-            '减伤:24，暴击:16，破盾:50｜圣灵根一动，天地先应',
-            '减伤:22，免死:30，闪避:16｜圣灵根不灭，一线生机自成',
+        '至高灵根': [
+            '减伤:28｜至高灵根护体，几近不伤',
+            '减伤:24，暴击:16，破盾:50｜至高灵根一动，天地先应',
+            '减伤:22，免死:30，闪避:16｜至高灵根不灭，一线生机自成',
             '增伤:25，减伤:22，气血上限:30，回蓝:8｜血通天地，生生不息',
-            '穿防:25，暴伤:30，减伤:20，吸血:15｜圣灵根所向，万甲皆穿',
-            '增伤:22，暴击:18，减伤:20，残血减伤:25，回蓝:8｜越近绝境，圣灵根越炽'
+            '穿防:25，暴伤:30，减伤:20，吸血:15｜至高灵根所向，万甲皆穿',
+            '增伤:22，暴击:18，减伤:20，残血减伤:25，回蓝:8｜越近绝境，至高灵根越炽'
         ]
     };
     function rollBloodEffect(rank) {
@@ -2714,38 +2954,40 @@ function xzSkeletonOfSkill(skill) {
     function rollBloodInto(d) {
         /* 随机灵根：按权重掷品阶（越高贵越稀），纯度 1~100，再配一个名字。
            掷出来仍可手改 —— 随机是给想省事的人用的，不是强制。 */
-        var rk = [['伪灵根', 30], ['四灵根', 24], ['三灵根', 12], ['双灵根', 8], ['天灵根', 5], ['圣灵根', 3]];  // 权重：圣灵根最稀（最低）
+        var rk = [['伪灵根', 30], ['四灵根', 24], ['三灵根', 12], ['双灵根', 8], ['天灵根', 5], ['至高灵根', 3]];  // 权重：至高灵根最稀（最低）
         var tot = 0, i;
         for (i = 0; i < rk.length; i++) tot += rk[i][1];
         var r = Math.random() * tot, pickRank = '伪灵根';
         for (i = 0; i < rk.length; i++) { r -= rk[i][1]; if (r <= 0) { pickRank = rk[i][0]; break; } }
+        /* ★ 2026-11-18：随机灵根**不再掷名字与纯度**（两个字段都删了）。
+           改为顺手把属性也掷掉 —— 否则「随机灵根」只换品阶、属性还停在上一次选的，
+           玩家会以为随机按钮坏了（点三次品阶变了、属性没变）。 */
+        d.elem = ELEMS[Math.floor(Math.random() * ELEMS.length)];
         var names = {
             '伪灵根': '山野散根', '四灵根': '小宗传承根', '三灵根': '望族古根',
-            '双灵根': '圣地主脉根', '圣灵根': '太古神兽根', '天灵根': '帝者遗脉'
+            '双灵根': '圣地主脉根', '至高灵根': '太古神兽根', '天灵根': '帝者遗脉'
         };
         d.spiritRootRank = pickRank;
-        d.spiritRootPurity = 5 + Math.floor(Math.random() * 96);
-        d.spiritRootName = names[pickRank] || pickRank;
-        /* ★ v74：随机灵根**连效果一起掷** —— 按品阶从预设池抽一条自由文本被动，
-           否则掷出来的血只有名/阶/纯度，「效果」栏永远是空的（用户报障）。 */
-        d.spiritRootEffect = rollBloodEffect(pickRank);
-        return d.spiritRootName + '（' + d.spiritRootRank + ' ' + d.spiritRootPurity + '%）';
+        /* ★ 2026-11-18：灵根没有名字、没有纯度、没有效果（三个字段全删）。
+           原来这里还会调 `rollBloodEffect` 掷一条被动 —— 掷出来也没地方写，
+           写进 `灵根.效果` 会被 schema 剥掉 ⇒ 纯白跑。一并删除。 */
+        return String(d.spiritRootRank || '伪灵根') + ' · ' + String(d.elem || '');
     }
     /* ★★★ v613：从预设池里掷一件「能直接用」的玄技／玄诀／武器 ★★★
        ── 为什么用预设池而不是从零拼 ──────────────────────────────────────────
          `PRESET_SKILLS` / `PRESET_HEARTS` / `PRESET_ARTS` 里每一条都过过闸
-         （机制名在引擎表里、条数不超品质上限、玄技里绝不出现「灵力上限」
-         这种只许挂玄诀/武器/灵根的机制）。从零 `rollFunc` 拼一条虽然也能跑，
+         （机制名在引擎表里、条数不超品质上限、法术里绝不出现「灵力上限」
+         这种只许挂心法/武器/灵根的机制）。从零 `rollFunc` 拼一条虽然也能跑，
          但绕过了这些约束 —— 引擎口径一收紧，随机出来的就是
          "写得进变量、打起来不生效"的那类静默坏招。
        ── 为什么必须按名字去重 ────────────────────────────────────────────────
-         `buildVars` 用**名字当键**（`learnedSkill[it.名] = …`）。掷出三门同名的玄技
+         `buildVars` 用**名字当键**（`learnedSkill[it.名] = …`）。掷出三门同名的法术
          ⇒ 后写覆盖前写 ⇒ 变量里只剩一门，而界面上「已配」明明列着三门。
          这是本项目典型的"看着都对、数据少一半"。⇒ `used` 逐件登记。
        ⚠ 武器品质必须**夹回允许档**：`PRESET_ARTS` 里有「天阶」的「无垢古剑」，
          而武器下拉只给凡/黄/玄/地（`qualityOptionsFor`）。把天阶直接写进变量，
          界面上那个 `<select>` 里没有这个 option ⇒ 显示空白，玩家以为坏了。
-       ⚠ 武器的「效果」是**一整串**（含描写），玄技/玄诀的是**对象**。
+       ⚠ 武器的「效果」是**一整串**（含描写），法术/心法的是**对象**。
          两者不同构，别用一份 copy 逻辑硬套（对象会被 JSON 拍平成一串）。 */
     function rollItemFrom(kind, d, used) {
         var elem = String((d && d.elem) || '火');
@@ -2757,26 +2999,26 @@ function xzSkeletonOfSkill(skill) {
         var it = emptyItem(kind);
         it.名 = src.名;
         it.品质 = src.品质 || it.品质;
-        if (kind === '武器') {
+        if (kind === '法宝') {
             if (['凡阶', '黄阶', '玄阶', '地阶'].indexOf(it.品质) < 0) it.品质 = '地阶';
             it.效果 = src.效果 || '';
         } else {
             it.效果 = JSON.parse(JSON.stringify(src.效果 || {}));
             it.目标 = src.目标 || it.目标;
             it.消耗 = (typeof src.消耗 === 'number') ? src.消耗 : it.消耗;
-            if (kind === '玄诀') it.目标 = '自身';   /* 被动恒自身：预设里也是，这里再钉一次 */
-            it.类型 = (kind === '玄诀') ? '被动' : '主动';
+            if (kind === '心法') it.目标 = '自身';   /* 被动恒自身：预设里也是，这里再钉一次 */
+            it.类型 = (kind === '心法') ? '被动' : '主动';
         }
         used[it.名] = 1;
         return it;
     }
     /* ★★★ v613：「补到几件」的口径 ─────────────────────────────────────────
-       全掷满（玄技 30 / 玄诀 15）会把「已配」列表撑成几十屏，开局第一眼就是灾难。
-       开局真要的是"我有几门能打的" ⇒ 玄技 3 门、玄诀 2 部、武器 1 件。
+       全掷满（法术 30 / 心法 15）会把「已配」列表撑成几十屏，开局第一眼就是灾难。
+       开局真要的是"我有几门能打的" ⇒ 法术 3 门、心法 2 部、武器 1 件。
        武器上限本来就是 1（`maxSlots` 写死），所以不用取 min。 */
     function rollFillCount(kind) {
-        if (kind === '武器') return 1;
-        return (kind === '玄诀') ? 2 : 3;
+        if (kind === '法宝') return 1;
+        return (kind === '心法') ? 2 : 3;
     }
     /* 掷一类：清空该类 → 按口径补满 → 复位"正在修改"。
        ⚠ `state.editing[kind]` 必须复位：它存的是下标，清了列表之后那个下标
@@ -2798,17 +3040,17 @@ function xzSkeletonOfSkill(skill) {
         var names = ['非天骄', '普通天骄', '大天骄', '天选之子'];
         /* ★★★ v405：**只看灵根**，六档灵根 → 四档天骄一一对死 ——
            与引擎 `tianjiaoOf()`（v311 定案）**逐条同源**：
-             圣灵根 → 天选之子　天灵根 → 大天骄　双灵根 → 普通天骄　三灵根及以下 → 非天骄
+             至高灵根 → 天选之子　天灵根 → 大天骄　双灵根 → 普通天骄　三灵根及以下 → 非天骄
            ⚠ 这里原来有两处过期，都不只是"多显示一个字"：
-             ① 还留着「人造路线」（玄技/玄诀/武器三样全 ≥ 地阶 = 普通天骄、全 ≥ 天阶 = 大天骄）
+             ① 还留着「人造路线」（法术/心法/武器三样全 ≥ 地阶 = 普通天骄、全 ≥ 天阶 = 大天骄）
                 —— 引擎 v296 就取消了。后果：面板会把**装备党**显示高一档，
                 而战斗里引擎只按灵根判 ⇒「预计天骄」与真正吃到的减伤乘区对不上。
-             ② 圣灵根被 `>=5` 一把兜进了「大天骄」—— v311 起圣灵根是**天选之子**。
+             ② 至高灵根被 `>=5` 一把兜进了「大天骄」—— v311 起至高灵根是**天选之子**。
            ⚠ 别再补回装备路线：天骄档是减伤乘区（压制 −10%/−20%/−35%），
              那条路等于让「砸装备」直接买一条数值通道，用户已明确取消。 */
         var spiritRootRank = SPIRIT_ROOT_RANK_UI[d.spiritRootRank] || 0;
         var tier = 0;
-        if (spiritRootRank >= 6) tier = 3;        // 圣灵根 → 天选之子
+        if (spiritRootRank >= 6) tier = 3;        // 至高灵根 → 天选之子
         else if (spiritRootRank >= 5) tier = 2;   // 天灵根 → 大天骄
         else if (spiritRootRank >= 4) tier = 1;   // 双灵根 → 普通天骄
         return { tier: tier, name: names[tier] };
@@ -2900,13 +3142,13 @@ function xzSkeletonOfSkill(skill) {
             '3. 数值写正整数；只有「持续 N 手/回合」才加第三个字段手数，否则省略。',
             '4. ｜ 之后只写画面与来历（脚本一个字都不读），可以留空。',
             '5. 最多 12 行。一行只写一次机制名 —— 不要写成「增伤:增伤:8」。',
-            '5a. 写的是**玄技**时，`气血上限` / `灵力上限` **一个都不许出现**：',
-            '    玄技是主动招式，战斗里不读上限。玩家原文写「气血 +50」「蓝量提高」时，',
+            '5a. 写的是**法术**时，`气血上限` / `灵力上限` **一个都不许出现**：',
+            '    法术是主动招式，战斗里不读上限。玩家原文写「气血 +50」「蓝量提高」时，',
             '    整条**不输出**（不要改写成护盾或回血，那是替他做决定）。',
             '    要保命就输出 `护盾` / `减伤`；但只有当原文确实在说护盾/减伤时才这么写。',
-            '5b. 这是**玄技**（主动招式）时：除 伤害/治疗/回复/护盾/吸血 外，',
+            '5b. 这是**法术**（主动招式）时：除 伤害/治疗/回复/护盾/吸血 外，',
             '    每条效果都必须带手数；玩家没写就写 2（最低 2 手）。',
-            '    这是**玄诀**（被动）时：一律不写手数。',
+            '    这是**心法**（被动）时：一律不写手数。',
             '6. 伤害类可写 {DMG} 表示「按品质与境界算出的实际伤害」，或写 auto 交给引擎现算。',
             '7. 玩家整句叙述时，按语义拆成多条机制（例：「又疼又烧」→ 伤害 + 灼烧）。',
             '',
@@ -2920,14 +3162,14 @@ function xzSkeletonOfSkill(skill) {
     /* 酒馆助手是「一个脚本一个 iframe」，主模型接口不一定挂在自己这个 window 上，
        逐个往上试（与 08 的 executeApiCall 同一套取法，只是不需要兜底那么多种形状）。 */
     /* ★★★ v406（用户 2026-10-26）：「我写了个给自己一个减伤，但是，翻译出来没有手数，
-       问题是玄技不是玄诀啊…**玄技的翻译必须得要手，最低 2 手保底**，
+       问题是法术不是心法啊…**法术的翻译必须得要手，最低 2 手保底**，
        哪怕玩家不说几手几回合，也要自动视为 2 手。」
        ── 引擎内部其实**有**默认（`_v75ParseEffect`：buff/debuff 缺省 2 手、dot 缺省 1 手、
           即时类 0 手），但**输出文本里看不见** ⇒ 玩家以为漏了；而且 dot 默认 1 手，
           低于用户要的「最低 2 手」底线。
        ⇒ 在 AI 输出之后**显式补手数**（不靠模型自觉）：
-          · 玄技（主动）：非即时类没写手数就补 `:2`；即时类（伤害/治疗/回复/护盾/吸血）不动
-          · 玄诀（被动）：一律不补 —— 它按常驻算，手数没有意义
+          · 法术（主动）：非即时类没写手数就补 `:2`；即时类（伤害/治疗/回复/护盾/吸血）不动
+          · 心法（被动）：一律不补 —— 它按常驻算，手数没有意义
        ⚠ 这条会**改变 dot 的实际强度**（灼烧从引擎默认 1 手变 2 手），是用户明确要求的底线。 */
     var HANDS_IMMEDIATE = ['伤害', '治疗', '回复', '护盾', '吸血',
       /* ★ v452：这几条**一次性动作**，补手数会让界面显示成"持续 2 手"，
@@ -2935,7 +3177,7 @@ function xzSkeletonOfSkill(skill) {
          显示与生效对不上是最难查的一类错，所以在这里就拦住。 */
       '拉条', '驱散', '换命'];
     function ensureHandsForActive(text, kind) {
-        if (kind !== '玄技') return text;
+        if (kind !== '法术') return text;
         return String(text || '').split('\n').map(function (ln) {
             var barAt = ln.search(/[｜|]/);
             var head = barAt >= 0 ? ln.slice(0, barAt) : ln;
@@ -2982,7 +3224,7 @@ function xzSkeletonOfSkill(skill) {
                 var txt = String((out && (out.content || out.text)) || out || '');
                 txt = txt.replace(/^\s*```[a-z]*\s*/i, '').replace(/```\s*$/, '').trim();
                 if (!txt) throw new Error('模型没有返回内容');
-                txt = ensureHandsForActive(txt, state.tab);   /* v406：玄技补手数，玄诀不补 */
+                txt = ensureHandsForActive(txt, state.tab);   /* v406：法术补手数，心法不补 */
                 ta.value = txt;
                 /* 不重绘前先让 onField 把草稿同步过去 —— 否则 render 会把框里的字改回旧值。
                    （事件委托挂在 doc / host 上，bubbles 才收得到。） */
@@ -3002,7 +3244,7 @@ function xzSkeletonOfSkill(skill) {
         done: false,
         note: '',
         draft: null,
-        tab: '玄技',
+        tab: '法术',
         tpl: null,
         editing: null,
         mesEl: null,
@@ -3069,8 +3311,8 @@ function xzSkeletonOfSkill(skill) {
         /* ★ v527：`pickNoteIdx` 删了（描写游标，随输入框一起下线）。 */
         /* ══ ★★★ v468：被动自选（玄诀 / 武器）★★★ ══════════════════════════
            与上面那一组**完全分开**：池子不同、上限不同、写回目标不同（一个是对象，
-           一个是字符串）。合用一个 pickSel 的话，在玄诀上勾的东西会跑到玄技面板里
-           显示成"已选"，而玄技点确定时又会把玄诀的字符串覆盖掉 —— 那种串味
+           一个是字符串）。合用一个 pickSel 的话，在心法上勾的东西会跑到法术面板里
+           显示成"已选"，而法术点确定时又会把心法的字符串覆盖掉 —— 那种串味
            在本项目属于最难查的一类（两边各自看着都对）。
            ⚠ `pasKind` 记住当前在改哪一类：面板是全局的一个，而 `tplHtml` 每类
              各调一次，`pasPickApply()` 必须知道往哪个 `state.tpl[kind]` 写。 */
@@ -3078,7 +3320,7 @@ function xzSkeletonOfSkill(skill) {
         /* ★ v527：`pasNote` / `pasNoteIdx` 删了（同玄技那两栏，随描写输入框下线）。 */
         pasOpen: false,
         pasCat: '',
-        pasKind: '玄诀',
+        pasKind: '心法',
         /* ★★★ v465：当前在第几页（0~3）★★★
            用户 2026-10-29：「开局脚本进行布局重新设计，改为，一页一页的，
            知道吧，也就是大幅度缩短，紧凑」。
@@ -3090,14 +3332,14 @@ function xzSkeletonOfSkill(skill) {
              而新一局的第 1 页是"DLC + 标题"，从第 3 页进来看起来像"漏了开头"。 */
         page: 0,
         /* ★★★ v584：弹层状态（玄技／玄诀／武器锻造台 + 灵根效果自选）★★★
-           用户原话：「对于一些面板空间不大的，就使用弹层。比如开局脚本里的玄技玄诀
+           用户原话：「对于一些面板空间不大的，就使用弹层。比如开局脚本里的法术心法
              和武器锻造台，彻底改为弹层式，这样子就不用在那挤来挤去了。」
            为什么需要弹层：第 3 页把「已配」列表 + 三页签 + 六字段表单 + 选效果面板
              全塞进一个 771px 的卡片里，任何一段展开都要靠**藏掉另一段**来腾地方
              （见 `_hideForm` 那段病历）。弹层把"编辑"这个动作整体搬出卡片，
              卡片里只留"已配的几件 + 一个按钮"。
            值：`null` = 没开；否则 `{ kind, act, idx }`
-             · kind —— 玄技 / 玄诀 / 武器（决定渲染哪份表单、写回 `state.tpl` 哪一支）
+             · kind —— 法术 / 心法 / 武器（决定渲染哪份表单、写回 `state.tpl` 哪一支）
              · act  —— 'new' 新建 / 'edit' 编辑第 idx 件
              · idx  —— 编辑时的下标（新建不看）
            ⚠ 纯界面态：不进 draft、不写变量、不进 localStorage。
@@ -3105,9 +3347,10 @@ function xzSkeletonOfSkill(skill) {
            ⚠ **必须进 render 的 sig**（本项目第 11 次踩：force 不跳过 sig，
              漏进去就是"点了没反应"）。 */
         forge: null,
-        /* 灵根效果自选弹层：`true` = 开着。它没有"新建/编辑"两态，
-           效果串就写在 `state.draft.spiritRootEffect` 里，选完直接回填。 */
-        bloodPick: false,
+        /* ★ 2026-11-18：`bloodPick`（灵根效果自选弹层）已删 —— 灵根不再有效果字段，
+           弹层整层下架（见 renderBloodPickOverlay 位置那段说明）。
+           ⚠ 它的状态位当年进过 render 签名，删字段时那两项也要一起删，
+             否则计算签名时会读 undefined（不报错，但 sig 恒差一位 ⇒ 每次 render 都全量重画）。 */
         /* 弹层里当前展开的分组（玄技按六类、被动按三组）。与 `state.pickCat` /
            `state.pasCat` 分开存 —— 那两个是**卡片内**面板的状态，
            弹层是另一块界面，共用一个变量会出现"关掉弹层回来分类被改了"。 */
@@ -3152,7 +3395,7 @@ function xzSkeletonOfSkill(skill) {
     function emptyItem(kind) {
         /* 只有武器预置「效果」；玄技/玄诀另有一套六字段 */
         var it = { 品质: '黄阶' };
-        if (kind === '玄技') {
+        if (kind === '法术') {
             it.类型 = '主动';
             /* ★ v468：默认「敌方单体」—— 兜底必须选**不会反噬**的那个。
                兜成「自身」会让一条攻击招变成自伤（v348 事故的形状）。 */
@@ -3160,13 +3403,13 @@ function xzSkeletonOfSkill(skill) {
             it.效果 = {};              // ★ v75：效果集
             it.消耗 = 0;
         }
-        if (kind === '玄诀') {
+        if (kind === '心法') {
             it.类型 = '被动';
             it.目标 = '自身';
             it.效果 = {};              // ★ v75：效果集
             it.消耗 = 0;
         }
-        if (kind === '武器') {
+        if (kind === '法宝') {
             /* ★ v70：武器没有类型字段 —— 剑刀枪全是旧字段。是什么兵器纯看名字自己写。 */
             it.效果 = '';
         }
@@ -3194,16 +3437,19 @@ function xzSkeletonOfSkill(skill) {
                ⚠ 小位置不是舆图层级（那是玩家自填的自由文本），保持空即可 ——
                  别再给一个假地名，空白比假地名诚实。 */
             customBig: '人州·中域·司天监', customSmall: '', customOpening: '',
-            items: { 玄技: [], 玄诀: [], 武器: [] },
+            items: { 法术: [], 心法: [], 法宝: [] },
             /* ★ v60：灵根禁止无，最低伪灵根 */
-            spiritRootRank: '伪灵根', spiritRootName: '山野散根', spiritRootPurity: 10,
+            /* ★ 2026-11-18：灵根只剩「品阶」；名称与纯度字段已删除。
+               属性不在这里另存一份 —— 它就是 `d.elem`（第 2 页那个下拉），
+               落盘时写进 `灵根.属性`。两处各存一份必然漂移（v551 的前科）。 */
+            spiritRootRank: '伪灵根',
             /* ★ v1.053c：人物关系预设 —— 默认「六姐与娘」（这卡默认就是这家人）。
                选「无关系」= 这一局不写这段亲缘，《亲缘·六姐与娘》会在确认开局时被关掉。 */
             castPick: '',
             kin: 'six',
-            /* ★ v74：灵根四样之一「效果」—— 自由文本的永久被动。开局掷灵根时从预设池抽一条；
-               玩家想自己写也行，留空也允许（留空就是这条血没有招牌被动）。 */
-            spiritRootEffect: '',
+            /* ★ 2026-11-18：`spiritRootEffect` 已从草稿里删除 —— 灵根不再有效果字段。
+               （原本这里是「灵根四样之一·永久被动」。字段与输入框都没了，
+                草稿里留着它只会让下一个人以为还有一处能写。） */
             /* ★ v352：斗罗 DLC 开关。**默认关**。
                用户 2026-10-23：「要在开局脚本里弄一个dlc选择，如果选，斗罗宗和斗罗的人物的条目都会开启」
                它不是一个"额外加料"的开关，而是"这个世界里有没有这批人"的开关：
@@ -3237,7 +3483,7 @@ function xzSkeletonOfSkill(skill) {
         };
     }
     function emptyTplState() {
-        var t = { 玄技: emptyItem('玄技'), 玄诀: emptyItem('玄诀'), 武器: emptyItem('武器') };
+        var t = { 法术: emptyItem('法术'), 心法: emptyItem('心法'), 法宝: emptyItem('法宝') };
         /* ★★★ v468：**玄技不再预填随机效果**（用户报的那个「只出伤害」的 bug 真身）★★★
            用户原话：「这堆，点击之后都是只有一个伤害，就没了，这什么bug，
              我任何没选的情况下的」。
@@ -3251,19 +3497,19 @@ function xzSkeletonOfSkill(skill) {
              · 玩家看到的现象就是"我点什么都还是只有那个伤害" ——
                看起来像点击坏了，其实是被那条凭空预填的效果占满了名额。
 
-           ── 为什么现在改成「玄技留空、玄诀与武器仍随机」──────────────
-           · 玄技的主入口已经是**效果自选**（v447/v468），预填一条等于
+           ── 为什么现在改成「法术留空、心法与武器仍随机」──────────────
+           · 法术的主入口已经是**效果自选**（v447/v468），预填一条等于
              替他做了选择，还占掉唯一的名额 —— 这是反的；
-           · 玄诀与武器仍走整门预设按钮条（没接自选），留随机反而有用：
+           · 心法与武器仍走整门预设按钮条（没接自选），留随机反而有用：
              不想打字的人点 🎲 就有一套底稿可以直接改。
            ⚠ 名字/品质/目标/消耗**仍然随机**（那是"起个草稿"，与效果不同）——
              效果是玩家要一句句挑的核心内容，不能替他挑。
-           ⚠ 如果哪天玄诀/武器也接了自选，这里要同步改成留空，
+           ⚠ 如果哪天心法/武器也接了自选，这里要同步改成留空，
              否则同一个 bug 会在那两个页签重演（判据见 `_v468_pick_probe`）。 */
-        var _keep = { 玄技: {}, 玄诀: t.玄诀.效果, 武器: t.武器.效果 };
+        var _keep = { 法术: {}, 心法: t.心法.效果, 法宝: t.法宝.效果 };
         KINDS.forEach(function (k) {
             rollAll(t[k], k);           /* 只为了随机的品质/目标/消耗 */
-            t[k].效果 = _keep[k];       /* 效果回填：玄技空、玄诀/武器保留随机结果 */
+            t[k].效果 = _keep[k];       /* 效果回填：法术空、心法/武器保留随机结果 */
         });
         return t;
     }
@@ -3301,7 +3547,7 @@ function xzSkeletonOfSkill(skill) {
        ★ v323：键名与值一律机制名，和世界书《设定-效果表》同一口径 —— 这样玩家点「随机」
          产出的也是规范串，开局不会被拉去翻译界面。 */
     var FUNCS = ['伤害', '治疗', '减速', '增益', '减益', '其他'];
-    var HEART_FUNCS = ['治疗', '增益', '减益', '其他'];   // 玄诀被动：不能主动伤人、不能制人
+    var HEART_FUNCS = ['治疗', '增益', '减益', '其他'];   // 心法被动：不能主动伤人、不能制人
     /* ★★★ v449：`控制` 这一档**没了**（定身 / 禁锢 / 眩晕全部下架）。
        原来 `控制` 与 `其他` 都映射到 `定身`，于是玩家点一次「随机」，
        有近 1/5 的概率拿到一条 `定身:1｜眼前一黑` —— 而引擎已经不认这个名字，
@@ -3333,9 +3579,9 @@ function xzSkeletonOfSkill(skill) {
     }
     /* ★ v75：随机「效果」= 随机一个效果名 + 填对应模板串（带 {DMG} 占位） */
     function rollFunc(item, kind) {
-        var pool = (kind === '玄诀') ? HEART_FUNCS : FUNCS;
+        var pool = (kind === '心法') ? HEART_FUNCS : FUNCS;
         var r = Math.random();
-        var idx = kind === '玄诀'
+        var idx = kind === '心法'
             ? (r < 0.5 ? 1 : (r < 0.82 ? 2 : (r < 0.95 ? 0 : 3)))   // 增益/减益/治疗/其他
             : (r < 0.42 ? 0 : (r < 0.62 ? 1 : (r < 0.78 ? 2 : (r < 0.92 ? 3 : (r < 0.97 ? 4 : 5)))));
         var kindName = pool[idx];
@@ -3345,7 +3591,7 @@ function xzSkeletonOfSkill(skill) {
     }
     /* 消耗：主动技每次出手扣多少灵力。0 = 不耗（玄诀常态即如此）。 */
     function rollCost(item, kind) {
-        if (kind === '玄诀') { item.消耗 = 0; return; }
+        if (kind === '心法') { item.消耗 = 0; return; }
         var r = Math.random();
         item.消耗 = r < 0.35 ? 0 : (r < 0.7 ? 10 : (r < 0.9 ? 20 : 35));
     }
@@ -3366,21 +3612,21 @@ function xzSkeletonOfSkill(skill) {
        ⚠ 名字必须**最后**掷：`rollTarget` 刚把目标定下来，名字池要按掷完之后的目标挑。
          顺序反了会出现「掷出敌方单体、名字却是护体类」的错配。 */
     function rollAll(item, kind, withName) {
-        if (kind === '玄技') {
+        if (kind === '法术') {
             rollQuality(item); rollTarget(item); rollFunc(item, kind); rollCost(item, kind);
             item.类型 = '主动';
-        } else if (kind === '玄诀') {
+        } else if (kind === '心法') {
             rollQuality(item); rollTarget(item); rollFunc(item, kind); rollCost(item, kind);
             item.类型 = '被动';
             item.目标 = '自身';                       // 被动功法恒作用于自身（v468：界面显示「保持自身」）
-        } else if (kind === '武器') {
+        } else if (kind === '法宝') {
             rollQuality(item);
         }
         if (withName) {
             /* 属性取草稿的玄元属性、目标取掷完之后的值 —— 这两个参数决定从哪个名字池抽，
                火系单体不该抽到水系群攻的名字（`namePoolFor` 就是按这两维切的）。 */
             var _el = (state && state.draft && state.draft.elem) ? state.draft.elem : '火';
-            var _tg = (kind === '玄诀' || kind === '武器') ? '自身' : (item.目标 || '自身');
+            var _tg = (kind === '心法' || kind === '法宝') ? '自身' : (item.目标 || '自身');
             var _nm = rollNameFor(_el, _tg);
             if (_nm) item.名 = _nm;
         }
@@ -3391,7 +3637,7 @@ function xzSkeletonOfSkill(skill) {
            与总随机同源：属性取草稿、目标取当前值。 */
         if (field === '名') {
             var _e1 = (state && state.draft && state.draft.elem) ? state.draft.elem : '火';
-            var _t1 = (kind === '玄诀' || kind === '武器') ? '自身' : (item.目标 || '自身');
+            var _t1 = (kind === '心法' || kind === '法宝') ? '自身' : (item.目标 || '自身');
             var _n1 = rollNameFor(_e1, _t1);
             if (_n1) item.名 = _n1;
             return item;
@@ -3452,13 +3698,13 @@ function xzSkeletonOfSkill(skill) {
         return target;
     }
     /* ★ v94：按点号路径读开局草稿变量（只读，不写）。
-       事故：`show-skill` 分支（3096 起）直接调 `at('主角信息.已学本领.玄技')`，
+       事故：`show-skill` 分支（3096 起）直接调 `at('主角信息.已学本领.法术')`，
        而 07 全文件没有任何 `at` 声明 —— 那是从 05 抄过来的调用（05 的状态栏 IIFE 里
        才有自己的 `at`），两个脚本互不可见 ⇒ 一律抛 ReferenceError ⇒
        **点任何招式名都会抛，并中断整段动作处理**（后面的按钮同一次点击全失灵）。 */
     function draftAt(path) {
         try {
-            /* 真身是 MVU 变量（路径形如 主角信息.已学本领.玄技）；
+            /* 真身是 MVU 变量（路径形如 主角信息.已学本领.法术）；
                state.draft 是开局草稿（结构不同：draft.attrs 等），当变量取不到时兜底。 */
             var v = null;
             try { v = (readVars().vars || null); } catch (eRV) { v = null; }
@@ -3573,7 +3819,16 @@ function xzSkeletonOfSkill(skill) {
         if (want.姓名 && z.姓名 !== want.姓名) bad.push('姓名(期望 ' + want.姓名 + '，实际 ' + z.姓名 + ')');
         if (want.境界 && z.境界 !== want.境界) bad.push('境界(期望 ' + want.境界 + '，实际 ' + z.境界 + ')');
             xzNormTermKeys(z);
-        if (want.玄元属性 && z.玄元属性 && want.玄元属性.属性 && z.玄元属性.属性 !== want.玄元属性.属性) bad.push('玄元属性.属性');
+        /* ★★★ 2026-11-18：这条原来判的是 `want.玄元属性` ——`want` 是 buildVars 的产出，
+           而 buildVars 早就不写 `玄元属性` 了（属性并进 `灵根`）⇒ 第一个条件恒 undefined
+           ⇒ **整条判据从来没执行过**。这不是"校验通过"，是"校验不存在"（空判据最贵的形态）。
+           ⇒ 现在判真产出：`灵根.属性`。玩家在面板上选火、落盘变水，这里当场红。
+           ⚠ 空串放行：属性允许留空（老档/个别 NPC 没写），留空时下面 ③ 的合法性校验才管。 */
+        if (want.灵根 && want.灵根.属性) {
+            var _gbA = String((z.灵根 || {}).属性 || '');
+            if (!_gbA) bad.push('灵根.属性(期望 ' + want.灵根.属性 + '，实际空)');
+            else if (_gbA !== String(want.灵根.属性)) bad.push('灵根.属性(期望 ' + want.灵根.属性 + '，实际 ' + _gbA + ')');
+        }
         /* ★★★ v350：四个派生值必须回读校验 ★★★
            只写不验的话，「气血 / 气血上限 / 灵力 / 灵力上限 没进变量」这个 bug
            （用户报的「战斗里血量对不上」）会再一次静默通过 —— 因为没人查它。
@@ -3590,19 +3845,19 @@ function xzSkeletonOfSkill(skill) {
             if (!gb.品阶) bad.push('灵根.品阶(期望 ' + want.灵根.品阶 + '，实际空)');
         }
         /* ★ v77：v43 起玄元属性**没有品阶**了，这一条是死分支（永远不成立），删掉免得误导。 */
-        if (want.已学本领 && want.已学本领.玄技) {
-            var wl = z.已学本领 && z.已学本领.玄技;
-            var wk = Object.keys(want.已学本领.玄技);
-            if (!wl || !wk.length || !Object.keys(wl).length) bad.push('已学本领.玄技');
+        if (want.已学本领 && want.已学本领.法术) {
+            var wl = z.已学本领 && z.已学本领.法术;
+            var wk = Object.keys(want.已学本领.法术);
+            if (!wl || !wk.length || !Object.keys(wl).length) bad.push('已学本领.法术');
         }
         /* ★ v77 补：「效果」效果集必须回读校验。
-           以前只查「玄技非空」—— 于是 zod 的 takeRight 把 9 条里的前1 条静默截掉、
+           以前只查「法术非空」—— 于是 zod 的 takeRight 把 9 条里的前1 条静默截掉、
            或归一段把效果集整个覆盖成字符串，开局照样报「校验通过」，
            玩家拿到的却是自己没写过的招式。逐条比对：键集合与效果串都必须对上。 */
         (function () {
             var wantBag = want.已学本领 || {};
             var gotBag = (z.已学本领 || {});
-            ['玄技', '玄诀'].forEach(function (kind) {
+            ['法术', '心法'].forEach(function (kind) {
                 var w = wantBag[kind]; if (!w || !Object.keys(w).length) return;
                 var g = gotBag[kind] || {};
                 Object.keys(w).forEach(function (nm) {
@@ -3622,8 +3877,8 @@ function xzSkeletonOfSkill(skill) {
                             bad.push('已学本领.' + kind + '.' + nm + '.效果.' + k + '（内容对不上）');
                         }
                     });
-                    if (kind === '玄诀' && Number(gs.消耗 || 0) !== 0) {
-                        bad.push('已学本领.' + kind + '.' + nm + '.消耗（玄诀须恒为 0，实际 ' + gs.消耗 + '）');
+                    if (kind === '心法' && Number(gs.消耗 || 0) !== 0) {
+                        bad.push('已学本领.' + kind + '.' + nm + '.消耗（心法须恒为 0，实际 ' + gs.消耗 + '）');
                     }
                 });
             });
@@ -3661,7 +3916,7 @@ function xzSkeletonOfSkill(skill) {
         /* ★ v398：写不进去**不要静默**（返回值给调用方判断，并在控制台留一行）。
            ⚠ 为什么这里可以只"留痕迹"而不"报错中断"：
              本标记（xzStartDone）**不是唯一判据** —— guessDone() 在拿不到标记时
-             会退回「已学本领.玄技 非空」，而 4235 行强制「至少一门玄技」，
+             会退回「已学本领.法术 非空」，而 4235 行强制「至少一门法术」，
              所以这条兜底必然成立。玩家不会因此被要求开两次局。
              但"写 flag 失败"这件事本身仍值得看得见：它是宿主变量接口坏了的征兆
              （那时其它写变量也会有问题），埋在空 catch 里就永远查不到。 */
@@ -3673,7 +3928,7 @@ function xzSkeletonOfSkill(skill) {
         try {
             var v = readVars().vars || {};
             var z = v.主角信息 || {};
-            var learned = (z.已学本领 && z.已学本领.玄技) || null;
+            var learned = (z.已学本领 && z.已学本领.法术) || null;
             var n = (learned && Object.keys(learned).length) || 0;
             var nm = String(z.姓名 || '').trim();
             var named = nm.length > 0 && nm !== '无名' && nm !== '待定';
@@ -3684,13 +3939,13 @@ function xzSkeletonOfSkill(skill) {
                ⇒ buildHtml 返回空串 ⇒ 开局面板永远不出现，玩家以为卡坏了。
                判据反过来锁死：**没有角色姓名就一定不算已开局**。
                ⚠ 只有「name 为空」才推翻 flag；有名字时仍以 flag 为准
-                 （否则玩家改名/删玄技会被重新弹面板，那是另一种坏）。 */
+                 （否则玩家改名/删法术会被重新弹面板，那是另一种坏）。 */
             if (flag !== undefined) {
                 if (flag && !named) return false;
                 return !!flag;
             }
             /* 没有 flag 时：已开局必须**同时**有真名字 **且** 有玄技。
-               只判玄技太松（新档可能被 schema/worldbook 预置一条模板技）。 */
+               只判法术太松（新档可能被 schema/worldbook 预置一条模板技）。 */
             return named && n > 0;
         } catch (e) {
             try { if (flag !== undefined) return !!flag; } catch (e2) {}
@@ -3708,14 +3963,26 @@ function xzSkeletonOfSkill(skill) {
             if (z.实际骨龄 || z.年龄) d.realAge = Number(z.实际骨龄 || z.年龄);
             if (z.境界 && REALMS.indexOf(z.境界) !== -1) d.realm = z.境界;
             xzNormTermKeys(z);
-            if (z.玄元属性 && z.玄元属性.属性 && ELEMS.indexOf(z.玄元属性.属性) !== -1) d.elem = z.玄元属性.属性;
+            /* ★★★ 2026-11-18：新档优先读 `灵根.属性`（buildVars 就写在那里）。
+               放在老档兜底**之前**，是因为下面那行只做「补空缺」——
+               先有值了它就不动，老档与新档各自走自己那条，不会互相覆盖。 */
+            if (z.灵根 && typeof z.灵根 === 'object' && ELEMS.indexOf(String(z.灵根.属性 || '')) !== -1) {
+                d.elem = String(z.灵根.属性);
+            }
+            /* ★ 2026-11-18：**这一行是老存档唯一的属性来源，不许删**。
+               新档把属性写在 `灵根.属性`（下面几行会读），老档只写 `玄元属性`
+               （裸串或 `{属性}` 两种形状）。删了它，老档打开面板属性一律是默认「火」
+               —— 而且看不出来是丢了还是本来如此。
+               ⚠ 反过来「新档优先」：灵根里已有属性时不要用这里覆盖，
+                 所以真正的赋值顺序是「先读灵根、读不到才回落这里」（见下）。 */
+            if (z.玄元属性 && z.玄元属性.属性 && ELEMS.indexOf(z.玄元属性.属性) !== -1 && ELEMS.indexOf(String(d.elem || '')) === -1) d.elem = z.玄元属性.属性;
             /* ★ v45：不再读 玄元属性.品质（品阶已废除）。 */
             if (z.四维) ATTRS.forEach(function (a) { if (typeof z.四维[a] === 'number') d.attrs[a] = z.四维[a]; });
             var g = v.地理 || {};
             if (g.大位置) for (var i = 0; i < PLACES.length; i++) {
                 if (PLACES[i].big === g.大位置 && !PLACES[i].custom) { d.place = PLACES[i].id; break; }
             }
-            /* ★ v70：只认新结构 —— 已学本领.{玄技|玄诀} + 装备武器；顶层旧字段一概不读。 */
+            /* ★ v70：只认新结构 —— 已学本领.{玄技|玄诀} + 装备法宝；顶层旧字段一概不读。 */
             var _learned = (z.已学本领 && typeof z.已学本领 === 'object') ? z.已学本领 : {};
             /* ★ v99：六字段＝名/品质/类型/目标/效果/消耗，第 5 字段正名为「效果」。
                ★ v222：武器只剩三件（名/品质/效果），「描述」已删除。 */
@@ -3725,7 +3992,7 @@ function xzSkeletonOfSkill(skill) {
                 for (var k in bag) {
                     var s = bag[k];
                     if (!s || typeof s !== 'object') continue;
-                    var nm = s.玄技名 || s.名称 || k;
+                    var nm = s.法术名 || s.名称 || k;
                     if (!nm || nm === '无') continue;
                     if (out.length >= maxSlots(d, kind)) break;
                     /* ★ v99：读「效果」效果集。老存档的字符串效果（"伤害"）与 v74 的
@@ -3742,24 +4009,46 @@ function xzSkeletonOfSkill(skill) {
                     out.push({
                         名: String(nm),
                         品质: s.品质 || '黄阶',
-                        类型: kind === '玄技' ? '主动' : '被动',
-                        目标: s.目标 || (kind === '玄技' ? '敌方单体' : '自身'),
+                        类型: kind === '法术' ? '主动' : '被动',
+                        目标: s.目标 || (kind === '法术' ? '敌方单体' : '自身'),
                         效果: set,
                         消耗: typeof s.消耗 === 'number' ? s.消耗 : 0
                     });
                 }
                 return out;
             }
-            d.items.玄技 = _readBag(_learned.玄技, '玄技');
-            d.items.玄诀 = _readBag(_learned.玄诀, '玄诀');
-            if (z.装备武器 && typeof z.装备武器 === 'object' && z.装备武器.武器名 && z.装备武器.武器名 !== '无') {
-                var za = z.装备武器;
-                d.items.武器 = [{
-                    名: za.武器名,
-                    品质: za.品质 || '黄阶',
-                    效果: za.效果 || za.描述 || ''
-                }];
+            d.items.法术 = _readBag(_learned.法术, '法术');
+            d.items.心法 = _readBag(_learned.心法, '心法');
+            /* ★★★ 2026-11-18（超级大更新）：装备改成**三槽**（法宝/防具/饰品）。
+               ── 这条原来读的是什么 ──────────────────────────────────────
+                 旧的单槽扁平键 `z.装备法宝`（`{ 法宝名, 品质, 效果 }`）。
+               ── 不改会怎样 ──────────────────────────────────────────────
+                 buildVars 现在只写 `z.装备.法宝`，`装备法宝` 这个键在 21 的 schema
+                 里也不存在了 ⇒ 恒读不到 ⇒ 玩家配好的法宝一开面板就"没了"
+                 （锻造台显示「未配」）。而不报错、界面上也不缺块 —— 最贵的静默形态。
+               ── 为什么还留着扁平键那条路 ────────────────────────────────
+                 04 的 `xzNormTermKeys` 会把 `装备.法宝` 归一出一份扁平键给老读点用；
+                 老存档里也可能只有扁平键。⇒ 先读三槽，读不到才回落，两个方向都不丢。
+               ⚠ 07 的草稿只有一个法宝位（`d.items.法宝[0]`，锻造台只管他手上那一件）。
+                 防具/饰品在 07 里**没有编辑入口**（由模型按《变量更新规则》写），
+                 所以这里**不**假装能编辑那两槽 —— 开了入口就得配一整套表单与写回，
+                 那是另一个功能，不是这次重构的一部分。 */
+            var _eqb2 = null;
+            if (z.装备 && typeof z.装备 === 'object' && z.装备.法宝 && typeof z.装备.法宝 === 'object') {
+                _eqb2 = {
+                    名: String(z.装备.法宝.名称 || ''),
+                    品质: String(z.装备.法宝.品质 || '黄阶'),
+                    效果: String(z.装备.法宝.效果 || '')
+                };
+            } else if (z.装备法宝 && typeof z.装备法宝 === 'object' && z.装备法宝.法宝名) {
+                /* 老档：扁平单槽键（`法宝名` 是它的字段名，不是 `名称`） */
+                _eqb2 = {
+                    名: String(z.装备法宝.法宝名 || ''),
+                    品质: String(z.装备法宝.品质 || '黄阶'),
+                    效果: String(z.装备法宝.效果 || z.装备法宝.描述 || '')
+                };
             }
+            if (_eqb2 && _eqb2.名 && _eqb2.名 !== '无') d.items.法宝 = [_eqb2];
             /* v70：旧存档里的旧杀招字段一律丢弃（已下架，不再迁移）。 */
         } catch (e) {}
         clampAttrs(d);
@@ -3798,10 +4087,10 @@ d.attrs[a] = v;
     }
     /* ★ v70：玄技与玄诀**门数同权**（都按境界档），武器恒 1 件。 */
     /* ★ v73：取消「按境界限门数」——玄技/玄诀不再限门数，只受变量 schema 的 record 上限兜底
-   （玄技 30 / 玄诀 15，防超 schema 炸变量）；武器恒 1 件。 */
+   （法术 30 / 心法 15，防超 schema 炸变量）；武器恒 1 件。 */
     function maxSlots(d, kind) {
-        if (kind === '武器') return 1;
-        return kind === '玄诀' ? 15 : 30;
+        if (kind === '法宝') return 1;
+        return kind === '心法' ? 15 : 30;
     }
 
     /* ★ v9：纯文本描述 —— 三条规矩
@@ -3826,7 +4115,7 @@ d.attrs[a] = v;
         /* 随机描述池：按类别分（玄技看招式气象／玄诀看心境／武器看形制） */
     var V2_DESC_POOL = {};   /* ★ [已删] 固定技能名表 —— 功法名由 AI 按「属性 + 品阶」现编 */;
     function v2RollDesc(kind, route, name) {
-        var pool = V2_DESC_POOL[kind] || V2_DESC_POOL.玄技;
+        var pool = V2_DESC_POOL[kind] || V2_DESC_POOL.法术;
         var hit = pool[Math.floor(Math.random() * pool.length)] || '';
         return v2PlainDesc(hit, 60);
     }
@@ -3959,11 +4248,11 @@ d.attrs[a] = v;
           不再由 zod 悄悄 takeRight 丢掉最前面的。 */
     var V75_SET_MAX = 12;
     /* ★★★ v406（用户 2026-10-26）：「我写了个给自己一个减伤，但是，翻译出来没有手数，
-       问题是玄技不是玄诀啊…**玄技的翻译必须得要手，最低 2 手保底**，
+       问题是法术不是心法啊…**法术的翻译必须得要手，最低 2 手保底**，
        哪怕玩家不说几手几回合，也要自动视为 2 手。」
        ⇒ 存储层统一处理（玩家手写、点 AI 按钮都走这里）：
-         · 玄技：机制名后面是纯数值、且没写手数 ⇒ 补 `:2`（即时类不动）
-         · 玄诀：不动（被动，按常驻算，手数无意义）
+         · 法术：机制名后面是纯数值、且没写手数 ⇒ 补 `:2`（即时类不动）
+         · 心法：不动（被动，按常驻算，手数无意义）
        ⚠ 引擎 `_v75ParseEffect` 里本来就有默认（buff/debuff 缺省 2、dot 缺省 1），
          这里是把它**写进数据**，让面板/战报/玩家都看得见；dot 因此从 1 手变 2 手，
          是用户点名的底线，不是顺手改的。 */
@@ -4002,7 +4291,7 @@ d.attrs[a] = v;
                    ⚠ 这条分支不是可选优化：不剥，存回去就是 `{ 增伤: "8:3｜…" }`
                      —— 正是用户说的「两个机制名」。 */
                 if (k && /^(?:\{DMG\}|[-+]?\d)/.test(v)) {
-                    if (kind === '玄技') v = ensureHandsInVal(k, v);   /* v406：玄技补手数 */
+                    if (kind === '法术') v = ensureHandsInVal(k, v);   /* v406：法术补手数 */
                     out[k] = v; return;
                 }
             } else if (i === 0) {
@@ -4061,9 +4350,9 @@ d.attrs[a] = v;
        效果 = 效果集 { 效果名: "效果串" }。类型由 kind 写死为「主动」，玩家改不了（zod 也会拦回）。 */
     function slotOf(it, realm) {
         return {
-            玄技名: it.名,
+            法术名: it.名,
             品质: it.品质 || '黄阶',
-            类型: '主动',                    // 玄技恒主动
+            类型: '主动',                    // 法术恒主动
             目标: it.目标 || '敌方单体',
             效果: fillDmgSet(it.效果, realm, it.品质 || '黄阶'),
             消耗: typeof it.消耗 === 'number' ? it.消耗 : 0,
@@ -4074,9 +4363,9 @@ d.attrs[a] = v;
     /* ★ v70：玄诀与玄技**完全同构**，唯一差别是「类型:被动」。 */
     function heartOf(it, realm) {
         return {
-            玄技名: it.名,
+            法术名: it.名,
             品质: it.品质 || '黄阶',
-            类型: '被动',                    // 玄诀恒被动
+            类型: '被动',                    // 心法恒被动
             目标: it.目标 || '自身',
             效果: fillDmgSet(it.效果, realm, it.品质 || '黄阶'),
             消耗: typeof it.消耗 === 'number' ? it.消耗 : 0,
@@ -4088,7 +4377,7 @@ d.attrs[a] = v;
        ★ v222：「描述」删除，旧数据里的描述并进效果，不再另存一份。 */
     function artifactOf(it) {
         return {
-            武器名: it.名,
+            法宝名: it.名,
             品质: it.品质 || '黄阶',
             效果: it.效果 || it.描述 || ''
         };
@@ -4096,7 +4385,7 @@ d.attrs[a] = v;
     /* v70：旧杀招层已下架 —— divineSlotOf 退化为空壳，**当前零调用点**。
        ★ v296：升级门槛那套没了，这个空壳也不再是「白嫖入口」，就是个没人调的占位。 */
     function divineSlotOf(it, name) {
-        return { 玄技名: '无', 品质: '黄阶', 类型: '主动', 目标: '敌方单体', 效果: {}, 消耗: 0 };
+        return { 法术名: '无', 品质: '黄阶', 类型: '主动', 目标: '敌方单体', 效果: {}, 消耗: 0 };
     }
 
     /* ★★★ v350：开局算血池 —— 与 04/世界书**同一条式子、同一张表** ★★★
@@ -4111,7 +4400,12 @@ d.attrs[a] = v;
         '练气': 95, '筑基': 275, '金丹': 680, '元婴': 1470, '化神': 2940, '炼虚': 5500
     };
     /* 灵根品阶定额（满纯度 100 的气血值；灵力 = 气血 × 0.6）—— 与 04 的 SPIRIT_ROOT_HP_FLAT 一字不差 */
-    var SPIRIT_ROOT_HP_FLAT_350 = { '无': 0, '伪灵根': 30, '四灵根': 70, '三灵根': 120, '双灵根': 190, '天灵根': 260, '圣灵根': 350 };
+    var SPIRIT_ROOT_HP_FLAT_350 = { '无': 0, '伪灵根': 30, '四灵根': 70, '三灵根': 120, '双灵根': 190, '天灵根': 260, '至高灵根': 350, '圣灵根': 350 };
+    /* ★ 2026-11-18：`圣灵根` 是**兼容键** —— 顶档已经改名成「至高灵根」（作者：天灵根之上是至高灵根），
+       但 04 的 `SPIRIT_ROOT_HP_FLAT` 里也留着同一条兼容键，两张表必须逐格相等
+       （`_v350_opening_vitals` ③c 就是判这个）。21 的 `prepLinggen` 会把老档的
+       圣灵根翻成至高灵根，所以主路径读不到它；留着这条是防「变量还没过 MVU 归一」
+       那一刻（07 先于 schema 跑）读到老值 ⇒ 定额落 0 ⇒ 血量凭空少一截且不报错。 */
 
     function _bigRealm07(realm) {
         var v = String(realm == null ? '' : realm).trim();
@@ -4122,10 +4416,10 @@ d.attrs[a] = v;
         return '';
     }
     /* 从**任意形态**的「效果」里抠「气血上限 / 灵力上限」两类百分比。
-       用户 2026-10-23：「检测玄诀和灵根和武器的效果有没有气血上限，直接一键写入变量」
+       用户 2026-10-23：「检测心法和灵根和武器的效果有没有气血上限，直接一键写入变量」
        ⇒ 这里必须认三种形态，不能只认灵根那一种：
          · 效果串（**武器 / 灵根**原文）：`气血上限:20，暴击:10｜这段是描写`
-         · 效果集对象（**玄诀**落盘后的形态）：{ 气血上限: '20', 灵力上限: '10:3' }
+         · 效果集对象（**心法**落盘后的形态）：{ 气血上限: '20', 灵力上限: '10:3' }
          · 带百分号的文案：`气血上限提高 20%`
        ⚠ 口径照《设定-数值表》第 185~196 行：两者都是**百分比**，单项封顶 30%，
          多源之间**相加**、相加后仍按 30% 封顶（世界书原话「超出封顶的一律按封顶算」）。
@@ -4173,17 +4467,30 @@ d.attrs[a] = v;
     /* ★★★ 三源合并：灵根 + 全部玄诀 + 武器，相加后封顶 30%。
        ⚠ 这就是"一键写入"能不能跟世界书公式对上的关键一步 ——
          少算任何一源，玩家看着条目写着「气血上限+20%」，变量里的数字却没变。 */
+    /* ★★★ 2026-11-18：三源改口径 ★★★
+       旧三源 = 灵根效果 + 心法 + 武器。
+       新口径：灵根**没有效果字段了**（作者：「灵根只能是品质、属性，没有效果」），
+       所以那个位置由 **先天气运** 顶上 —— 它才是新的「出身即带的永久被动」。
+       ⇒ 新三源 = 先天气运 + 心法 + 法宝。
+       ⚠ 为什么要替换而不是删掉：这一路负责的是「气血上限／灵力上限」的百分比加成，
+         删了就等于玩家写了 `气血上限:20` 却一分不涨（v350/v363 两轮血案就是这个）。
+       ⚠ 老档兼容：老档的灵根效果仍在 `灵根.效果` 里（引擎照读），但开局脚本只跑一次，
+         不涉及老档；这里只保证**新档**三源算得对。 */
     function capPctOfDraft(d) {
         d = d || {};
         var hp = 0, mp = 0;
-        var b = _capPctAny(d.spiritRootEffect);
-        hp += b.hp; mp += b.mp;
-        var hearts = (d.items && d.items['玄诀']) || [];
+        /* 先天气运：record 形态，逐条加起来 */
+        var _dsts = (d && d.destiny && typeof d.destiny === 'object') ? d.destiny : {};
+        Object.keys(_dsts).forEach(function (_dk) {
+            var c0 = _capPctAny(_dsts[_dk] && _dsts[_dk].效果);
+            hp += c0.hp; mp += c0.mp;
+        });
+        var hearts = (d.items && d.items['心法']) || [];
         for (var i = 0; i < hearts.length; i++) {
             var c = _capPctAny(hearts[i] && hearts[i]['效果']);
             hp += c.hp; mp += c.mp;
         }
-        var w = (d.items && d.items['武器'] && d.items['武器'][0]) ? _capPctAny(d.items['武器'][0]['效果']) : { hp: 0, mp: 0 };
+        var w = (d.items && d.items['法宝'] && d.items['法宝'][0]) ? _capPctAny(d.items['法宝'][0]['效果']) : { hp: 0, mp: 0 };
         hp += w.hp; mp += w.mp;
         return { hp: Math.min(0.30, hp), mp: Math.min(0.30, mp) };
     }
@@ -4196,10 +4503,15 @@ d.attrs[a] = v;
         var base = XZ_HP_BASE_07[_bigRealm07(d.realm)] || 50;
         var con = Number((d.attrs && d.attrs.体质) || 0);
         var rank = String(d.spiritRootRank || '伪灵根');
-        var pu = Math.max(0, Math.min(100, Number(d.spiritRootPurity || 0)));
-        var flat = (SPIRIT_ROOT_HP_FLAT_350[rank] || 0) * pu / 100;
+        /* ★ 2026-11-18：灵根「纯度」字段已删除 ⇒ **定额全额兑现**。
+           以前是「定额 × 纯度/100」，纯度没了再乘就恒乘 0 ⇒ 所有新档灵根一分定额都不给，
+           而且不报错、不越界，界面上只是「血量比预期低一截」（最贵的那类静默错）。
+           04 那边口径相同：spiritRootPurity 恒定 100、守门只看品阶。
+           ⚠ 别改成 `|| 100` 的兜底 —— 那等于把「没填」当成「满纯度」，
+             老档里真存了 60 的人会被悄悄抬到 100。字段都删了，直接不乘。 */
+        var flat = (SPIRIT_ROOT_HP_FLAT_350[rank] || 0);
         /* ★ v363：上限百分比改成**三源合并**（灵根 + 玄诀 + 武器），见 capPctOfDraft。
-           以前只算灵根那一源 —— 于是条目里写着「气血上限+20%」的玄诀/武器
+           以前只算灵根那一源 —— 于是条目里写着「气血上限+20%」的心法/武器
            在开局数值里一点都没体现（玩家看不出来，只是数字偏小）。 */
         var cap = capPctOfDraft(d);
         /* 顺序固定：先加定额 → 再乘总倍率 ×8 → 最后乘效果里的上限百分比 */
@@ -4219,21 +4531,21 @@ d.attrs[a] = v;
         var base = XZ_HP_BASE_07[_bigRealm07(d.realm)] || 50;
         var it = Number((d.attrs && d.attrs.智力) || 0);
         var rank = String(d.spiritRootRank || '伪灵根');
-        var pu = Math.max(0, Math.min(100, Number(d.spiritRootPurity || 0)));
-        var flat = (SPIRIT_ROOT_HP_FLAT_350[rank] || 0) * pu / 100;
+        /* ★ 2026-11-18：纯度已删，定额全额兑现（与 computedHpMax 同一处理）。 */
+        var flat = (SPIRIT_ROOT_HP_FLAT_350[rank] || 0);
         var cap = capPctOfDraft(d);      /* ★ v363：同上，三源合并 */
         return Math.round((base + it * 4 + flat) * 4 * (1 + cap.mp));
     }
 
     function buildVars(d) {
         var learnedSkill = {}, learnedHeart = {}, learnedArtifact = {};
-        var n = maxSlots(d, '玄技');
+        var n = maxSlots(d, '法术');
         // 记录型：键＝自己起的功法名
-        d.items.玄技.forEach(function (it) { learnedSkill[it.名] = slotOf(it, d.realm); });
-        var artifact = d.items.武器[0] ? artifactOf(d.items.武器[0]) : { 武器名: '无', 品质: '黄阶', 效果: '' };
+        d.items.法术.forEach(function (it) { learnedSkill[it.名] = slotOf(it, d.realm); });
+        var artifact = d.items.法宝[0] ? artifactOf(d.items.法宝[0]) : { 法宝名: '无', 品质: '黄阶', 效果: '' };
         /* ★ v70：玄诀不再只装 1 部 —— 与玄技同权，按境界档多部并存。 */
-        d.items.玄诀.forEach(function (it) { learnedHeart[it.名] = heartOf(it, d.realm); });
-        if (d.items.武器[0]) learnedArtifact[d.items.武器[0].名] = artifactOf(d.items.武器[0]);
+        d.items.心法.forEach(function (it) { learnedHeart[it.名] = heartOf(it, d.realm); });
+        if (d.items.法宝[0]) learnedArtifact[d.items.法宝[0].名] = artifactOf(d.items.法宝[0]);
 
         var place = placeOf(d.place);
         /* ★★★ v388：自定义开局的落点**必须落在舆图上**，不许再写「苍玄九州」★★★
@@ -4299,7 +4611,7 @@ d.attrs[a] = v;
 
         /* ★★★ v350【开局必须把 气血 / 灵力 一起落盘 —— 否则就是"写一半"】★★★
            用户 2026-10-23：「全部开场白都没写灵根和血量当前血量灵力什么的，写一半不写一半是吧。」
-           病根：这段 `changes.主角信息` 从 v43 起只写**配置类**字段（境界 / 灵根 / 四维 / 玄技），
+           病根：这段 `changes.主角信息` 从 v43 起只写**配置类**字段（境界 / 灵根 / 四维 / 法术），
            而 气血 / 气血上限 / 灵力 / 灵力上限 是**派生值**，一直交给"属性初始化指令"让 AI 现算
            （见下方 initAttrPrompt）。于是玩家点完开局，变量里这四个字段**根本不存在** ——
            战斗脚本 04 的 `_hpFromVar` 判假 ⇒ 掉进兜底血池 ⇒ 面板血条与正文数字对不上。
@@ -4307,9 +4619,9 @@ d.attrs[a] = v;
            现在按《设定-境界体系》第 7 行的口径在本地算准，**开局即落盘，不再依赖 AI 补算**：
              气血上限 =（大境界基数 + 体质×4 + 灵根定额×纯度%）× 8 ×（1 + 三源上限%）
              灵力上限 =（大境界基数×3 + 智力×3 + 灵根定额×0.6×纯度%）× 4 ×（1 + 三源上限%）
-           ⚠ 括号里那个「三源上限%」是 v363 补的：灵根、**全部玄诀**、**武器**三方各写着
+           ⚠ 括号里那个「三源上限%」是 v363 补的：灵根、**全部心法**、**武器**三方各写着
              「气血上限/灵力上限」的百分比，相加后按 30% 封顶（见 capPctOfDraft）。
-             v350 当时只算了灵根那一源，于是玄诀/武器写了上限跟没写一样。
+             v350 当时只算了灵根那一源，于是心法/武器写了上限跟没写一样。
            气血／灵力**按上限给满**（健康开局）。
            ★ v363：`initAttrPrompt` 和「把指令追加进输入框」整条路已删除 ——
              现在这里就是**唯一**来源，不再有"AI 事后复核"这一步。 */
@@ -4332,55 +4644,63 @@ d.attrs[a] = v;
                 气血上限: _hpMax,
                 灵力: _mpMax,
                 灵力上限: _mpMax,
-                /* ★ v43：玄元属性**没有品阶**（只留属性） */
-                玄元属性: { 属性: d.elem },
-                /* ★ v43 灵根：品阶定上限 × 纯度定兑现，写入完整三件套 */
+                /* ★★★ 2026-11-18（超级大更新）：`玄元属性` **整格删除**，并入 `灵根.属性**。
+                   灵根只有两个字段：`品阶` 与 `属性`。
+                   作者原话：「灵根不能有名字，只能有品质，属性，没有效果」
+                            「玄元属性删除，归纳到灵根里」。
+                   ⇒ 名称 / 纯度 / 效果 三个子键**一律不写**。
+                   ⚠ 为什么不是「留个空串保平安」：MVU 的 z.object 会把表外子键静默剥掉，
+                     写了也不存在，读了恒 undefined —— 那就是「看起来有、其实没有」。
+                   ⚠ 纯度的删除有一个**连带后果**，已在引擎侧一并处理：
+                     04 的守门原来是「品阶非无 且 纯度>0」，纯度不再写 ⇒ 恒 0 ⇒
+                     所有新档灵根一分不兑现。04 已改成纯度恒取 100、守门只看品阶。
+                     ⇒ 07 这边同样**不再乘纯度**（见 computedHpMax / computedMpMax）。 */
                 灵根: {
-                    名称: String(d.spiritRootName || '山野散根'),
                     品阶: String(d.spiritRootRank || '伪灵根'),
-                    纯度: Number(d.spiritRootPurity || 0),
-                    /* ★ v74：灵根四样之四 —— 自由文本的永久被动。开局必须一并落盘，
-                       否则状态栏「效果：」永远空着（用户报障）。空字符串也照写，保持字段存在。
-                       ★★ 2026-11-07 修：原来这里还多写一行 `说明: String(d.bloodDesc || '')`，
-                       而 `说明` 这个子字段 **v296 就已从 schema 删掉**（《灵根规则》只留
-                       名称/品阶/纯度/效果 四样，与玄技/玄诀/兵器齐名）。
-                       MVU 的 z.object 会静默剥掉多余子字段 ⇒ 玩家在开局面板填的那 80 字
-                       「来历与体征」**每次开局都丢**，而且没有任何报错。
-                       按 v296 的原意并进 `效果`（用户原话：「灵根里的描述和效果融合…只留效果」）：
-                       `效果` 的格式本就是 `机制串｜描写`，`｜` 右侧正好承载来历与体征。 */
-                    效果: (function () {
-                        var _mech = String(d.spiritRootEffect || '').trim();
-                        var _desc = String(d.bloodDesc || '').trim();
-                        if (!_desc) return _mech;
-                        if (!_mech) return _desc;
-                        /* 已带竖线就以机制串那一侧为准，描写侧不重复拼 */
-                        if (_mech.indexOf('｜') >= 0 || _mech.indexOf('|') >= 0) return _mech;
-                        return _mech + '｜' + _desc;
-                    })()
+                    属性: String(d.elem || '')
                 },
                 /* ★ v1.052：**天骄必须落盘**。原来这一段没写天骄，
                    变量里就一直是默认的「非天骄」——选什么灵根都一样，
                    而灵根规则写死了「天骄只由灵根决定」，两边对不上。
                    口径与上面的天骄预览**同一套**（只看灵根，不看装备）：
-                     圣灵根 → 天选之子｜天灵根 → 大天骄｜双灵根 → 普通天骄｜三灵根及以下 → 非天骄 */
+                     至高灵根 → 天选之子｜天灵根 → 大天骄｜双灵根 → 普通天骄｜三灵根及以下 → 非天骄 */
                 天骄: (function () {
-                    /* 灵根档位走 SPIRIT_ROOT_RANK_UI：圣灵根=6 / 天灵根=5 / 双灵根=4 / 三灵根=3 / 四灵根=2 / 伪灵根=1 */
+                    /* 灵根档位走 SPIRIT_ROOT_RANK_UI：至高灵根=6 / 天灵根=5 / 双灵根=4 / 三灵根=3 / 四灵根=2 / 伪灵根=1 */
                     var _rk = SPIRIT_ROOT_RANK_UI[String(d.spiritRootRank || '伪灵根')] || 0;
                     return _rk >= 6 ? '天选之子' : (_rk >= 5 ? '大天骄' : (_rk >= 4 ? '普通天骄' : '非天骄'));
                 })(),
                 可用四维点: 0,
                 四维: { 力量: d.attrs.力量, 敏捷: d.attrs.敏捷, 体质: d.attrs.体质, 智力: d.attrs.智力 },
-                /* ★ v72 结构：已学本领 = 玄技（主动）/ 玄诀（被动），两类**同构六字段**；
-                   装备只有一个「装备武器」。顶层不再有那四个「装备槽」时代的旧字段。 */
-                已学本领: { 玄技: learnedSkill, 玄诀: learnedHeart },
-                装备武器: artifact
+                /* ★ 2026-11-18：已学本领 = 法术（主动）/ 心法（被动）/ 神通（高阶杀招），
+                   三类同构；装备改成**三槽**：法宝(1) / 防具(1) / 饰品(2)。
+                   `装备法宝` 这个扁平旧键**不再写** —— 21 的 schema 里已经没有它，
+                   写了会被 z.looseObject 留着但没人读，等于给下一个人留了个假字段。 */
+                已学本领: { 法术: learnedSkill, 心法: learnedHeart },
+                装备: {
+                    法宝: (artifact && artifact.法宝名 && artifact.法宝名 !== '无')
+                        ? { 名称: artifact.法宝名, 品质: artifact.品质 || '黄阶', 效果: artifact.效果 || '' }
+                        : { 名称: '无', 品质: '黄阶', 效果: '' },
+                    防具: { 名称: '无', 品质: '黄阶', 效果: '' },
+                    /* 饰品最多 2 件，开局一律空（record 形态，键＝饰品名） */
+                    饰品: {}
+                },
+                /* ★ 2026-11-18：主角「身份」—— 开局留空，由模型在第一次建档时按落点写。
+                   为什么不在这里猜一个：`d.place` 只决定「在哪」，不决定「是谁的弟子」；
+                   脚本猜出来的身份（比如「外门弟子」）会被模型当成既成事实抄下去，
+                   而玩家明明选了「散修」落点。留空 ⇒ 模型按《变量更新规则》自己写。
+                   ⚠ 空串不是「缺键」：schema 的默认就是空串，写空串与不写等价。 */
+                身份: '',
+                /* ★ 2026-11-18：先天气运（金手指）—— record 形态，键＝气运名，最多 3 个。
+                   开局一律空：这是**出身即带、不由后天修来**的东西，
+                   让模型在第一次建档时随机/按剧本给，比脚本硬塞一条更符合设定。 */
+                先天气运: {}
             },
             地理: geo,
             /* ★ 2026-11-03（作者：「把在场人物开局写进变量干几把毛，让他妈正文去生成啊」）
                **这里不再写 `人物列表`。** 第 4 页选的人只做两件事：
                  ① 拼进输入框那段开场白（`customOpeningText()`），让模型在正文里把他们写出来；
                  ② 由模型按《变量更新规则》在建档时自己写进 `人物列表`。
-               ⇒ 脚本预先塞一份空壳（只有姓名 + 在场状态，没有境界/气血/玄技）
+               ⇒ 脚本预先塞一份空壳（只有姓名 + 在场状态，没有境界/气血/法术）
                  等于把"建档"这件事抢了一半，模型看到人已经在册，就不再补全字段，
                  最后状态栏里是一堆缺字段的人。
                ⚠ 别再加回来。一个都没选时更不该写 —— 写空对象等于清空玩家已有的人物列表。 */
@@ -4394,7 +4714,7 @@ d.attrs[a] = v;
         };
         /* ★ v509：不再写 `全局.近期大事件`（用户要求把这个变量删掉）。
              启程之地自带的 event 文案仍留在 `place.event` 里，需要时现读即可。 */
-        return { changes: changes, place: place, equipped: Math.min(n, d.items.玄技.length) };
+        return { changes: changes, place: place, equipped: Math.min(n, d.items.法术.length) };
     }
 
     /* ============================ 交互与跳转 ============================ */
@@ -4409,34 +4729,29 @@ d.attrs[a] = v;
 
     var GREETING_CONTENTS = [
         // 0: 00-开场.md · 通用（凡人村落序章）
-        /* ★ v633：原文案「看不到状态栏和开局脚本就刷新网页！！！刷新网页之后等十秒」
-           —— 这句话把**加载失败**说成「刷新就好」，玩家会一直刷。
-           真因（2026-11-17 实测）：fastly 镜像返回半截脚本但 HTTP 200，
-           loader 误判成功 ⇒ 05/07 一行都没执行。已在 loader 里加完整性校验修掉。
-           ⇒ 文案改为「稍候片刻」，并把排障办法指向真正有效的那一步。 */
         "<content>\n【开局 · 仙缘初启】\n\n开局面板与状态栏稍候片刻便会浮现。\n</content>\n<UpdateVariable>\n<Analysis>\n</Analysis>\n<JSONPatch>\n[]\n</JSONPatch>\n</UpdateVariable>",
         // 1: 01-备选开场.md · 测试 · 演武台试招
-        "<content>\n【测试 · 演武台试招】\n\n演武台在三剑宗山门后头，三丈见方的青石台子。台面被踩了不知多少年，中间那块磨得泛白，四角石缝里长着半枯的草。台子四周没有栏杆，只在地上刻了一圈浅槽——那是护道结界的位置，平日不亮，一旦有人踏进去，槽里便浮起一层薄薄的青光。\n\n顺着台边往上三十级石阶，就是山门。今天上台前你从那道石阶走下来，石阶两边的新弟子还在一遍遍过桩。\n\n今天亮着。\n\n你上台时，台边已站了七八个门内弟子，抱着胳膊看热闹，没人出声。\n\n对面那个人比你先到。他站在台子另一头，背着手，脚下踩着结界内圈，衣摆被山风吹得贴在小腿上。\n\n“来了。”他说，声音不高，也不看你。\n\n他身后站着一位执剑长老，须发灰白，两手拢在袖里。等你站定，他才慢慢开口：\n\n“今日不是门内小比，也不是论生死。”他抬了抬下巴，点向对面那人，“这位是演武台请来的试招客，只试你的路数，不试你的命。”\n\n他顿了一下。\n\n“结界在，死不了人，也断不了手脚。你手里有什么、身上有几分力气，尽管使出来。撑过几轮，你自己就知道哪一门使得顺、哪一门使到一半就卡住了。”\n\n“规矩只有一条——”长老看着你，“打完了，谁也别记仇。”\n\n说完他退到台外，从袖里摸出一枚玉牌，往结界上一按。\n\n青光自台沿内侧升起，薄薄一层，像水一样漫过脚背，然后停住。台面上的风忽然就没了。\n\n对面那人这才抬眼看你。他解开外袍，往台边一扔，露出里面一身收得很紧的短打，右手指节缠着一圈发旧的布条。\n\n你抬手时，指缝里有细小的雷光跳了一下，又灭了。剑宗给你配的这四门，你昨夜才第一遍走完：雷鸣掌贴脸硬拍，雷走经络催身法也催手上劲，引雷落抬手就是一片，撼雷诀震人筋脉。哪一门使得顺，上了台才知道。\n\n“我姓裴。”他说，“裴照。散修，靠替人试招混口饭吃。”\n\n他活动了一下手腕，骨节响了两声。\n\n“先说清楚：我不留手。不过你放心，我不会往死处去。”他朝你笑了一下，那个笑不太像好意，倒像是某种早就习惯了的客气，“你也别留。留手我反倒不好试。”\n\n结界外的弟子们又往后挪了半步，把台子让得更开。\n\n长老的声音从外面传进来，很平：\n\n“——开始吧。”\n\n<战斗开始>\n敌方人员：[裴照]\n我方人员：[测试]\n</战斗开始>\n\n<StatusPlaceHolderImpl/>\n</content>\n<UpdateVariable>\n<Analysis>\n一、地理：人州·中域·三剑宗 / 山门石阶（山门后头那块演武台）\n二、时间：1年1月1日 09:20\n三、主角信息：本楼把姓名固定为「测试」（作者跳过创角直测，引擎按姓名认人）；境界、四维、气血给一套能打的基准值，避免落兜底公式\n四、主角招式：四门（雷鸣掌 / 雷走经络 / 引雷落 / 撼雷诀），雷属性，耗蓝 45~90，灵力池 900 放得出\n五、人物列表：新增「裴照」（筑基中期·散修试招客·**不在场**）。他在敌方名单里，若在场状态设成 true 会被引擎当同伴拉进我方；他也带四门玄技，正好对练\n六、开局落点：三剑宗山门后的演武台，护道结界已开，执剑长老台外监场\n</Analysis>\n<JSONPatch>\n[\n  {\n    \"op\": \"replace\",\n    \"path\": \"/主角信息/姓名\",\n    \"value\": \"测试\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/主角信息/境界\",\n    \"value\": \"筑基中期\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/主角信息/玄元属性\",\n    \"value\": {\n      \"属性\": \"雷\"\n    }\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/主角信息/四维\",\n    \"value\": {\n      \"力量\": 7,\n      \"敏捷\": 7,\n      \"体质\": 7,\n      \"智力\": 5\n    }\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/主角信息/气血\",\n    \"value\": 2800\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/主角信息/气血上限\",\n    \"value\": 2800\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/主角信息/灵力\",\n    \"value\": 900\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/主角信息/灵力上限\",\n    \"value\": 900\n  },\n  {\n    \"op\": \"insert\",\n    \"path\": \"/主角信息/已学本领/玄技/雷鸣掌\",\n    \"value\": {\n      \"玄技名\": \"雷鸣掌\",\n      \"品质\": \"玄阶\",\n      \"类型\": \"主动\",\n      \"目标\": \"单体\",\n      \"流派\": \"掌\",\n      \"效果\": {\n        \"伤害\": \"320｜掌心雷光炸开，顺着骨缝往里钻\"\n      },\n      \"消耗\": 45\n    }\n  },\n  {\n    \"op\": \"insert\",\n    \"path\": \"/主角信息/已学本领/玄技/雷走经络\",\n    \"value\": {\n      \"玄技名\": \"雷走经络\",\n      \"品质\": \"玄阶\",\n      \"类型\": \"主动\",\n      \"目标\": \"自身\",\n      \"流派\": \"术\",\n      \"效果\": {\n        \"提速\": \"10:3｜雷气窜过经脉，脚下忽然就轻了\",\n        \"增伤\": \"15:2｜指尖还留着麻意，下一击带上了电\"\n      },\n      \"消耗\": 50\n    }\n  },\n  {\n    \"op\": \"insert\",\n    \"path\": \"/主角信息/已学本领/玄技/引雷落\",\n    \"value\": {\n      \"玄技名\": \"引雷落\",\n      \"品质\": \"地阶\",\n      \"类型\": \"主动\",\n      \"目标\": \"敌方范围\",\n      \"流派\": \"术\",\n      \"效果\": {\n        \"伤害\": \"410｜举掌向天，一线雷光砸进人堆\",\n        \"易伤\": \"18:2｜雷火燎过，皮肉焦翻，后面的力道更吃得进\"\n      },\n      \"消耗\": 90\n    }\n  },\n  {\n    \"op\": \"insert\",\n    \"path\": \"/主角信息/已学本领/玄技/撼雷诀\",\n    \"value\": {\n      \"玄技名\": \"撼雷诀\",\n      \"品质\": \"玄阶\",\n      \"类型\": \"主动\",\n      \"目标\": \"单体\",\n      \"流派\": \"掌\",\n      \"效果\": {\n        \"伤害\": \"260｜一掌拍实，雷劲透进去\",\n        \"虚弱\": \"15:2｜经脉被震得发木，出手软了半分\"\n      },\n      \"消耗\": 55\n    }\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/大位置\",\n    \"value\": \"人州·中域·三剑宗\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/小位置\",\n    \"value\": \"山门石阶\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/日期\",\n    \"value\": \"1年1月1日\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/精确时间\",\n    \"value\": \"09:20\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/任务\",\n    \"value\": {\n      \"进行中\": {},\n      \"已完成\": []\n    }\n  },\n  {\n    \"op\": \"insert\",\n    \"path\": \"/人物列表/裴照\",\n    \"value\": {\n      \"姓名\": \"裴照\",\n      \"势力\": \"散修（受雇于演武台）\",\n      \"外貌\": \"三十上下，身形精瘦；短打收得紧，右手指节缠一圈发旧的白布条；外袍随手扔在台边，腰间不佩兵刃\",\n      \"性格\": \"把试招当营生的老手。嘴上客气、手上不留情；说“不往死处去”是真话，说“你也别留”也是真话——他要知道你真实的斤两，留手对他是麻烦\",\n      \"好感度\": 40,\n      \"心里话\": \"这一身骨架还算稳，就是不知道敢不敢真打。敢打的人，第一招就会往脸上来。\",\n      \"种族\": \"人族\",\n      \"境界\": \"筑基中期\",\n      \"气血\": 3242,\n      \"气血上限\": 3242,\n      \"灵力\": 1605,\n      \"灵力上限\": 1605,\n      \"玄元属性\": {\n        \"属性\": \"风\"\n      },\n      \"四维\": {\n        \"力量\": 6,\n        \"敏捷\": 7,\n        \"体质\": 5,\n        \"智力\": 4\n      },\n      \"灵根\": {\n        \"名称\": \"疾风随形\",\n        \"品阶\": \"双灵根\",\n        \"纯度\": 58,\n        \"效果\": \"提速:8｜风随身走，步法比常人快半拍\"\n      },\n      \"天骄\": \"非天骄\",\n      \"已学本领\": {\n        \"玄技\": {\n          \"引风掌\": {\n            \"玄技名\": \"引风掌\",\n            \"品质\": \"玄阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"流派\": \"掌\",\n            \"效果\": {\n              \"伤害\": \"58｜一掌拍在风口上，力道被风推着走\"\n            },\n            \"消耗\": 40\n          },\n          \"缠丝手\": {\n            \"玄技名\": \"缠丝手\",\n            \"品质\": \"玄阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"流派\": \"掌\",\n            \"效果\": {\n              \"伤害\": \"34｜手腕一翻，扣住对手的关节\",\n              \"虚弱\": \"12:2｜关节被绞住，出手慢了半息\"\n            },\n            \"消耗\": 45\n          },\n          \"卸力步\": {\n            \"玄技名\": \"卸力步\",\n            \"品质\": \"黄阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"自身\",\n            \"流派\": \"掌\",\n            \"效果\": {\n              \"闪避\": \"15:2｜侧身让开半步，劲力擦着衣角过去\"\n            },\n            \"消耗\": 25\n          }\n        },\n        \"玄诀\": {\n          \"随风势\": {\n            \"玄技名\": \"随风势\",\n            \"品质\": \"玄阶\",\n            \"类型\": \"被动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"提速\": \"6｜顺风时脚下更轻，一出手就抢了先\"\n            },\n            \"消耗\": 0\n          }\n        }\n      },\n      \"装备武器\": {},\n      \"灵宠\": {},\n      \"部位\": {\n        \"私处\": \"正常\",\n        \"奶子\": \"正常\",\n        \"大腿\": \"正常\",\n        \"足部\": \"正常\"\n      },\n      \"在场状态\": false\n    }\n  }\n]\n</JSONPatch>\n</UpdateVariable>",
+        "<content>\n【测试 · 演武台试招】\n\n演武台在三剑宗山门后头，三丈见方的青石台子。台面被踩了不知多少年，中间那块磨得泛白，四角石缝里长着半枯的草。台子四周没有栏杆，只在地上刻了一圈浅槽——那是护道结界的位置，平日不亮，一旦有人踏进去，槽里便浮起一层薄薄的青光。\n\n顺着台边往上三十级石阶，就是山门。今天上台前你从那道石阶走下来，石阶两边的新弟子还在一遍遍过桩。\n\n今天亮着。\n\n你上台时，台边已站了七八个门内弟子，抱着胳膊看热闹，没人出声。\n\n对面那个人比你先到。他站在台子另一头，背着手，脚下踩着结界内圈，衣摆被山风吹得贴在小腿上。\n\n“来了。”他说，声音不高，也不看你。\n\n他身后站着一位执剑长老，须发灰白，两手拢在袖里。等你站定，他才慢慢开口：\n\n“今日不是门内小比，也不是论生死。”他抬了抬下巴，点向对面那人，“这位是演武台请来的试招客，只试你的路数，不试你的命。”\n\n他顿了一下。\n\n“结界在，死不了人，也断不了手脚。你手里有什么、身上有几分力气，尽管使出来。撑过几轮，你自己就知道哪一门使得顺、哪一门使到一半就卡住了。”\n\n“规矩只有一条——”长老看着你，“打完了，谁也别记仇。”\n\n说完他退到台外，从袖里摸出一枚玉牌，往结界上一按。\n\n青光自台沿内侧升起，薄薄一层，像水一样漫过脚背，然后停住。台面上的风忽然就没了。\n\n对面那人这才抬眼看你。他解开外袍，往台边一扔，露出里面一身收得很紧的短打，右手指节缠着一圈发旧的布条。\n\n你抬手时，指缝里有细小的雷光跳了一下，又灭了。剑宗给你配的这四门，你昨夜才第一遍走完：雷鸣掌贴脸硬拍，雷走经络催身法也催手上劲，引雷落抬手就是一片，撼雷诀震人筋脉。哪一门使得顺，上了台才知道。\n\n“我姓裴。”他说，“裴照。散修，靠替人试招混口饭吃。”\n\n他活动了一下手腕，骨节响了两声。\n\n“先说清楚：我不留手。不过你放心，我不会往死处去。”他朝你笑了一下，那个笑不太像好意，倒像是某种早就习惯了的客气，“你也别留。留手我反倒不好试。”\n\n结界外的弟子们又往后挪了半步，把台子让得更开。\n\n长老的声音从外面传进来，很平：\n\n“——开始吧。”\n\n<战斗开始>\n敌方人员：[裴照]\n我方人员：[测试]\n</战斗开始>\n\n<StatusPlaceHolderImpl/>\n</content>\n<UpdateVariable>\n<Analysis>\n一、地理：人州·中域·三剑宗 / 山门石阶（山门后头那块演武台）\n二、时间：1年1月1日 09:20\n三、主角信息：本楼把姓名固定为「测试」（作者跳过创角直测，引擎按姓名认人）；境界、四维、气血给一套能打的基准值，避免落兜底公式\n四、主角招式：四门（雷鸣掌 / 雷走经络 / 引雷落 / 撼雷诀），雷属性，耗蓝 45~90，灵力池 900 放得出\n五、人物列表：新增「裴照」（筑基中期·散修试招客·**不在场**）。他在敌方名单里，若在场状态设成 true 会被引擎当同伴拉进我方；他也带四门法术，正好对练\n六、开局落点：三剑宗山门后的演武台，护道结界已开，执剑长老台外监场\n</Analysis>\n<JSONPatch>\n[\n  {\n    \"op\": \"replace\",\n    \"path\": \"/主角信息/姓名\",\n    \"value\": \"测试\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/主角信息/境界\",\n    \"value\": \"筑基中期\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/主角信息/灵根\",\n    \"value\": {\n      \"品阶\": \"双灵根\",\n      \"属性\": \"雷\"\n    }\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/主角信息/四维\",\n    \"value\": {\n      \"力量\": 7,\n      \"敏捷\": 7,\n      \"体质\": 7,\n      \"智力\": 5\n    }\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/主角信息/气血\",\n    \"value\": 2800\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/主角信息/气血上限\",\n    \"value\": 2800\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/主角信息/灵力\",\n    \"value\": 900\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/主角信息/灵力上限\",\n    \"value\": 900\n  },\n  {\n    \"op\": \"insert\",\n    \"path\": \"/主角信息/已学本领/法术/雷鸣掌\",\n    \"value\": {\n      \"法术名\": \"雷鸣掌\",\n      \"品质\": \"玄阶\",\n      \"类型\": \"主动\",\n      \"目标\": \"单体\",\n      \"流派\": \"掌\",\n      \"效果\": {\n        \"伤害\": \"320｜掌心雷光炸开，顺着骨缝往里钻\"\n      },\n      \"消耗\": 45\n    }\n  },\n  {\n    \"op\": \"insert\",\n    \"path\": \"/主角信息/已学本领/法术/雷走经络\",\n    \"value\": {\n      \"法术名\": \"雷走经络\",\n      \"品质\": \"玄阶\",\n      \"类型\": \"主动\",\n      \"目标\": \"自身\",\n      \"流派\": \"术\",\n      \"效果\": {\n        \"提速\": \"10:3｜雷气窜过经脉，脚下忽然就轻了\",\n        \"增伤\": \"15:2｜指尖还留着麻意，下一击带上了电\"\n      },\n      \"消耗\": 50\n    }\n  },\n  {\n    \"op\": \"insert\",\n    \"path\": \"/主角信息/已学本领/法术/引雷落\",\n    \"value\": {\n      \"法术名\": \"引雷落\",\n      \"品质\": \"地阶\",\n      \"类型\": \"主动\",\n      \"目标\": \"敌方范围\",\n      \"流派\": \"术\",\n      \"效果\": {\n        \"伤害\": \"410｜举掌向天，一线雷光砸进人堆\",\n        \"易伤\": \"18:2｜雷火燎过，皮肉焦翻，后面的力道更吃得进\"\n      },\n      \"消耗\": 90\n    }\n  },\n  {\n    \"op\": \"insert\",\n    \"path\": \"/主角信息/已学本领/法术/撼雷诀\",\n    \"value\": {\n      \"法术名\": \"撼雷诀\",\n      \"品质\": \"玄阶\",\n      \"类型\": \"主动\",\n      \"目标\": \"单体\",\n      \"流派\": \"掌\",\n      \"效果\": {\n        \"伤害\": \"260｜一掌拍实，雷劲透进去\",\n        \"虚弱\": \"15:2｜经脉被震得发木，出手软了半分\"\n      },\n      \"消耗\": 55\n    }\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/大位置\",\n    \"value\": \"人州·中域·三剑宗\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/小位置\",\n    \"value\": \"山门石阶\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/日期\",\n    \"value\": \"1年1月1日\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/精确时间\",\n    \"value\": \"09:20\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/任务\",\n    \"value\": {\n      \"进行中\": {},\n      \"已完成\": []\n    }\n  },\n  {\n    \"op\": \"insert\",\n    \"path\": \"/人物列表/裴照\",\n    \"value\": {\n      \"姓名\": \"裴照\",\n      \"势力\": \"散修（受雇于演武台）\",\n      \"外貌\": \"三十上下，身形精瘦；短打收得紧，右手指节缠一圈发旧的白布条；外袍随手扔在台边，腰间不佩兵刃\",\n      \"性格\": \"把试招当营生的老手。嘴上客气、手上不留情；说“不往死处去”是真话，说“你也别留”也是真话——他要知道你真实的斤两，留手对他是麻烦\",\n      \"好感度\": 40,\n      \"心里话\": \"这一身骨架还算稳，就是不知道敢不敢真打。敢打的人，第一招就会往脸上来。\",\n      \"种族\": \"人族\",\n      \"境界\": \"筑基中期\",\n      \"气血\": 3880,\n      \"气血上限\": 3880,\n      \"灵力\": 1924,\n      \"灵力上限\": 1924,\n      \"四维\": {\n        \"力量\": 6,\n        \"敏捷\": 7,\n        \"体质\": 5,\n        \"智力\": 4\n      },\n      \"灵根\": {\n        \"品阶\": \"双灵根\",\n        \"属性\": \"风\"\n      },\n      \"天骄\": \"非天骄\",\n      \"已学本领\": {\n        \"法术\": {\n          \"引风掌\": {\n            \"品质\": \"玄阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"流派\": \"掌\",\n            \"效果\": {\n              \"伤害\": \"58｜一掌拍在风口上，力道被风推着走\"\n            },\n            \"消耗\": 40,\n            \"法术名\": \"引风掌\"\n          },\n          \"缠丝手\": {\n            \"品质\": \"玄阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"流派\": \"掌\",\n            \"效果\": {\n              \"伤害\": \"34｜手腕一翻，扣住对手的关节\",\n              \"虚弱\": \"12:2｜关节被绞住，出手慢了半息\"\n            },\n            \"消耗\": 45,\n            \"法术名\": \"缠丝手\"\n          },\n          \"卸力步\": {\n            \"品质\": \"黄阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"自身\",\n            \"流派\": \"掌\",\n            \"效果\": {\n              \"闪避\": \"15:2｜侧身让开半步，劲力擦着衣角过去\"\n            },\n            \"消耗\": 25,\n            \"法术名\": \"卸力步\"\n          }\n        },\n        \"心法\": {\n          \"随风势\": {\n            \"品质\": \"玄阶\",\n            \"类型\": \"被动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"提速\": \"6｜顺风时脚下更轻，一出手就抢了先\"\n            },\n            \"消耗\": 0,\n            \"心法名\": \"随风势\"\n          }\n        }\n      },\n      \"灵宠\": {},\n      \"部位\": {\n        \"私处\": \"正常\",\n        \"奶子\": \"正常\",\n        \"大腿\": \"正常\",\n        \"足部\": \"正常\"\n      },\n      \"在场状态\": false,\n      \"装备\": {\n        \"法宝\": {\n          \"名称\": \"无\",\n          \"品质\": \"黄阶\",\n          \"效果\": \"\"\n        },\n        \"防具\": {\n          \"名称\": \"无\",\n          \"品质\": \"黄阶\",\n          \"效果\": \"\"\n        },\n        \"饰品\": {}\n      },\n      \"身份\": \"\",\n      \"先天气运\": {}\n    }\n  }\n]\n</JSONPatch>\n</UpdateVariable>",
         // 2: 02-备选开场.md · 青木药宗
-        "<content>\n【开局 · 青木药宗】\n这条雾道两边都插着旧灯杆，灯芯是新换的，光只照到脚下三步。\n\n再往东半日，是专做脏活、凶名在外的煞血门；往西，是弥漫着淡淡草木微香的边缘小宗——青木药宗。\n\n你初涉修行，玄元在经脉里走得还不太顺，一路避开了几个行迹鬼祟的劫道散修，摸到药谷入口那座青石药庐前时，额上已见薄汗。\n\n雾在身后合拢。回望时，来路只剩两盏灯，隔得很远。\n\n“小心呀！”\n\n路旁密密匝匝的灌木丛一动，钻出来一个身形娇小的小姑娘。她挽着宽大的布袖，露出一截沾着泥灰的纤细小臂，指甲缝里留着洗不掉的深绿药汁痕，额发被汗水软趴趴地黏在鬓角。身后还吃力地背着一只足有半人多高的竹编药篓，篓口满当当插着挂着晨露的新鲜灵草。\n\n她一眼看出你气机未稳，连药篓都没卸下就小跑过来，指尖稳稳搭上你的手腕。\n\n指尖搭上寸关尺的刹那，一股极其纯正柔和的草木玄元顺着经脉缓缓淌入丹田，悄然抚平了翻江倒海的气机。\n\n“经脉又薄又燥，玄根才刚开窍不久，怎么就敢一个人走这条道呀……”\n\n她松了口气，随后从腰间摸出一只温热的粗瓷小碗，盛着一勺碧绿微苦的药汤递到你唇边，眼睛笑成两弯月牙，嗓音软软糯糯，尾音不自觉地往上挑：\n\n“快喝了吧，是刚熬好的回春灵露。这条道上不干净——前几日有两拨人没走完，煞血门到现在还没把那两个的尸首捞回来。”\n\n她说到这儿，声音低了些，回头朝药谷里望了一眼。\n\n“要是暂时没个去处，不如先留在咱们药宗的偏庐歇歇脚？我这里有张缺了两味主药的古残方……你若肯帮我掌炉煽火，包你每天都有热药汤和灵米饭吃，好不好呀？”\n\n——她没说的是，缺的那两味主药，都在雾里。\n\n药宗的采雾队三个月前少了三个人。她师父说今年不再派人，可药炉上的火不能停，停了整炉就废。她自己在墙外采了半个月，采到的都是替不得的。\n\n所以那张残方，她不是在跟你商量。\n\n是在问：你敢不敢陪我走一趟。\n</content>\n<UpdateVariable>\n<Analysis>\n一、地理：人州·中域·青木药宗（百草药谷药庐）\n二、时间：1月1号 08:00\n三、开局落点：青木药宗（药谷外门）\n四、主角信息：开局一律健康（身受重伤的写法不用）\n五、人物列表：药仙儿建档在场（练气中期·青木药宗药童·普通天骄（灵根定档））；并写入玄技《回春露》《缠丝藤》《苦麻针》与玄诀《百草经》\n</Analysis>\n<JSONPatch>\n[\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/大位置\",\n        \"value\": \"人州·中域·青木药宗\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/小位置\",\n        \"value\": \"百草药谷药庐\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/日期\",\n        \"value\": \"1年1月1日\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/精确时间\",\n        \"value\": \"08:00\"\n    },\n    {\n        \"op\": \"add\",\n        \"path\": \"/人物列表/药仙儿\",\n        \"value\": {\n            \"姓名\": \"药仙儿\",\n            \"势力\": \"青木药宗\",\n            \"外貌\": \"持药篮的小药仙，袖口常年沾着药渍，随身带着上古残方拓片\",\n            \"性格\": \"温婉心细、药痴脾气，遇奇药就挪不动脚\",\n            \"好感度\": 30,\n            \"心里话\": \"他脸色好差，得先灌一碗热的。\",\n            \"种族\": \"人族\",\n            \"境界\": \"练气中期\",\n            \"气血\": 1861,\n            \"气血上限\": 1861,\n            \"灵力\": 910,\n            \"灵力上限\": 910,\n            \"玄元属性\": {\n                \"属性\": \"木\"\n            },\n            \"四维\": {\n                \"力量\": 2,\n                \"敏捷\": 4,\n                \"体质\": 3,\n                \"智力\": 7\n            },\n            \"灵根\": {\n                \"名称\": \"药王传人\",\n                \"品阶\": \"双灵根\",\n                \"纯度\": 55,\n                \"效果\": \"回血:3，气血上限:10｜药性通身，丹药入口见效快\"\n            },\n            \"天骄\": \"普通天骄\",\n            \"已学本领\": {\n                \"玄技\": {\n                    \"回春露\": {\n                        \"玄技名\": \"回春露\",\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"治疗\": \"31｜给自己或同伴\"\n                        },\n                        \"消耗\": 45\n                    },\n                    \"缠丝藤\": {\n                        \"玄技名\": \"缠丝藤\",\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"减速\": \"4:2｜藤蔓缠住脚踝，两回合脚步拖滞\"\n                        },\n                        \"消耗\": 45\n                    },\n                    \"苦麻针\": {\n                        \"玄技名\": \"苦麻针\",\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"流血\": \"40:3｜刺入经脉，气血缓缓流失\"\n                        },\n                        \"消耗\": 45\n                    }\n                },\n                \"玄诀\": {\n                    \"百草经\": {\n                        \"玄技名\": \"百草经\",\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"被动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"减伤\": \"15:3｜识药之能，疗伤效果更强\",\n                            \"回蓝\": \"5:3｜识药之能，疗伤效果更强\"\n                        },\n                        \"消耗\": 0\n                    }\n                }\n            },\n            \"灵宠\": {},\n            \"部位\": {\n                \"私处\": \"正常\",\n                \"奶子\": \"正常\",\n                \"大腿\": \"正常\",\n                \"足部\": \"正常\"\n            },\n            \"在场状态\": true\n        }\n    }\n]\n</JSONPatch>\n</UpdateVariable>\n<StatusPlaceHolderImpl/>",
+        "<content>\n【开局 · 青木药宗】\n这条雾道两边都插着旧灯杆，灯芯是新换的，光只照到脚下三步。\n\n再往东半日，是专做脏活、凶名在外的煞血门；往西，是弥漫着淡淡草木微香的边缘小宗——青木药宗。\n\n你初涉修行，玄元在经脉里走得还不太顺，一路避开了几个行迹鬼祟的劫道散修，摸到药谷入口那座青石药庐前时，额上已见薄汗。\n\n雾在身后合拢。回望时，来路只剩两盏灯，隔得很远。\n\n“小心呀！”\n\n路旁密密匝匝的灌木丛一动，钻出来一个身形娇小的小姑娘。她挽着宽大的布袖，露出一截沾着泥灰的纤细小臂，指甲缝里留着洗不掉的深绿药汁痕，额发被汗水软趴趴地黏在鬓角。身后还吃力地背着一只足有半人多高的竹编药篓，篓口满当当插着挂着晨露的新鲜灵草。\n\n她一眼看出你气机未稳，连药篓都没卸下就小跑过来，指尖稳稳搭上你的手腕。\n\n指尖搭上寸关尺的刹那，一股极其纯正柔和的草木玄元顺着经脉缓缓淌入丹田，悄然抚平了翻江倒海的气机。\n\n“经脉又薄又燥，玄根才刚开窍不久，怎么就敢一个人走这条道呀……”\n\n她松了口气，随后从腰间摸出一只温热的粗瓷小碗，盛着一勺碧绿微苦的药汤递到你唇边，眼睛笑成两弯月牙，嗓音软软糯糯，尾音不自觉地往上挑：\n\n“快喝了吧，是刚熬好的回春灵露。这条道上不干净——前几日有两拨人没走完，煞血门到现在还没把那两个的尸首捞回来。”\n\n她说到这儿，声音低了些，回头朝药谷里望了一眼。\n\n“要是暂时没个去处，不如先留在咱们药宗的偏庐歇歇脚？我这里有张缺了两味主药的古残方……你若肯帮我掌炉煽火，包你每天都有热药汤和灵米饭吃，好不好呀？”\n\n——她没说的是，缺的那两味主药，都在雾里。\n\n药宗的采雾队三个月前少了三个人。她师父说今年不再派人，可药炉上的火不能停，停了整炉就废。她自己在墙外采了半个月，采到的都是替不得的。\n\n所以那张残方，她不是在跟你商量。\n\n是在问：你敢不敢陪我走一趟。\n</content>\n<UpdateVariable>\n<Analysis>\n一、地理：人州·中域·青木药宗（百草药谷药庐）\n二、时间：1月1号 08:00\n三、开局落点：青木药宗（药谷外门）\n四、主角信息：开局一律健康（身受重伤的写法不用）\n五、人物列表：药仙儿建档在场（练气中期·青木药宗药童·普通天骄（灵根定档））；并写入法术《回春露》《缠丝藤》《苦麻针》与心法《百草经》\n</Analysis>\n<JSONPatch>\n[\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/大位置\",\n        \"value\": \"人州·中域·青木药宗\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/小位置\",\n        \"value\": \"百草药谷药庐\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/日期\",\n        \"value\": \"1年1月1日\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/精确时间\",\n        \"value\": \"08:00\"\n    },\n    {\n        \"op\": \"add\",\n        \"path\": \"/人物列表/药仙儿\",\n        \"value\": {\n            \"姓名\": \"药仙儿\",\n            \"势力\": \"青木药宗\",\n            \"外貌\": \"持药篮的小药仙，袖口常年沾着药渍，随身带着上古残方拓片\",\n            \"性格\": \"温婉心细、药痴脾气，遇奇药就挪不动脚\",\n            \"好感度\": 30,\n            \"心里话\": \"他脸色好差，得先灌一碗热的。\",\n            \"种族\": \"人族\",\n            \"境界\": \"练气中期\",\n            \"气血\": 2376,\n            \"气血上限\": 2376,\n            \"灵力\": 1252,\n            \"灵力上限\": 1252,\n            \"四维\": {\n                \"力量\": 2,\n                \"敏捷\": 4,\n                \"体质\": 3,\n                \"智力\": 7\n            },\n            \"灵根\": {\n                \"品阶\": \"双灵根\",\n                \"属性\": \"木\"\n            },\n            \"天骄\": \"普通天骄\",\n            \"已学本领\": {\n                \"法术\": {\n                    \"回春露\": {\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"治疗\": \"31｜给自己或同伴\"\n                        },\n                        \"消耗\": 45,\n                        \"法术名\": \"回春露\"\n                    },\n                    \"缠丝藤\": {\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"减速\": \"4:2｜藤蔓缠住脚踝，两回合脚步拖滞\"\n                        },\n                        \"消耗\": 45,\n                        \"法术名\": \"缠丝藤\"\n                    },\n                    \"苦麻针\": {\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"流血\": \"40:3｜刺入经脉，气血缓缓流失\"\n                        },\n                        \"消耗\": 45,\n                        \"法术名\": \"苦麻针\"\n                    }\n                },\n                \"心法\": {\n                    \"百草经\": {\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"被动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"减伤\": \"15:3｜识药之能，疗伤效果更强\",\n                            \"回蓝\": \"5:3｜识药之能，疗伤效果更强\"\n                        },\n                        \"消耗\": 0,\n                        \"心法名\": \"百草经\"\n                    }\n                }\n            },\n            \"灵宠\": {},\n            \"部位\": {\n                \"私处\": \"正常\",\n                \"奶子\": \"正常\",\n                \"大腿\": \"正常\",\n                \"足部\": \"正常\"\n            },\n            \"在场状态\": true,\n            \"装备\": {\n                \"法宝\": {\n                    \"名称\": \"无\",\n                    \"品质\": \"黄阶\",\n                    \"效果\": \"\"\n                },\n                \"防具\": {\n                    \"名称\": \"无\",\n                    \"品质\": \"黄阶\",\n                    \"效果\": \"\"\n                },\n                \"饰品\": {}\n            },\n            \"身份\": \"\",\n            \"先天气运\": {}\n        }\n    }\n]\n</JSONPatch>\n</UpdateVariable>\n<StatusPlaceHolderImpl/>",
         // 3: 03-备选开场.md · 幽月仙宫·樱桃玉榻
-        "<content>\n【开局 · 幽月仙宫·樱桃玉榻】\n你是被一阵樱桃的甜香熏醒的。\n睁眼是重重叠叠的绛紫纱帐天花板，帐外一炉冷香烧到只剩灰。玉榻另一头侧卧着个黑发金瞳的女人，指尖捻着一颗樱桃，也不吃，只在你眼前慢慢转。她离你很近，或者说，你发现自己是贴着她睡的。没错，这人是你的三姐。\"醒了还不快起来，当真是小懒猫\"，她慵懒又富有魅惑的声音传出，突然将你揽了过来，以至于你的脸埋进了她柔软的胸里。\n</content>\n\n<UpdateVariable>\n<Analysis>\n一、地理：人州·中域·万花迷沼·幽月仙宫（沼心玉榻）\n二、时间：1月1号 10:00\n三、开局落点：幽月仙宫（沼心玉榻）\n四、主角信息：开局一律健康（身受重伤的写法不用）\n五、人物列表：司幽怜建档在场（元婴中期·幽月仙宫宗主·大天骄（灵根定档）·玩家亲姐）；并写入玄技《月华照影》《幻纱帐》《幽冥引》与玄诀《太阴心》\n</Analysis>\n<JSONPatch>\n[\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/大位置\",\n        \"value\": \"人州·中域·幽月仙宫\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/小位置\",\n        \"value\": \"沼心玉榻\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/日期\",\n        \"value\": \"1年1月1日\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/精确时间\",\n        \"value\": \"10:00\"\n    },\n    {\n        \"op\": \"add\",\n        \"path\": \"/人物列表/司幽怜\",\n        \"value\": {\n            \"姓名\": \"司幽怜\",\n            \"势力\": \"幽月仙宫\",\n            \"外貌\": \"墨黑长发披散、发尾泛淡酒红，暗金蛇眸；墨灰深V衣袍缀黑蕾丝，宽黑腰封，额心细金链坠红宝石，颈上金链坠琥珀圆\",\n            \"性格\": \"知性妩媚、随性慵懒，温柔里全是刀；对唯一的骨肉护得极凶，笑里下刀从不预告\",\n            \"好感度\": 75,\n            \"心里话\": \"瘦成这样。谁把他扔在雾里的，本座要把这人查出来。\",\n            \"种族\": \"人族\",\n            \"境界\": \"元婴中期\",\n            \"气血\": 13824,\n            \"气血上限\": 13824,\n            \"灵力\": 8371,\n            \"灵力上限\": 8371,\n            \"玄元属性\": {\n                \"属性\": \"水\"\n            },\n            \"四维\": {\n                \"力量\": 6,\n                \"敏捷\": 8,\n                \"体质\": 6,\n                \"智力\": 10\n            },\n            \"灵根\": {\n                \"名称\": \"太虚残魂\",\n                \"品阶\": \"天灵根\",\n                \"纯度\": 90,\n                \"效果\": \"灵力上限:20，回蓝:5｜魂里残着太虚一脉，识海极阔\"\n            },\n            \"天骄\": \"大天骄\",\n            \"已学本领\": {\n                \"玄技\": {\n                    \"月华照影\": {\n                        \"玄技名\": \"月华照影\",\n                        \"品质\": \"地阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"伤害\": \"156｜月华自虚空落下，穿透护体灵光\"\n                        },\n                        \"消耗\": 520\n                    },\n                    \"幻纱帐\": {\n                        \"玄技名\": \"幻纱帐\",\n                        \"品质\": \"地阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"范围\",\n                        \"效果\": {\n                            \"闪避\": \"20:3｜纱影铺开，遮蔽四方视线，隐匿气息，敌方无法锁定\"\n                        },\n                        \"消耗\": 520\n                    },\n                    \"幽冥引\": {\n                        \"玄技名\": \"幽冥引\",\n                        \"品质\": \"天阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"伤害\": \"200｜直取神魂的一击\"\n                        },\n                        \"消耗\": 1400\n                    }\n                },\n                \"玄诀\": {\n                    \"太阴心\": {\n                        \"玄技名\": \"太阴心\",\n                        \"品质\": \"天阶\",\n                        \"类型\": \"被动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"减伤\": \"10｜心神稳固，不受幻术所动，心智坚定，免疫幻术与魅惑\"\n                        },\n                        \"消耗\": 0\n                    }\n                }\n            },\n            \"装备武器\": {\n                \"武器名\": \"九幽幻纱绫\",\n                \"品质\": \"地阶\",\n                \"效果\": \"闪避:15｜幽泉绫起，缠敌于幻境\"\n            },\n            \"灵宠\": {},\n            \"部位\": {\n                \"私处\": \"正常\",\n                \"奶子\": \"正常\",\n                \"大腿\": \"正常\",\n                \"足部\": \"正常\"\n            },\n            \"在场状态\": true\n        }\n    }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
+        "<content>\n【开局 · 幽月仙宫·樱桃玉榻】\n你是被一阵樱桃的甜香熏醒的。\n睁眼是重重叠叠的绛紫纱帐天花板，帐外一炉冷香烧到只剩灰。玉榻另一头侧卧着个黑发金瞳的女人，指尖捻着一颗樱桃，也不吃，只在你眼前慢慢转。她离你很近，或者说，你发现自己是贴着她睡的。没错，这人是你的三姐。\"醒了还不快起来，当真是小懒猫\"，她慵懒又富有魅惑的声音传出，突然将你揽了过来，以至于你的脸埋进了她柔软的胸里。\n</content>\n\n<UpdateVariable>\n<Analysis>\n一、地理：人州·中域·万花迷沼·幽月仙宫（沼心玉榻）\n二、时间：1月1号 10:00\n三、开局落点：幽月仙宫（沼心玉榻）\n四、主角信息：开局一律健康（身受重伤的写法不用）\n五、人物列表：司幽怜建档在场（元婴中期·幽月仙宫宗主·大天骄（灵根定档）·玩家亲姐）；并写入法术《月华照影》《幻纱帐》《幽冥引》与心法《太阴心》\n</Analysis>\n<JSONPatch>\n[\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/大位置\",\n        \"value\": \"人州·中域·幽月仙宫\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/小位置\",\n        \"value\": \"沼心玉榻\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/日期\",\n        \"value\": \"1年1月1日\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/精确时间\",\n        \"value\": \"10:00\"\n    },\n    {\n        \"op\": \"add\",\n        \"path\": \"/人物列表/司幽怜\",\n        \"value\": {\n            \"姓名\": \"司幽怜\",\n            \"势力\": \"幽月仙宫\",\n            \"外貌\": \"墨黑长发披散、发尾泛淡酒红，暗金蛇眸；墨灰深V衣袍缀黑蕾丝，宽黑腰封，额心细金链坠红宝石，颈上金链坠琥珀圆\",\n            \"性格\": \"知性妩媚、随性慵懒，温柔里全是刀；对唯一的骨肉护得极凶，笑里下刀从不预告\",\n            \"好感度\": 75,\n            \"心里话\": \"瘦成这样。谁把他扔在雾里的，本座要把这人查出来。\",\n            \"种族\": \"人族\",\n            \"境界\": \"元婴中期\",\n            \"气血\": 14032,\n            \"气血上限\": 14032,\n            \"灵力\": 7080,\n            \"灵力上限\": 7080,\n            \"四维\": {\n                \"力量\": 6,\n                \"敏捷\": 8,\n                \"体质\": 6,\n                \"智力\": 10\n            },\n            \"灵根\": {\n                \"品阶\": \"天灵根\",\n                \"属性\": \"水\"\n            },\n            \"天骄\": \"大天骄\",\n            \"已学本领\": {\n                \"法术\": {\n                    \"月华照影\": {\n                        \"品质\": \"地阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"伤害\": \"156｜月华自虚空落下，穿透护体灵光\"\n                        },\n                        \"消耗\": 520,\n                        \"法术名\": \"月华照影\"\n                    },\n                    \"幻纱帐\": {\n                        \"品质\": \"地阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"范围\",\n                        \"效果\": {\n                            \"闪避\": \"20:3｜纱影铺开，遮蔽四方视线，隐匿气息，敌方无法锁定\"\n                        },\n                        \"消耗\": 520,\n                        \"法术名\": \"幻纱帐\"\n                    },\n                    \"幽冥引\": {\n                        \"品质\": \"天阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"伤害\": \"200｜直取神魂的一击\"\n                        },\n                        \"消耗\": 1400,\n                        \"法术名\": \"幽冥引\"\n                    }\n                },\n                \"心法\": {\n                    \"太阴心\": {\n                        \"品质\": \"天阶\",\n                        \"类型\": \"被动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"减伤\": \"10｜心神稳固，不受幻术所动，心智坚定，免疫幻术与魅惑\"\n                        },\n                        \"消耗\": 0,\n                        \"心法名\": \"太阴心\"\n                    }\n                }\n            },\n            \"灵宠\": {},\n            \"部位\": {\n                \"私处\": \"正常\",\n                \"奶子\": \"正常\",\n                \"大腿\": \"正常\",\n                \"足部\": \"正常\"\n            },\n            \"在场状态\": true,\n            \"装备\": {\n                \"法宝\": {\n                    \"名称\": \"九幽幻纱绫\",\n                    \"品质\": \"地阶\",\n                    \"效果\": \"闪避:15｜幽泉绫起，缠敌于幻境\"\n                },\n                \"防具\": {\n                    \"名称\": \"无\",\n                    \"品质\": \"黄阶\",\n                    \"效果\": \"\"\n                },\n                \"饰品\": {}\n            },\n            \"身份\": \"\",\n            \"先天气运\": {}\n        }\n    }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
         // 4: 04-备选开场.md · 霜霄仙阙·雪夜归人
-        "<content>\n【开局 · 霜霄仙阙·雪夜归人】\n你醒在一处冷得发脆的静室里，身上盖着两层厚氅，氅下压着一只温着的暖玉枕。\n门被推开，霜雪气卷进来一线。来人一身圣女规制的白袍，发间一支素银簪，眉眼端正得近乎刻板——霜霄仙阙现任圣女，陆昭华。\n她走到榻前站定，先看了你很久，才伸手把你额前贴着的一缕碎发拨开，指尖凉得像雪。\n「主峰不许男子入内。」她一字一句，声音平得听不出情绪，「你躺的这间，是主峰。」\n你张口，她却不许你说：「别解释。清规是清规。」\n顿了顿，她把暖玉枕往你颈下又塞实了些，动作轻得和刚才那句话判若两人。\n不错，这人是你的四姐。十一年散了之后头一个找回来的，也是她。\n她不会再破第二次例——可她已经为你破过一次了。\n</content>\n\n<UpdateVariable>\n<Analysis>\n一、地理：人州·雪域·霜霄仙阙（霜霄道场偏殿）\n二、时间：1月1号 10:30\n三、开局落点：霜霄仙阙（霜霄道场偏殿）\n四、主角信息：开局一律健康（身受重伤的写法不用）\n五、人物列表：陆昭华建档在场（金丹中期·霜霄仙阙圣女·大天骄（灵根定档）·玩家亲姐）；梵清仪可在场（尊长·玩家奶娘）；并写入玄技《霜曜九剑》《冰棱锁》《踏霜步》与玄诀《霜女诀》\n</Analysis>\n<JSONPatch>\n[\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/大位置\",\n    \"value\": \"人州·雪域·霜霄仙阙\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/小位置\",\n    \"value\": \"霜霄道场偏殿\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/日期\",\n    \"value\": \"1年1月1日\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/精确时间\",\n    \"value\": \"10:30\"\n  },\n  {\n    \"op\": \"add\",\n    \"path\": \"/人物列表/陆昭华\",\n    \"value\": {\n      \"姓名\": \"陆昭华\",\n      \"势力\": \"霜霄仙阙\",\n      \"外貌\": \"金色长发垂至腰际，极细极亮；额心细金链坠绿玉，头顶金莲花冠、两侧金流苏长簪；素白立领旗袍金线滚边，胸前红玉扣，外罩白底金纹广袖长袍、腰侧高叉；赤足踝系银铃，身后一圈白底金边圆环\",\n      \"性格\": \"高冷傲娇，冷淬戒备，看不起来路不明的男子\",\n      \"好感度\": 0,\n      \"心里话\": \"这种浊物也配进仙阙？\",\n      \"种族\": \"人族\",\n      \"境界\": \"金丹中期\",\n      \"气血\": 8534,\n      \"气血上限\": 8534,\n      \"灵力\": 3710,\n      \"灵力上限\": 3710,\n      \"玄元属性\": {\n        \"属性\": \"冰\"\n      },\n      \"四维\": {\n        \"力量\": 7,\n        \"敏捷\": 7,\n        \"体质\": 6,\n        \"智力\": 6\n      },\n      \"灵根\": {\n        \"名称\": \"冰曜玉骨\",\n        \"品阶\": \"天灵根\",\n        \"纯度\": 86,\n        \"效果\": \"减伤:18，气血上限:15｜骨如冰玉，寒气自骨缝里往外冒\"\n      },\n      \"天骄\": \"大天骄\",\n      \"已学本领\": {\n        \"玄技\": {\n          \"霜曜九剑\": {\n            \"玄技名\": \"霜曜九剑\",\n            \"品质\": \"天阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"范围\",\n            \"效果\": {\n              \"伤害\": \"200｜九道剑光同时落下\"\n            },\n            \"消耗\": 1400\n          },\n          \"冰棱锁\": {\n            \"玄技名\": \"冰棱锁\",\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"效果\": {\n              \"减速\": \"3:2｜冰棱封住退路，脚下打滑\"\n            },\n            \"消耗\": 520\n          },\n          \"踏霜步\": {\n            \"玄技名\": \"踏霜步\",\n            \"品质\": \"玄阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"提速\": \"30:3｜一步踏上霜花，身法更快\"\n            },\n            \"消耗\": 170\n          }\n        },\n        \"玄诀\": {\n          \"霜女诀\": {\n            \"玄技名\": \"霜女诀\",\n            \"品质\": \"天阶\",\n            \"类型\": \"被动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"减速\": \"15:3｜寒气入体，被她打中的人动作变慢\"\n            },\n            \"消耗\": 0\n          }\n        }\n      },\n      \"装备武器\": {\n        \"武器名\": \"霜铃曜魄环\",\n        \"品质\": \"地阶\",\n        \"效果\": \"穿防:20｜霜铃一振，曜魄碎甲\"\n      },\n      \"灵宠\": {},\n      \"部位\": {\n        \"私处\": \"正常\",\n        \"奶子\": \"正常\",\n        \"大腿\": \"正常\",\n        \"足部\": \"正常\"\n      },\n      \"在场状态\": true\n    }\n  }\n]\n</JSONPatch>\n</UpdateVariable>\n\n\n<StatusPlaceHolderImpl/>",
+        "<content>\n【开局 · 霜霄仙阙·雪夜归人】\n你醒在一处冷得发脆的静室里，身上盖着两层厚氅，氅下压着一只温着的暖玉枕。\n门被推开，霜雪气卷进来一线。来人一身圣女规制的白袍，发间一支素银簪，眉眼端正得近乎刻板——霜霄仙阙现任圣女，陆昭华。\n她走到榻前站定，先看了你很久，才伸手把你额前贴着的一缕碎发拨开，指尖凉得像雪。\n「主峰不许男子入内。」她一字一句，声音平得听不出情绪，「你躺的这间，是主峰。」\n你张口，她却不许你说：「别解释。清规是清规。」\n顿了顿，她把暖玉枕往你颈下又塞实了些，动作轻得和刚才那句话判若两人。\n不错，这人是你的四姐。十一年散了之后头一个找回来的，也是她。\n她不会再破第二次例——可她已经为你破过一次了。\n</content>\n\n<UpdateVariable>\n<Analysis>\n一、地理：人州·雪域·霜霄仙阙（霜霄道场偏殿）\n二、时间：1月1号 10:30\n三、开局落点：霜霄仙阙（霜霄道场偏殿）\n四、主角信息：开局一律健康（身受重伤的写法不用）\n五、人物列表：陆昭华建档在场（金丹中期·霜霄仙阙圣女·大天骄（灵根定档）·玩家亲姐）；梵清仪可在场（尊长·玩家奶娘）；并写入法术《霜曜九剑》《冰棱锁》《踏霜步》与心法《霜女诀》\n</Analysis>\n<JSONPatch>\n[\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/大位置\",\n    \"value\": \"人州·雪域·霜霄仙阙\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/小位置\",\n    \"value\": \"霜霄道场偏殿\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/日期\",\n    \"value\": \"1年1月1日\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/精确时间\",\n    \"value\": \"10:30\"\n  },\n  {\n    \"op\": \"add\",\n    \"path\": \"/人物列表/陆昭华\",\n    \"value\": {\n      \"姓名\": \"陆昭华\",\n      \"势力\": \"霜霄仙阙\",\n      \"外貌\": \"金色长发垂至腰际，极细极亮；额心细金链坠绿玉，头顶金莲花冠、两侧金流苏长簪；素白立领旗袍金线滚边，胸前红玉扣，外罩白底金纹广袖长袍、腰侧高叉；赤足踝系银铃，身后一圈白底金边圆环\",\n      \"性格\": \"高冷傲娇，冷淬戒备，看不起来路不明的男子\",\n      \"好感度\": 0,\n      \"心里话\": \"这种浊物也配进仙阙？\",\n      \"种族\": \"人族\",\n      \"境界\": \"金丹中期\",\n      \"气血\": 7712,\n      \"气血上限\": 7712,\n      \"灵力\": 3856,\n      \"灵力上限\": 3856,\n      \"四维\": {\n        \"力量\": 7,\n        \"敏捷\": 7,\n        \"体质\": 6,\n        \"智力\": 6\n      },\n      \"灵根\": {\n        \"品阶\": \"天灵根\",\n        \"属性\": \"冰\"\n      },\n      \"天骄\": \"大天骄\",\n      \"已学本领\": {\n        \"法术\": {\n          \"霜曜九剑\": {\n            \"品质\": \"天阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"范围\",\n            \"效果\": {\n              \"伤害\": \"200｜九道剑光同时落下\"\n            },\n            \"消耗\": 1400,\n            \"法术名\": \"霜曜九剑\"\n          },\n          \"冰棱锁\": {\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"效果\": {\n              \"减速\": \"3:2｜冰棱封住退路，脚下打滑\"\n            },\n            \"消耗\": 520,\n            \"法术名\": \"冰棱锁\"\n          },\n          \"踏霜步\": {\n            \"品质\": \"玄阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"提速\": \"30:3｜一步踏上霜花，身法更快\"\n            },\n            \"消耗\": 170,\n            \"法术名\": \"踏霜步\"\n          }\n        },\n        \"心法\": {\n          \"霜女诀\": {\n            \"品质\": \"天阶\",\n            \"类型\": \"被动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"减速\": \"15:3｜寒气入体，被她打中的人动作变慢\"\n            },\n            \"消耗\": 0,\n            \"心法名\": \"霜女诀\"\n          }\n        }\n      },\n      \"灵宠\": {},\n      \"部位\": {\n        \"私处\": \"正常\",\n        \"奶子\": \"正常\",\n        \"大腿\": \"正常\",\n        \"足部\": \"正常\"\n      },\n      \"在场状态\": true,\n      \"装备\": {\n        \"法宝\": {\n          \"名称\": \"霜铃曜魄环\",\n          \"品质\": \"地阶\",\n          \"效果\": \"穿防:20｜霜铃一振，曜魄碎甲\"\n        },\n        \"防具\": {\n          \"名称\": \"无\",\n          \"品质\": \"黄阶\",\n          \"效果\": \"\"\n        },\n        \"饰品\": {}\n      },\n      \"身份\": \"\",\n      \"先天气运\": {}\n    }\n  }\n]\n</JSONPatch>\n</UpdateVariable>\n\n\n<StatusPlaceHolderImpl/>",
         // 5: 05-备选开场.md · 天云雪山·雪庐
-        "<content>\n【开局 · 天云雪山·雪庐】\n天云雪山在雪域最北一段断脊上，终年铅云压顶。\n雪庐在峰巅，一进院墙风雪就断在身后三步——那道结界靠后山灵泉里一座小阵眼撑着，她这辈子没出过雪域：阵眼在这儿，走不开。\n你从厚软的蒲团上睁眼，她正扣着你的腕子一寸寸理经脉。收回手：「经脉通达，吐纳尚可。」\n然后掏出一只玄冰雕的胖雪兔塞进你掌心：「给你的。」。此人正是你亲娘，无比漂亮的大美人。\n</content>\n\n<UpdateVariable>\n<Analysis>\n一、地理：人州·雪域·天云雪山（峰巅雪庐）\n二、时间：1月1号 06:30\n三、开局落点：天云雪山（峰巅雪庐）\n四、主角信息：吐纳初醒，经脉被白长雪以太玄冰魄真元理过一遍；接过她递来的玄冰小兔；昨夜雾里的事她一字未提，泡透的靴子已换、院墙外引路灯换了新灯芯\n五、人物列表：白长雪建档在场（化神中期·天云雪山剑仙·大天骄（灵根定档）），**相处未越界（一律三无淡漠）**；并写入玄技《流霜一剑》《冰河封路》《雪落无声》与玄诀《无垢剑心》\n</Analysis>\n<JSONPatch>\n[\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/大位置\",\n        \"value\": \"人州·雪域·天云雪山\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/小位置\",\n        \"value\": \"天云雪山峰巅\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/日期\",\n        \"value\": \"1年1月1日\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/精确时间\",\n        \"value\": \"06:30\"\n    },\n    {\n        \"op\": \"add\",\n        \"path\": \"/人物列表/白长雪\",\n        \"value\": {\n            \"姓名\": \"白长雪\",\n            \"势力\": \"天云雪山（隐世剑仙）\",\n            \"外貌\": \"银灰长发中分垂至腰际，霜色长睫，赤色眼眸；白宽袖外袍，内衬黑底金菱纹抹胸与红系带，深色长裙，背斜负无垢银白古剑\",\n            \"性格\": \"极致三无面瘫、寡言少语，实则闷得厉害；对骨肉护得极紧，一辈子不肯出雪域一步\",\n            \"好感度\": 80,\n            \"心里话\": \"瘦了。明日汤药再加一味。雾里那三天……不说也罢。\",\n            \"种族\": \"人族\",\n            \"境界\": \"化神中期\",\n            \"气血\": 25626,\n            \"气血上限\": 25626,\n            \"灵力\": 12845,\n            \"灵力上限\": 12845,\n            \"玄元属性\": {\n                \"属性\": \"冰\"\n            },\n            \"四维\": {\n                \"力量\": 6,\n                \"敏捷\": 8,\n                \"体质\": 6,\n                \"智力\": 8\n            },\n            \"灵根\": {\n                \"名称\": \"九幽玄阴\",\n                \"品阶\": \"天灵根\",\n                \"纯度\": 92,\n                \"效果\": \"增伤:15，穿防:15｜阴寒入骨，冰寒之力天生高一等\"\n            },\n            \"天骄\": \"大天骄\",\n            \"已学本领\": {\n                \"玄技\": {\n                    \"流霜一剑\": {\n                        \"玄技名\": \"流霜一剑\",\n                        \"品质\": \"天阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"伤害\": \"200｜一剑递出，寒气随剑而至\"\n                        },\n                        \"消耗\": 1400\n                    },\n                    \"冰河封路\": {\n                        \"玄技名\": \"冰河封路\",\n                        \"品质\": \"地阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"范围\",\n                        \"效果\": {\n                            \"减速\": \"3:2｜冰河自脚下铺开，全场滞步\"\n                        },\n                        \"消耗\": 520\n                    },\n                    \"雪落无声\": {\n                        \"玄技名\": \"雪落无声\",\n                        \"品质\": \"地阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"闪避\": \"20:3｜气息收敛，敌人难以察觉，隐匿气息，敌方无法锁定\"\n                        },\n                        \"消耗\": 520\n                    }\n                },\n                \"玄诀\": {\n                    \"无垢剑心\": {\n                        \"玄技名\": \"无垢剑心\",\n                        \"品质\": \"天阶\",\n                        \"类型\": \"被动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"减伤\": \"10｜心神澄澈，魅惑与幻术无效，心智坚定\"\n                        },\n                        \"消耗\": 0\n                    }\n                }\n            },\n            \"装备武器\": {\n                \"武器名\": \"流霜无垢剑\",\n                \"品质\": \"地阶\",\n                \"效果\": \"增伤:20｜无垢银白古剑，不染尘埃\"\n            },\n            \"灵宠\": {},\n            \"部位\": {\n                \"私处\": \"正常\",\n                \"奶子\": \"正常\",\n                \"大腿\": \"正常\",\n                \"足部\": \"正常\"\n            },\n            \"在场状态\": true\n        }\n    }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
+        "<content>\n【开局 · 天云雪山·雪庐】\n天云雪山在雪域最北一段断脊上，终年铅云压顶。\n雪庐在峰巅，一进院墙风雪就断在身后三步——那道结界靠后山灵泉里一座小阵眼撑着，她这辈子没出过雪域：阵眼在这儿，走不开。\n你从厚软的蒲团上睁眼，她正扣着你的腕子一寸寸理经脉。收回手：「经脉通达，吐纳尚可。」\n然后掏出一只玄冰雕的胖雪兔塞进你掌心：「给你的。」。此人正是你亲娘，无比漂亮的大美人。\n</content>\n\n<UpdateVariable>\n<Analysis>\n一、地理：人州·雪域·天云雪山（峰巅雪庐）\n二、时间：1月1号 06:30\n三、开局落点：天云雪山（峰巅雪庐）\n四、主角信息：吐纳初醒，经脉被白长雪以太玄冰魄真元理过一遍；接过她递来的玄冰小兔；昨夜雾里的事她一字未提，泡透的靴子已换、院墙外引路灯换了新灯芯\n五、人物列表：白长雪建档在场（化神中期·天云雪山剑仙·大天骄（灵根定档）），**相处未越界（一律三无淡漠）**；并写入法术《流霜一剑》《冰河封路》《雪落无声》与心法《无垢剑心》\n</Analysis>\n<JSONPatch>\n[\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/大位置\",\n        \"value\": \"人州·雪域·天云雪山\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/小位置\",\n        \"value\": \"天云雪山峰巅\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/日期\",\n        \"value\": \"1年1月1日\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/精确时间\",\n        \"value\": \"06:30\"\n    },\n    {\n        \"op\": \"add\",\n        \"path\": \"/人物列表/白长雪\",\n        \"value\": {\n            \"姓名\": \"白长雪\",\n            \"势力\": \"天云雪山（隐世剑仙）\",\n            \"外貌\": \"银灰长发中分垂至腰际，霜色长睫，赤色眼眸；白宽袖外袍，内衬黑底金菱纹抹胸与红系带，深色长裙，背斜负无垢银白古剑\",\n            \"性格\": \"极致三无面瘫、寡言少语，实则闷得厉害；对骨肉护得极紧，一辈子不肯出雪域一步\",\n            \"好感度\": 80,\n            \"心里话\": \"瘦了。明日汤药再加一味。雾里那三天……不说也罢。\",\n            \"种族\": \"人族\",\n            \"境界\": \"化神中期\",\n            \"气血\": 25792,\n            \"气血上限\": 25792,\n            \"灵力\": 12928,\n            \"灵力上限\": 12928,\n            \"四维\": {\n                \"力量\": 6,\n                \"敏捷\": 8,\n                \"体质\": 6,\n                \"智力\": 8\n            },\n            \"灵根\": {\n                \"品阶\": \"天灵根\",\n                \"属性\": \"冰\"\n            },\n            \"天骄\": \"大天骄\",\n            \"已学本领\": {\n                \"法术\": {\n                    \"流霜一剑\": {\n                        \"品质\": \"天阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"伤害\": \"200｜一剑递出，寒气随剑而至\"\n                        },\n                        \"消耗\": 1400,\n                        \"法术名\": \"流霜一剑\"\n                    },\n                    \"冰河封路\": {\n                        \"品质\": \"地阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"范围\",\n                        \"效果\": {\n                            \"减速\": \"3:2｜冰河自脚下铺开，全场滞步\"\n                        },\n                        \"消耗\": 520,\n                        \"法术名\": \"冰河封路\"\n                    },\n                    \"雪落无声\": {\n                        \"品质\": \"地阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"闪避\": \"20:3｜气息收敛，敌人难以察觉，隐匿气息，敌方无法锁定\"\n                        },\n                        \"消耗\": 520,\n                        \"法术名\": \"雪落无声\"\n                    }\n                },\n                \"心法\": {\n                    \"无垢剑心\": {\n                        \"品质\": \"天阶\",\n                        \"类型\": \"被动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"减伤\": \"10｜心神澄澈，魅惑与幻术无效，心智坚定\"\n                        },\n                        \"消耗\": 0,\n                        \"心法名\": \"无垢剑心\"\n                    }\n                }\n            },\n            \"灵宠\": {},\n            \"部位\": {\n                \"私处\": \"正常\",\n                \"奶子\": \"正常\",\n                \"大腿\": \"正常\",\n                \"足部\": \"正常\"\n            },\n            \"在场状态\": true,\n            \"装备\": {\n                \"法宝\": {\n                    \"名称\": \"流霜无垢剑\",\n                    \"品质\": \"地阶\",\n                    \"效果\": \"增伤:20｜无垢银白古剑，不染尘埃\"\n                },\n                \"防具\": {\n                    \"名称\": \"无\",\n                    \"品质\": \"黄阶\",\n                    \"效果\": \"\"\n                },\n                \"饰品\": {}\n            },\n            \"身份\": \"\",\n            \"先天气运\": {}\n        }\n    }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
         // 6: 06-备选开场.md · 幽月仙宫·冷月惊鸿
-        "<content>\n【开局 · 幽月仙宫·冷月惊鸿】\n紫檀殿门被你从内侧推开，冷月的光铺了满地。\n殿中央立着一个白衣女子，正在收剑。她没有回头，可剑尖已经停住了——她听见了你的脚步。\n「谁让你进来的。」转过身，那张脸冷得像结了霜，眼尾一颗小痣，越衬得不可亲近。幽月仙宫首席客卿，云疏月。\n你把名字叫出口。她握剑的手一紧，随即又松开了。\n「不认得。」三个字，硬邦邦的。\n可她没走。她站在原地，隔着满地月光看了你很久，才低声补了一句：「……回去。这儿不是你该来的地方。」\n说得是这样冷，剑却收进了鞘——那是给你让出的路。\n没错，这人是你的二姐。她越冷，越是不肯认；越不肯认，越站在这儿不动。\n</content>\n\n<UpdateVariable>\n<Analysis>\n一、地理：人州·中域·万花迷沼·幽月仙宫（冷月回廊）\n二、时间：1月1号 11:00\n三、开局落点：幽月仙宫（冷月回廊）\n四、主角信息：开局一律健康（身受重伤的写法不用）\n五、人物列表：云疏月建档离场（元婴后期·幽月仙宫首席客卿·大天骄（灵根定档）·玩家亲姐，瞬移离去，在场 false）；并写入玄技《月华照影环》《雷遁瞬影》《引雷落》与玄诀《忘情引》\n</Analysis>\n<JSONPatch>\n[\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/大位置\",\n        \"value\": \"人州·中域·幽月仙宫\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/小位置\",\n        \"value\": \"冷月寒潭回廊\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/日期\",\n        \"value\": \"1年1月1日\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/精确时间\",\n        \"value\": \"11:00\"\n    },\n    {\n        \"op\": \"add\",\n        \"path\": \"/人物列表/云疏月\",\n        \"value\": {\n            \"姓名\": \"云疏月\",\n            \"势力\": \"幽月仙宫\",\n            \"外貌\": \"淡紫长发中分垂腰、两侧细辫，鬓边素金鸟形长簪，额心小银坠；白与浅蓝相叠大袖长袍，交领极深，胸前金色小扣，浅蓝腰带，素白长裙；周身淡紫月华不散\",\n            \"性格\": \"超然清冷、一心修太上忘情；对万事都能放下，唯独这一根亲缘断不掉，正因此比谁都冷\",\n            \"好感度\": 0,\n            \"心里话\": \"挪不动。八十年道心，栽在他一个人身上。\",\n            \"种族\": \"人族\",\n            \"境界\": \"元婴后期\",\n            \"气血\": 13771,\n            \"气血上限\": 13771,\n            \"灵力\": 6934,\n            \"灵力上限\": 6934,\n            \"玄元属性\": {\n                \"属性\": \"雷\"\n            },\n            \"四维\": {\n                \"力量\": 7,\n                \"敏捷\": 8,\n                \"体质\": 5,\n                \"智力\": 8\n            },\n            \"灵根\": {\n                \"名称\": \"上古战体\",\n                \"品阶\": \"天灵根\",\n                \"纯度\": 89,\n                \"效果\": \"增伤:18，暴击:10｜天生的打架料子，越战越勇\"\n            },\n            \"天骄\": \"大天骄\",\n            \"已学本领\": {\n                \"玄技\": {\n                    \"月华照影环\": {\n                        \"玄技名\": \"月华照影环\",\n                        \"品质\": \"地阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"伤害\": \"168｜环击落点炸开雷光\"\n                        },\n                        \"消耗\": 520\n                    },\n                    \"雷遁瞬影\": {\n                        \"玄技名\": \"雷遁瞬影\",\n                        \"品质\": \"地阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"提速\": \"30:3｜化作雷光瞬移出三丈，身法陡然加快\"\n                        },\n                        \"消耗\": 520\n                    },\n                    \"引雷落\": {\n                        \"玄技名\": \"引雷落\",\n                        \"品质\": \"天阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"范围\",\n                        \"效果\": {\n                            \"伤害\": \"215｜召一道细雷劈落\"\n                        },\n                        \"消耗\": 1400\n                    }\n                },\n                \"玄诀\": {\n                    \"忘情引\": {\n                        \"玄技名\": \"忘情引\",\n                        \"品质\": \"天阶\",\n                        \"类型\": \"被动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"减伤\": \"10｜七情六欲都被压下，出手更稳，心智坚定，免疫幻术与魅惑\"\n                        },\n                        \"消耗\": 0\n                    }\n                }\n            },\n            \"装备武器\": {\n                \"武器名\": \"月华照影环\",\n                \"品质\": \"地阶\",\n                \"效果\": \"闪避:15｜月华照影，动静无形\"\n            },\n            \"灵宠\": {},\n            \"部位\": {\n                \"私处\": \"正常\",\n                \"奶子\": \"正常\",\n                \"大腿\": \"正常\",\n                \"足部\": \"正常\"\n            },\n            \"在场状态\": false\n        }\n    }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
+        "<content>\n【开局 · 幽月仙宫·冷月惊鸿】\n紫檀殿门被你从内侧推开，冷月的光铺了满地。\n殿中央立着一个白衣女子，正在收剑。她没有回头，可剑尖已经停住了——她听见了你的脚步。\n「谁让你进来的。」转过身，那张脸冷得像结了霜，眼尾一颗小痣，越衬得不可亲近。幽月仙宫首席客卿，云疏月。\n你把名字叫出口。她握剑的手一紧，随即又松开了。\n「不认得。」三个字，硬邦邦的。\n可她没走。她站在原地，隔着满地月光看了你很久，才低声补了一句：「……回去。这儿不是你该来的地方。」\n说得是这样冷，剑却收进了鞘——那是给你让出的路。\n没错，这人是你的二姐。她越冷，越是不肯认；越不肯认，越站在这儿不动。\n</content>\n\n<UpdateVariable>\n<Analysis>\n一、地理：人州·中域·万花迷沼·幽月仙宫（冷月回廊）\n二、时间：1月1号 11:00\n三、开局落点：幽月仙宫（冷月回廊）\n四、主角信息：开局一律健康（身受重伤的写法不用）\n五、人物列表：云疏月建档离场（元婴后期·幽月仙宫首席客卿·大天骄（灵根定档）·玩家亲姐，瞬移离去，在场 false）；并写入法术《月华照影环》《雷遁瞬影》《引雷落》与心法《忘情引》\n</Analysis>\n<JSONPatch>\n[\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/大位置\",\n        \"value\": \"人州·中域·幽月仙宫\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/小位置\",\n        \"value\": \"冷月寒潭回廊\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/日期\",\n        \"value\": \"1年1月1日\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/精确时间\",\n        \"value\": \"11:00\"\n    },\n    {\n        \"op\": \"add\",\n        \"path\": \"/人物列表/云疏月\",\n        \"value\": {\n            \"姓名\": \"云疏月\",\n            \"势力\": \"幽月仙宫\",\n            \"外貌\": \"淡紫长发中分垂腰、两侧细辫，鬓边素金鸟形长簪，额心小银坠；白与浅蓝相叠大袖长袍，交领极深，胸前金色小扣，浅蓝腰带，素白长裙；周身淡紫月华不散\",\n            \"性格\": \"超然清冷、一心修太上忘情；对万事都能放下，唯独这一根亲缘断不掉，正因此比谁都冷\",\n            \"好感度\": 0,\n            \"心里话\": \"挪不动。八十年道心，栽在他一个人身上。\",\n            \"种族\": \"人族\",\n            \"境界\": \"元婴后期\",\n            \"气血\": 14000,\n            \"气血上限\": 14000,\n            \"灵力\": 7048,\n            \"灵力上限\": 7048,\n            \"四维\": {\n                \"力量\": 7,\n                \"敏捷\": 8,\n                \"体质\": 5,\n                \"智力\": 8\n            },\n            \"灵根\": {\n                \"品阶\": \"天灵根\",\n                \"属性\": \"雷\"\n            },\n            \"天骄\": \"大天骄\",\n            \"已学本领\": {\n                \"法术\": {\n                    \"月华照影环\": {\n                        \"品质\": \"地阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"伤害\": \"168｜环击落点炸开雷光\"\n                        },\n                        \"消耗\": 520,\n                        \"法术名\": \"月华照影环\"\n                    },\n                    \"雷遁瞬影\": {\n                        \"品质\": \"地阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"提速\": \"30:3｜化作雷光瞬移出三丈，身法陡然加快\"\n                        },\n                        \"消耗\": 520,\n                        \"法术名\": \"雷遁瞬影\"\n                    },\n                    \"引雷落\": {\n                        \"品质\": \"天阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"范围\",\n                        \"效果\": {\n                            \"伤害\": \"215｜召一道细雷劈落\"\n                        },\n                        \"消耗\": 1400,\n                        \"法术名\": \"引雷落\"\n                    }\n                },\n                \"心法\": {\n                    \"忘情引\": {\n                        \"品质\": \"天阶\",\n                        \"类型\": \"被动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"减伤\": \"10｜七情六欲都被压下，出手更稳，心智坚定，免疫幻术与魅惑\"\n                        },\n                        \"消耗\": 0,\n                        \"心法名\": \"忘情引\"\n                    }\n                }\n            },\n            \"灵宠\": {},\n            \"部位\": {\n                \"私处\": \"正常\",\n                \"奶子\": \"正常\",\n                \"大腿\": \"正常\",\n                \"足部\": \"正常\"\n            },\n            \"在场状态\": false,\n            \"装备\": {\n                \"法宝\": {\n                    \"名称\": \"月华照影环\",\n                    \"品质\": \"地阶\",\n                    \"效果\": \"闪避:15｜月华照影，动静无形\"\n                },\n                \"防具\": {\n                    \"名称\": \"无\",\n                    \"品质\": \"黄阶\",\n                    \"效果\": \"\"\n                },\n                \"饰品\": {}\n            },\n            \"身份\": \"\",\n            \"先天气运\": {}\n        }\n    }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
         // 7: 07-备选开场.md · 司天监·天枢台遮眼星官
-        "<content>\n【开局 · 司天监·天枢台遮眼星官】\n崖壁上的石梯很长，你爬到顶时，风把衣袍吹得猎猎响。\n台上立着个人，白布覆着眼，一身司天监的星官袍。她没有回头，却在你踏上最后一级台阶的一瞬，轻轻开口：\n「你上来了。」\n声音很轻，像在自言自语。你愣住——她眼睛看不见，却认得了你的脚步。\n「十一年了。」她侧过头，白布下隐约能看见眼睫的弧度，「这台阶的响动，我记了十一年。」\n她朝你的方向伸出手，指尖停在你面前一寸，没有真的碰上。\n「别出声。」她说，「让我听完。」\n风从崖边灌上来。她静静立着，像在辨认一件终于失而复得的东西。\n这人，是你的六姐，言清漪。她认人从不用眼睛——你走路的声响，她十年没忘。\n</content>\n\n<UpdateVariable>\n<Analysis>\n一、地理：人州·中域·天枢台\n二、时间：1月1号 10:30\n三、开局落点：司天监·天枢台（隐世中立势力，观星推演一脉）\n五、人物列表：言清漪建档在场（金丹初期·司天监掌星弟子·遮眼星官·普通天骄·玩家亲姐）；温而不亲，不谈这十一年；玄技写入：《赤羽指》｜水\n</Analysis>\n<JSONPatch>\n[\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/大位置\",\n    \"value\": \"人州·中域·司天监\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/小位置\",\n    \"value\": \"天枢台\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/日期\",\n    \"value\": \"1年1月1日\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/精确时间\",\n    \"value\": \"10:30\"\n  },\n  {\n    \"op\": \"add\",\n    \"path\": \"/人物列表/言清漪\",\n    \"value\": {\n      \"姓名\": \"言清漪\",\n      \"势力\": \"司天监（隐世中立势力）\",\n      \"外貌\": \"极浅蓝长发垂至腰下，素白布带覆眼（缘绣星位）；白底长袍压藏青滚边与盘扣，黑色宽腰带，藏青裙摆；胸悬铜色璇玑盘，身后符纸自浮\",\n      \"性格\": \"长年把话放轻了说的温柔。不与人争，要拒绝只说“这个我算不了”。覆眼一半是看不见，一半是自己上的锁：不看，就不推。是玩家亲姐——她把“接引外客”那套流程当挡板，先走完规矩，才敢叫那声名字；这十一年她一个字不问\",\n      \"好感度\": 78,\n      \"心里话\": \"右脚还是轻的。十一年了，那道旧伤没养好。\",\n      \"种族\": \"人族\",\n      \"境界\": \"金丹初期\",\n      \"气血\": 6559,\n      \"气血上限\": 6559,\n      \"灵力\": 3312,\n      \"灵力上限\": 3312,\n      \"玄元属性\": {\n        \"属性\": \"水\"\n      },\n      \"四维\": {\n        \"力量\": 4,\n        \"敏捷\": 6,\n        \"体质\": 6,\n        \"智力\": 8\n      },\n      \"灵根\": {\n        \"名称\": \"问水知微\",\n        \"品阶\": \"双灵根\",\n        \"纯度\": 61,\n        \"效果\": \"闪避:10，回蓝:4｜水气一动便知吉凶，夜里能看见别人看不见的\"\n      },\n      \"天骄\": \"普通天骄\",\n      \"已学本领\": {\n        \"玄技\": {\n          \"清波引\": {\n            \"玄技名\": \"清波引\",\n            \"品质\": \"玄阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"效果\": {\n              \"伤害\": \"73｜水线穿喉\"\n            },\n            \"消耗\": 170\n          },\n          \"回澜\": {\n            \"玄技名\": \"回澜\",\n            \"品质\": \"玄阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"治疗\": \"73｜退潮时把伤一起带走\"\n            },\n            \"消耗\": 170\n          },\n          \"涟漪散\": {\n            \"玄技名\": \"涟漪散\",\n            \"品质\": \"黄阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"范围\",\n            \"效果\": {\n              \"虚弱\": \"15:2｜涟漪推开，气息一乱\"\n            },\n            \"消耗\": 45\n          }\n        },\n        \"玄诀\": {\n          \"澄波心\": {\n            \"玄技名\": \"澄波心\",\n            \"品质\": \"玄阶\",\n            \"类型\": \"被动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"减伤\": \"10｜心神清明，不受他人威压所慑，心智坚定，免疫幻术与魅惑\"\n            },\n            \"消耗\": 0\n          }\n        }\n      },\n      \"装备武器\": {\n        \"武器名\": \"璇玑镜\",\n        \"品质\": \"玄阶\",\n        \"效果\": \"暴击:15｜司天监星盘，以水为卦；推卦的代价落在她自己五感上\"\n      },\n      \"灵宠\": {},\n      \"部位\": {\n        \"私处\": \"正常\",\n        \"奶子\": \"正常\",\n        \"大腿\": \"正常\",\n        \"足部\": \"正常\"\n      },\n      \"在场状态\": true\n    }\n  }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
+        "<content>\n【开局 · 司天监·天枢台遮眼星官】\n崖壁上的石梯很长，你爬到顶时，风把衣袍吹得猎猎响。\n台上立着个人，白布覆着眼，一身司天监的星官袍。她没有回头，却在你踏上最后一级台阶的一瞬，轻轻开口：\n「你上来了。」\n声音很轻，像在自言自语。你愣住——她眼睛看不见，却认得了你的脚步。\n「十一年了。」她侧过头，白布下隐约能看见眼睫的弧度，「这台阶的响动，我记了十一年。」\n她朝你的方向伸出手，指尖停在你面前一寸，没有真的碰上。\n「别出声。」她说，「让我听完。」\n风从崖边灌上来。她静静立着，像在辨认一件终于失而复得的东西。\n这人，是你的六姐，言清漪。她认人从不用眼睛——你走路的声响，她十年没忘。\n</content>\n\n<UpdateVariable>\n<Analysis>\n一、地理：人州·中域·天枢台\n二、时间：1月1号 10:30\n三、开局落点：司天监·天枢台（隐世中立势力，观星推演一脉）\n五、人物列表：言清漪建档在场（金丹初期·司天监掌星弟子·遮眼星官·普通天骄·玩家亲姐）；温而不亲，不谈这十一年；法术写入：《赤羽指》｜水\n</Analysis>\n<JSONPatch>\n[\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/大位置\",\n    \"value\": \"人州·中域·司天监\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/小位置\",\n    \"value\": \"天枢台\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/日期\",\n    \"value\": \"1年1月1日\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/精确时间\",\n    \"value\": \"10:30\"\n  },\n  {\n    \"op\": \"add\",\n    \"path\": \"/人物列表/言清漪\",\n    \"value\": {\n      \"姓名\": \"言清漪\",\n      \"势力\": \"司天监（隐世中立势力）\",\n      \"外貌\": \"极浅蓝长发垂至腰下，素白布带覆眼（缘绣星位）；白底长袍压藏青滚边与盘扣，黑色宽腰带，藏青裙摆；胸悬铜色璇玑盘，身后符纸自浮\",\n      \"性格\": \"长年把话放轻了说的温柔。不与人争，要拒绝只说“这个我算不了”。覆眼一半是看不见，一半是自己上的锁：不看，就不推。是玩家亲姐——她把“接引外客”那套流程当挡板，先走完规矩，才敢叫那声名字；这十一年她一个字不问\",\n      \"好感度\": 78,\n      \"心里话\": \"右脚还是轻的。十一年了，那道旧伤没养好。\",\n      \"种族\": \"人族\",\n      \"境界\": \"金丹初期\",\n      \"气血\": 7152,\n      \"气血上限\": 7152,\n      \"灵力\": 3608,\n      \"灵力上限\": 3608,\n      \"四维\": {\n        \"力量\": 4,\n        \"敏捷\": 6,\n        \"体质\": 6,\n        \"智力\": 8\n      },\n      \"灵根\": {\n        \"品阶\": \"双灵根\",\n        \"属性\": \"水\"\n      },\n      \"天骄\": \"普通天骄\",\n      \"已学本领\": {\n        \"法术\": {\n          \"清波引\": {\n            \"品质\": \"玄阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"效果\": {\n              \"伤害\": \"73｜水线穿喉\"\n            },\n            \"消耗\": 170,\n            \"法术名\": \"清波引\"\n          },\n          \"回澜\": {\n            \"品质\": \"玄阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"治疗\": \"73｜退潮时把伤一起带走\"\n            },\n            \"消耗\": 170,\n            \"法术名\": \"回澜\"\n          },\n          \"涟漪散\": {\n            \"品质\": \"黄阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"范围\",\n            \"效果\": {\n              \"虚弱\": \"15:2｜涟漪推开，气息一乱\"\n            },\n            \"消耗\": 45,\n            \"法术名\": \"涟漪散\"\n          }\n        },\n        \"心法\": {\n          \"澄波心\": {\n            \"品质\": \"玄阶\",\n            \"类型\": \"被动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"减伤\": \"10｜心神清明，不受他人威压所慑，心智坚定，免疫幻术与魅惑\"\n            },\n            \"消耗\": 0,\n            \"心法名\": \"澄波心\"\n          }\n        }\n      },\n      \"灵宠\": {},\n      \"部位\": {\n        \"私处\": \"正常\",\n        \"奶子\": \"正常\",\n        \"大腿\": \"正常\",\n        \"足部\": \"正常\"\n      },\n      \"在场状态\": true,\n      \"装备\": {\n        \"法宝\": {\n          \"名称\": \"璇玑镜\",\n          \"品质\": \"玄阶\",\n          \"效果\": \"暴击:15｜司天监星盘，以水为卦；推卦的代价落在她自己五感上\"\n        },\n        \"防具\": {\n          \"名称\": \"无\",\n          \"品质\": \"黄阶\",\n          \"效果\": \"\"\n        },\n        \"饰品\": {}\n      },\n      \"身份\": \"\",\n      \"先天气运\": {}\n    }\n  }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
         // 8: 08-备选开场.md · 战斗专用 · 一线天演武台
-        "<content>\n【战斗专用 · 一线天演武台】\n\n人州·中域，苍岚宗的演武台悬在半山一处孤崖平顶上，方圆十丈的青石被历代门人踩得发亮。台下不是云海，是雾——白得发闷，看不见底。风过时，石缝里的松枝簌簌作响，声音传不出三丈就被雾吃掉了。\n\n今日是门下弟子\"试剑\"的日子。你刚踏上石台，对面只站了一个人——按演武台的规矩，试剑不留手，但也不出人命：一方认负、或被护道结界弹出石台，便算输。\n\n那青年剑修负手而立，气息稳稳停在同一层上——**同境相搏**，拼的是谁更稳、谁更狠、谁先露破绽。\n\n\"台上有结界，死不了人。\"青年抬手，腰间长剑嗡然出鞘半寸，寒光映着云海，\"但输了，就得认。\"\n\n他身形一沉，叠层增伤先一步压了过来。\n\n你站定脚步，气机随之提起——这一战，谁也压不了谁的境界。\n\n你识海里那几门玄技都是刚练成的，够用了。\n<人物面板>\n姓名：剑修·萧决\n性格：沉稳自负，重规矩\n外貌：青衫束发，背一柄三尺青锋，气度如出鞘寒刃\n势力：苍岚宗\n境界：练气中期\n玄元属性：【雷】\n四维：【5、5、5、3】\n灵根：【山野遗血】｜【伪灵根】｜【纯度 100】｜【效果 皮实耐造，寻常寒暑与跌打不易落病根；但对瘴气、毒物毫无抗性，中了只能硬扛】\n种族：人族\n玄技：《一剑断江》\n品质：黄阶\n类型：主动\n目标：范围\n效果：{ 伤害: \"32｜剑光横铺，截断来路；一剑横扫，剑气铺成一片\" }\n消耗：45\n\n玄技：《青锋直递》\n品质：黄阶\n类型：主动\n目标：单体\n效果：{ 伤害: \"44｜一剑快刺，直取咽喉；剑锋一转，刺出不留余地\", 穿防: \"20｜剑锋一转，护体被凿开一道口子\" }\n消耗：45\n\n玄技：《踏影》\n品质：黄阶\n类型：主动\n目标：自身\n效果：{ 提速: \"30:3｜身法拔高，先手更稳；足尖一点，人已换位\" }\n消耗：45\n\n玄诀：《剑心通明》\n品质：黄阶\n类型：被动\n目标：自身\n效果：{ 减伤: \"12｜出手不被杂念所扰；心若止水，万念不生\", 抗暴: \"30｜心念澄澈，不被外物所乘\" }\n消耗：0\n\n兵器：《松纹古剑》\n品质：黄阶\n效果：穿防:20｜松纹剑脊，刃口泛青自带破甲\n描述：松纹剑脊，刃口泛青\n</人物面板>\n\n</content>\n<UpdateVariable>\n<Analysis>\n一、地理：人州·中域·苍岚宗（半山孤崖演武台）\n二、时间：1月1号 09:00\n三、本楼是**代码战斗（脚本结算）**：伤害、增益、减益、治疗全部由脚本算，AI 不写战斗过程与数值，写完名单等玩家在浮层里打完再接着写正文\n四、本场用途：**战斗专用一键入场 · 代码战斗纯数值对照场（1v1）**。\n   台上**只有一名对手**：剑修·萧决。\n   敌我**同境界（练气中期）**、**同灵根（山野遗血 · 伪灵根 · 纯度 100）**——\n   本楼把这四项一并写死，两边完全对等，比的就是招式与玄技，不是境界压制、也不是灵根压制。\n   ★ 完全按变量：战斗脚本**绝不改写**敌方境界与灵根，变量里写的就是面板显示的。\n   ★ 铁律：**不存在任何境界改写机制**——本楼不是让脚本去改对手的境界，而是开楼时就把两边写成同一组数值。\n   ★ 本楼会覆盖你存档里的「境界」与「灵根」为这一组对照值（练气中期 / 伪灵根·100%）；\n     若想用自己存档的境界与灵根开局，请选别的开场白，本楼是**专门的验证场**。\n   ★ 纯数值（境界+灵根，不算功法/心法/法宝）保底 30 手；装上功法心法法宝后收敛到 15 手上下。\n五、主角信息：剑修·萧决，练气中期，灵根 山野遗血（伪灵根·纯度100）；四维与装备以你存档为准，本楼不动\n六、**本楼额外给主角两门玄技**（测试用，会覆盖你存档里的「已学本领.玄技」）：\n   · 《赤霄枪》｜黄阶｜主动｜单体｜消耗 45｜效果 `{ 伤害: \"32｜枪出如龙，火光拖尾\" }`\n   · 《踏云步》｜黄阶｜主动｜自身｜消耗 45｜效果 `{ 提速: \"30:3｜足下生云，人已掠出三丈\" }`\n   两门字段按《设定-效果表》写全，效果键名一律用机制名。\n七、人物列表：萧决 一人建档在场（玄技名字自拟（按本事属性与品质现编，配一句效果））\n八、无队友：我方只有主角一人，战前勾选面板为空属正常\n</Analysis>\n<JSONPatch>\n[\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/大位置\",\n        \"value\": \"人州·中域·苍岚宗\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/小位置\",\n        \"value\": \"半山孤崖演武台\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/日期\",\n        \"value\": \"1年1月1日\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/精确时间\",\n        \"value\": \"09:00\"\n    },\n    {\n        \"op\": \"add\",\n        \"path\": \"/人物列表/剑修·萧决\",\n        \"value\": {\n            \"姓名\": \"剑修·萧决\",\n            \"势力\": \"苍岚宗\",\n            \"外貌\": \"青衫束发，背一柄三尺青锋\",\n            \"性格\": \"沉稳自负，重规矩\",\n            \"好感度\": 0,\n            \"心里话\": \"来都来了，打完再说。\",\n            \"种族\": \"人族\",\n            \"境界\": \"练气中期\",\n            \"气血\": 1160,\n            \"气血上限\": 1160,\n            \"灵力\": 548,\n            \"灵力上限\": 548,\n            \"玄元属性\": {\n                \"属性\": \"雷\"\n            },\n            \"四维\": {\n                \"力量\": 5,\n                \"敏捷\": 5,\n                \"体质\": 5,\n                \"智力\": 3\n            },\n            \"灵根\": {\n                \"名称\": \"山野遗血\",\n                \"品阶\": \"伪灵根\",\n                \"纯度\": 100,\n                \"效果\": \"减伤:6｜最常见的凡俗灵根，无先天加成，与主角同一条血；皮实耐造，寻常寒暑与跌打不易落病根\"\n            },\n            \"天骄\": \"非天骄\",\n            \"已学本领\": {\n                \"玄技\": {\n                    \"一剑断江\": {\n                        \"玄技名\": \"一剑断江\",\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"范围\",\n                        \"效果\": {\n                            \"伤害\": \"32｜剑光横铺，截断来路；一剑横扫，剑气铺成一片\"\n                        },\n                        \"消耗\": 45\n                    },\n                    \"青锋直递\": {\n                        \"玄技名\": \"青锋直递\",\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"伤害\": \"44｜一剑快刺，直取咽喉；剑锋一转，刺出不留余地\",\n                            \"穿防\": \"20｜剑锋一转，护体被凿开一道口子\"\n                        },\n                        \"消耗\": 45\n                    },\n                    \"踏影\": {\n                        \"玄技名\": \"踏影\",\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"提速\": \"30:3｜身法拔高，先手更稳；足尖一点，人已换位\"\n                        },\n                        \"消耗\": 45\n                    }\n                },\n                \"玄诀\": {\n                    \"剑心通明\": {\n                        \"玄技名\": \"剑心通明\",\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"被动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"减伤\": \"12｜心若止水，万念不生，出手不被杂念所扰\",\n                            \"抗暴\": \"30｜心念澄澈，不被外物所乘\"\n                        },\n                        \"消耗\": 0\n                    }\n                }\n            },\n            \"装备武器\": {\n                \"武器名\": \"松纹古剑\",\n                \"品质\": \"黄阶\",\n                \"效果\": \"穿防:20｜松纹剑脊，刃口泛青自带破甲\"\n            },\n            \"灵宠\": {},\n            \"部位\": {\n                \"私处\": \"正常\",\n                \"奶子\": \"正常\",\n                \"大腿\": \"正常\",\n                \"足部\": \"正常\"\n            },\n            \"在场状态\": true,\n            \"阵营\": \"敌\"\n        }\n    }\n]\n</JSONPatch>\n</UpdateVariable>\n\n\n<StatusPlaceHolderImpl/>\n<战斗开始>\n敌方人员：[剑修·萧决]\n</战斗开始>",
+        "<content>\n【战斗专用 · 一线天演武台】\n\n人州·中域，苍岚宗的演武台悬在半山一处孤崖平顶上，方圆十丈的青石被历代门人踩得发亮。台下不是云海，是雾——白得发闷，看不见底。风过时，石缝里的松枝簌簌作响，声音传不出三丈就被雾吃掉了。\n\n今日是门下弟子\"试剑\"的日子。你刚踏上石台，对面只站了一个人——按演武台的规矩，试剑不留手，但也不出人命：一方认负、或被护道结界弹出石台，便算输。\n\n那青年剑修负手而立，气息稳稳停在同一层上——**同境相搏**，拼的是谁更稳、谁更狠、谁先露破绽。\n\n\"台上有结界，死不了人。\"青年抬手，腰间长剑嗡然出鞘半寸，寒光映着云海，\"但输了，就得认。\"\n\n他身形一沉，叠层增伤先一步压了过来。\n\n你站定脚步，气机随之提起——这一战，谁也压不了谁的境界。\n\n你识海里那几门法术都是刚练成的，够用了。\n<人物面板>\n姓名：剑修·萧决\n性格：沉稳自负，重规矩\n外貌：青衫束发，背一柄三尺青锋，气度如出鞘寒刃\n势力：苍岚宗\n境界：练气中期\n四维：【5、5、5、3】\n灵根：【伪灵根】｜属性：【雷】\n先天气运：山野遗血｜凡阶｜效果：减伤:6｜皮实耐造，寻常寒暑与跌打不易落病根；但对瘴气、毒物毫无抗性，中了只能硬扛\n种族：人族\n法术：《一剑断江》\n品质：黄阶\n类型：主动\n目标：范围\n效果：{ 伤害: \"32｜剑光横铺，截断来路；一剑横扫，剑气铺成一片\" }\n消耗：45\n\n法术：《青锋直递》\n品质：黄阶\n类型：主动\n目标：单体\n效果：{ 伤害: \"44｜一剑快刺，直取咽喉；剑锋一转，刺出不留余地\", 穿防: \"20｜剑锋一转，护体被凿开一道口子\" }\n消耗：45\n\n法术：《踏影》\n品质：黄阶\n类型：主动\n目标：自身\n效果：{ 提速: \"30:3｜身法拔高，先手更稳；足尖一点，人已换位\" }\n消耗：45\n\n心法：《剑心通明》\n品质：黄阶\n类型：被动\n目标：自身\n效果：{ 减伤: \"12｜出手不被杂念所扰；心若止水，万念不生\", 抗暴: \"30｜心念澄澈，不被外物所乘\" }\n消耗：0\n\n法宝：《松纹古剑》\n品质：黄阶\n效果：穿防:20｜松纹剑脊，刃口泛青自带破甲\n描述：松纹剑脊，刃口泛青\n</人物面板>\n\n</content>\n<UpdateVariable>\n<Analysis>\n一、地理：人州·中域·苍岚宗（半山孤崖演武台）\n二、时间：1月1号 09:00\n三、本楼是**代码战斗（脚本结算）**：伤害、增益、减益、治疗全部由脚本算，AI 不写战斗过程与数值，写完名单等玩家在浮层里打完再接着写正文\n四、本场用途：**战斗专用一键入场 · 代码战斗纯数值对照场（1v1）**。\n   台上**只有一名对手**：剑修·萧决。\n   敌我**同境界（练气中期）**、**同灵根（伪灵根）**——\n   本楼把这四项一并写死，两边完全对等，比的就是招式与法术，不是境界压制、也不是灵根压制。\n   ★ 完全按变量：战斗脚本**绝不改写**敌方境界与灵根，变量里写的就是面板显示的。\n   ★ 铁律：**不存在任何境界改写机制**——本楼不是让脚本去改对手的境界，而是开楼时就把两边写成同一组数值。\n   ★ 本楼会覆盖你存档里的「境界」与「灵根」为这一组对照值（练气中期 / 伪灵根）；\n     若想用自己存档的境界与灵根开局，请选别的开场白，本楼是**专门的验证场**。\n   ★ 纯数值（境界+灵根，不算功法/心法/法宝）保底 30 手；装上功法心法法宝后收敛到 15 手上下。\n五、主角信息：剑修·萧决，练气中期，灵根 伪灵根（雷属性，先天外挂「山野遗血」）；四维与装备以你存档为准，本楼不动\n六、**本楼额外给主角两门法术**（测试用，会覆盖你存档里的「已学本领.法术」）：\n   · 《赤霄枪》｜黄阶｜主动｜单体｜消耗 45｜效果 `{ 伤害: \"32｜枪出如龙，火光拖尾\" }`\n   · 《踏云步》｜黄阶｜主动｜自身｜消耗 45｜效果 `{ 提速: \"30:3｜足下生云，人已掠出三丈\" }`\n   两门字段按《设定-效果表》写全，效果键名一律用机制名。\n七、人物列表：萧决 一人建档在场（法术名字自拟（按本事属性与品质现编，配一句效果））\n八、无队友：我方只有主角一人，战前勾选面板为空属正常\n</Analysis>\n<JSONPatch>\n[\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/大位置\",\n        \"value\": \"人州·中域·苍岚宗\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/小位置\",\n        \"value\": \"半山孤崖演武台\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/日期\",\n        \"value\": \"1年1月1日\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/精确时间\",\n        \"value\": \"09:00\"\n    },\n    {\n        \"op\": \"add\",\n        \"path\": \"/人物列表/剑修·萧决\",\n        \"value\": {\n            \"姓名\": \"剑修·萧决\",\n            \"势力\": \"苍岚宗\",\n            \"外貌\": \"青衫束发，背一柄三尺青锋\",\n            \"性格\": \"沉稳自负，重规矩\",\n            \"好感度\": 0,\n            \"心里话\": \"来都来了，打完再说。\",\n            \"种族\": \"人族\",\n            \"境界\": \"练气中期\",\n            \"气血\": 1160,\n            \"气血上限\": 1160,\n            \"灵力\": 548,\n            \"灵力上限\": 548,\n            \"四维\": {\n                \"力量\": 5,\n                \"敏捷\": 5,\n                \"体质\": 5,\n                \"智力\": 3\n            },\n            \"灵根\": {\n                \"品阶\": \"伪灵根\",\n                \"属性\": \"雷\"\n            },\n            \"天骄\": \"非天骄\",\n            \"已学本领\": {\n                \"法术\": {\n                    \"一剑断江\": {\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"范围\",\n                        \"效果\": {\n                            \"伤害\": \"32｜剑光横铺，截断来路；一剑横扫，剑气铺成一片\"\n                        },\n                        \"消耗\": 45,\n                        \"法术名\": \"一剑断江\"\n                    },\n                    \"青锋直递\": {\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"伤害\": \"44｜一剑快刺，直取咽喉；剑锋一转，刺出不留余地\",\n                            \"穿防\": \"20｜剑锋一转，护体被凿开一道口子\"\n                        },\n                        \"消耗\": 45,\n                        \"法术名\": \"青锋直递\"\n                    },\n                    \"踏影\": {\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"提速\": \"30:3｜身法拔高，先手更稳；足尖一点，人已换位\"\n                        },\n                        \"消耗\": 45,\n                        \"法术名\": \"踏影\"\n                    }\n                },\n                \"心法\": {\n                    \"剑心通明\": {\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"被动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"减伤\": \"12｜心若止水，万念不生，出手不被杂念所扰\",\n                            \"抗暴\": \"30｜心念澄澈，不被外物所乘\"\n                        },\n                        \"消耗\": 0,\n                        \"心法名\": \"剑心通明\"\n                    }\n                }\n            },\n            \"灵宠\": {},\n            \"部位\": {\n                \"私处\": \"正常\",\n                \"奶子\": \"正常\",\n                \"大腿\": \"正常\",\n                \"足部\": \"正常\"\n            },\n            \"在场状态\": true,\n            \"阵营\": \"敌\",\n            \"装备\": {\n                \"法宝\": {\n                    \"名称\": \"松纹古剑\",\n                    \"品质\": \"黄阶\",\n                    \"效果\": \"穿防:20｜松纹剑脊，刃口泛青自带破甲\"\n                },\n                \"防具\": {\n                    \"名称\": \"无\",\n                    \"品质\": \"黄阶\",\n                    \"效果\": \"\"\n                },\n                \"饰品\": {}\n            },\n            \"身份\": \"\",\n            \"先天气运\": {\n                \"山野遗血\": {\n                    \"气运名\": \"山野遗血\",\n                    \"品质\": \"凡阶\",\n                    \"效果\": \"减伤:6｜皮实耐造，寻常寒暑与跌打不易落病根；但对瘴气、毒物毫无抗性，中了只能硬扛\"\n                }\n            }\n        }\n    }\n]\n</JSONPatch>\n</UpdateVariable>\n\n\n<StatusPlaceHolderImpl/>\n<战斗开始>\n敌方人员：[剑修·萧决]\n</战斗开始>",
         // 9: 09-备选开场.md · 霜霄仙阙·素心尊者
-        "<content>\n【开局 · 霜霄仙阙·素心尊者】\n后颈还在发钝。记忆停在雾道上：灯灭了一盏，有人喊了一声，然后是白。\n再睁眼，你躺在一间素白的静室里，窗纸透进薄光。\n榻边坐着个人。前任圣女，仙阙尊长，梵清仪。她手里端着一盏温着的药，正用指背试温度。\n见你醒了，她把药搁下，起身替你掖了掖被角——那动作熟稔得不像头一回。\n「醒了就喝。」她的声音客气而克制，像长辈对晚辈该说的话，「凉了就不好了。」\n你想问是谁把你抱回来的，她却已经转过身去，只留一句：\n「别问。」\n十年了，每年那一日她都独自去一趟墙根。她从不提那一夜，所以那句谢，一直欠着没头没尾。\n这人是你的奶娘。十一年前从山外把你抱回来的，是她。\n</content>\n\n<UpdateVariable>\n<Analysis>\n一、地理：人州·雪域·霜霄仙阙（霜霄道场·静室）\n二、时间：1月1号 11:00\n三、开局落点：霜霄仙阙（隐世全女宗门，万年天关封压之地）\n四、主角信息：开局被梵清仪跨空打晕掳回，后颈有寒气淤伤，未受内伤；身怀破关玄脉（主线伏笔）\n五、人物列表：梵清仪建档在场（元婴初期·霜霄仙阙前任圣女/尊长·大天骄·玩家奶娘）；首次见面全程三无淡漠、未越界；玄技写入：《霜刃凝华》《玄冰封脉》《冰镜返照》｜冰\n</Analysis>\n<JSONPatch>\n[\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/大位置\",\n    \"value\": \"人州·雪域·霜霄仙阙\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/小位置\",\n    \"value\": \"霜霄道场·静室\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/日期\",\n    \"value\": \"1年1月1日\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/精确时间\",\n    \"value\": \"11:00\"\n  },\n  {\n    \"op\": \"add\",\n    \"path\": \"/人物列表/梵清仪\",\n    \"value\": {\n      \"姓名\": \"梵清仪\",\n      \"势力\": \"霜霄仙阙（隐世全女宗门）\",\n      \"外貌\": \"乌黑长发挽成高髻，两侧各一支金凤头长簪垂细金流苏；墨黑宽袖外袍压厚金线纹，内衬藏青抹胸绣金色兽首，墨绿腰带、素白内衬；神色清冷沉穆，不怒自威\",\n      \"性格\": \"极致三无（面无表情/无情绪波动/极度寡言）。行事只认结果、毫无世俗虚荣，一切为了宗门强大与延续\",\n      \"好感度\": 10,\n      \"心里话\": \"钥匙成色尚可，比预想的好。\",\n      \"种族\": \"人族\",\n      \"境界\": \"元婴初期\",\n      \"气血\": 13877,\n      \"气血上限\": 13877,\n      \"灵力\": 6954,\n      \"灵力上限\": 6954,\n      \"玄元属性\": {\n        \"属性\": \"冰\"\n      },\n      \"四维\": {\n        \"力量\": 7,\n        \"敏捷\": 6,\n        \"体质\": 7,\n        \"智力\": 8\n      },\n      \"灵根\": {\n        \"名称\": \"赤阳真血\",\n        \"品阶\": \"天灵根\",\n        \"纯度\": 91,\n        \"效果\": \"减伤:12｜血里藏着一轮小太阳，暖自己、也灼别人；寒毒与阴邪近体自退，冰属灵力入体会被暖血反噬，越修冰法越受熬煎\"\n      },\n      \"天骄\": \"大天骄\",\n      \"已学本领\": {\n        \"玄技\": {\n          \"霜刃凝华\": {\n            \"玄技名\": \"霜刃凝华\",\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"效果\": {\n              \"伤害\": \"83:2｜剑锋凝霜划开一线冰虹，并在伤口留一层霜（每回合流失 6% 气血，）\"\n            },\n            \"消耗\": 520\n          },\n          \"玄冰封脉\": {\n            \"玄技名\": \"玄冰封脉\",\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"效果\": {\n              \"减速\": \"3:2｜寒气封住经脉，命中后脚步发沉\"\n            },\n            \"消耗\": 520\n          },\n          \"冰镜返照\": {\n            \"玄技名\": \"冰镜返照\",\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"减伤\": \"30:2｜凝一面冰镜护体\"\n            },\n            \"消耗\": 520\n          },\n          \"雪落无声\": {\n            \"玄技名\": \"雪落无声\",\n            \"品质\": \"黄阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"范围\",\n            \"效果\": {\n              \"伤害\": \"26｜细雪无声落下，对范围内每个敌人各伤一击\"\n            },\n            \"消耗\": 45\n          }\n        },\n        \"玄诀\": {\n          \"太上忘情诀\": {\n            \"玄技名\": \"太上忘情诀\",\n            \"品质\": \"天阶\",\n            \"类型\": \"被动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"减伤\": \"25｜心若冰湖，免疫一切心智类控制\"\n            },\n            \"消耗\": 0\n          }\n        }\n      },\n      \"装备武器\": {\n        \"武器名\": \"照雪剑\",\n        \"品质\": \"地阶\",\n        \"效果\": \"穿防:25｜碎甲\"\n      },\n      \"灵宠\": {},\n      \"部位\": {\n        \"私处\": \"正常\",\n        \"奶子\": \"正常\",\n        \"大腿\": \"正常\",\n        \"足部\": \"正常\"\n      },\n      \"在场状态\": true\n    }\n  }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
+        "<content>\n【开局 · 霜霄仙阙·素心尊者】\n后颈还在发钝。记忆停在雾道上：灯灭了一盏，有人喊了一声，然后是白。\n再睁眼，你躺在一间素白的静室里，窗纸透进薄光。\n榻边坐着个人。前任圣女，仙阙尊长，梵清仪。她手里端着一盏温着的药，正用指背试温度。\n见你醒了，她把药搁下，起身替你掖了掖被角——那动作熟稔得不像头一回。\n「醒了就喝。」她的声音客气而克制，像长辈对晚辈该说的话，「凉了就不好了。」\n你想问是谁把你抱回来的，她却已经转过身去，只留一句：\n「别问。」\n十年了，每年那一日她都独自去一趟墙根。她从不提那一夜，所以那句谢，一直欠着没头没尾。\n这人是你的奶娘。十一年前从山外把你抱回来的，是她。\n</content>\n\n<UpdateVariable>\n<Analysis>\n一、地理：人州·雪域·霜霄仙阙（霜霄道场·静室）\n二、时间：1月1号 11:00\n三、开局落点：霜霄仙阙（隐世全女宗门，万年天关封压之地）\n四、主角信息：开局被梵清仪跨空打晕掳回，后颈有寒气淤伤，未受内伤；身怀破关玄脉（主线伏笔）\n五、人物列表：梵清仪建档在场（元婴初期·霜霄仙阙前任圣女/尊长·大天骄·玩家奶娘）；首次见面全程三无淡漠、未越界；法术写入：《霜刃凝华》《玄冰封脉》《冰镜返照》｜冰\n</Analysis>\n<JSONPatch>\n[\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/大位置\",\n    \"value\": \"人州·雪域·霜霄仙阙\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/小位置\",\n    \"value\": \"霜霄道场·静室\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/日期\",\n    \"value\": \"1年1月1日\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/精确时间\",\n    \"value\": \"11:00\"\n  },\n  {\n    \"op\": \"add\",\n    \"path\": \"/人物列表/梵清仪\",\n    \"value\": {\n      \"姓名\": \"梵清仪\",\n      \"势力\": \"霜霄仙阙（隐世全女宗门）\",\n      \"外貌\": \"乌黑长发挽成高髻，两侧各一支金凤头长簪垂细金流苏；墨黑宽袖外袍压厚金线纹，内衬藏青抹胸绣金色兽首，墨绿腰带、素白内衬；神色清冷沉穆，不怒自威\",\n      \"性格\": \"极致三无（面无表情/无情绪波动/极度寡言）。行事只认结果、毫无世俗虚荣，一切为了宗门强大与延续\",\n      \"好感度\": 10,\n      \"心里话\": \"钥匙成色尚可，比预想的好。\",\n      \"种族\": \"人族\",\n      \"境界\": \"元婴初期\",\n      \"气血\": 14064,\n      \"气血上限\": 14064,\n      \"灵力\": 7048,\n      \"灵力上限\": 7048,\n      \"四维\": {\n        \"力量\": 7,\n        \"敏捷\": 6,\n        \"体质\": 7,\n        \"智力\": 8\n      },\n      \"灵根\": {\n        \"品阶\": \"天灵根\",\n        \"属性\": \"冰\"\n      },\n      \"天骄\": \"大天骄\",\n      \"已学本领\": {\n        \"法术\": {\n          \"霜刃凝华\": {\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"效果\": {\n              \"伤害\": \"83:2｜剑锋凝霜划开一线冰虹，并在伤口留一层霜（每回合流失 6% 气血，）\"\n            },\n            \"消耗\": 520,\n            \"法术名\": \"霜刃凝华\"\n          },\n          \"玄冰封脉\": {\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"效果\": {\n              \"减速\": \"3:2｜寒气封住经脉，命中后脚步发沉\"\n            },\n            \"消耗\": 520,\n            \"法术名\": \"玄冰封脉\"\n          },\n          \"冰镜返照\": {\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"减伤\": \"30:2｜凝一面冰镜护体\"\n            },\n            \"消耗\": 520,\n            \"法术名\": \"冰镜返照\"\n          },\n          \"雪落无声\": {\n            \"品质\": \"黄阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"范围\",\n            \"效果\": {\n              \"伤害\": \"26｜细雪无声落下，对范围内每个敌人各伤一击\"\n            },\n            \"消耗\": 45,\n            \"法术名\": \"雪落无声\"\n          }\n        },\n        \"心法\": {\n          \"太上忘情诀\": {\n            \"品质\": \"天阶\",\n            \"类型\": \"被动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"减伤\": \"25｜心若冰湖，免疫一切心智类控制\"\n            },\n            \"消耗\": 0,\n            \"心法名\": \"太上忘情诀\"\n          }\n        }\n      },\n      \"灵宠\": {},\n      \"部位\": {\n        \"私处\": \"正常\",\n        \"奶子\": \"正常\",\n        \"大腿\": \"正常\",\n        \"足部\": \"正常\"\n      },\n      \"在场状态\": true,\n      \"装备\": {\n        \"法宝\": {\n          \"名称\": \"照雪剑\",\n          \"品质\": \"地阶\",\n          \"效果\": \"穿防:25｜碎甲\"\n        },\n        \"防具\": {\n          \"名称\": \"无\",\n          \"品质\": \"黄阶\",\n          \"效果\": \"\"\n        },\n        \"饰品\": {}\n      },\n      \"身份\": \"\",\n      \"先天气运\": {}\n    }\n  }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
         // 10: 10-备选开场.md · 断霜崖·孤峰刀仙
-        "<content>\n【开局 · 断霜崖·孤峰刀仙】\n脚下的雪碴子硬得像冻了三天的老面。你顺着山道往上走，转过一道石屏，眼前忽然空了一片。\n崖顶那块能坐的石头上，坐着个人。一身半旧的刀客打扮，膝上横着一柄没了鞘的刀，正拿指腹擦刃口上的霜。\n「上来了？」她头也不抬，「说过多少次了，就你真上来了。」\n沈清颜，独居断霜崖的散修。崖壁那一排正字，是她自己刻的。\n她抬眼看你一眼，往旁边挪了挪——让出石头的一半。\n「坐。」就一个字。\n你坐下，她也不看你，只望着崖下的云海：「这崖上没屋檐，住不进谁。你爱来就来，不来拉倒。」\n风很大，她却把刀往你那边挪了半寸，替你挡了一点。\n这人是你的五姐。没人管她，她也不管谁——可那块石头，一直给你留着。\n</content>\n\n<UpdateVariable>\n<Analysis>\n一、地理：人州·雪域·天云雪山（城外孤峰断霜崖）\n二、时间：1月1号 08:30\n三、开局落点：断霜崖（散修沈清颜独居之地，踩界即视为外敌）\n四、主角信息：越界登崖，初见未受内伤；沈清颜只拔刀半寸、未真正出手\n五、人物列表：沈清颜建档在场（金丹后期·无宗无派散修·孤峰刀仙·普通天骄·玩家亲姐）；冷壳惜字，刀已回鞘，认出来之后话反而更少；玄技写入：《断霜斩》《回刃旋雪》｜刀\n</Analysis>\n<JSONPatch>\n[\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/大位置\",\n        \"value\": \"人州·雪域·天云雪山\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/小位置\",\n        \"value\": \"断霜崖\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/日期\",\n        \"value\": \"1年1月1日\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/精确时间\",\n        \"value\": \"08:30\"\n    },\n    {\n        \"op\": \"add\",\n        \"path\": \"/人物列表/沈清颜\",\n        \"value\": {\n            \"姓名\": \"沈清颜\",\n            \"势力\": \"无宗无派（散修）\",\n            \"外貌\": \"银白长发垂至腰后、齐刘海剪到眉骨、左垂一缕黑；翡翠绿眼瞳；白底交领上衣，青灰蓝宽袖长袍压墨绿滚边与盘扣，暗红宽腰封，青蓝百褶高开叉长裙，腰侧挂红穗黑鞘长刀，戴白手套；左手终年结霜\",\n            \"性格\": \"冷壳惜字，能点头绝不开口；对外只剩一句「让开」。刀比人快，嘴比刀慢。冷面之下是实打实的别扭。是玩家亲姐——不肯住进任何人的墙里，一个人守着断霜崖这盏小灯；崖壁那排正字她说「练刀留下的」，其实是在数人\",\n            \"好感度\": 5,\n            \"心里话\": \"十一年。这一笔该刻到哪儿了。\",\n            \"种族\": \"人族\",\n            \"境界\": \"金丹后期\",\n            \"气血\": 7830,\n            \"气血上限\": 7830,\n            \"灵力\": 3302,\n            \"灵力上限\": 3302,\n            \"玄元属性\": {\n                \"属性\": \"冰\"\n            },\n            \"四维\": {\n                \"力量\": 7,\n                \"敏捷\": 8,\n                \"体质\": 6,\n                \"智力\": 5\n            },\n            \"灵根\": {\n                \"名称\": \"冰魄玉髓\",\n                \"品阶\": \"双灵根\",\n                \"纯度\": 66,\n                \"效果\": \"减伤:19，气血上限:18｜骨里带寒，冰路走得比同阶更纯；寒暑不侵、百毒不染，专克双灵根的秘毒却毫无抗性。寒脉滞龄，容貌停在二十一\"\n            },\n            \"天骄\": \"普通天骄\",\n            \"已学本领\": {\n                \"玄技\": {\n                    \"断霜斩\": {\n                        \"玄技名\": \"断霜斩\",\n                        \"品质\": \"玄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"减速\": \"3:1｜一刀斜落，刀势先结霜再开刃，附带滞身寒气\",\n                            \"伤害\": \"49\"\n                        },\n                        \"消耗\": 170\n                    },\n                    \"回刃旋雪\": {\n                        \"玄技名\": \"回刃旋雪\",\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"范围\",\n                        \"效果\": {\n                            \"伤害\": \"15｜刀身回旋卷起漫天雪屑，对范围内每个敌人各斩一刀\"\n                        },\n                        \"消耗\": 45\n                    },\n                    \"凝霜护\": {\n                        \"玄技名\": \"凝霜护\",\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"减伤\": \"30:2｜刀气外放凝成霜壳\"\n                        },\n                        \"消耗\": 45\n                    }\n                },\n                \"玄诀\": {\n                    \"寒脉诀\": {\n                        \"玄技名\": \"寒脉诀\",\n                        \"品质\": \"玄阶\",\n                        \"类型\": \"被动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"减伤\": \"15\",\n                            \"增伤\": \"15\"\n                        },\n                        \"消耗\": 0\n                    }\n                }\n            },\n            \"装备武器\": {\n                \"武器名\": \"断霜刀\",\n                \"品质\": \"玄阶\",\n                \"效果\": \"穿防:20｜削锋\"\n            },\n            \"灵宠\": {},\n            \"部位\": {\n                \"私处\": \"正常\",\n                \"奶子\": \"正常\",\n                \"大腿\": \"正常\",\n                \"足部\": \"正常\"\n            },\n            \"在场状态\": true\n        }\n    }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
+        "<content>\n【开局 · 断霜崖·孤峰刀仙】\n脚下的雪碴子硬得像冻了三天的老面。你顺着山道往上走，转过一道石屏，眼前忽然空了一片。\n崖顶那块能坐的石头上，坐着个人。一身半旧的刀客打扮，膝上横着一柄没了鞘的刀，正拿指腹擦刃口上的霜。\n「上来了？」她头也不抬，「说过多少次了，就你真上来了。」\n沈清颜，独居断霜崖的散修。崖壁那一排正字，是她自己刻的。\n她抬眼看你一眼，往旁边挪了挪——让出石头的一半。\n「坐。」就一个字。\n你坐下，她也不看你，只望着崖下的云海：「这崖上没屋檐，住不进谁。你爱来就来，不来拉倒。」\n风很大，她却把刀往你那边挪了半寸，替你挡了一点。\n这人是你的五姐。没人管她，她也不管谁——可那块石头，一直给你留着。\n</content>\n\n<UpdateVariable>\n<Analysis>\n一、地理：人州·雪域·天云雪山（城外孤峰断霜崖）\n二、时间：1月1号 08:30\n三、开局落点：断霜崖（散修沈清颜独居之地，踩界即视为外敌）\n四、主角信息：越界登崖，初见未受内伤；沈清颜只拔刀半寸、未真正出手\n五、人物列表：沈清颜建档在场（金丹后期·无宗无派散修·孤峰刀仙·普通天骄·玩家亲姐）；冷壳惜字，刀已回鞘，认出来之后话反而更少；法术写入：《断霜斩》《回刃旋雪》｜刀\n</Analysis>\n<JSONPatch>\n[\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/大位置\",\n        \"value\": \"人州·雪域·天云雪山\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/小位置\",\n        \"value\": \"断霜崖\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/日期\",\n        \"value\": \"1年1月1日\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/精确时间\",\n        \"value\": \"08:30\"\n    },\n    {\n        \"op\": \"add\",\n        \"path\": \"/人物列表/沈清颜\",\n        \"value\": {\n            \"姓名\": \"沈清颜\",\n            \"势力\": \"无宗无派（散修）\",\n            \"外貌\": \"银白长发垂至腰后、齐刘海剪到眉骨、左垂一缕黑；翡翠绿眼瞳；白底交领上衣，青灰蓝宽袖长袍压墨绿滚边与盘扣，暗红宽腰封，青蓝百褶高开叉长裙，腰侧挂红穗黑鞘长刀，戴白手套；左手终年结霜\",\n            \"性格\": \"冷壳惜字，能点头绝不开口；对外只剩一句「让开」。刀比人快，嘴比刀慢。冷面之下是实打实的别扭。是玩家亲姐——不肯住进任何人的墙里，一个人守着断霜崖这盏小灯；崖壁那排正字她说「练刀留下的」，其实是在数人\",\n            \"好感度\": 5,\n            \"心里话\": \"十一年。这一笔该刻到哪儿了。\",\n            \"种族\": \"人族\",\n            \"境界\": \"金丹后期\",\n            \"气血\": 7152,\n            \"气血上限\": 7152,\n            \"灵力\": 3560,\n            \"灵力上限\": 3560,\n            \"四维\": {\n                \"力量\": 7,\n                \"敏捷\": 8,\n                \"体质\": 6,\n                \"智力\": 5\n            },\n            \"灵根\": {\n                \"品阶\": \"双灵根\",\n                \"属性\": \"冰\"\n            },\n            \"天骄\": \"普通天骄\",\n            \"已学本领\": {\n                \"法术\": {\n                    \"断霜斩\": {\n                        \"品质\": \"玄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"单体\",\n                        \"效果\": {\n                            \"减速\": \"3:1｜一刀斜落，刀势先结霜再开刃，附带滞身寒气\",\n                            \"伤害\": \"49\"\n                        },\n                        \"消耗\": 170,\n                        \"法术名\": \"断霜斩\"\n                    },\n                    \"回刃旋雪\": {\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"范围\",\n                        \"效果\": {\n                            \"伤害\": \"15｜刀身回旋卷起漫天雪屑，对范围内每个敌人各斩一刀\"\n                        },\n                        \"消耗\": 45,\n                        \"法术名\": \"回刃旋雪\"\n                    },\n                    \"凝霜护\": {\n                        \"品质\": \"黄阶\",\n                        \"类型\": \"主动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"减伤\": \"30:2｜刀气外放凝成霜壳\"\n                        },\n                        \"消耗\": 45,\n                        \"法术名\": \"凝霜护\"\n                    }\n                },\n                \"心法\": {\n                    \"寒脉诀\": {\n                        \"品质\": \"玄阶\",\n                        \"类型\": \"被动\",\n                        \"目标\": \"自身\",\n                        \"效果\": {\n                            \"减伤\": \"15\",\n                            \"增伤\": \"15\"\n                        },\n                        \"消耗\": 0,\n                        \"心法名\": \"寒脉诀\"\n                    }\n                }\n            },\n            \"灵宠\": {},\n            \"部位\": {\n                \"私处\": \"正常\",\n                \"奶子\": \"正常\",\n                \"大腿\": \"正常\",\n                \"足部\": \"正常\"\n            },\n            \"在场状态\": true,\n            \"装备\": {\n                \"法宝\": {\n                    \"名称\": \"断霜刀\",\n                    \"品质\": \"玄阶\",\n                    \"效果\": \"穿防:20｜削锋\"\n                },\n                \"防具\": {\n                    \"名称\": \"无\",\n                    \"品质\": \"黄阶\",\n                    \"效果\": \"\"\n                },\n                \"饰品\": {}\n            },\n            \"身份\": \"\",\n            \"先天气运\": {}\n        }\n    }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
         // 11: 11-备选开场.md · 沙洲商道·月牙泉城
-        "<content>\n【开局 · 沙洲商道·月牙泉城】\n日头毒得能拧出水。你跟着商队走完最后一段雾道，城墙上的灯一齐照下来。\n月牙泉城最大的货栈里，一个卷发碧眼的女人正拨着算盘，见你进来，算盘珠子\"啪\"地停了。\n「哟。」她把账本一合，笑起来，声音又亮又热络，「活了。」\n阿依莎，沙洲供奉仙姬，这条商道要冲上说话最算数的人。\n她上下打量你一遍，转身就吆咐伙计：「这位的账，记我头上。住最好的房，价按最低的算。」\n你张口要谢，她摆手：「别谢。生意人嘛，顺手。」\n可你瞥见她那本账的最后一行——\"今年没找到\"，添了二十年。此刻那行字，被她的袖子盖住了。\n「吃饭了没有？」她把一盘热食推到你面前，算盘珠子又响起来，声音却轻了，「……这么多年，可算找着了。」\n这人是你的大姐。天底下算得清所有账的人，偏偏这一笔，算了二十年。\n</content>\n\n<UpdateVariable>\n<Analysis>\n一、地理：人州·沙洲·月牙泉城\n二、时间：1月1号 15:00\n三、开局落点：月牙泉城驿院外（沙洲商道要冲，商旅云集之地）\n四、主角信息：随商队抵城，被阿依莎拦下\"收货\"，未动手、未受内伤；身上被掸灰理领口（首次接触）\n五、人物列表：阿依莎建档在场（金丹后期·月牙泉城供奉仙姬·无宗无派·大天骄·玩家亲姐）；先按生意规矩谈，伙计退下后才认人；玄技写入：《流沙缠丝》《沙丘移脉》｜土\n</Analysis>\n<JSONPatch>\n[\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/大位置\",\n    \"value\": \"人州·沙洲·月牙泉城\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/小位置\",\n    \"value\": \"月牙泉城驿院外\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/日期\",\n    \"value\": \"1年1月1日\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/精确时间\",\n    \"value\": \"15:00\"\n  },\n  {\n    \"op\": \"add\",\n    \"path\": \"/人物列表/阿依莎\",\n    \"value\": {\n      \"姓名\": \"阿依莎\",\n      \"势力\": \"无宗无派（月牙泉城供奉仙姬，坐镇沙洲商道）\",\n      \"外貌\": \"高挑丰腴，肩背薄腰细；暖白肤色透粉青细血管；黑褐色大波浪长发高高束成马尾、束口缠金链、发尾泛酒红；额心红宝石坠，颈上三四条金链挂金币串；两臂七八只金环；淡紫细吊带短身衣＋透明披纱＋层叠淡紫长裙，腰上一圈金链（实为兵器）\",\n      \"性格\": \"妩媚精明的大姐姐，嗓音偏哑、爱笑。坐镇商道一百年，从不抢货、只定价，每件小事都算得极精。是玩家亲姐——只有这一笔账她算不清；账本最后每年添一行「今年没找到」，从不给人看\",\n      \"好感度\": 25,\n      \"心里话\": \"第十一行。今年总算不用写了。\",\n      \"种族\": \"人族\",\n      \"境界\": \"金丹后期\",\n      \"气血\": 7546,\n      \"气血上限\": 7546,\n      \"灵力\": 3773,\n      \"灵力上限\": 3773,\n      \"玄元属性\": {\n        \"属性\": \"土\"\n      },\n      \"四维\": {\n        \"力量\": 6,\n        \"敏捷\": 8,\n        \"体质\": 6,\n        \"智力\": 6\n      },\n      \"灵根\": {\n        \"名称\": \"瀚海遗脉\",\n        \"品阶\": \"天灵根\",\n        \"纯度\": 92,\n        \"效果\": \"回血:4｜踏沙不陷、旱地能自饮水汽，越在无水之处越觉其利；灵根自成一脉，寻常灵根类压制近不了身，代价是与寻常灵根者双修、结契皆不成\"\n      },\n      \"天骄\": \"大天骄\",\n      \"已学本领\": {\n        \"玄技\": {\n          \"流沙缠丝\": {\n            \"玄技名\": \"流沙缠丝\",\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"效果\": {\n              \"减速\": \"3:1｜金链抖开化作漫天流沙缠住目标，脚下寸步难行\",\n              \"伤害\": \"279\"\n            },\n            \"消耗\": 520\n          },\n          \"沙丘移脉\": {\n            \"玄技名\": \"沙丘移脉\",\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"减伤\": \"25:2｜沙随气脉自移，抢先手\"\n            },\n            \"消耗\": 520\n          },\n          \"裂沙掌\": {\n            \"玄技名\": \"裂沙掌\",\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"效果\": {\n              \"伤害\": \"279｜掌力轰开沙层，并击碎护体气劲\"\n            },\n            \"消耗\": 520\n          }\n        },\n        \"玄诀\": {\n          \"瀚海养脉诀\": {\n            \"玄技名\": \"瀚海养脉诀\",\n            \"品质\": \"天阶\",\n            \"类型\": \"被动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"回蓝\": \"6｜以沙养脉，气脉如沙丘自移：，久战不竭且越战越沉\"\n            },\n            \"消耗\": 0\n          }\n        }\n      },\n      \"装备武器\": {\n        \"武器名\": \"缠沙金链\",\n        \"品质\": \"天阶\",\n        \"效果\": \"减速:3:2｜软时缠人、硬时断骨，出手自带流沙路数：命中后脚步陷进沙里\"\n      },\n      \"灵宠\": {},\n      \"部位\": {\n        \"私处\": \"正常\",\n        \"奶子\": \"正常\",\n        \"大腿\": \"正常\",\n        \"足部\": \"正常\"\n      },\n      \"在场状态\": true\n    }\n  }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
+        "<content>\n【开局 · 沙洲商道·月牙泉城】\n日头毒得能拧出水。你跟着商队走完最后一段雾道，城墙上的灯一齐照下来。\n月牙泉城最大的货栈里，一个卷发碧眼的女人正拨着算盘，见你进来，算盘珠子\"啪\"地停了。\n「哟。」她把账本一合，笑起来，声音又亮又热络，「活了。」\n阿依莎，沙洲供奉仙姬，这条商道要冲上说话最算数的人。\n她上下打量你一遍，转身就吆咐伙计：「这位的账，记我头上。住最好的房，价按最低的算。」\n你张口要谢，她摆手：「别谢。生意人嘛，顺手。」\n可你瞥见她那本账的最后一行——\"今年没找到\"，添了二十年。此刻那行字，被她的袖子盖住了。\n「吃饭了没有？」她把一盘热食推到你面前，算盘珠子又响起来，声音却轻了，「……这么多年，可算找着了。」\n这人是你的大姐。天底下算得清所有账的人，偏偏这一笔，算了二十年。\n</content>\n\n<UpdateVariable>\n<Analysis>\n一、地理：人州·沙洲·月牙泉城\n二、时间：1月1号 15:00\n三、开局落点：月牙泉城驿院外（沙洲商道要冲，商旅云集之地）\n四、主角信息：随商队抵城，被阿依莎拦下\"收货\"，未动手、未受内伤；身上被掸灰理领口（首次接触）\n五、人物列表：阿依莎建档在场（金丹后期·月牙泉城供奉仙姬·无宗无派·大天骄·玩家亲姐）；先按生意规矩谈，伙计退下后才认人；法术写入：《流沙缠丝》《沙丘移脉》｜土\n</Analysis>\n<JSONPatch>\n[\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/大位置\",\n    \"value\": \"人州·沙洲·月牙泉城\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/地理/小位置\",\n    \"value\": \"月牙泉城驿院外\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/日期\",\n    \"value\": \"1年1月1日\"\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"/时间/精确时间\",\n    \"value\": \"15:00\"\n  },\n  {\n    \"op\": \"add\",\n    \"path\": \"/人物列表/阿依莎\",\n    \"value\": {\n      \"姓名\": \"阿依莎\",\n      \"势力\": \"无宗无派（月牙泉城供奉仙姬，坐镇沙洲商道）\",\n      \"外貌\": \"高挑丰腴，肩背薄腰细；暖白肤色透粉青细血管；黑褐色大波浪长发高高束成马尾、束口缠金链、发尾泛酒红；额心红宝石坠，颈上三四条金链挂金币串；两臂七八只金环；淡紫细吊带短身衣＋透明披纱＋层叠淡紫长裙，腰上一圈金链（实为兵器）\",\n      \"性格\": \"妩媚精明的大姐姐，嗓音偏哑、爱笑。坐镇商道一百年，从不抢货、只定价，每件小事都算得极精。是玩家亲姐——只有这一笔账她算不清；账本最后每年添一行「今年没找到」，从不给人看\",\n      \"好感度\": 25,\n      \"心里话\": \"第十一行。今年总算不用写了。\",\n      \"种族\": \"人族\",\n      \"境界\": \"金丹后期\",\n      \"气血\": 7712,\n      \"气血上限\": 7712,\n      \"灵力\": 3856,\n      \"灵力上限\": 3856,\n      \"四维\": {\n        \"力量\": 6,\n        \"敏捷\": 8,\n        \"体质\": 6,\n        \"智力\": 6\n      },\n      \"灵根\": {\n        \"品阶\": \"天灵根\",\n        \"属性\": \"土\"\n      },\n      \"天骄\": \"大天骄\",\n      \"已学本领\": {\n        \"法术\": {\n          \"流沙缠丝\": {\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"效果\": {\n              \"减速\": \"3:1｜金链抖开化作漫天流沙缠住目标，脚下寸步难行\",\n              \"伤害\": \"279\"\n            },\n            \"消耗\": 520,\n            \"法术名\": \"流沙缠丝\"\n          },\n          \"沙丘移脉\": {\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"减伤\": \"25:2｜沙随气脉自移，抢先手\"\n            },\n            \"消耗\": 520,\n            \"法术名\": \"沙丘移脉\"\n          },\n          \"裂沙掌\": {\n            \"品质\": \"地阶\",\n            \"类型\": \"主动\",\n            \"目标\": \"单体\",\n            \"效果\": {\n              \"伤害\": \"279｜掌力轰开沙层，并击碎护体气劲\"\n            },\n            \"消耗\": 520,\n            \"法术名\": \"裂沙掌\"\n          }\n        },\n        \"心法\": {\n          \"瀚海养脉诀\": {\n            \"品质\": \"天阶\",\n            \"类型\": \"被动\",\n            \"目标\": \"自身\",\n            \"效果\": {\n              \"回蓝\": \"6｜以沙养脉，气脉如沙丘自移：，久战不竭且越战越沉\"\n            },\n            \"消耗\": 0,\n            \"心法名\": \"瀚海养脉诀\"\n          }\n        }\n      },\n      \"灵宠\": {},\n      \"部位\": {\n        \"私处\": \"正常\",\n        \"奶子\": \"正常\",\n        \"大腿\": \"正常\",\n        \"足部\": \"正常\"\n      },\n      \"在场状态\": true,\n      \"装备\": {\n        \"法宝\": {\n          \"名称\": \"缠沙金链\",\n          \"品质\": \"天阶\",\n          \"效果\": \"减速:3:2｜软时缠人、硬时断骨，出手自带流沙路数：命中后脚步陷进沙里\"\n        },\n        \"防具\": {\n          \"名称\": \"无\",\n          \"品质\": \"黄阶\",\n          \"效果\": \"\"\n        },\n        \"饰品\": {}\n      },\n      \"身份\": \"\",\n      \"先天气运\": {}\n    }\n  }\n]\n</JSONPatch>\n</UpdateVariable>\n\n<StatusPlaceHolderImpl/>",
         // 12: 12-备选开场.md · 凡人村落
         "<content>\n【开局 · 凡人村落】\n日头偏西的时候，你顺着那条被牛车碾出两道深辙的土路下了山。\n\n三十里没见过一户人家，路边的草已经长得比膝盖高——没人敢出墙这么远。转过最后一道土坡，前面总算有了人烟：几十间夯土的矮屋散在一片缓坡上，屋顶压着茅草和碎瓦，几缕炊烟被晚风扯得歪歪扭扭。村口立着一株老槐，树身空了一半，树底下垫着几块被人坐得油亮的石头。\n\n一条黄狗先从篱笆后头窜出来，冲你叫了两声，声音虚得很，边叫边往后退。\n\n挑水的老汉在井台边停住了脚。他把扁担往肩上一搁，眯着眼睛把你从头看到脚，又看回你的鞋——那双鞋底已经磨穿了半边。\n\n井台边洗衣的几个妇人抬起头，手里的棒槌停在水面上，谁也没说话。几个半大的孩子从门缝里挤出来，远远围成一圈，最大的那个被推了一把，又赶紧缩回去。\n\n“走错路了吧。”老汉先开的口，声音干巴巴的，“往西三十里才是驿道，这条是死路，通不到别处去。”\n\n他把木桶放下，从桶里舀了一瓢水递过来：“先喝。这条道上，一年也见不着几个外人。”\n\n水是井里刚提的，凉得牙根发紧。\n\n你喝水的时候，老汉靠着井台慢慢说：村子叫石堰，四十几户，一百多口人，靠坡上那几亩薄田和山脚的几眼泉过日子。\n\n“三十年前有个游方的道人路过，说这地方地脉浅，养不出修士。”他往井里指了指，“村里人听了也不恼——养不出就养不出，种地也能活。”\n\n他顿了一下，声音低了些。\n\n“那道人在井底埋了样东西。埋完跟我们说：这口井能护你们二十年，二十年后自己想办法。”\n\n“——今年是第三十一年。”\n\n你顺着他的目光看下去。井水很深，底下有一点极淡的光，很弱，像隔着水看一盏快没油的灯。\n\n老汉接着说：这口井的光罩住的范围，每年小一点。三十年前能罩住整个村子，如今只罩到村口这几十步。村东头早在墙外了。那边的人天一黑就都挪到西头来睡，几户人家挤一间屋。\n\n“不过这几日不太平。”他往村东头抬了抬下巴，“村东头周家的闺女，三天前上山捡柴，没回来。村里十几个后生打着火把找了两个晚上，连只鞋都没找着。”\n\n他把瓢从你手里接回去，在水里涮了涮。\n\n“昨夜又有人听见后山响，像是有什么东西在石头里挪窝。你要真是路过的，就在村口这间空屋将就一晚，天亮赶紧走——往西，别往东。”\n\n他挑起扁担，走出两步又回头补了一句：\n\n“要是你敢往山上去——周家婆娘还在村东头哭，你去跟她说一声，也算积德。”\n\n他走远了。\n\n你低头看那口井。井底那点光，忽然晃了一下。\n\n——像有人在水底下，动了一动。\n</content>\n<UpdateVariable>\n<Analysis>\n一、地理：人州·中域·三剑宗（辖下石堰村，村口老槐树下）\n二、时间：1月1号 17:40\n三、主角信息：开局健康，境界与灵根由创角结果落定\n四、人物列表：无（村口老汉是路人，临时对话即可）\n五、开局落点：凡人村落\n</Analysis>\n<JSONPatch>\n[\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/大位置\",\n        \"value\": \"人州·中域·三剑宗\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/地理/小位置\",\n        \"value\": \"村口老槐树下\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/日期\",\n        \"value\": \"1年1月1日\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/时间/精确时间\",\n        \"value\": \"17:40\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/任务\",\n        \"value\": {\n            \"进行中\": {},\n            \"已完成\": []\n        }\n    }\n]\n</JSONPatch>\n</UpdateVariable>\n\n\n<StatusPlaceHolderImpl/>",
     ];;
@@ -5274,7 +5589,7 @@ d.attrs[a] = v;
     /* ★★★ v363：`spiritRootLine()` / `initAttrPrompt()` / `bloodCapPct()` / `SPIRIT_ROOT_HP_FLAT_07`
        全部删除（连同它们的调用点 `fillComposer(initAttrPrompt())`）。
 
-       用户 2026-10-23：「开局不再初始化，而是根据血量和蓝量公式，然后检测玄诀和灵根和武器的
+       用户 2026-10-23：「开局不再初始化，而是根据血量和蓝量公式，然后检测心法和灵根和武器的
        效果有没有气血上限，直接一键写入变量，也就是不再追加文本到输入框了。」
 
        这几个东西的唯一用途就是**生成一段给 AI 看的"属性初始化指令"文本**并塞进输入框，
@@ -5384,7 +5699,7 @@ d.attrs[a] = v;
                  而第 3 页刚好不超。
                ⚠ 这个数**不是随手调大的**：它是 `_v466_h.mjs` 量出来的 p3 实际高。
                  改任何一处间距都要重跑那个探针，别凭印象改这里。
-               ⚠ 也别改成 `height`：内容再多一截（玩家配满 4 门玄技）就要长出去，
+               ⚠ 也别改成 `height`：内容再多一截（玩家配满 4 门法术）就要长出去，
                  `min-height` 允许长高，`height` 会裁掉 —— 裁掉的字段玩家填不了。
                ★★★ v471：743 → **768px**（换字体把窄屏第 2 页顶高了 21px）★★★
                病历（这一版最典型的"无防护回归"，值得记）：
@@ -5514,8 +5829,13 @@ d.attrs[a] = v;
                5px 后 ≈ 27px，是"能点、能读、不臃肿"的平衡点。
                ⚠ 别回到 6：那是 v466 之前的原始值，配上新行距会显得松垮；
                  5 是这一档（行高 1.72）下的实测值。 */
-            '.xz-st-body input[type=text],.xz-st-body input[type=number],.xz-st-body select,.xz-st-body textarea{flex:1;min-width:0;background:var(--xz-card,#151a24);border:1px solid rgba(138,95,20,.32);border-radius:3px;color:var(--xz-text,#f1ede4);font-size:12px;padding:5px 9px;line-height:1.35;font-family:inherit;outline:none;box-shadow:inset 0 1px 2px rgba(120,86,32,.10);transition:border-color 0.2s;}',
-            '.xz-st-body input:focus,.xz-st-body select:focus,.xz-st-body textarea:focus{border-color:rgba(230,189,118,.75);box-shadow:0 0 0 2px rgba(230,189,118,.12);}',
+            /* ★ v637：输入框边框**不随主题变色**。原来 authored 是土金 rgba(138,95,20,.32)
+               （日光档那套深金）：夜墨被去金收编成灰、玄青却保留土金原值 ⇒ 一切到玄青
+               边框就从灰跳成土黄，作者原话「切换玄青色输入框会变色」。
+               ⇒ 换成 chroma=0 的纯中性灰：isGoldLike 判不到（chroma<24、不在 TONE_MAP），
+               生成器不会把它收编成 --xz-tN，三档恒定同一个色。focus/shadow 同理。 */
+            '.xz-st-body input[type=text],.xz-st-body input[type=number],.xz-st-body select,.xz-st-body textarea{flex:1;min-width:0;background:var(--xz-card,#151a24);border:1px solid rgba(150,150,150,.34);border-radius:3px;color:var(--xz-text,#f1ede4);font-size:12px;padding:5px 9px;line-height:1.35;font-family:inherit;outline:none;box-shadow:inset 0 1px 2px rgba(130,130,130,.10);transition:border-color 0.2s;}',
+            '.xz-st-body input:focus,.xz-st-body select:focus,.xz-st-body textarea:focus{border-color:rgba(205,205,205,.72);box-shadow:0 0 0 2px rgba(205,205,205,.14);}',
             '.xz-st-body input[type=number]{flex:0 0 58px;text-align:center;}',
             '.xz-st-body textarea{min-height:42px;resize:vertical;}',
             /* ★ v469：hint 的上下间距还回去（3/1 → 6/3），它原来是紧贴上一行的 */
@@ -5589,7 +5909,7 @@ d.attrs[a] = v;
             /* ★★★ v620：已配 = 固定高度滚动框 ★★★
                用户原话：「已配你他妈不改成固定大小的滑轮式，你是不是脑子有问题」。
                ── 为什么必须定高 ────────────────────────────────────────────────
-                 已配是**动态列表**（玄技上限 30 门），没上限时它一出条数就把卡片撑长，
+                 已配是**动态列表**（法术上限 30 门），没上限时它一出条数就把卡片撑长，
                  v469/v470/v471 三轮"顶穿卡片"的病根全在这里：
                  上面藏表单省 168px，下面列表加 15 门就全吃回去。
                ── 178px 怎么来的 ────────────────────────────────────────────────
@@ -5712,7 +6032,7 @@ d.attrs[a] = v;
                 + 'font-size:8.5px;font-weight:var(--xz-fw-bold);line-height:1;}',
             '.xz-st-mini:hover:not(:disabled),button.xz-st-mini:hover:not(:disabled){border-color:var(--xz-gold);background:rgba(230,189,118,.14);color:var(--xz-gold-bright);}',
             '.xz-st-mini.del:hover:not(:disabled),button.xz-st-mini.del:hover:not(:disabled){border-color:#c0392b;color:#f0a6a0;background:rgba(192,57,43,.12);}',
-            '.xz-st-ovl-box input[type=text],.xz-st-ovl-box input[type=number],.xz-st-ovl-box select,.xz-st-ovl-box textarea{font-family:inherit;background:var(--xz-card,#151a24);border:1px solid rgba(138,95,20,.32);border-radius:3px;padding:6px 9px;color:var(--xz-text,#f1ede4);font-size:12.5px;}',
+            '.xz-st-ovl-box input[type=text],.xz-st-ovl-box input[type=number],.xz-st-ovl-box select,.xz-st-ovl-box textarea{font-family:inherit;background:var(--xz-card,#151a24);border:1px solid rgba(150,150,150,.34);border-radius:3px;padding:6px 9px;color:var(--xz-text,#f1ede4);font-size:12.5px;}',
             '.xz-st-ovl-box input:focus,.xz-st-ovl-box select:focus,.xz-st-ovl-box textarea:focus{border-color:var(--xz-gold);outline:none;}',
             '.xz-st-note{margin-top:8px;font-size:11px;color:#7fb69b;}',
             '.xz-st-note.warn{color:var(--xz-gold);}',
@@ -5840,7 +6160,13 @@ d.attrs[a] = v;
                  而第 4 页高度已拍板不许涨（作者：「就这个高度吧。高度别改了」）。
                ⚠ 底色是**半透明黑**而不是主题变量：图是彩色照片，压深色底才读得清，
                  跟主题无关（日光模式下压浅色会糊在图里）。 */
-            '.xz-st-scene{position:relative;margin:7px 0 0;line-height:0;}',
+            '.xz-st-scene{position:relative;margin:7px 0 0;line-height:0;text-align:center;}',
+            /* ★ v635：城名标签的锚点必须是**图片盒子**，不是这一整行。
+               原来它 `position:absolute` 挂在 `.xz-st-scene`（满宽）上，
+               而 v635 让图按自身比例收缩居中 ⇒ 标签会飘到图右边的空白里。
+               ⇒ 套一层 inline-block：它天然收缩到内容（图）宽度，
+                 标签相对它就永远贴着图的右下角。 */
+            '.xz-st-scene-w{position:relative;display:inline-block;max-width:100%;line-height:0;}',
             '.xz-st-scene-n{position:absolute;right:6px;bottom:6px;line-height:1.4;'
                 + 'padding:1px 7px;border-radius:5px;font-size:10.5px;'
                 + 'background:rgba(8,10,14,.72);color:#f1ede4;border:1px solid rgba(230,189,118,.35);'
@@ -6339,21 +6665,21 @@ d.attrs[a] = v;
                固定行一律 `flex:none`，谁也不许被压。 */
             /* ★★ v468：玄诀/武器那只面板**比玄技矮一档**（实测差 49px）★★
                量出来的账：
-                 玄技展开藏掉 名24+品质25+目标25+消耗24+效果70 = **168px**
-                 玄诀展开藏掉 名24+品质25+效果70          = **119px**
-                   （玄诀「目标」恒自身只读、"消耗"v77 起不渲染 ⇒ 少两行 49px）
+                 法术展开藏掉 名24+品质25+目标25+消耗24+效果70 = **168px**
+                 心法展开藏掉 名24+品质25+效果70          = **119px**
+                   （心法「目标」恒自身只读、"消耗"v77 起不渲染 ⇒ 少两行 49px）
                面板固定段 = 分类行 21 + 描写+确定 28 + 上下内距/边框 9 = 58px
-                 · 玄技：163 − 58 = 105px 给滚动区（网格 ≈ 2.9 行）✔
-                 · 玄诀：163 − 58 = 105px 也放得下，但**预算只有 119**
+                 · 法术：163 − 58 = 105px 给滚动区（网格 ≈ 2.9 行）✔
+                 · 心法：163 − 58 = 105px 也放得下，但**预算只有 119**
                    ⇒ 119 − 58 = 61px 给滚动区（网格 ≈ 1.6 行）
-               ⇒ 玄诀设 119px：不长高，但网格只露 1.6 行。
-                 ⚠ 这是硬上限，不是没优化 —— 玄诀能藏的只有 119px，
+               ⇒ 心法设 119px：不长高，但网格只露 1.6 行。
+                 ⚠ 这是硬上限，不是没优化 —— 心法能藏的只有 119px，
                    想再露两行只能砍固定行（分类是主入口不能砍、描写确定是唯一出口）。
-                   真要改就改**藏得更多**：玄诀把「效果自选」这块整体替换掉
+                   真要改就改**藏得更多**：心法把「效果自选」这块整体替换掉
                    才可能腾出更多，那是结构改动，不在本轮范围。 */
             /* ★★★ v471：119 → **163px**（玄诀面板终于和玄技一样高）★★★
                ── 上一版（v468）为什么定 119 ─────────────────────────────
-               账是这么算的：玄诀展开只藏了「名24+品质25+效果70 = 119px」，
+               账是这么算的：心法展开只藏了「名24+品质25+效果70 = 119px」，
                而面板固定段 58px ⇒ 滚动区 119−58 = **61px ≈ 1.6 行**。
                当时就写下「这是硬上限，不是没优化」。
 
@@ -6373,11 +6699,76 @@ d.attrs[a] = v;
                           **163 → 卡片 771（Δ0）**   ← 取这一档，余量用尽且不顶长
                           190 → 卡片 785.78（**+14.78 顶长**）
                           220 → 卡片 815.78（+44.78）
-               ⇒ 163 是「不顶长」的最后整档，和玄技同一个数，**两份预算终于统一**。
+               ⇒ 163 是「不顶长」的最后整档，和法术同一个数，**两份预算终于统一**。
                ⚠ 别再加到 190：那是实测顶长的第一档。
                  要再高只能抬 `07` 的 `min-height`（四页等高基准），那是另一件事。
-               ⚠ 玄技那份是 163 且实测余量到 220，所以 163 对两边都安全。 */
+               ⚠ 法术那份是 163 且实测余量到 220，所以 163 对两边都安全。 */
             '.xz-st-pickpanel.pas{max-height:163px;}',
+            /* ══════════════════════════════════════════════════════════════════
+               ★★★ v635：弹层语境**放开那三道限高**（作者 2026-11-18 第二次骂）★★★
+               作者原话：「不是，nitm，你倒是拉长啊，不然弹层的意义在哪」。
+               ── 病历：上一版弹层已经不出屏，但高度是"内容撑多少算多少" ──────
+                 390×844 实测：弹层 360px 高，其中
+                   分类行 21 + 滚动区 **124** + 确定 33 + 上下内距
+                 网格只露 124px（≈2.7 行），下面**一大片空白**，
+                 而底部「确定」还压住网格最后一行 —— 弹层白挂了。
+               ── 三道约束各自是为谁算的（都不能在卡片里动）──────────────────
+                 ① `.xz-st-pickpanel{max-height:163px}` —— 法术展开藏了 168px 表单，
+                    163 是「不顶长卡片」的最后整档（`_v471_pasroom` 逐档实测：
+                    190 就 +14.78 顶长）。**这一笔只在卡片里成立**。
+                 ② `.xz-st-pickpanel.pas{max-height:163px}` —— 心法/武器同上。
+                 ③ `@media(max-width:430px){.xz-st-pickgrid{max-height:124px}}` ——
+                    同上，压网格是为了省那一档。
+                 ④ `.xz-st-pickscroll>*{flex:none}` —— 为了不让网格被压扁
+                    （面板有 max-height 时 flex 子项默认 shrink）。它同时
+                    也**禁止了网格拉伸**，所以光去掉 ① ② ③ 是没用的。
+               ── 修法：加一层"弹层专用"，**选择器全带 `.xz-st-body-pick` 前缀** ────
+                 卡片里那块面板的祖先链上没有这个 class ⇒ 三条规则一条都不命中
+                 ⇒ 四页等高 625px 预算**一个字节不动**（这是本项目的硬账）。
+               ── 弹层里改成"撑满"而不是"给个更大的数" ──────────────────────
+                 面板 `flex:1 1 auto;min-height:0` 吃满 body 的剩余高度，
+                 网格再 `flex:1 1 auto` 吃满面板的剩余高度 ⇒ 窗口多高它就多高。
+                 ⚠ 不许再写 `max-height:400px` 这种数：换个屏就又不对了。
+                 ⚠ 必须 `min-height:0`：flex 子项的默认 `min-height:auto` 会让它
+                   被内容顶开、把「确定」挤出弹层（本条是 flex 里的老坑）。
+               ══════════════════════════════════════════════════════════════════ */
+            '.xz-st-body-pick{display:flex;flex-direction:column;overflow:hidden;}',
+            '.xz-st-body-pick>.xz-st-tabs{flex:none;}',
+            /* ★★★ v637：选择器必须是**后代**（`.xz-st-body-pick .xz-st-pickpanel`），
+               不能写直子 `>` ★★★
+               作者 2026-11-18：「扁的超级扁」
+               ── 病根 ────────────────────────────────────────────────────────
+                 上一版写的是 `.xz-st-body-pick>.xz-st-pickpanel`（直子），
+                 但真实 DOM 链是 `xz-st-body > xz-st-row > div > xz-st-pickpanel`
+                 —— 中间隔了两层 ⇒ **一条都没命中** ⇒ 弹层里仍吃着
+                 `.xz-st-pickpanel{max-height:163px}`（那是为**卡片内**168px 预算算的）。
+                 结果：弹层 box 撑到 680px，面板却永远 110px、网格 53px，
+                 下面一大片空白 —— 就是作者截图的"扁"。
+               ── 连带两层也要放 ──────────────────────────────────────────────
+                 `.xz-st-row` 与中间那层 `div` 都得 `flex:1 1 auto;min-height:0`，
+                 否则它们按内容收缩到 143px，panel 就算解了限高也没高度可分。
+               ⚠ 只作用于 `.xz-st-body-pick` 后代：卡片里那块面板继续用 163px，
+                 那 163 是按卡片 168px 预算反推的，动它会顶长卡片（v468 的账）。 */
+            '.xz-st-body-pick .xz-st-row,.xz-st-body-pick .xz-st-row>div'
+                + '{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;}',
+            '.xz-st-body-pick .xz-st-pickpanel,.xz-st-body-pick .xz-st-pickpanel.pas'
+                + '{max-height:none;flex:1 1 auto;min-height:0;margin:6px 0 0;}',
+            /* 滚动区在弹层里就是"网格的家"，它自己撑满，不再靠 max-height 分配 */
+            '.xz-st-body-pick .xz-st-pickscroll{flex:1 1 auto;min-height:0;}',
+            /* ★ 破掉 `.xz-st-pickscroll>*{flex:none}` 对网格的约束（第 ④ 条）：
+               弹层里网格要吃掉滚动区的整块高度，它才是"多出来那些地方"的主人。
+               ⚠ 只放行 grid，不放行 hint/warn —— 提示是一行字，撑满会把文字
+                 顶到中间（`align-items` 默认 stretch，块会被拉高但内容仍贴顶，
+                 视觉上是"上面一坨字 + 下面空白"，比不撑更难看）。 */
+            '.xz-st-body-pick .xz-st-pickscroll>.xz-st-pickgrid'
+                + '{flex:1 1 auto;min-height:0;max-height:none;align-content:start;}',
+            /* 弹层底部那条「确定」：body 是 flex 列 ⇒ 它就是最后一颗 `flex:none` 的行，
+               天然钉在底边。**不要再写 sticky**（v635 之前它 sticky 在 bottom:-12px，
+               `overflow:auto` 里会浮在内容之上、把网格最后一行盖住 —— 作者截图钉的就是这个）。 */
+            '.xz-st-body-pick>.xz-st-ovl-ft'
+                + '{flex:none;margin:8px -14px -12px;padding:9px 14px;'
+                + 'background:#141922;border-top:1px solid rgba(230,189,118,.22);'
+                + 'display:flex;gap:8px;align-items:center;}',
             /* 中间可滚的那段：成套 / 网格 / 提示 塞在里面 */
             /* ★★★ v471：必须写 `display:flex;flex-direction:column` ★★★
                下一段给网格挂 `order:-1` 想把它提到最前，但 **`order` 只对
@@ -6647,8 +7038,8 @@ d.attrs[a] = v;
                 + 'background:rgba(104,197,178,.14);'
                 + 'border-left:2px solid rgba(242,194,111,.85);}',
             /* ★★★ v468：`.xz-chip-sm` 此前**从未定义过** ★★★
-               病历：v467 起玄技那栏就在写 `<span class="xz-chip-sm">主动</span>`、
-               v468 又给玄诀/武器各写了一次「被动」，一共 7 处用到 —— 而样式表里
+               病历：v467 起法术那栏就在写 `<span class="xz-chip-sm">主动</span>`、
+               v468 又给心法/武器各写了一次「被动」，一共 7 处用到 —— 而样式表里
                一条都没有。浏览器对未知 class 完全静默，所以界面上是**裸文字**：
                没有边框、没有底、没有字号约束，跟在「目标」那一行后面像一串多余的字符。
                这是本项目最典型的「写了没反应」形状：静态闸查不出来（class 确实拼对了），
@@ -6782,26 +7173,26 @@ d.attrs[a] = v;
          第 3 页现在把它包进 `.xz-st-sect`，框顶已经有一条
          「已配 · 核心专区 0 项」的标题栏了，再输出一次「【已配技能与武器】」就是
          **同一个意思写两遍**（实测截图里两行标题紧挨着，看着像渲染错了）。
-       ⚠ 但**计数**不能丢：「01 | 玄技 0 门 · 玄诀 0 部 · 武器 0 件」是玩家要看的读数。
+       ⚠ 但**计数**不能丢：「01 | 法术 0 门 · 心法 0 部 · 武器 0 件」是玩家要看的读数。
          ⇒ 不输出 head 时，把计数并进 sect 的右侧小字（调用方负责传，见 pageWizSkillHtml 函数）。
        ⚠ 这里**不要用反引号包形参名**：`_v404_stale_refs` 会把反引号里的词当成
          "必须存在的符号"去查定义，而函数形参不在它的定义表里 —— 会误判成失效引用挡发布。
          本行第一版就是那么错的，跑闸红在 R3。 */
     function renderEquippedBox(d, noHead) {
-        var skills = d.items.玄技 || [];
-        var hearts = d.items.玄诀 || [];
-        var _count = '玄技 ' + skills.length + ' 门 · 玄诀 ' + hearts.length + ' 部 · 武器 ' + (d.items.武器 || []).length + ' 件';
+        var skills = d.items.法术 || [];
+        var hearts = d.items.心法 || [];
+        var _count = '法术 ' + skills.length + ' 门 · 心法 ' + hearts.length + ' 部 · 法宝 ' + (d.items.法宝 || []).length + ' 件';
         var h = '<div class="xz-st-equipped-box">';
         if (!noHead) {
             h += '<div class="xz-st-equipped-head">' +
-                '<span>【已配技能与武器】</span>' +
+                '<span>【已配技能与法宝】</span>' +
                 '<span class="xz-st-equipped-count">' + _count + '</span>' +
                 '</div>';
         }
         /* ★★★ v620：已配列表 = **固定高度的滚动框** ★★★
            用户原话：「已配你他妈不改成固定大小的滑轮式，你是不是脑子有问题」。
            ── 原来错在哪 ────────────────────────────────────────────────────
-             已配是**动态列表**（玄技上限 30 门），它一出条数就把整张卡撑长。
+             已配是**动态列表**（法术上限 30 门），它一出条数就把整张卡撑长。
              v469/v470 那几轮全在跟"卡片被顶穿"打架，原因就是这里没有上限 ——
              上面藏一个表单省 168px，下面列表加 15 门就全吃回去。
            ── 为什么用 max-height + overflow-y:auto，而不是 flex 撑满 ─────────
@@ -6820,7 +7211,7 @@ d.attrs[a] = v;
 
         /* v71：玄技卡标签为「主动 · 功能 · 目标 · 消耗」。 */
         function _slotItem(it, i, kind) {
-            var isH = (kind === '玄诀');
+            var isH = (kind === '心法');
             var tagCol = isH ? '#60a5fa' : '#f87171';
             var tagBd = isH ? 'rgba(59,130,246,0.45)' : 'rgba(248,113,113,0.45)';
             var tags = '<span class="xz-st-tag-term" style="color:' + tagCol + ';border-color:' + tagBd + ';">' + (isH ? '被动' : '主动') + '</span> ';
@@ -6831,7 +7222,7 @@ d.attrs[a] = v;
                      武器只有一段**纯文本**效果，没有「效果名」这一层 ——
                      原来这里还会额外贴一枚「主击」标签，加上下方效果正文，
                      看起来就像填了两遍。武器不再出标签，只留正文那一段。 */
-                if (kind !== '武器') {
+                if (kind !== '法宝') {
                     var _fkeys = (typeof it.效果 === 'object') ? Object.keys(it.效果) : ['伤害'];
                     tags += _fkeys.map(function (k) { return '<span class="xz-st-tag-term">' + esc(k) + '</span> '; }).join('');
                 }
@@ -6858,7 +7249,7 @@ d.attrs[a] = v;
                      一行 = 一条效果，这是 04 的存储口径（`效果` 是对象，键是机制名），
                      按行拆与它一一对应，玩家改完回来顺序也不会乱。
                    ⚠ 只做**渲染层**拆分，`it.效果` 一个字节都不动。 */
-                (kind === '武器'
+                (kind === '法宝'
                     ? (it.效果 ? ('<div class="xz-st-opill" style="color:var(--xz-cyan);">' + esc(it.效果) + '</div>') : '')
                     : (function () {
                         var _txt = setToText(it.效果);
@@ -6881,46 +7272,46 @@ d.attrs[a] = v;
         /* ★★★ v467（用户 2026-10-30）：「这里，括号内容都删掉。」
            三处空槽提示的括号说明全删 —— 只留「空着 / 空手」。
            ⚠ 别再"好心"补回来：这三句解释占的是**每类槽位一整行**，
-             而槽位本身已经有「玄技 / 玄诀 / 武器」徽章说明这是什么；
+             而槽位本身已经有「法术 / 心法 / 武器」徽章说明这是什么；
              括号里那句（不限数量 / 领悟后生效 / 可选配 1 件）属于玩法说明，
              该在世界书里，不该压在创角界面上。 */
         if (skills.length === 0) {
             h += '<div class="xz-st-slot-item empty">' +
-                '<span class="xz-st-slot-badge empty">玄技</span>' +
+                '<span class="xz-st-slot-badge empty">法术</span>' +
                 '<span class="xz-st-slot-empty-tip">空着</span>' +
                 '</div>';
         } else {
-            skills.forEach(function (it, i) { h += _slotItem(it, i, '玄技'); });
+            skills.forEach(function (it, i) { h += _slotItem(it, i, '法术'); });
         }
 
         /* ★ v70：玄诀不再只装 1 部 —— 与玄技同权，逐部列出。 */
         if (hearts.length === 0) {
             h += '<div class="xz-st-slot-item empty">' +
-                '<span class="xz-st-slot-badge empty">玄诀</span>' +
+                '<span class="xz-st-slot-badge empty">心法</span>' +
                 '<span class="xz-st-slot-empty-tip">空着</span>' +
                 '</div>';
         } else {
-            hearts.forEach(function (it, i) { h += _slotItem(it, i, '玄诀'); });
+            hearts.forEach(function (it, i) { h += _slotItem(it, i, '心法'); });
         }
 
         // 武器玄技栏
-        var art = d.items.武器[0];
+        var art = d.items.法宝[0];
         if (art) {
             h += '<div class="xz-st-slot-item filled">' +
                 '<div class="xz-st-slot-top">' +
-                '<span class="xz-st-slot-badge artifact">武器</span>' +
+                '<span class="xz-st-slot-badge artifact">法宝</span>' +
                 '<span class="xz-st-slot-title">《' + esc(art.名) + '》</span>' +
                 '<span class="xz-st-slot-quality">' + esc(art.品质) + '</span>' +
                 '<div class="xz-st-slot-actions">' +
-                '<button type="button" class="xz-st-mini" data-xz-act="edit" data-xz-kind="武器" data-xz-index="0">修改</button>' +
-                '<button type="button" class="xz-st-mini del" data-xz-act="del-item" data-xz-kind="武器" data-xz-index="0">删除</button>' +
+                '<button type="button" class="xz-st-mini" data-xz-act="edit" data-xz-kind="法宝" data-xz-index="0">修改</button>' +
+                '<button type="button" class="xz-st-mini del" data-xz-act="del-item" data-xz-kind="法宝" data-xz-index="0">删除</button>' +
                 '</div></div>' +
-                '<div class="xz-st-slot-details">' + (art.武器类型 ? ('<span class="xz-st-tag-term" style="color:var(--xz-cyan);">' + esc(art.武器类型) + '</span> ') : '') + '</div>' +
+                '<div class="xz-st-slot-details">' + (art.法宝类型 ? ('<span class="xz-st-tag-term" style="color:var(--xz-cyan);">' + esc(art.法宝类型) + '</span> ') : '') + '</div>' +
                 '<div class="xz-st-slot-desc-text" style="color:var(--xz-cyan);border-left:2px solid rgba(120,180,150,0.45);padding-left:6px;margin-top:4px;line-height:1.4;">描述：' + esc(art.描述 || '—') + '</div>' +
                 '</div>';
         } else {
             h += '<div class="xz-st-slot-item empty">' +
-                '<span class="xz-st-slot-badge empty">武器</span>' +
+                '<span class="xz-st-slot-badge empty">法宝</span>' +
                 '<span class="xz-st-slot-empty-tip">空手</span>' +
                 '</div>';
         }
@@ -6933,10 +7324,10 @@ d.attrs[a] = v;
     }
 
     /* ══════════════════════════════════════════════════════════════════════
-       ★★★ v447 · 「效果自选」界面（玄技专用）
+       ★★★ v447 · 「效果自选」界面（法术专用）
 
        ── 它做的事只有一件 ─────────────────────────────────────────────────
-       把勾选的机制按当前品质拼成一条效果串，**写进 `state.tpl['玄技'].效果`**。
+       把勾选的机制按当前品质拼成一条效果串，**写进 `state.tpl['法术'].效果`**。
        写进去之后，一切照旧：玩家可以在下面那个 textarea 里继续改，
        保存时走 `textToSet`，落盘、进引擎 —— 与手打完全同一条路，
        不新增任何"预设专用"的存储形态（那会立刻变成两套真相）。
@@ -7023,20 +7414,20 @@ d.attrs[a] = v;
        输入框下线以后它们全库零调用（`_v335_dead_copy` 会判红），留着只会让人以为还有第二处写描写。 */
 
     /* ══════════════════════════════════════════════════════════════════════
-       ★★★ v468：被动版效果自选（玄诀 / 武器 / 灵根）★★★
-       ── 与玄技那套的三处真差异（不是抄一遍改个名）───────────────────────
+       ★★★ v468：被动版效果自选（心法 / 武器 / 灵根）★★★
+       ── 与法术那套的三处真差异（不是抄一遍改个名）───────────────────────
        ① 池子不同：`EFF_PAS_POOL`（16 条，引擎 `SPIRIT_ROOT_EFFECT_KEYS` 真认的）。
-          玄技的 54 条写进这里，引擎一条都不认 —— 那才是「写了没反应」的来源。
+          法术的 54 条写进这里，引擎一条都不认 —— 那才是「写了没反应」的来源。
        ② 没有品质条数上限：被动在引擎里是 `for (k in buff)` 全量并入，
           不存在"超过 N 条就叠爆"的口径 ⇒ 界面也不该编一个上限出来。
-          （玄技那个上限是有出处的：《设定-数值表》「效果条数」是**招式**的硬上限。）
-       ③ 写回目标不同：玄技写 `state.tpl['玄技'].效果`（对象，键=机制名）；
-          玄诀/武器写 `state.tpl[kind].效果`（**字符串**），灵根写 `state.draft.spiritRootEffect`。
-          ⚠ 玄诀/武器的 `效果` 是字符串不是对象 —— 引擎两条通道的形参就是文本，
+          （法术那个上限是有出处的：《设定-数值表》「效果条数」是**招式**的硬上限。）
+       ③ 写回目标不同：法术写 `state.tpl['法术'].效果`（对象，键=机制名）；
+          心法/武器写 `state.tpl[kind].效果`（**字符串**），灵根写 `state.draft.spiritRootEffect`。
+          ⚠ 心法/武器的 `效果` 是字符串不是对象 —— 引擎两条通道的形参就是文本，
              `parseSpiritRootEffect(text)` 直接吃整段。写成对象会让 `String(text)` 变成
              `[object Object]`，然后解析出 0 条，且**零报错**。
        ── 遮哪一半 ──────────────────────────────────────────────────────────
-       玄诀/武器的效果栏在**下半截**，展开面板时整块表单隐藏（用户第 ⑫ 条，
+       心法/武器的效果栏在**下半截**，展开面板时整块表单隐藏（用户第 ⑫ 条，
        「点击展开选效果的时候，这部分就暂时隐藏」）。这个由 `tplHtml` 那边控制，
        这里只负责出面板内容。
        ══════════════════════════════════════════════════════════════════════ */
@@ -7050,12 +7441,12 @@ d.attrs[a] = v;
     /* 玄诀 / 武器的面板
        ★ v620：第三形参 `inOverlay` 与 `effPickerHtml` 完全同理 ——
          卡片里只画「已选摘要 + 展开按钮」，整块网格只在弹层里画。
-         ⚠ 两支必须**同形**：只给一支加 `inOverlay` 就会出现"玄技不占地方、玄诀占"
+         ⚠ 两支必须**同形**：只给一支加 `inOverlay` 就会出现"法术不占地方、心法占"
            这种半对半错的状态，而静态闸看不出来（它们看类名不看调用点）。 */
     function pasPickerHtml(it, kind, inOverlay) {
         /* ★ 记下"现在在改哪一类"：`tplHtml` 对玄诀与武器各调一次，
            而 `pasPickApply()` 只知道"某个 kind"。不记的话点确定会写回错的那一支
-           （玄诀的效果跑到武器上，且界面看着都对）。 */
+           （心法的效果跑到武器上，且界面看着都对）。 */
         if (kind) state.pasKind = kind;
         var sel = pasSelOf();
         var h = '';
@@ -7064,11 +7455,11 @@ d.attrs[a] = v;
 
         /* 头部：品质·条数上限 / 已选 / 清空 / 展开（与玄技那份同构） */
         /* ★★★ v509：玄诀/武器也加品质条数上限 ★★★
-           用户 2026-10-31：「为什么这里有最多五条，结果武器和玄诀那里又没有?」
+           用户 2026-10-31：「为什么这里有最多五条，结果武器和心法那里又没有?」
            原来这两条走被动通道，**设计上就是无上限**（注释原文「EFF_PAS_POOL / 三组 / 无条数上限」）——
-           但玩家看到的后果是：玄技天阶只让选 5 条，玄诀/武器却能一路勾满 16 条。
+           但玩家看到的后果是：法术天阶只让选 5 条，心法/武器却能一路勾满 16 条。
            同一个「效果自选」在三个页签里两套规矩，没人说得清为什么。
-           ⇒ 统一按 `EFF_QUAL_MAX`（凡1/黄2/玄3/地4/天5/神6），与玄技同一张表。 */
+           ⇒ 统一按 `EFF_QUAL_MAX`（凡1/黄2/玄3/地4/天5/神6），与法术同一张表。 */
         var _pq = it.品质 || '黄阶';
         var _pmax = EFF_QUAL_MAX[_pq] || 3;
         h += '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">'
@@ -7100,25 +7491,25 @@ d.attrs[a] = v;
              漏传应当表现为"卡片里什么都不多"，而不是"卡片里摊开一个网格"。 */
         if (state.pasOpen && inOverlay) {
             /* ★ v468：`pas` 这个修饰类 = 玄诀/武器那只面板的更矮上限。
-               它展开时只藏了「效果」70px，而玄技藏 168px —— 同一个 163px
-               放进两份表单里必然有一边超（实测玄诀长 44px）。
+               它展开时只藏了「效果」70px，而法术藏 168px —— 同一个 163px
+               放进两份表单里必然有一边超（实测心法长 44px）。
                ⚠ 别再算"共用一档"：两份预算差 98px，一个数套不住。 */
             h += '<div class="xz-st-pickpanel pas">';
             /* ★ 一句必要的说明：为什么池子这么小。
-               不写的话玩家会觉得"玄技有 54 条，这里才 16 条，是不是坏了"。
+               不写的话玩家会觉得"法术有 54 条，这里才 16 条，是不是坏了"。
                ⚠ 别写"引擎只认这些"这种话术 —— 它把实现细节甩给玩家。
                  写成"被动是挂一整场的，一次性的效果在这里没有触发时机"更好懂。
                ★ v468：这行说明压成一句并挪进滚动区 —— 它不是导航，滚走不心疼。 */
             /* ★★ v468：分类**独占一行**（与玄技那一份同构）★★
-               理由见玄技那边：合并成一行后最后那个分类会被裁掉半个，
+               理由见法术那边：合并成一行后最后那个分类会被裁掉半个，
                而分类是唯一入口。⚠ 两处结构必须一致 —— 它们共用同一套 class，
-               CSS 只有一份，结构不一致就会出现"玄诀比玄技高 33px"这种查不到的病。 */
+               CSS 只有一份，结构不一致就会出现"心法比法术高 33px"这种查不到的病。 */
             var curG = String(state.pasCat || '');
             /* ★★★ v584：与玄技那份**同一个理由**，被动这组也要默认展开第一类 ★★★
-               病历（探针 `_v584_forge_overlay.mjs` ⑦-C3 抓到）：玄诀点「展开选效果」后，面板里只有
+               病历（探针 `_v584_forge_overlay.mjs` ⑦-C3 抓到）：心法点「展开选效果」后，面板里只有
                一排分类按钮，**一个可勾的效果都没有**（实测 0 个）。
-               玩家会以为"玄诀没有效果可选"，而池子里明明有 16 条。
-               我在玄技那支已经补过兜底（`effPickerHtml` 里），这里**漏了一处** ——
+               玩家会以为"心法没有效果可选"，而池子里明明有 16 条。
+               我在法术那支已经补过兜底（`effPickerHtml` 里），这里**漏了一处** ——
                典型的"两份同构代码只改了一份"，而且不报错。
                ⚠ 兜底用 `EFF_PAS_GROUPS[0]`，别写死 'p攻'：分组表改名/换序就指空。
                ⚠ 只在没选过时兜底：`pas-cat` 设过就照旧，别覆盖玩家的手选。 */
@@ -7186,15 +7577,15 @@ d.attrs[a] = v;
     }
 
     /* 勾选/取消一条被动。
-       ★ v509：**有**条数上限了（原来无上限）—— 按品质走 `EFF_QUAL_MAX`，与玄技同一张表。
-         用户 2026-10-31：「为什么这里有最多五条，结果武器和玄诀那里又没有?」
-         三个页签用两套规矩，玩家只会觉得玄诀能白嫖。 */
+       ★ v509：**有**条数上限了（原来无上限）—— 按品质走 `EFF_QUAL_MAX`，与法术同一张表。
+         用户 2026-10-31：「为什么这里有最多五条，结果武器和心法那里又没有?」
+         三个页签用两套规矩，玩家只会觉得心法能白嫖。 */
     function pasPickToggle(mech) {
         if (!EFF_PAS_BY_KEY[mech]) return false;
         var sel = pasSelOf();
         var at = sel.indexOf(mech);
         if (at >= 0) { sel.splice(at, 1); state.pasSel = sel; return true; }
-        var kind0 = state.pasKind || '玄诀';
+        var kind0 = state.pasKind || '心法';
         var it0 = state.tpl[kind0] || {};
         var q0 = it0.品质 || '黄阶';
         var max0 = EFF_QUAL_MAX[q0] || 3;
@@ -7209,7 +7600,7 @@ d.attrs[a] = v;
     /* 把已选被动写回表单。**唯一写入口**（勾选/取消/口味/清空/确定都走它）。
        ⚠ 写成**字符串**：见函数头 ③。 */
     function pasPickApply() {
-        var kind = state.pasKind || '玄诀';
+        var kind = state.pasKind || '心法';
         var it = state.tpl[kind];
         if (!it) return;
         var sel = pasSelOf();
@@ -7237,8 +7628,8 @@ d.attrs[a] = v;
          不是状态的属性** —— 所以必须由调用方告诉它，不能猜。 */
     function effPickerHtml(it, kind, inOverlay) {
         /* ★★★ v468：按类别分派 ★★★
-           玄技走招式通道（EFF_POOL / 六类 / 有品质条数上限）；
-           玄诀与武器走被动通道（EFF_PAS_POOL / 三组 / 无条数上限）。
+           法术走招式通道（EFF_POOL / 六类 / 有品质条数上限）；
+           心法与武器走被动通道（EFF_PAS_POOL / 三组 / 无条数上限）。
            灵根在**第 2 页**，字段是 `spiritRootEffect`（一个 80 字输入框），
            不是 `state.tpl`，所以**不走这里** —— 它没有自选面板，
            仍靠手打或随机。~~原本打算给它也接 `bloodPickHtml`，v468 没做~~：
@@ -7246,7 +7637,7 @@ d.attrs[a] = v;
            会把第 2 页撑破（那页已经 628px），而灵根效果本来就只有一句。
            ⚠ 别把两条通道合成一个函数：它们的池子、上限、排序、写回目标全都不同，
              合在一起以后每加一个条件都要写 if，最后必然只改对一半。 */
-        if (kind === '玄诀' || kind === '武器') return pasPickerHtml(it, kind, inOverlay);
+        if (kind === '心法' || kind === '法宝') return pasPickerHtml(it, kind, inOverlay);
         var q = it.品质 || '黄阶';
         var maxN = EFF_QUAL_MAX[q] || 3;
         var sel = (state.pickSel || []).filter(function (k) { return !!EFF_BY_KEY[k]; });
@@ -7462,7 +7853,7 @@ d.attrs[a] = v;
         /* ★ v468：目标是自己侧时，扣血的机制一个都不许加。
            ⚠ 这里**必须再判一次**（不能只靠界面隐藏）：按钮可以隐藏，
              但状态能通过"先选伤害再切目标"绕过 —— 那是同一个自伤 bug 的另一条路。 */
-        var _it0 = state.tpl['玄技'] || {};
+        var _it0 = state.tpl['法术'] || {};
         if (targetIsSelfSide(_it0.目标) && effBlockedOnSelf(mech)) {
             /* ★ v527：提示语改成**说清这条为什么离不开对手**。
                旧版按分组给两句套话（"伤害/减益类会落到自己身上" vs "作用在对面无处可落"），
@@ -7478,7 +7869,7 @@ d.attrs[a] = v;
         var sel = (state.pickSel || []).filter(function (k) { return !!EFF_BY_KEY[k]; });
         var at = sel.indexOf(mech);
         if (at >= 0) { sel.splice(at, 1); state.pickSel = sel; return true; }
-        var q = (state.tpl['玄技'] || {}).品质 || '黄阶';
+        var q = (state.tpl['法术'] || {}).品质 || '黄阶';
         var maxN = EFF_QUAL_MAX[q] || 3;
         if (sel.length >= maxN) {
             state.note = '⚠ ' + q + '最多 ' + maxN + ' 条效果。想加「' + mech + '」，先取消一条，'
@@ -7493,7 +7884,7 @@ d.attrs[a] = v;
        ★ 这是**唯一**的写入口：勾选、取消、口味、换品质、清空、确定，全部走它，
          绝不在别处手拼效果串（两处拼 = 迟早不一致）。 */
     function effPickApply() {
-        var it = state.tpl['玄技'];
+        var it = state.tpl['法术'];
         if (!it) return;
         var q = it.品质 || '黄阶';
         var selfSide = targetIsSelfSide(it.目标);
@@ -7532,7 +7923,7 @@ d.attrs[a] = v;
     function tplHtml(kind, d) {
         /* ★ v70：卡里不再有技能表，**玄技/玄诀一律由玩家自己编、自己填**：
            名字自己起，品质自己选，目标/消耗自己定（或点 🎲 掷），功能写成一栏效果（每行「效果名: 效果串」）。
-           两类字段完全相同，只有「类型」由所选类别定死：玄技主动 / 玄诀被动。 */
+           两类字段完全相同，只有「类型」由所选类别定死：法术主动 / 心法被动。 */
         var it = state.tpl[kind];
         if (!it) return '';
         var editing = state.editing[kind];
@@ -7547,36 +7938,36 @@ d.attrs[a] = v;
         h += '</div>';
 
         /* ★ v71 预设按钮条：点一下把整套字段一次性填好，玩家懒得打字就直接用
-           ★ v410：玄技改成「属性 × 品质」两段拉取。
+           ★ v410：法术改成「属性 × 品质」两段拉取。
              属性＝下面这个下拉；品质**直接跟着上面那个「品质」下拉走** ——
              改品质，下面这排预设就换一批，不另做一个品质选择器（两个品质会打架）。
-           ★★★ v447：玄技这一支换成**效果自选**（用户：「重新改为效果自选」）。
-             210 门整门预设仍在 `PRESET_SKILLS` 里（玄技池子/`工具/_v410_preset_cover.mjs` 闸还在用它），
+           ★★★ v447：法术这一支换成**效果自选**（用户：「重新改为效果自选」）。
+             210 门整门预设仍在 `PRESET_SKILLS` 里（法术池子/`工具/_v410_preset_cover.mjs` 闸还在用它），
              只是不再作为主入口摆出来 —— 主入口改成"勾效果 → 现拼一条效果串"。
-             玄诀与兵器**不动**，仍走原预设（玄诀是常驻被动，勾选器那套手数逻辑不适用）。 */
+             心法与兵器**不动**，仍走原预设（心法是常驻被动，勾选器那套手数逻辑不适用）。 */
         /* ★★★ v479：这三行随「预设按钮条」一起删掉了 ★★★
            它们只服务于那一排按钮（算属性/品质 → 取这一档的预设名列表）。
            按钮删了之后 `_pre` / `_psA` / `_psC` 全库零读 —— `_v335_dead_copy` 会判红
            （「声明了却全库零读」），本项目对这种残留零容忍：留着会让人以为预设还在用。
            ⚠ `presetsOf()` / `presetAttrOf()` / `presetClsOf()` / `PRESET_SKILLS` **全部保留**：
-             玄技池子、`工具/_v410_preset_cover.mjs` 闸、老存档都还在读它们，
+             法术池子、`工具/_v410_preset_cover.mjs` 闸、老存档都还在读它们，
              这里删的只是「为渲染那一排按钮而算的三个局部量」。 */
         /* ★★★ v468：玄诀与武器也接上「效果自选」★★★
-           用户原话：「玄技和武器怎么不tm也改成玄技这样，但是切记，
-             灵根和玄诀和武器的效果本质上来说就是被动，所以有一些效果不能选」。
+           用户原话：「法术和武器怎么不tm也改成法术这样，但是切记，
+             灵根和心法和武器的效果本质上来说就是被动，所以有一些效果不能选」。
            ⇒ 两支走 `pasPickerHtml`（被动池 16 条 / 三组 / 无条数上限）。
            ⚠ 原来的「预设」按钮条（一长排整门预设名）**仍在**，但收成一行、
              且排在自选器**上面**：它是"一键起个底子"，自选器是"精调"。
              两者写的是同一个 `效果` 字段，后点的覆盖先点的 —— 这是设计，
              不是 bug（玩家点预设后再勾两条，就得到"预设 + 微调"）。 */
-        if (kind === '玄技') {
+        if (kind === '法术') {
             h += effPickerHtml(it, kind);
         } else {
             /* ★★★ v479：这一排「预设」按钮**删掉**（用户 2026-10-31 发了玄诀与武器
                两张截图：「删了」）。
                原来它是"点一下填一门整门预设名 + 效果"的快捷入口；现在效果由下面的
                自选器勾，名字由玩家自己写 —— 两排预设名反而让人以为"只能从这些里挑"。
-               ⚠ `presetsOf()` / `PRESET_SKILLS` 全部保留：玄技池、闸、老存档都还在用，
+               ⚠ `presetsOf()` / `PRESET_SKILLS` 全部保留：法术池、闸、老存档都还在用，
                  这里只是**不渲染**。
                ⚠ `data-xz-act="use-preset"` / `preset-clear` 从此没有发送方，
                  接收分支留着接老存档里的按钮（删了以后老楼层点了就是静默死键）。 */
@@ -7598,33 +7989,33 @@ d.attrs[a] = v;
            ⚠ 别把「总随机 🎲 / 预设条」也藏了：那是挑效果的另一个入口。 */
         /* ★★★ v468：玄诀/武器展开时也**整段藏**（与玄技同构）★★★
            病历（量出来的，两个方案都试过）：
-             玄诀那份表单只有三个字段 —— 名24 / 品质25 / 效果70 = **119px**，
-             而共用的自选面板要 163px（那是按玄技的 168px 预算算的）。
-             ⇒ ① 两只面板给不同高度：玄诀压到 119 ⇒ 固定行（分类21+描写确定28+
+             心法那份表单只有三个字段 —— 名24 / 品质25 / 效果70 = **119px**，
+             而共用的自选面板要 163px（那是按法术的 168px 预算算的）。
+             ⇒ ① 两只面板给不同高度：心法压到 119 ⇒ 固定行（分类21+描写确定28+
                   边框内距6=55）吃完只剩 64px 滚动区，网格露 1.5 行，
                   等于把用户「怕不够写」又踩回去 ✘
-                ② **玄诀也整段藏**（连名与品质一起）⇒ 预算回到 168px 量级，
+                ② **心法也整段藏**（连名与品质一起）⇒ 预算回到 168px 量级，
                   面板 163 ✔ 且网格 103px（≈2.9 行）✔
             ⇒ 选 ②。挑效果的此刻玩家注意力在"挑"上，名和品阶挑完回来还在原位
               （值一个都没动，回来按 `value=it.名` 重贴），不是丢失。
            ⚠ 静态闸、CSS 闸、class 闸在"两只面板高度不一致"这条上**全绿**：
              它们看类名不看结构，两处共用同一套 class ——
              只有真 Chrome 分别展开两份、各量一次卡片高才看得见。
-           ⚠ 玄技仍整段藏（它多两行目标/消耗）。别让两处结构分叉：
+           ⚠ 法术仍整段藏（它多两行目标/消耗）。别让两处结构分叉：
              分叉之后一定只有一份是好的，而错的那份不报错。 */
         /* ★★★ v471：武器也必须整段藏（原来只有玄技/玄诀，武器被漏在外面）★★★
            病历（真 Chrome 量出来的）：
              武器 展开选效果 ⇒ 卡片 **862.03px**，比基准 771 多出 **91px**。
            真因：`_hideForm0` 写的是
-             `(kind === '玄技') ? pickOpen : (kind === '玄诀' ? pasOpen : false)`
+             `(kind === '法术') ? pickOpen : (kind === '心法' ? pasOpen : false)`
              —— **武器落到 else 的 false**，于是它展开面板时表单照样在，
              一个 163px 的面板叠在完整表单上，直接把卡片顶穿。
            为什么必须改（不是"武器就该长"）：
              ① 武器走的是**同一个** `pasPickerHtml`、同一个 `state.pasOpen`
-                （见上面 `if (kind === '玄技') … else { …h += pasPickerHtml(it, kind); }`）；
+                （见上面 `if (kind === '法术') … else { …h += pasPickerHtml(it, kind); }`）；
              ② 它的面板同样是 `max-height:163px`（`.xz-st-pickpanel.pas`）；
-             ③ 玄诀能藏的部分武器**同样能藏**（名/品质/类型/效果都是"挑完才填"的）。
-             ⇒ 三者同构，判据统一成「**除玄技外都看 `pasOpen`**」，别再三岔。
+             ③ 心法能藏的部分武器**同样能藏**（名/品质/类型/效果都是"挑完才填"的）。
+             ⇒ 三者同构，判据统一成「**除法术外都看 `pasOpen`**」，别再三岔。
            ⚠ 这一漏的成因很典型：`_hideForm0` 与 `_hideForm` 是**两条并行判据**，
              加一个 kind 时只改了一处就不会有报错，只是高度悄悄多 91px。
              所以下面 `_hideForm` 也一起改成同一个写法，两个真相源合并成一个。 */
@@ -7670,13 +8061,13 @@ d.attrs[a] = v;
             h += '<div class="xz-st-row"><label>品质</label><select data-xz-tpl="品质">' + opts(qualityOptionsFor(kind), it.品质) + '</select></div>';
         }
 
-        if (kind === '玄技' || kind === '玄诀') {
+        if (kind === '法术' || kind === '心法') {
             /* ★★★ v468：展开选效果时，下面这一段表单**整块隐藏** ★★★
                用户原话：「点击展开选效果的时候，这部分就暂时隐藏，也就是，它选了，
                  然后还要点一个确定按钮，就关闭展开选效果的部分，然后显示那部分，
                  然后就输入到了效果里，我这样主要是为了限高，你知道吧，
                  我不想脚本变长，但是怕不够写」。
-               ⇒ 判据：玄技看 `state.pickOpen`、玄诀看 `state.pasOpen`。
+               ⇒ 判据：法术看 `state.pickOpen`、心法看 `state.pasOpen`。
                  两个面板各自独立展开，所以两个标志位都要判，不能只判一个。
                ⚠ 隐藏而不是"折叠"：折叠还占一行标题，而这一整段（目标/消耗/效果/按钮）
                  在面板打开时本来就没用 —— 玩家此刻的注意力全在"挑效果"上，
@@ -7686,11 +8077,11 @@ d.attrs[a] = v;
                  不是靠 DOM 活着 —— 这也是四页向导换页不丢数据的原因）。 */
             /* ★ v468：两只面板**同构**，都整段藏。
                ★★★ v471 更正：这行旧账写「最终把面板压到 119px」——**已作废**。
-               现在的 `max-height` 是 **163px**（与玄技同数），见上面
+               现在的 `max-height` 是 **163px**（与法术同数），见上面
                `.xz-st-pickpanel.pas` 那段账：119 那笔漏算了卡片 `min-height` 的兜底，
                实测 119/140/163 三档都不顶长卡片（Δ0），190 才开始顶长 +14.78。
                记账不改会误导下一个改这里的人（他会以为"119 是算出来的最优"）。
-               ⚠ 两只面板必须能分别量到：玄诀那只带 `pas` 类，闸按 `getComputedStyle`
+               ⚠ 两只面板必须能分别量到：心法那只带 `pas` 类，闸按 `getComputedStyle`
                  取各自的 max-height，别用同一个常量判两只。 */
             var _hideForm = false;   /* v620：作废，理由见上面 `_hideForm0` 那段 */
             if (!_hideForm) {
@@ -7698,7 +8089,7 @@ d.attrs[a] = v;
                类型由所选类别定死、不给玩家改。
                ★ 「功能」不再是单选标签，而是**效果集**：一个 textarea，**每行一个效果**，
                  写法 `效果名: 效果描述`（描述里要带具体数值）。留空行忽略。 */
-            var isHeartTpl = (kind === '玄诀');
+            var isHeartTpl = (kind === '心法');
             /* 玄诀是被动功法：目标恒「自身」 */
             if (isHeartTpl) {
                 h += '<div class="xz-st-row"><label>目标</label>' +
@@ -7711,7 +8102,7 @@ d.attrs[a] = v;
                     '<span class="xz-chip-sm" style="margin-left:6px;color:#f87171;border-color:rgba(239,68,68,0.5);">主动</span></div>';
             }
             /* ★ v77：玄诀是被动功法，恒不耗灵力 —— 不再给「消耗」输入框。
-               （原来玄技玄诀都渲染这个框，玩家填了也会在保存时被强制归零。） */
+               （原来法术心法都渲染这个框，玩家填了也会在保存时被强制归零。） */
             if (!isHeartTpl) {
                 h += '<div class="xz-st-row"><label>消耗</label><input type="number" data-xz-tpl="消耗" min="0" max="999" step="5" value="' + Number(it.消耗 || autoMpCost(it.品质, it.目标)) + '">' + dice('消耗') +
                     '<span style="font-size:10px;color:#64748b;margin-left:6px;">灵力</span></div>';
@@ -7750,22 +8141,22 @@ d.attrs[a] = v;
         /* ★ v84：武器也只有「效果」一栏了 —— 描述与效果本就是一回事，
            分成两个框的结果是「玩家填的那栏不生效、引擎读的那栏玩家看不见」。
            现在一栏写完，既是画面也是效果，引擎直接读它。 */
-        var canDesc = (kind === '武器');
+        var canDesc = (kind === '法宝');
         /* ★★★ v471：展开选效果时，「类型 / 效果 / 添加」也必须一起藏 ★★★
            病历（真 Chrome 390×844 实测，不是推算）：
              武器点「展开选效果」⇒ 卡片 771 → **790.84px（+19.84）**。
            逐行量出来的账：
-             藏掉的：武器名 28.19 + 品质 31 = **59.19px**（`_hideForm0` 的功劳）
+             藏掉的：法宝名 28.19 + 品质 31 = **59.19px**（`_hideForm0` 的功劳）
              面板带来的：效果自选行 46.91 → **183.28（+136.37px）**
              没藏的：类型 28.19 + 效果 53.5 + 添加 31 = **112.69px**
            ⇒ 这 112.69 一直压在面板下面，靠卡片 `min-height:768` 的兜底
              硬吃了 92px，剩下的 19.84 就漏到卡片高度上。
-           ⇒ 判据与玄诀/玄技**同一个**：`_hideForm0` 为真就整段不渲染。
+           ⇒ 判据与心法/法术**同一个**：`_hideForm0` 为真就整段不渲染。
              武器此刻的注意力全在"挑"上，类型恒「常驻装配」不可改、
              效果挑完点确定自动写回（`pasPickApply` → `it.效果`），
              添加按钮挑完就在原位 —— 三者都不是挑的过程中要看的东西。
            ⚠ 别再留"武器特殊"这个口子：`_hideForm0` 已经统一成两岔，
-             这里再写一份 `kind === '武器'` 的判据就是**又开一个真相源**，
+             这里再写一份 `kind === '法宝'` 的判据就是**又开一个真相源**，
              下次加 kind 照样只改对一半（这正是上面那 91px 的成因）。 */
         /* ★ v620：`XZ_IN_OVERLAY` 已整体删除，三处判据回到同一个直白写法。
            这里保留 v471 那条教训（它跟常量无关，仍然成立）：
@@ -7785,7 +8176,7 @@ d.attrs[a] = v;
                  而「被动」是**玩法信息**：它告诉玩家这件兵器是常驻加成的，
                  不是在战斗中主动点出来的。把这两个字一起删掉 = 玩家以为武器要手动放。
                ── 所以现在：不新增整行，只在「效果」的 label 后面挂一枚小标签 ──────
-                 用与玄诀「目标」行**同一个** `.xz-chip-sm` 蓝标签（同语义同视觉：
+                 用与心法「目标」行**同一个** `.xz-chip-sm` 蓝标签（同语义同视觉：
                  蓝＝被动），不复用 v509 那个只读输入框（那才是被骂的东西）。
                ⚠ 别再把它做成一行「类型 / 常驻装配」—— 那正是 v509 的原文案。 */
             var _ph = '60 字内写下这件兵器的效果（可带一句样子，如「寒气森然，增伤 15%」）';
@@ -8251,18 +8642,32 @@ d.attrs[a] = v;
              · `background` 给一层极淡的底：contain 在极端宽高比下可能留边，
                留边处不能是刺眼的页面底色。
            ⚠ 别再用 cover：项目里 cover 是给"头像／缩略图"用的（方形裁切无所谓），
-             而这里玩家要看的就是**这张画的全部**。两件事的裁切语义相反。 */
+             而这里玩家要看的就是**这张画的全部**。两件事的裁切语义相反。
+           ★★★ v635：边框比图宽（作者 2026-11-18 截图指出）★★★
+             原话：「显示框比显示内容宽，所有空出来两边，看着好难看。」
+             ── 病根 ──────────────────────────────────────────────────────
+               `width:100%` 把 **img 元素**拉满容器宽，`max-height` 再把它压到 300px，
+               `object-fit:contain` 于是把图**居中放进去**、左右留出黑边
+               ⇒ 边框（画在元素上）比看得见的内容宽，两边各一大块空。
+             ── 修法：让元素按图自己的比例收缩，而不是拉满再内缩 ────────────
+               `width:auto;height:auto` + `max-width:100%` + `max-height`
+               ⇒ 替换元素（img）在两个 auto 加两个 max 下**等比缩放**，
+                 元素盒子 == 看得见的图 ⇒ 边框天然贴着图。
+               ⚠ 别再写 `width:100%`：它是"容器多宽我多宽"，和 contain 天生打架。
+               ⚠ 用 `margin:0 auto` 居中：图比容器窄时贴着左边更难看。 */
         return '<div class="xz-st-scene">'
+            + '<div class="xz-st-scene-w">'
             + '<img src="' + esc(url) + '" alt="' + esc(alt) + ' 场景图"'
             + ' loading="lazy" referrerpolicy="no-referrer"'
-            + ' style="display:block;width:100%;height:auto;max-height:min(38vh,300px);'
+            + ' style="display:block;margin:0 auto;width:auto;height:auto;'
+            + 'max-width:100%;max-height:min(38vh,300px);'
             + 'object-fit:contain;background:rgba(8,10,14,.35);'
             + 'border-radius:7px;border:1px solid rgba(230,189,118,.28);"'
             /* 图上叠城名：单看图认不出是哪座城。`pointer-events:none` 让它不挡点击 */
             + ' onerror="this.style.display=\'none\';var c=this.nextElementSibling;if(c)c.style.display=\'block\';"'
             + '>'
             + '<span class="xz-st-scene-n">' + esc(alt) + '</span>'
-            + '</div>';
+            + '</div></div>';
     }
 
     /* ══════════════════════════════════════════════════════════════════════
@@ -8419,14 +8824,34 @@ d.attrs[a] = v;
     /* 怎么打 / 自选气运 的浮层（新手预设包与机制科普已随脚本战斗一并作废）。
        手机端体验升级：改用本领界面同款「底部贴合小窗」（Bottom Sheet 布局），
        align-items:flex-end，贴在屏幕最下方，直观、好看、不遮挡、在手机上绝不截断！ */
-    function overlayShell(title, closeAct, bodyHtml) {
+    /* ★★★ v635：第 4 参 `bodyCls` —— 让 body 变 flex 列，面板才能"拉长" ★★★
+       作者 2026-11-18（第二次就这块骂）：「不是，nitm，你倒是拉长啊，不然弹层的
+         意义在哪」。上一版只把弹层**挪进屏幕**，高度仍是"内容撑多少算多少"：
+         `.xz-st-pickpanel` 自带 `max-height:163px`（那是给**卡片里**算的账），
+         于是弹层 360px 高、网格只露 124px、下面一大片空白，最后一行还被底部
+         「确定」压住 —— 弹层完全没起到"给多腾地方"的作用。
+       ⇒ 这里加一个可选 class 名，只给"选效果"这只弹层挂上（`xz-st-body-pick`）。
+         CSS 里那个 class 把 body 变成 `display:flex;flex-direction:column`，
+         并让 `.xz-st-pickpanel` 吃 `flex:1 1 auto;min-height:0` —— 面板自然撑满，
+         不需要给面板写任何 px。**卡片里那份面板不加这个 class，163px 预算一个
+         字节不动**（四页等高 625px 是本项目的硬账，见 `_v471_pasroom`）。
+       ⚠ 别改成"所有弹层都 flex 定高"：灰雾总纲/灵根自选那些是"读一段文字"，
+         内容少的时候定高就是一大片空。只有**网格**那种"要给多留地方"的才需要。 */
+    function overlayShell(title, closeAct, bodyHtml, bodyCls) {
+        /* ★★★ v634：上限改成 CSS 变量，别写进内联 max-width ★★★
+           裁决层（VIEW 里 `[data-xz-ovl-box]`）有一条 `!important` 的
+           `max-width:min(视口, var(--xz-ovl-maxw,100%))`。
+           以前这里内联 `max-width:540px`，被裁决层压成"视口宽"⇒
+           1280 宽的桌面上弹层铺满整屏。现在把 540/680 交给那两个变量，
+           `min()` 才能拿到它并真正取小值。
+           ⚠ 变量必须写在这个元素自己的 style 上（内联变量对自身可见）。 */
         return '<div class="xz-st-ovl-bg" data-xz-act="' + closeAct + '" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.82);z-index:999999;display:flex;align-items:flex-end;justify-content:center;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;">' +
-            '<div class="xz-st-ovl-box" style="background:#141922;border:1.5px solid var(--xz-gold);border-bottom:none;border-radius:12px 12px 0 0;max-width:540px;width:100%;max-height:min(82vh,680px);display:flex;flex-direction:column;box-shadow:0 -10px 35px rgba(0,0,0,0.9);color:#e2decb;">' +
+            '<div class="xz-st-ovl-box" style="--xz-ovl-maxw:540px;--xz-ovl-maxh:680px;background:#141922;border:1.5px solid var(--xz-gold);border-bottom:none;border-radius:12px 12px 0 0;max-width:540px;width:100%;max-height:min(82vh,680px);display:flex;flex-direction:column;box-shadow:0 -10px 35px rgba(0,0,0,0.9);color:#e2decb;">' +
             '<div style="padding:10px 14px;border-bottom:1px solid rgba(230,189,118,.3);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-shrink:0;background:#181e28;border-radius:12px 12px 0 0;">' +
             '<strong style="color:#dcdcdc;font-size:14px;">' + esc(title) + '</strong>' +
             '<button type="button" class="xz-st-mini del" data-xz-act="' + closeAct + '" style="padding:4px 12px;flex:0 0 auto;font-size:11px;">✕ 关闭</button>' +
             '</div>' +
-            '<div class="xz-st-body" style="padding:12px 14px;overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1 1 auto;min-height:0;font-size:12px;line-height:1.55;">' + bodyHtml + '</div>' +
+            '<div class="xz-st-body' + (bodyCls ? (' ' + bodyCls) : '') + '" style="padding:12px 14px;overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1 1 auto;min-height:0;font-size:12px;line-height:1.55;">' + bodyHtml + '</div>' +
             '</div></div>';
     }
 
@@ -8435,7 +8860,7 @@ d.attrs[a] = v;
        用户原话（2026-11-16）：
          「我他妈让你搞弹层的意义是什么！效果这么多用弹层啊，其他像原来一样啊，
            我他妈意思是**选效果才有弹层**啊」
-       这是他第二次说这件事（v584 时他说的是「玄技玄诀和武器锻造台，彻底改为弹层式」，
+       这是他第二次说这件事（v584 时他说的是「法术心法和武器锻造台，彻底改为弹层式」，
        我理解成了"整个锻造台"）。真正的分工是：
          · **效果网格**（几十个按钮、分类条）→ 弹层。它才是"面板空间不大"的那个东西。
          · **五个输入框**（名/品质/目标/消耗/效果）→ 就在卡片里，像原来一样。
@@ -8459,7 +8884,7 @@ d.attrs[a] = v;
     function renderForgeOverlay() {
         var st = state.forge;
         if (!st) return '';
-        var kind = st.kind || '玄技';
+        var kind = st.kind || '法术';
         var d = state.draft;
         if (!d) return '';
         var it = state.tpl[kind];
@@ -8471,13 +8896,13 @@ d.attrs[a] = v;
         /* 三页签放在弹层顶部：效果池跟着类别走（玄技走招式通道、玄诀/武器走被动通道），
            换类别＝换整个池子，所以这个选择必须在弹层里能改。
            ⚠ 它改的是 `state.tab` + `state.forge.kind` 两个（`forge-kind` 分支负责），
-             不是只改一个 —— 只改一个就会出现"给玄技挑效果、写进武器"。 */
+             不是只改一个 —— 只改一个就会出现"给法术挑效果、写进武器"。 */
         /* ★ 用户 2026-11-16：玄技/玄诀无上限，只显示门数；武器 /1 是真上限保留。
            与主渲染 9054 那段同口径 —— 两处显示必须一致，否则弹层里 0/30、外面 0 门，看着像两个游戏。 */
         var body = '<div class="xz-st-tabs" style="margin-top:0;">' + KINDS.map(function (k) {
             var n = d.items[k].length, lim = maxSlots(d, k);
-            var unit = (k === '玄诀') ? '部' : (k === '武器') ? '件' : '门';
-            var cnt = (k === '武器') ? (n + '/' + lim) : (n + ' ' + unit);
+            var unit = (k === '心法') ? '部' : (k === '法宝') ? '件' : '门';
+            var cnt = (k === '法宝') ? (n + '/' + lim) : (n + ' ' + unit);
             return '<button type="button" class="xz-st-tab' + (kind === k ? ' on' : '') + '"'
                 + ' data-xz-act="forge-kind" data-xz-kind="' + esc(k) + '">'
                 + esc(k) + ' ' + cnt + '</button>';
@@ -8485,97 +8910,43 @@ d.attrs[a] = v;
 
         /* 只要选择器本身。传 kind 之前已经由 `forge-kind` 把 `state.tab` 对齐过，
            因为 `pasPickerHtml` 读的是 `state.pasKind`，`effPickerHtml` 读 `state.tab`。 */
-        body += (kind === '玄技') ? effPickerHtml(it, kind, true) : pasPickerHtml(it, kind, true);
+        body += (kind === '法术') ? effPickerHtml(it, kind, true) : pasPickerHtml(it, kind, true);
 
         /* 底部：确定 = 收起面板（效果在勾选那一刻已经写回了，这里只负责收） */
-        body += '<div style="position:sticky;bottom:-12px;margin:10px -14px -12px;padding:9px 14px;'
-            + 'background:linear-gradient(to top,#141922 72%,rgba(20,25,34,0));'
-            + 'border-top:1px solid rgba(230,189,118,.22);display:flex;gap:8px;align-items:center;">'
+        /* ★ v635：不再 `position:sticky`。body 现在是 flex 列（`.xz-st-body-pick`），
+           这一条就是最后一个 `flex:none` 的行，天然贴在弹层底边 —— 这才是"钉在底部"。
+           ── 为什么 sticky 必须去掉（v635 的病根之一）───────────────────────
+             原来 `bottom:-12px` + `margin-bottom:-12px` 是把条**压在** body 的
+             padding 区外面，靠 sticky 悬在内容之上。body 有 `overflow-y:auto` 时
+             它确实能"浮"住，但同时**盖住网格最后一行**（作者截图里最后一行按钮
+             被「确定」压住就是这个）。改成 flex 行之后内容区自己收缩，
+             两者永不重叠，也不需要负 margin。 */
+        body += '<div class="xz-st-ovl-ft">'
             + '<button type="button" class="xz-st-main" data-xz-act="forge-ok" style="flex:1;">'
             + '确定</button>'
             + '</div>';
-        return overlayShell(title, 'forge-close', body);
+        /* ★ v635：`forge-ovl` → body 变 flex 列，效果面板才能撑满弹层（见上方 overlayShell 那段） */
+        return overlayShell(title, 'forge-close', body, 'xz-st-body-pick');
     }
 
-    /* ══════════════════════════════════════════════════════════════════════════
-       ★★★ v584：灵根（血脉）效果自选 → 弹层 ★★★
-       用户原话：「血脉也开始实装效果自选，也是弹层。」
-       ── 实装前是什么 ────────────────────────────────────────────────────
-       第 2 页「灵根」那一行只有一个 🎲：按品阶从被动池**随机一条**写进效果栏。
-       池子有 16 条、三组（攻伐／护体／根基），玩家却只能干看着骰子掷 ——
-       想选「减伤」得反复掷。而引擎那边 `SPIRIT_ROOT_EFFECT_KEYS` 这 16 条**全都认**，
-       也就是"能力在、入口没有"。
-       ── 为什么这次能做（v468 当时明确说做不了）──────────────��──────────
-       v468 留的原话是「灵根只有一个 80 字输入框，塞一个 16 条的三级面板进去会把
-       第 2 页撑破（那页已经 628px）」。那个判断在"面板必须内联"的前提下是对的。
-       ⇒ 现在搬进弹层，卡片高度**一分不涨**，前提变了，结论也跟着变。
-       ── 写回目标 ────────────────────────────────────────────────────────
-       `state.draft.spiritRootEffect`（字符串），格式 `机制:数值｜描写`。
-       复用 `effPasLineFor()` —— 与玄诀/武器同一个出口，所以选出来的字
-       必然能被 `SPIRIT_ROOT_EFFECT_KEYS` 命中（`_v468_pas_probe` 守着这条）。
-       ⚠ **不改**灵根已有的「说明」字段（`bloodDesc`）：那是独立的 80 字输入框，
-         落盘时由 `效果 + '｜' + 说明` 合并（见 `buildVars` 里那段）。
-         这里只动竖线左边，右边留给玩家自己写。
-       ══════════════════════════════════════════════════════════════════════════ */
-    function renderBloodPickOverlay() {
-        var d = state.draft;
-        if (!d) return '';
-        var rank = d.spiritRootRank || '伪灵根';
-        var maxN = Math.max(1, Math.min(4, EFF_QUAL_MAX[rank] || 1));
-        /* 当前效果串里已经有的机制 —— 用来把按钮标成"已选"
-           ⚠ 只认竖线左边（右侧是描写，里面出现"减伤"两个字不代表选了减伤效果） */
-        var cur = String(d.spiritRootEffect || '');
-        var curKeys = {};
-        cur.split(/[\n｜|]/).forEach(function (seg) {
-            var m = /^\s*([^:：]+)\s*[:：]/.exec(seg);
-            if (!m) return;
-            var nm = String(m[1]).trim();
-            EFF_PAS_POOL.forEach(function (e) { if (e.kw === nm || e.k === nm) curKeys[e.k] = 1; });
-        });
-        var picked = Object.keys(curKeys).length;
-
-        var body = '';
-        body += '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:9px;">'
-            + '<span class="xz-chip-sm" style="border-color:rgba(201,168,106,.5);color:#e8cb92;">'
-            + esc(rank) + ' · 最多 ' + maxN + ' 条</span>'
-            + '<span class="xz-chip-sm" style="' + (picked > maxN ? 'border-color:rgba(239,68,68,.6);color:#f87171;' : '') + '">'
-            + '已选 ' + picked + ' 条</span>'
-            + (picked ? '<button type="button" class="xz-st-mini" data-xz-act="blood-clear" style="padding:3px 9px;">✕ 清空</button>' : '')
-            + '<button type="button" class="xz-st-dice" data-xz-act="roll-eff-blood" style="padding:3px 10px;margin-left:auto;">🎲 随机</button>'
-            + '</div>';
-        /* 当前效果回显：让玩家看见"现在写的是什么"，不然勾完不知道落成了什么字 */
-        body += '<div class="xz-st-picksum" style="margin-bottom:8px;' + (cur ? '' : 'opacity:.55;') + '">'
-            + (cur ? esc(cur) : '效果栏现在是空的')
-            + '</div>';
-        /* 三组逐组列出。**不用二级折叠**：弹层已经够高，16 条一次看全比点两层快。 */
-        EFF_PAS_GROUPS.forEach(function (g) {
-            var items = EFF_PAS_POOL.filter(function (e2) { return e2.g === g.k; });
-            if (!items.length) return;
-            body += '<div style="margin-top:10px;">'
-                + '<div style="font-size:11px;color:var(--xz-gold);letter-spacing:.05em;margin-bottom:5px;">'
-                + esc(g.label) + '</div>'
-                + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;">';
-            items.forEach(function (e2) {
-                var on = !!curKeys[e2.k];
-                body += '<button type="button" class="xz-st-mini" data-xz-act="blood-tog" data-mech="' + esc(e2.k) + '"'
-                    + ' style="text-align:left;padding:7px 9px;line-height:1.35;'
-                    + (on ? 'border-color:var(--xz-gold);background:rgba(230,189,118,.18);color:var(--xz-gold-bright);' : '')
-                    + '">'
-                    + '<span style="font-weight:var(--xz-fw-med);">' + (on ? '✓ ' : '') + esc(e2.kw) + '</span>'
-                    + '<span style="opacity:.62;font-size:10px;">:' + esc(String(e2.base)) + '</span>'
-                    + '<br><span style="opacity:.55;font-size:10px;">' + esc(e2.txt) + '</span>'
-                    + '</button>';
-            });
-            body += '</div></div>';
-        });
-        body += '<div style="position:sticky;bottom:-12px;margin:12px -14px -12px;padding:9px 14px;'
-            + 'background:linear-gradient(to top,#141922 72%,rgba(20,25,34,0));'
-            + 'border-top:1px solid rgba(230,189,118,.22);display:flex;gap:8px;">'
-            + '<button type="button" class="xz-st-main" data-xz-act="blood-ok" style="flex:1;">确定</button>'
-            + '<button type="button" class="xz-st-mini" data-xz-act="blood-close" style="flex:0 0 auto;padding:7px 12px;">✕ 关闭</button>'
-            + '</div>';
-        return overlayShell('✦ 灵根效果自选', 'blood-close', body);
-    }
+    /* ★★★ 2026-11-18（超级大更新）：这里原本是 `renderBloodPickOverlay()` ★★★
+       灵根「效果自选」弹层（16 条被动池，写回 `state.draft.spiritRootEffect`）。
+       ── 为什么整层删掉 ──────────────────────────────────────────────
+         灵根收成 `{ 品阶, 属性 }` 两个字段，没有「效果」了（作者：
+         「灵根不能有名字，只能有品质，属性，没有效果」）。
+         ⇒ 这一层失去写回目标：勾了、确定了、界面还回显着，
+           而 buildVars 不写它、schema 里也没有 `灵根.效果` ⇒ **一个字节都不落盘**。
+         这正是本项目最贵的形态（能点、能勾、什么都不发生；且不报错）。
+       ── 连带删掉的东西（少删一样就留一个死键）──────────────────────
+         · `state.bloodPick` 状态位 + 它在 render 签名里的两项
+         · `if (state.bloodPick) h += renderBloodPickOverlay();`
+         · handleAction 的 blood-open / blood-close / blood-tog /
+           blood-clear / blood-ok 五个分支
+         · `roll-eff-blood` 分支（两个发送方都在这层里，删完即孤儿）
+       ⚠ 别把 `SPIRIT_ROOT_EFFECT_POOL` 一起删：`_v330_preset_format.mjs` ② 段
+         仍拿它逐条喂引擎 `parseSpiritRootEffect`（效果格式的第四源校验），
+         删了那道闸当场 exit 2 —— 那不是"清理死代码"，是拆掉一条判据。
+       ⚠ 也别删 `EFF_PAS_POOL`：心法/法宝的自选面板还在用它。 */
 
     /* ══════════════════════════════════════════════════════════════════════════
        ★★★ v465：开局脚本 = 四页向导 ★★★
@@ -8602,7 +8973,7 @@ d.attrs[a] = v;
        这不是"好看优先"：DLC 决定**后面出现哪些落点**（`PLACES[].dlc`），
        放在最后会让玩家填完四页才发现"想玩的世界没开"。
        ══════════════════════════════════════════════════════════════════════════ */
-    var XZ_WIZ_PAGES = ['天元录', '灵根四维', '技能武器', '开局'];
+    var XZ_WIZ_PAGES = ['天元录', '灵根四维', '技能法宝', '开局'];
     /* ★ v467：手风琴的合法 key 白名单。
        ⚠ 必须是**常量**且与各页 `sectOpen(...)` 传的 key 逐字一致 ——
          加一块新分区时两处都要改，漏了就是"点了没反应"（脏值被 `indexOf < 0` 挡掉，
@@ -9121,14 +9492,11 @@ d.attrs[a] = v;
        ── 与第 2 页的关系 ────────────────────────────────────────────────────
          第 2 页只留 `sectClose('灵根')` 之前的那段注释指向本函数，**不再调用**。
        ⚠ 返回值是**一整块**（自带 sectOpen/sectClose），调用方直接 `h +=`，别再包一层。 */
-    var SPIRIT_ROOT_RANKS = ['伪灵根', '四灵根', '三灵根', '双灵根', '天灵根', '圣灵根'];  // 顺序：低→高；圣灵根为顶（用户口径：圣灵根 > 天灵根）
+    var SPIRIT_ROOT_RANKS = ['伪灵根', '四灵根', '三灵根', '双灵根', '天灵根', '至高灵根'];  // 顺序：低→高；至高灵根为顶（用户口径：至高灵根 > 天灵根）
     function spiritRootBlockHtml(d) {
         var h = '';
         /* ★ v43 灵根选择：品阶定上限、纯度定兑现。可手填，也可「随机灵根」掷一组。 */
         var tjNow = draftTianjiao(d);
-        /* 右侧小字放"预计天骄"—— 它是**会变的读数**，必须留在折叠区外。
-           原来它是一整行长句（还带"圣灵根·天选之子 天灵根·大天骄…"那段对照表），
-           用户说的"解释字体太多"有一半是它。 */
         /* ★★★ v620：随机按钮搬进**标题栏** ★★★
            用户原话：「你他妈随机肯定是在对应部分随机啊，谁他妈叫你专门做一个标头」。
            原来它在正文第一行占一整行（≈28px），内容是「🎲 随机血脉 + 一句解释」。
@@ -9141,8 +9509,17 @@ d.attrs[a] = v;
              折进 `foldTip`（"说明"那一行本来就有）。它讲的是"随机掷的是哪几项"，
              属于解释不属于操作 —— 作者 2026-11-04 定过「所有解释只能进说明」。
            ⚠ 动作名保留 `roll-blood`（v43 起就在，事件分支不用改）。 */
-        h += sectOpen('血脉 · 灵根', (d.spiritRootName || '未定') + ' · ' + (d.spiritRootRank || '伪灵根') +
-            ' · 纯度 ' + (Number(d.spiritRootPurity) || 0) + '% · 预计天骄 ' + tjNow.name, '灵根',
+        /* ★ v637：标题栏不再写那串摘要。原来 extra 是
+           `山野散根 · 伪灵根 · 纯度 10% · 预计天骄 非天骄`，作者 2026-11-18：
+           「血脉那栏，你再试试看在标题栏写字何况还是写重复试试看呢」。
+           ── 它重复了两遍 ──────────────────────────────────────────
+             ① 「预计天骄」+ 读数「非天骄」= 同一词连写两次；
+             ② 整串把下面四个格子（名称/品阶/天骄预计/纯度）又抄了一遍。
+           ── 为什么可以整串删掉而不丢读数 ──────────────────────────
+             正文 flow 区（9533 行附近）已有「天骄预计 [非天骄]」那颗金框读数，
+             且它在折叠区外、一直显示。名称/品阶/纯度更是下面四格的原值本身。
+           ⇒ 标题栏只留「血脉 · 灵根」+ 随机血脉按钮（v620 作者钦定留在标题栏）。 */
+        h += sectOpen('血脉 · 灵根', '', '灵根',
             '<button type="button" class="xz-st-dice" data-xz-act="roll-blood"'
             + ' style="padding:3px 9px;font-size:11px;" title="品阶、纯度、名称、效果一起掷；掷完仍可逐格手改">'
             + '🎲 随机血脉</button>');
@@ -9161,15 +9538,29 @@ d.attrs[a] = v;
              flex-wrap 严格按 DOM 顺序回流，顺序错了宽屏也拼不到一起。
            ⚠ `data-xz-field` / `min/max` / `maxlength` 全部原样 —— 纯排版，
              `onField` 按 `data-xz-field` 找，与在第几行、第几列完全无关。 */
+        /* ★★★ 2026-11-18（超级大更新）：灵根只剩两个字段 ⇒ 表单也只留两格 ★★★
+           作者：「灵根不能有名字，只能有品质，属性，没有效果」。
+           ⇒ 名称 / 纯度% / 效果 / 说明 四个框**整块删除**，补一格「属性」。
+           ── 为什么属性这一格绑 `data-xz-field="elem"` ────────────────────
+             07 里 `d.elem` 本来就是「这条灵根是什么属性」：第 2 页「道基」那个下拉、
+             落盘的 `灵根.属性`、05 的状态栏/NPC 卡 全读它。这里是**同一个字段的
+             第二处视图**，不是第二个字段 —— 两处各存一份必然漂移（v551 前科）。
+             ⇒ onField 里 `elem` 分支现成可用，不必新增；`_v387_ui_wiring` 要求
+               「每个 data-xz-field 都有分支」，用 elem 天然满足。
+           ── 为什么删纯度框是**修 bug** 而不是收拾界面 ──────────────────
+             纯度参与 computedHpMax/MP 的乘数（`定额 × 纯度/100`）。字段删了、
+             框还在，玩家照填 ⇒ 看着像生效、其实一个数都不落盘。
+             （乘数本身已在 _v664 断开；这里把**误导源**一起拆掉。）
+           ── 布局 ──────────────────────────────────────────────────────
+             三格：品阶（均分）+ 属性（均分）+ 天骄预计（定宽 104）。
+             宽屏一行三个，390px 窄屏按 DOM 顺序折成 2+1，不会再挤。 */
         h += '<div class="xz-st-flow" style="margin-top:0;">' +
-             '<div class="xz-st-cell" style="flex:1 1 200px;"><label>名称</label>' +
-             '<input type="text" data-xz-field="spiritRootName" value="' + esc(d.spiritRootName || '') + '" placeholder="如：九幽地冥蟒 / 太古虚龙"></div>' +
              '<div class="xz-st-cell"><label>品阶</label><select data-xz-field="spiritRootRank">' + opts(SPIRIT_ROOT_RANKS, d.spiritRootRank || '伪灵根') + '</select></div>' +
+             '<div class="xz-st-cell"><label>属性</label><select data-xz-field="elem">' + opts(ELEMS, d.elem) + '</select></div>' +
             '<div class="xz-st-cell" style="flex:0 0 104px;"><label>天骄预计</label>' +
             '<div style="padding:5px 8px;border:1px solid rgba(212,175,55,.45);border-radius:8px;background:rgba(212,175,55,.10);color:var(--xz-gold-bright);font-size:12.5px;font-weight:var(--xz-fw-med);text-align:center;">' +
             esc((tjNow && tjNow.name) || '非天骄') + '</div></div>' +
-             '<div class="xz-st-cell" style="flex:0 0 88px;"><label>纯度 %</label>' +
-             '<input type="number" data-xz-field="spiritRootPurity" min="0" max="100" value="' + (Number(d.spiritRootPurity) || 0) + '"></div>' +
+             '</div>';
              /* ★ 效果 + 说明是两个 80 字短文本，宽屏并排一行、窄屏自动折。
                 `flex:1 1 210px` 是本条能并排的临界值：两个 210 + 间距 ≈ 430px，
                 再小会在 760px 宽时反而挤成一行两半 —— 实测 210 时两边各得 ≈325px，
@@ -9180,7 +9571,7 @@ d.attrs[a] = v;
                   `.xz-st-cell` 是 label 上、控件下的竖排，多一个兄弟节点会多占一整行；
                  挂进 `<label>` 里就只是标题那一行变宽，高度一分不涨。
                  （第 2 页预算 628px，实测加完仍是 628px，见 _v466_h.mjs。）
-                ⚠ 别给这个 input 加 `readonly`：效果栏是玩家要写的（与玄诀那个
+                ⚠ 别给这个 input 加 `readonly`：效果栏是玩家要写的（与心法那个
                  「目标=自身 / readonly」不同，那个是定死的，这个是空的等人填）。 */
              /* ★★★ v584：灵根效果 —— 🎲 旁边加**自选**入口 ★★★
                 用户原话：「血脉也开始实装效果自选，也是弹层。」
@@ -9190,18 +9581,24 @@ d.attrs[a] = v;
                   只留一个都会让另一类玩家难受。
                 ⚠ 别把「选效果」塞进这一行做内联面板（v468 试过并明确否决）：
                   第 2 页预算已经吃满，16 条网格一进来就撑破。弹层才是不涨页高的解法。 */
-             '<div class="xz-st-cell" style="flex:1 1 210px;"><label>效果' +
-             '<span class="xz-chip-sm" style="margin-left:5px;color:#60a5fa;border-color:rgba(59,130,246,0.5);">被动</span>' +
-             '</label>' +
-             '<input type="text" data-xz-field="spiritRootEffect" maxlength="80" value="' + esc(d.spiritRootEffect || '') + '" placeholder="永久被动，可留空">' +
-             '<button type="button" class="xz-st-dice" data-xz-act="blood-open" style="flex:0 0 auto;padding:4px 9px;">选</button>' +
-             '<button type="button" class="xz-st-dice" data-xz-act="roll-eff-blood" style="flex:0 0 auto;">🎲</button></div>' +
-             '<div class="xz-st-cell" style="flex:1 1 210px;"><label>说明</label>' +
-             '<input type="text" data-xz-field="bloodDesc" maxlength="80" value="' + esc(d.bloodDesc || '') + '" placeholder="来历与体征，可留空"></div>' +
-             '</div>';
-        h += foldTip('品阶 = 这条灵根能到的<em>上限</em>；纯度 = 当下兑现几成（0~100），最低伪灵根。<br>'
-            + '标题栏那颗「🎲 随机血脉」会把品阶、纯度、名称、效果<em>一起</em>掷掉（掷完仍可逐格手改）。<br>'
-            + '天骄档只看灵根：<b>圣灵根</b> · 天选之子　<b>天灵根</b> · 大天骄　<b>双灵根</b> · 普通天骄　三灵根及以下 · 非天骄。');
+        /* ★★★ 2026-11-18：效果 + 说明两格已删除（连带「选」「🎲」两颗按钮）★★★
+           ── 为什么连按钮一起删，而不是只删输入框 ──────────────────────
+             「选」开的是 `renderBloodPickOverlay`（16 条被动池），写回
+             `d.spiritRootEffect`；那个键现在**零消费点**（buildVars 不写它，
+             schema 里也没有 `灵根.效果`）⇒ 留着就是「能点、能勾、什么都不发生」。
+             本项目铁律：死件不报错，比报错更难查 ⇒ 入口与写回一起删。
+           ── 随机那一路呢 ──────────────────────────────────────────────
+             标题栏那颗「🎲 随机血脉」保留：`rollBloodInto()` 现在掷的是
+             **品阶 + 属性**，两个都还是真字段，掷完界面上看得见变化。
+           ⚠ 别把 `SPIRIT_ROOT_EFFECT_POOL` / `rollBloodEffect` 也当成死代码删掉：
+             它们仍在被 `_v330_preset_format` 逐条喂引擎解析（那是效果格式的
+             第四源校验）。池子留着不占空间，删了会让那道闸当场 exit 2。 */
+        /* ★ 2026-11-18：说明文字跟着改口径 —— 不再提纯度/名称/效果（都删了）。
+           ⚠ 「灵根只加气血上限/灵力上限/修炼速度」这句必须写上：它是玩家最常问的
+             「我这灵根到底有什么用」，而界面上已经没有任何地方显示它的收益了。 */
+        h += foldTip('灵根<em>只</em>决定三件事：<b>气血上限</b>、<b>灵力上限</b>、<b>修炼速度</b>；品阶越高给得越多，属性决定克制关系。<br>'
+            + '标题栏那颗「🎲 随机血脉」会把品阶与属性<em>一起</em>掷掉（掷完仍可逐格手改）。<br>'
+            + '天骄档只看灵根：<b>至高灵根</b> · 天选之子　<b>天灵根</b> · 大天骄　<b>双灵根</b> · 普通天骄　三灵根及以下 · 非天骄。');
         h += sectClose('灵根');   /* ⚠ 必须传同一个 key（v470 修：这里原来漏传，多闭合一层 div，
                                      把 .xz-st-body 提前关掉 ⇒ 下面「四维」整块掉出作用域，
                                      四个数字框退回浏览器默认白底黑字。见 CSS 里 `.xz-st-sect-b input` 那段） */
@@ -9289,7 +9686,12 @@ d.attrs[a] = v;
              + ' value="' + (d.realAge || XZ_AGE_ABS[0]) + '"'
              + ' title="' + XZ_AGE_ABS[0] + '~' + XZ_AGE_ABS[1] + '岁，与境界无关"></div>' +
              '<div class="xz-st-cell"><label>境界</label><select data-xz-field="realm">' + opts(REALMS, d.realm) + '</select></div>' +
-             '<div class="xz-st-cell"><label>玄元属性</label><select data-xz-field="elem">' + opts(ELEMS, d.elem) + '</select></div>' +
+             /* ★ 2026-11-18：标签原为「玄元属性」—— 那个字段已删除，属性并进 `灵根.属性`。
+                这里保留这格（它就是 `d.elem`），只把名字改对：玩家看到的应当是
+                「这个人的属性」，而不是一个变量里根本不存在的字段名。
+                ⚠ 它与第 3 页灵根块那格是**同一个 `d.elem` 的两处视图**，两页不同时在 DOM
+                  （一次只产一页），所以不存在两个同名控件打架的问题。 */
+             '<div class="xz-st-cell"><label>属性</label><select data-xz-field="elem">' + opts(ELEMS, d.elem) + '</select></div>' +
              '</div>';
         /* 年龄标尺从"行内小字"挪成 title 提示 + 这里一行极小的灰字 ——
            直接删掉会让玩家不知道能填几岁（那是判据，不是装饰）。
@@ -9303,7 +9705,7 @@ d.attrs[a] = v;
 
         /* ★★★ v613：灵根（血脉）整块**已搬到第 3 页** ★★★
            作者 2026-11-15：「血脉搬迁到技能分页里，刚刚好四个都是选择的」。
-           第 3 页从此是四个「选择」：血脉 / 玄技 / 玄诀 / 武器 —— 全是"从池子里选一个"，
+           第 3 页从此是四个「选择」：血脉 / 法术 / 心法 / 武器 —— 全是"从池子里选一个"，
            而第 2 页只剩「道基 + 四维」两样**打数字**的，语义反而更干净了。
 
            ── 为什么抽成 `spiritRootBlockHtml(d)` 而不是复制一份到第 3 页 ──────
@@ -9389,20 +9791,20 @@ d.attrs[a] = v;
            ★ v466：标题只出现一次 —— 走 sect 的标题栏，框内不再重复输出。
            ★★★ v468：右侧计数去掉了「部 / 件 / 门」三个量词（用户：「这里，0部去掉，
               也就是几部去掉，上面有显示了，重复了」）★★★
-           真因：下面 `xz-st-tabs` 的每个页签本来就写着「玄诀 1 部」「武器 0 件」，
-           sect 右上角再写一遍「玄诀 1 · 武器 0」＝同一行字在同一屏出现两次。
+           真因：下面 `xz-st-tabs` 的每个页签本来就写着「心法 1 部」「武器 0 件」，
+           sect 右上角再写一遍「心法 1 · 武器 0」＝同一行字在同一屏出现两次。
            ⇒ 保留计数（它是"框里有多少东西"的读数），但只留数字，量词交给页签，
              一行三个数字不会和页签打架，也不再有"两部"这种半截词。 */
-        var _sk = (d.items.玄技 || []).length;
-        var _hj = (d.items.玄诀 || []).length;
-        var _wr = (d.items.武器 || []).length;
+        var _sk = (d.items.法术 || []).length;
+        var _hj = (d.items.心法 || []).length;
+        var _wr = (d.items.法宝 || []).length;
         /* ★★★ v469：「已配 · 核心专区」改成**可折叠**（省 89px）★★★
            病历：第 3 页两个框都是常开（这里不传 key + 锻造台不传 key），
            美化还回去之后从 653 涨到 **689px**（超 36px）。
            ⇒ 「已配」是**只读展示**（看已经配了什么），不是操作区，
-             收起来不留任何损失 —— 标题栏还写着「玄技 N · 玄诀 N · 武器 N」，
+             收起来不留任何损失 —— 标题栏还写着「法术 N · 心法 N · 武器 N」，
              玩家一眼就知道有几件，想看细节再点开。
-           ⚠ 锻造台**不能折**：它是操作区，收起后玩家找不到「添加到玄技」的入口。
+           ⚠ 锻造台**不能折**：它是操作区，收起后玩家找不到「添加到法术」的入口。
              这是 v467 就在注释里定下的规矩，别为了省高度把它也折了。
            ⚠ 默认**收起**（不传 key 时 `state.sectOpen` 初始为 '道基'，
              这里传 '已配' 则默认不展开）—— 第 3 页真正要操作的是锻造台。 */
@@ -9411,22 +9813,22 @@ d.attrs[a] = v;
              谁他妈叫你专门做一个标头」。
            ── 原来错在哪 ────────────────────────────────────────────────────
              v613 在整页最下面立了一个独立 sect「全随机 / 一键掷一套」，
-             里面放「全部随机 + 只掷血脉 + 只掷玄技 + 只掷玄诀 + 只掷武器」。
+             里面放「全部随机 + 只掷血脉 + 只掷法术 + 只掷心法 + 只掷武器」。
              那是把"操作"和"它作用的对象"拆到两个地方 —— 玩家看到「只掷武器」
              时，武器那一条在**上面隔了两块**的地方。随机是就地操作，不是独立功能。
            ── 现在的归属（按钮跟着它掷的东西走）────────────────────────────
              · 血脉     → 「血脉 · 灵根」区块里（已经在那儿，v613 就放对了）
-             · 玄技/玄诀/武器 → 各自那一个页签 → 所以进「造化锻造台」那一块的标题栏，
+             · 法术/心法/武器 → 各自那一个页签 → 所以进「造化锻造台」那一块的标题栏，
                掷的是**当前页签**那一类（`roll-kind` + `state.tab`）
              · 全部随机 → 「已配」标题栏（它掷的正是已配里的全部内容）
            ⚠ 「全部随机」放在已配标题栏而不是锻造台：它掷完的**结果就出现在已配上**，
              紧挨着结果比挨着入口更合理；而且已配在最上面，玩家第一眼就能看到这条捷径。
-           ⚠ 别把「只掷玄技/玄诀/武器」三颗又摆回来：页签已经表达了"现在在弄哪一类"，
+           ⚠ 别把「只掷法术/心法/武器」三颗又摆回来：页签已经表达了"现在在弄哪一类"，
              再摆三颗就是**同一个选择做了两遍**（v620 用户骂的就是这种冗余）。 */
-        h += sectOpen('已配 · 核心专区', '玄技 ' + _sk + ' · 玄诀 ' + _hj + ' · 武器 ' + _wr, '已配',
+        h += sectOpen('已配 · 核心专区', '法术 ' + _sk + ' · 心法 ' + _hj + ' · 法宝 ' + _wr, '已配',
             '<button type="button" class="xz-st-dice" data-xz-act="roll-everything"'
             + ' style="padding:3px 9px;font-size:11px;"'
-            + ' title="血脉五项 + 玄技 3 门 + 玄诀 2 部 + 武器 1 件；已配的先清空再掷">'
+            + ' title="灵根 + 法术 3 门 + 心法 2 部 + 法宝 1 件；已配的先清空再掷">'
             + '🎲 全部随机</button>');
         h += renderEquippedBox(d, true);
         h += sectClose('已配');   /* ⚠ 必须传同一个 key：传空会多闭合一层 div（静默塌版） */
@@ -9455,7 +9857,7 @@ d.attrs[a] = v;
            ══════════════════════════════════════════════════════════════════════ */
         /* ★ 用户 2026-11-16：锻造台标题栏那行「玄技 N · 玄诀 N · 武器 N」计数
            和 🎲 掷当前页签按钮**整块删掉**（"这里的文字包括按钮直接删"）。
-           · 计数删掉不丢信息 —— 下面三个页签本来就各显示门数（玄技 N门/玄诀 N部/武器 N/1）。
+           · 计数删掉不丢信息 —— 下面三个页签本来就各显示门数（法术 N门/心法 N部/武器 N/1）。
            · 🎲 掷当前页签删掉后，随机入口仍在「已配」标题栏的「全部随机」，
              以及各页签表单里的「总随机 🎲」/名字骰子 —— 不是把随机功能删光。
            · `roll-kind` 的接收分支保留（接老存档/别处调用），只是这里不再有发送方。 */
@@ -9463,20 +9865,20 @@ d.attrs[a] = v;
         /* 一、三页签（切 `state.tab`，决定下面渲染哪一类表单）
            ⚠ 属性名是 `data-xz-kind`（不是 `data-xz-tab`）：`act === 'tab'` 那个分支
              读的就是它（`t.getAttribute('data-xz-kind')`）。写错属性名的后果不是报错，
-             是 `|| '武器'` 兜底 ⇒ **不管点哪个页签都跳到武器**，而且零报错。 */
+             是 `|| '法宝'` 兜底 ⇒ **不管点哪个页签都跳到武器**，而且零报错。 */
         /* ★ 用户 2026-11-16：玄技、玄诀**无上限**（/30、/15 是变量 schema 的 record 兜底数，
            不是给玩家看的门数上限；摆出来只会让人以为"练到 30 门就不能学了"）。
-           ⇒ 玄技/玄诀只显示当前门数；武器恒 1 件，那个 /1 是真上限，保留。 */
+           ⇒ 法术/心法只显示当前门数；武器恒 1 件，那个 /1 是真上限，保留。 */
         h += '<div class="xz-st-tabs" style="margin-top:0;">' + KINDS.map(function (k) {
             var n = d.items[k].length, lim = maxSlots(d, k);
-            var unit = (k === '玄诀') ? '部' : (k === '武器') ? '件' : '门';
-            var cnt = (k === '武器') ? (n + '/' + lim) : (n + ' ' + unit);
+            var unit = (k === '心法') ? '部' : (k === '法宝') ? '件' : '门';
+            var cnt = (k === '法宝') ? (n + '/' + lim) : (n + ' ' + unit);
             return '<button type="button" class="xz-st-tab' + (state.tab === k ? ' on' : '') + '"'
                 + ' data-xz-act="tab" data-xz-kind="' + esc(k) + '">'
                 + esc(k) + ' ' + cnt + '</button>';
         }).join('') + '</div>';
         /* 二、表单（名/品质/目标/消耗/效果/添加）—— 按当前页签那一类渲染 */
-        h += tplHtml(state.tab || '玄技', d);
+        h += tplHtml(state.tab || '法术', d);
         h += sectClose('锻造台');
 
         return h;
@@ -9775,7 +10177,7 @@ d.attrs[a] = v;
         h += '</div>';
         h += foldTip(
             '点卡片**只是展开看开场白**，不会动你填的东西；展开后点「选择此开局」才把'
-            + '<b>落点</b>和<b>开场白</b>填好，其余（姓名/境界/血脉/四维/玄技）仍由你自己定。'
+            + '<b>落点</b>和<b>开场白</b>填好，其余（姓名/境界/血脉/四维/法术）仍由你自己定。'
             + '载入后照样能改下面的下拉框和开场白框。<br>'
             + '· 第一条「自定义开局」是你自己写；下面每一条是一次备好的开局场面。'
             + '· 金色左边线且名字发白的，就是**当前落点与它一致**的那条。'
@@ -9981,7 +10383,7 @@ d.attrs[a] = v;
              2 个 ⇒ 那条闸会红（而且报的话是"body 被提前闭合"，把人往错的方向引）。
              放外面则完全不在 card.querySelectorAll 的范围内，两边都成立。 */
         if (state.forge) h += renderForgeOverlay();
-        if (state.bloodPick) h += renderBloodPickOverlay();
+        /* ★ 2026-11-18：`if (state.bloodPick) h += renderBloodPickOverlay();` 已删。 */
 
         /* ★★★ v468：第 ⑪ 条 —— 四页高度对齐（用户：「我要固定长度，
            以没点开展开选效果的第三页的长度为主，四页固定长度，内容不够就空着下半部分」）
@@ -10160,10 +10562,10 @@ d.attrs[a] = v;
         if (!it) return;
         var full = state.draft.items[kind].length >= maxSlots(state.draft, kind) && state.editing[kind] === null;
         /* ★ v72：「描述」字段已删 —— 启用条件改看「效果」（武器除外，武器仍要描述）。
-           武器四件套保留描述，所以武器继续按描述判；玄技/玄诀按效果判。 */
+           武器四件套保留描述，所以武器继续按描述判；法术/心法按效果判。 */
         /* ★ v84：武器判「效果」—— 原代码这里判的是 `it.描述`，而 artifactOf 落库读 `it.效果`，
            两边不是同一个字段 ⇒ 玩家填了效果却被按钮拦住、填了描述反而能过，且全程不报错。 */
-        var need = (kind === '武器') ? (it.效果 || it.描述 || '') : setToText(it.效果);
+        var need = (kind === '法宝') ? (it.效果 || it.描述 || '') : setToText(it.效果);
         btn.disabled = !(String(need).trim().length > 0) || full;
     }
 
@@ -10290,7 +10692,7 @@ d.attrs[a] = v;
         try {
             /* ★★★ v473：开局完成后**什么都不渲染**（空串）★★★
                原来这里 `state.done ? doneHtml() : formHtml(...)` —— 开局后渲染那张
-               「开局已就绪 · 姓名」+ 属性/灵根/玄技清单 + 「重新设定」按钮。
+               「开局已就绪 · 姓名」+ 属性/灵根/法术清单 + 「重新设定」按钮。
                用户 2026-10-30：「这个确定开局后的面板，删掉，不再弹出。」
                返回空串后，下面的 `render()` 会把 host 节点整个移除（见 `if (!html)` 分支），
                聊天记录里连一个空格都不留。 */
@@ -10389,7 +10791,7 @@ d.attrs[a] = v;
                           与上面那一组同一个道理 —— 改了 `pasOpen` / `pasCat` 之后
                           `render(true)` 只会因为 sig 没变而直接 return，表现就是
                           "点了分类没反应""点确定没反应"。
-                          ⚠ `pasKind` 也进来：它在面板打开时切类别（玄诀↔武器页签），
+                          ⚠ `pasKind` 也进来：它在面板打开时切类别（心法↔武器页签），
                             不进来就会出现"面板内容还是上一类的"。
                           ★ v527：`pasNoteIdx` / `pasNote` 同上，随描写框移出。 */
                        state.pasOpen ? 1 : 0, state.pasCat || '',
@@ -10408,11 +10810,12 @@ d.attrs[a] = v;
                             之外的什么？没有。⇒ 这里补一个"勾了几条"的读数进 sig，
                             否则连点两次会只更新第一次。 */
                        state.forge ? (state.forge.kind + ':' + String(state.forge.act) + ':' + String(state.forge.idx)) : '',
-                       state.bloodPick ? 1 : 0,
+                       /* ★ 2026-11-18：`state.bloodPick ? 1 : 0` 已删（弹层下架）。 */
                        /* ★ v584 修正：这里原来只放"串长"。勾一条、再改一条（等长替换）
                           长度不变 ⇒ sig 不变 ⇒ 弹层里那颗按钮的 ✓ 不跟手。
                           放**整串**进去：它最多几百字，sig 每月算一次，代价可以忽略。 */
-                       state.bloodPick ? String((state.draft && state.draft.spiritRootEffect) || '') : '',
+                       /* ★ 2026-11-18：`state.bloodPick ? String(draft.spiritRootEffect…) : ''`
+                          —— 弹层与那个字段都没了，这项一起删。 */
                        /* ★★★ v613：预设开局载入必须能重画 ★★★
                           `prem-pick` 只改 `state.draft`（customBig/customSmall/customOpening），
                           而 draft **全项目都不进 sig**（每次 render 从 DOM 重贴）。
@@ -10504,6 +10907,21 @@ d.attrs[a] = v;
                  `__xzGuard` 也会把新节点当成"绑过了"而跳过（表现为点不动）。
                ⚠ `state.bound = false` 同样要归位，否则重新开局面板时事件绑不上。 */
             var _html = buildHtml();
+            /* ★★★ v636：删掉上一轮的旧弹层（必须在 `buildHtml()` 之后、`xzMountOvl()` 之前）
+               ── 为什么病灶在这里 ────────────────────────────────────────────────
+                 `xzOvlHome()` 会把 `.xz-st-ovl-bg` **搬走**到 `body > 代理容器`，
+                 而本函数重建的只有 `host.innerHTML` ⇒ 搬走的那块**不受重建影响**
+                 ⇒ 关掉弹层后遮罩仍以 82% 黑 + z-index:999999 盖住整屏，
+                 玩家点什么都隔着它 ⇒ 作者说的「所有弹层都无法交互」。
+               ── 为什么顺序是"先算 html，再清旧，再写入" ────────────────────────
+                 · 必须**先** `buildHtml()`：它按 `state` 决定这一轮有没有弹层。
+                   先清后算也行，但清完到写入之间若抛异常，就变成"没弹层也没面板"。
+                 · 必须**在** `host.innerHTML = _html` 与 `xzMountOvl()` **之后不要**：
+                   那时新弹层已经搬进代理，`xzOvlPurge` 会把**新的也一起干掉**。
+                   所以位置只能是这里 —— 旧的在代理里、新的还没被搬进去。
+               ⚠ 这一步是"全弹层共用"的：别改成在某个弹层的关闭分支里单独清，
+                 那正是 v635 修不干净的原因（逐个弹层修，共用的生命周期没动）。 */
+            try { xzOvlPurge(); } catch (eP0) {}
             if (!_html) {
                 try { if (host && host.parentNode) host.parentNode.removeChild(host); } catch (eRm) {}
                 state.hostEl = null;
@@ -10572,6 +10990,9 @@ d.attrs[a] = v;
         while (n && guard < 200) {
             guard++;
             try { if (n.id === HOST_ID) return true; } catch (e) {}
+            /* ★ v634：弹层被搬到 body 下的代理容器里（见 xzOvlHome），
+               它不是 HOST_ID，但也归本脚本管 —— 不认这个就会"弹层能看见、按钮全点不动"。 */
+            try { if (n.id === OVL_PROXY_ID && n.__xzOvlProxy) return true; } catch (eP) {}
             n = n.parentNode;
         }
         return false;
@@ -10691,7 +11112,7 @@ host.__xzGuard = true;
                 }
                 if (tplField === '效果') {
                     /* ★ v75：功能是**效果集**，textarea 每行 `效果名: 效果串` → 解析成对象 */
-                    it.效果 = textToSet(t.value, kind);   /* v406：传 kind，玄技才补手数 */
+                    it.效果 = textToSet(t.value, kind);   /* v406：传 kind，法术才补手数 */
                     /* ★ v77：超上限时**明说**，别让玩家以为 12 条以下都存进去了。
                        （v74~v76 是由 zod 的 takeRight 静默丢最前面的。） */
                     if (textToSet.overflow > 0) {
@@ -10712,11 +11133,11 @@ host.__xzGuard = true;
                     it.品质 = t.value;
                     /* ★ v509：换品质要顺带重算消耗 —— 数值表每一档的耗蓝差一个数量级
                        （凡 9 / 神 3300），品质一变消耗不跟，就是在拿凡阶的价卖神阶的招。 */
-                    if (kind !== '玄诀') it.消耗 = autoMpCost(it.品质, it.目标);
+                    if (kind !== '心法') it.消耗 = autoMpCost(it.品质, it.目标);
                     /* ★ v447：换品质要**顺带重算自选** —— 数值与手数、甚至允许的条数
                        都跟着品质走。不重算的话，界面上是「神阶」而效果串还停在凡阶的数上，
                        玩家会以为"换品质没用"。 */
-                    if (kind === '玄技' && (state.pickSel || []).length) {
+                    if (kind === '法术' && (state.pickSel || []).length) {
                         var _q2 = it.品质;
                         var _mx2 = EFF_QUAL_MAX[_q2] || 3;
                         if ((state.pickSel || []).length > _mx2) {
@@ -10730,7 +11151,7 @@ host.__xzGuard = true;
                 }
                 if (tplField === '目标') {
                     it.目标 = t.value;
-                    if (kind !== '玄诀') it.消耗 = autoMpCost(it.品质, it.目标);
+                    if (kind !== '心法') it.消耗 = autoMpCost(it.品质, it.目标);
                     render(true);
                     return;
                 }
@@ -10898,25 +11319,24 @@ host.__xzGuard = true;
                    现在年龄只受 `XZ_AGE_ABS` 管，与境界完全解耦。
                    ⚠ 别改回"抬到下限"：那不是"校验变严"，那是替玩家改掉他填的数字。 */
                 clampAttrs(d);
-                var maxS = maxSlots(d, '玄技');
-                if (d.items.玄技.length > maxS) {
-                    d.items.玄技 = d.items.玄技.slice(0, maxS);
+                var maxS = maxSlots(d, '法术');
+                if (d.items.法术.length > maxS) {
+                    d.items.法术 = d.items.法术.slice(0, maxS);
                 }
                 render(true);
                 return;
             }
-            /* ★ v74：灵根四项的输入此前**根本没有被接住** —— 面板上改了名/阶/纯度，
-               回到 state.draft 里全是旧值，等于白改。这里一并补齐。 */
-            if (field === 'spiritRootName') { d.spiritRootName = String(t.value || '').slice(0, 24); return; }
+            /* ★★★ 2026-11-18（超级大更新）：灵根只剩 品阶 / 属性 两个字段 ★★★
+               作者：「灵根不能有名字，只能有品质，属性，没有效果」。
+               ⇒ spiritRootName / spiritRootPurity / spiritRootEffect / bloodDesc
+                 四条分支**整块删除**。它们对应的输入框也一并不存在了（见
+                 spiritRootBlockHtml），留着分支只会让人以为还有人在写这四个键。
+               ⚠ 别为了「接住老存档」把它们加回来：`draftFromVars()` 也不读
+                 这四个键（老档里存着也没人用），加了分支等于给一个死键开入口。
+               ⚠ 属性那格走的是现成的 `elem` 分支（在下面几行），不在这里重复。
+               ⚠ 品阶仍要 `render(true)`：它决定「天骄预计」那格读数与灵根定额，
+                 不重绘读数就不跟手（和 v74 修的是同一件事）。 */
             if (field === 'spiritRootRank') { d.spiritRootRank = t.value; render(true); return; }
-            if (field === 'spiritRootPurity') {
-                var bp = Math.round(Number(t.value) || 0);
-                if (!isFinite(bp)) bp = 0;
-                d.spiritRootPurity = Math.max(0, Math.min(100, bp));
-                return;
-            }
-            if (field === 'spiritRootEffect') { d.spiritRootEffect = String(t.value || '').slice(0, 80); return; }
-            if (field === 'bloodDesc') { d.bloodDesc = String(t.value || '').slice(0, 80); return; }
             if (field === 'elem') { d.elem = t.value; return; }
             if (field === 'place') { d.place = t.value; render(true); return; }
             /* ★ v1.053：人物关系预设的勾选框（只改草稿） */
@@ -11246,7 +11666,7 @@ host.__xzGuard = true;
                 /* 关掉弹层**不丢表单内容**：`state.tpl` 原样留着（玩家可能只是关掉看看别处）。
                    ⚠ 但要把两个展开态复位：否则下次点「展开选效果」会直接看到上次那类，
                      而玩家心里的预期是"重新挑"。
-                   ⚠ v622：这里原来有一行 `var _ck = state.tab || '玄技';`，全库零读 ——
+                   ⚠ v622：这里原来有一行 `var _ck = state.tab || '法术';`，全库零读 ——
                      `_v335_dead_copy` 判红。删掉（不是加白名单：它确实一个用处都没有）。 */
                 state.forge = null;
                 state.pickOpen = false;
@@ -11259,94 +11679,51 @@ host.__xzGuard = true;
             }
             if (act === 'forge-kind') {
                 /* 弹层里切类别（玄技↔玄诀↔武器）。
-                   ⚠ 三处必须一起改，缺一处就会出现"面板内容是武器、效果写进玄诀"：
+                   ⚠ 三处必须一起改，缺一处就会出现"面板内容是武器、效果写进心法"：
                      `state.forge.kind`（弹层认哪一类）/ `state.tab`（`tplHtml` 读它）/
                      `state.pasKind`（`pasPickApply` 写它）。 */
-                var _nk2 = t.getAttribute('data-xz-kind') || '玄技';
+                var _nk2 = t.getAttribute('data-xz-kind') || '法术';
                 state.tab = _nk2;
                 state.forge = { kind: _nk2, act: 'new', idx: null };
                 state.editing[_nk2] = null;
                 state.tpl[_nk2] = emptyItem(_nk2);
                 rollAll(state.tpl[_nk2], _nk2);
-                if (_nk2 === '武器') state.tpl[_nk2].描述 = '';
+                if (_nk2 === '法宝') state.tpl[_nk2].描述 = '';
                 state.pasKind = _nk2;
-                state.pickOpen = false;
-                state.pasOpen = false;
+                /* ★★★ v637：切类别**不能把网格一起收掉** ★★★
+                   作者 2026-11-18：「切换一下到心法，直接 tmd 变成完全扁了」
+                   ── 真因 ──────────────────────────────────────────────────────
+                     原来这里 `pickOpen=false; pasOpen=false`，理由是"复位展开态，
+                     下次点展开不要看到上轮那类"。但它把**当前弹层**也一起收了：
+                     玩家在弹层里点「心法」→ 网格整块消失 → 只剩分类条 + 一行 ⇒
+                     弹层从 680px 塌到 206px，就是作者截图的"完全扁"。
+                   ── 修法 ──────────────────────────────────────────────────────
+                     切类别＝换效果池 ⇒ 新池子**必须立刻展开**给玩家看。
+                     法术走招式池（`effPickerHtml` 读 pickOpen），
+                     心法/武器走被动池（`pasPickerHtml` 读 pasOpen）—— 只开对应的那个。
+                     ⚠ 分类筛选（pickCat/pasCat）仍然清空：换池子后旧类别无意义。
+                     ⚠ 不要在关闭弹层的分支沿用这条：forge-ok/forge-close 是
+                       真的要收，那里照旧清两个 false。 */
+                state.pickOpen = (_nk2 === '法术');
+                state.pasOpen = (_nk2 !== '法术');
+                state.pickCat = '';
+                state.pasCat = '';
                 state.note = '';
                 render(true);
                 return;
             }
-            if (act === 'blood-open') {
-                state.bloodPick = true;
-                render(true);
-                return;
-            }
-            if (act === 'blood-close') {
-                state.bloodPick = false;
-                render(true);
-                return;
-            }
-            if (act === 'blood-tog') {
-                /* 勾/取消一条灵根效果。
-                   ── 写回格式 ────────────────────────────────────────────────
-                   勾中的按 `EFF_PAS_ORDER` 顺序拼成多行 `机制:数值｜`，直接写进效果栏。
-                   **不用 `state.pasSel`** —— 那个是玄诀/武器共用的，灵根掺进去会让
-                   下次打开玄诀弹层看见灵根的一条。这里从**当前效果串**现读现算。
-                   ⚠ 条数上限（`EFF_QUAL_MAX[灵根品阶]`，伪灵根=1 … 天灵根=5）**只提示不拦**：
-                     这条规则属于"AI 生成招式"的量，玩家自填按引擎口径是
-                     `origin!=='story'` ⇒ 一律不裁（见 `v81CapEffectKeys`）。
-                     拦下来等于替玩家删掉他自己写的东西，那是本项目明令禁止的。 */
-                var _bm = t.getAttribute('data-mech') || '';
-                if (!_bm || !EFF_PAS_BY_KEY[_bm]) return;
-                var _bd = d;   /* ⚠ 用事件入口那个 `d`（就是 state.draft 的同一引用），
-                                  不另起 `state.draft` —— 两处都写会让下一个人以为有两个 draft */
-                var _cur = String(_bd.spiritRootEffect || '');
-                /* 拆成 { 机制key: 描写 }, 逐行处理 —— 保留玩家自己写的描写 */
-                var _rows = [];
-                _cur.split('\n').forEach(function (line) {
-                    var seg = String(line || '');
-                    var mm = /^\s*([^:：]+)\s*[:：]\s*([^｜|]*)\s*(?:[｜|]([\s\S]*))?$/.exec(seg);
-                    if (!mm) { if (seg.trim()) _rows.push({ raw: seg }); return; }
-                    var nm = String(mm[1]).trim();
-                    var hit = null;
-                    EFF_PAS_POOL.forEach(function (e3) { if (e3.kw === nm || e3.k === nm) hit = e3; });
-                    if (!hit) { _rows.push({ raw: seg }); return; }   /* 不认识的机制原样留着，不吞玩家的字 */
-                    _rows.push({ k: hit.k, val: String(mm[2] || '').trim(), note: String(mm[3] || '') });
-                });
-                var _has = false;
-                for (var _bi = 0; _bi < _rows.length; _bi++) if (_rows[_bi].k === _bm) { _has = true; break; }
-                if (_has) {
-                    _rows = _rows.filter(function (r) { return r.k !== _bm; });
-                } else {
-                    _rows.push({ k: _bm, val: String(EFF_PAS_BY_KEY[_bm].base), note: '' });
-                }
-                /* 排序：认识的按池子顺序，不认识的（原样保留行）排在后面 */
-                _rows.sort(function (a, b) {
-                    var ai = a.k ? EFF_PAS_ORDER.indexOf(a.k) : 9999;
-                    var bi = b.k ? EFF_PAS_ORDER.indexOf(b.k) : 9999;
-                    return ai - bi;
-                });
-                _bd.spiritRootEffect = _rows.map(function (r) {
-                    if (r.raw != null) return r.raw;
-                    /* ⚠ 尾部那个 `｜` 要留（`effPasLineFor` 的规矩）：它是描写起点，
-                       玩家在那后面接着写就是描写，引擎只读竖线左边。 */
-                    return EFF_PAS_BY_KEY[r.k].kw + ':' + r.val + '｜' + (r.note || '');
-                }).join('\n');
-                render(true);
-                return;
-            }
-            if (act === 'blood-clear') {
-                state.draft.spiritRootEffect = '';
-                render(true);
-                return;
-            }
-            if (act === 'blood-ok') {
-                state.bloodPick = false;
-                var _bn = String(state.draft.spiritRootEffect || '').trim();
-                state.note = _bn ? ('灵根效果已写入：' + _bn.split('\n').length + ' 条。') : '灵根效果已清空。';
-                render(true);
-                return;
-            }
+            /* ★★★ 2026-11-18：五个 blood-* 分支 + `roll-eff-blood` 已删 ★★★
+               （blood-open / blood-close / blood-tog / blood-clear / blood-ok）
+               ── 为什么整段删而不是留着"接住老存档" ────────────────────
+                 它们的**发送方全在同一层**（「选」「🎲」「确定」「✕ 清空」四颗按钮
+                 + 弹层里的 16 个 `blood-tog`），那层已经整块下架 ⇒ 没有残留元素
+                 会发这些动作。留着分支＝留 6 条永久不可达的代码，
+                 而 `_v387_ui_wiring` ④ 段会把它们当"有分支没人发"报出来。
+               ── 老存档里会不会残留这些按钮 ──────────────────────────────
+                 不会。开局面板每次都是 `innerHTML` 整块重建、且它只在
+                 **创角那一刻**渲染（`#xz-start-host` 一次性），玩家存档里没有它。
+               ⚠ 别为了"万一"把它们加回来：加了就得同时加回 16 条效果池的写回
+                 路径，而那一路的落点 `灵根.效果` 在 schema 里已不存在。 */
             /* ★ v359：DLC 说明折叠/展开。纯界面态，不碰 draft、不碰世界书。
                ★ v376：按包各折各的 —— `state.dlcOpen` 是包名集合。
                ★★★ v464：键从「包 id」改成「组名」(group) ★★★
@@ -11421,20 +11798,20 @@ host.__xzGuard = true;
             if (act === 'tab') {
                 /* ★★★ v471：切子页签必须把**两个展开态都收起来** ★★★
                    病历（真 Chrome 量出来的，不是猜的）：
-                     玩家在「玄诀」点开「展开选效果」→ 直接切到「武器」
+                     玩家在「心法」点开「展开选效果」→ 直接切到「法宝」
                      ⇒ 卡片从 **771 涨到 854.66px**，把「四页固定长度」撑破 83.66px。
                    真因两层：
-                     ① `state.pasOpen` 没随页签复位 ⇒ 武器栏照着玄诀的开关状态
-                        渲染出「展开」态（武器借用了 `pas` 那套渲染）；
-                     ② 武器**没有** `.pas` 这个子页签，它的面板本该更矮/不存在，
-                        结果套上玄诀的 `max-height:119px` 硬撑出一副不属于它的面板。
+                     ① `state.pasOpen` 没随页签复位 ⇒ 法宝栏照着心法的开关状态
+                        渲染出「展开」态（法宝借用了 `pas` 那套渲染）；
+                     ② 法宝**没有** `.pas` 这个子页签，它的面板本该更矮/不存在，
+                        结果套上心法的 `max-height:119px` 硬撑出一副不属于它的面板。
                    ⚠ 复位的口径：**切页签 = 换了一整套表单**，展开态是上一套的临时 UI，
                      不该跨过去。而且 `pickCat`/`pasCat` 也得一起清 ——
-                     不清就会带着「护体」这个分类去渲染武器，池子里没这一类 ⇒ 空网格。
+                     不清就会带着「护体」这个分类去渲染法宝，池子里没这一类 ⇒ 空网格。
                    ⚠ 这条闸看不见：`_v471_overflow` 只判「四页等高」，而它逐页量的是
                      **默认状态**（不点任何开关）；`_v471_paspanel` 只量玄诀自己。
                      ⇒ 单为它补了 `_v471_pasroom.mjs` 的「切页签残留」一节。 */
-                state.tab = t.getAttribute('data-xz-kind') || '武器';
+                state.tab = t.getAttribute('data-xz-kind') || '法宝';
                 state.pickOpen = false;
                 state.pasOpen = false;
                 state.pickCat = '';
@@ -11449,9 +11826,9 @@ host.__xzGuard = true;
                 return;
             }
             if (act === 'roll-desc') {
-                /*掷一句画面感（按这件兵器的玄元属性挑池）；玩家自己写的那句永远优先，掷只是帮你起头。
-                   ★ v72：只有武器还保留「描述」，玄技/玄诀的描述字段已删。 */
-                if (state.tab !== '武器') return;
+                /*掷一句画面感（按这件法宝的灵根属性挑池）；玩家自己写的那句永远优先，掷只是帮你起头。
+                   ★ v72：只有法宝还保留「描述」，法术/心法的描述字段已删。 */
+                if (state.tab !== '法宝') return;
                 var _it = state.tpl[state.tab];
                 if (!_it) return;
                 _it.描述 = rollDescByElem(_it.属性 || state.draft.elem || '无');
@@ -11477,9 +11854,9 @@ host.__xzGuard = true;
                  ② `state.pickOpen/pasOpen` 置 true（选择器据此渲染展开区）
                  只做 ① 会看到一个空弹层（没有展开区）；只做 ② 卡片里会摊开面板。
                ⚠ `state.tab` 要跟着当前 kind 对齐：`effPickerHtml` 读它决定池子，
-                 不一致会把玄技的效果写进武器（v468 踩过）。 */
+                 不一致会把法术的效果写进法宝（v468 踩过）。 */
             if (act === 'pick-toggle' || act === 'pas-toggle') {
-                var _tk = state.tab || '玄技';
+                var _tk = state.tab || '法术';
                 state.forge = { kind: _tk, act: 'new', idx: state.editing[_tk] };
                 state.pasKind = _tk;
                 if (act === 'pick-toggle') {
@@ -11577,13 +11954,13 @@ host.__xzGuard = true;
                 return;
             }
             if (act === 'roll-all') {
-                /* ★ v72：只有武器的「描述」在 roll-all 时保留（玩家手写的一句画面感不该被洗掉） */
-                var keep = (kind === '武器') ? String(state.tpl[kind].效果 || state.tpl[kind].描述 || '') : '';
+                /* ★ v72：只有法宝的「描述」在 roll-all 时保留（玩家手写的一句画面感不该被洗掉） */
+                var keep = (kind === '法宝') ? String(state.tpl[kind].效果 || state.tpl[kind].描述 || '') : '';
                 /* ★ v626：第三参 true = **连名字一起掷**。这颗按钮的语义就是"整条给我一份能用的"，
                    名字留空等于没兑现（作者 2026-11-16 点名两次）。
                    ⚠ 表单初始化 / 锻造台新建那两处**不传**，理由见 rollAll 上方注释。 */
                 rollAll(state.tpl[kind], kind, true);
-                if (kind === '武器') { state.tpl[kind].效果 = keep; state.tpl[kind].描述 = keep; }
+                if (kind === '法宝') { state.tpl[kind].效果 = keep; state.tpl[kind].描述 = keep; }
                 /* 掷完把名字回给玩家看一眼 —— 否则名字是变了，但他不知道是掷出来的还是自己填的 */
                 var _rn = String(state.tpl[kind].名 || '');
                 state.note = _rn ? ('🎲 已随机：' + kind + '《' + _rn + '》，名字也一起掷了，可以改。') : ('🎲 已随机' + kind + '。');
@@ -11599,15 +11976,15 @@ host.__xzGuard = true;
                 } else {
                     /* ★ v410：和渲染时**同参数**，否则按钮顺序一变就点 A 得 B */
                     var pl = presetsOf(pk,
-                        (pk === '玄技') ? presetAttrOf(state.draft) : '',
-                        (pk === '玄技') ? (state.tpl[pk] || {}).品质 : '',
-                        (pk === '玄技') ? presetClsOf() : '');
+                        (pk === '法术') ? presetAttrOf(state.draft) : '',
+                        (pk === '法术') ? (state.tpl[pk] || {}).品质 : '',
+                        (pk === '法术') ? presetClsOf() : '');
                     if (!pl[pi]) return;
                     var pr = pl[pi];
                     var np = emptyItem(pk);
                     np.名 = pr.名 || '';
                     np.品质 = pr.品质 || np.品质;
-                    if (pk === '武器') {
+                    if (pk === '法宝') {
                         np.效果 = pr.效果 || '';
                     } else {
                         np.效果 = pr.效果 || np.效果;   // ★ v75：效果集
@@ -11631,8 +12008,8 @@ host.__xzGuard = true;
                     state.note = '《' + it.名 + '》修改已保存。';
                 } else {
                     if (d.items[kind].length >= maxSlots(d, kind)) {
-                        throw vfail(kind === '玄技'
-                            ? ('玄技已学满（共 ' + maxSlots(d, kind) + ' 门），如需更换请在上方点击【修改】或【删除】。')
+                        throw vfail(kind === '法术'
+                            ? ('法术已学满（共 ' + maxSlots(d, kind) + ' 门），如需更换请在上方点击【修改】或【删除】。')
                             : (kind + '已满（限 ' + (maxSlots(d, kind) || 1) + ' 门），如需更换请在上方点击【修改】或【删除】。'));
                     }
                     d.items[kind].push(JSON.parse(JSON.stringify(it)));
@@ -11640,7 +12017,7 @@ host.__xzGuard = true;
                 }
                 state.tpl[kind] = emptyItem(kind);
                 rollAll(state.tpl[kind], kind);
-                if (kind === '武器') state.tpl[kind].描述 = '';
+                if (kind === '法宝') state.tpl[kind].描述 = '';
                 state.errText = '';
                 /* ★ v584：添加/保存成功后**关掉弹层** —— 否则玩家点完「添加到玄技」，
                    弹层还开着、表单已经清空，看起来像"没成功，还让我再填一遍"。
@@ -11656,9 +12033,9 @@ host.__xzGuard = true;
                 /* ★ v75：招式名可点 —— 把这一条自己的六字段摊开（都在变量里，没有表可查）。 */
                 var snm = t.getAttribute('data-skill-name') || '';
                 if (!snm) return;
-                var bag = (draftAt('主角信息.已学本领.玄技') || {})[snm]
-                       || (draftAt('主角信息.已学本领.玄诀') || {})[snm]
-                       || (String((draftAt('主角信息.装备武器') || {}).武器名 || '') === snm ? draftAt('主角信息.装备武器') : null);
+                var bag = (draftAt('主角信息.已学本领.法术') || {})[snm]
+                       || (draftAt('主角信息.已学本领.心法') || {})[snm]
+                       || (String((draftAt('主角信息.装备法宝') || {}).法宝名 || '') === snm ? draftAt('主角信息.装备法宝') : null);
                 if (!bag) { openHowto('✦ 《' + snm + '》', '这一条还没有落进变量，开局确认后就能点开看。', '招式说明', ''); return; }
                 var lines = [];
                 if (bag.品质) lines.push('品阶：' + bag.品质);
@@ -11675,11 +12052,11 @@ host.__xzGuard = true;
                 } else if (bag.效果) lines.push('效果：' + bag.效果);
                 if (bag.目标) lines.push('目标：' + bag.目标);
                 if (bag.消耗 !== undefined && bag.消耗 !== null) lines.push('消耗：' + Number(bag.消耗) + ' 灵力');
-                if (bag.武器类型 && bag.武器类型 !== '无') lines.push('兵器：' + bag.武器类型);
+                if (bag.法宝类型 && bag.法宝类型 !== '无') lines.push('兵器：' + bag.法宝类型);
                 /* ⚠ v99：这条以前无条件执行 ⇒ 效果集已经逐条列过之后，又追加一行
                    `效果：[object Object]`（字符串接对象）。只在**还没列过**时兜底。 */
                 if (bag.效果 && !_effListed && typeof bag.效果 !== 'object') lines.push('效果：' + bag.效果);
-                /* ★ v75：武器仍有描述与效果；玄技/玄诀六字段里没有「描述」 */
+                /* ★ v75：法宝仍有描述与效果；法术/心法六字段里没有「描述」 */
                 if (bag.描述) lines.push('描述：' + bag.描述);
                 openHowto('✦ 《' + snm + '》',
                     lines.join('\n') || '这一条只写了名字。',
@@ -11720,7 +12097,7 @@ host.__xzGuard = true;
                 state.editing[kind] = null;
                 state.tpl[kind] = emptyItem(kind);
                 rollAll(state.tpl[kind], kind);
-                if (kind === '武器') state.tpl[kind].描述 = '';
+                if (kind === '法宝') state.tpl[kind].描述 = '';
                 state.note = '已取消修改。';
                 render(true);
                 return;
@@ -11736,7 +12113,7 @@ host.__xzGuard = true;
                 var _nit = state.tpl[_nk];
                 if (!_nit) return;
                 var _nel = (d && d.elem) ? d.elem : '火';
-                var _nt = (_nk === '玄诀' || _nk === '武器') ? '自身' : (_nit.目标 || '自身');
+                var _nt = (_nk === '心法' || _nk === '法宝') ? '自身' : (_nit.目标 || '自身');
                 var _nn = rollNameFor(_nel, _nt);
                 if (!_nn) { state.note = '⚠ 这个属性没有可用的名字。'; render(true); return; }
                 _nit.名 = _nn;
@@ -11750,7 +12127,7 @@ host.__xzGuard = true;
                 if (!_it) return;
                 var _q = _it.品质 || '黄阶';
                 var _max = EFF_QUAL_MAX[_q] || 3;
-                if (_kind === '玄诀' || _kind === '武器') {
+                if (_kind === '心法' || _kind === '法宝') {
                     var _psel = effRollPasSel(_q, _max);
                     if (!_psel.length) { state.note = '⚠ 这个品质没有可随机的效果。'; render(true); return; }
                     state.pasSel = _psel;
@@ -11775,7 +12152,7 @@ host.__xzGuard = true;
                 return;
             }
             if (act === 'roll-eff-pas') {
-                var _k2 = state.pasKind || '玄诀';
+                var _k2 = state.pasKind || '心法';
                 var _it2 = state.tpl[_k2] || {};
                 var _q2 = _it2.品质 || '黄阶';
                 var _max2 = EFF_QUAL_MAX[_q2] || 3;
@@ -11787,20 +12164,13 @@ host.__xzGuard = true;
                 render(true);
                 return;
             }
-            if (act === 'roll-eff-blood') {
-                var _bq = d.spiritRootRank || '伪灵根';
-                var _bmax = Math.max(1, Math.min(4, EFF_QUAL_MAX[_bq] || 1));
-                var _bsel = effRollPasSel(_bq, _bmax);
-                if (!_bsel.length) { state.note = '⚠ 没有可随机的灵根效果。'; render(true); return; }
-                d.spiritRootEffect = effPasLineFor(_bsel[0], '');
-                state.note = '🎲 已随机一条灵根效果：' + _bsel[0];
-                render(true);
-                return;
-            }
             if (act === 'roll-blood') {
                 /* ★ v613：实现搬到 `rollBloodInto`（「全部随机」与「只掷血脉」共用一份） */
                 var _bsum = rollBloodInto(d);
-                state.note = '血脉已掷：' + _bsum + ' — 效果：' + d.spiritRootEffect;
+                /* ★ 2026-11-18：灵根没有效果字段了，note 只报掷出来的 品阶 · 属性。
+                   （原来拼的是 `— 效果：` + d.spiritRootEffect，那个键已删 ⇒ 恒印
+                    「— 效果：undefined」，看着像随机坏了。） */
+                state.note = '血脉已掷：' + _bsum;
                 render(true); return;
             }
             /* ★★★ v613：单项全随机（只掷玄技 / 只掷玄诀 / 只掷武器）★★★
@@ -11813,7 +12183,7 @@ host.__xzGuard = true;
                  `state.tab` 是锻造台当前页签，与这三颗按钮点哪个无关。 */
             if (act === 'roll-kind') {
                 var _rk2 = String(t.getAttribute('data-xz-kind') || '');
-                if (['玄技', '玄诀', '武器'].indexOf(_rk2) < 0) return;
+                if (['法术', '心法', '法宝'].indexOf(_rk2) < 0) return;
                 var _rn2 = rollKindInto(_rk2, d);
                 state.note = _rn2
                     ? ('🎲 ' + _rk2 + '已整批重掷：' + _rn2 + ' 件。想改哪件点「修改」。')
@@ -11821,17 +12191,17 @@ host.__xzGuard = true;
                 render(true); return;
             }
             /* ★★★ v613：一键总全随机 ★★★
-               = 血脉五项 + 玄技 + 玄诀 + 武器，四块一起换一套。
+               = 血脉五项 + 法术 + 心法 + 武器，四块一起换一套。
                ⚠ 一句 note 里报**四样都动了**：只报"已随机"的话，玩家看不出
                  武器是"本来就那把"还是"被换掉了"。 */
             if (act === 'roll-everything') {
                 var _esum = rollBloodInto(d);
                 var _en = {};
-                ['玄技', '玄诀', '武器'].forEach(function (k4) { _en[k4] = rollKindInto(k4, d); });
+                ['法术', '心法', '法宝'].forEach(function (k4) { _en[k4] = rollKindInto(k4, d); });
                 /* 锻造台如果正开着编辑模式，它的下标也跟着失效了 ⇒ 一并复位 */
                 state.forge = null;
                 state.note = '🎲 全部随机：血脉 ' + _esum
-                    + '；玄技 ' + _en['玄技'] + ' 门／玄诀 ' + _en['玄诀'] + ' 部／武器 ' + _en['武器'] + ' 件。'
+                    + '；法术 ' + _en['法术'] + ' 门／心法 ' + _en['心法'] + ' 部／法宝 ' + _en['法宝'] + ' 件。'
                     + '名字是模板名，想换自己编的就在锻造台里改。';
                 render(true); return;
             }
@@ -12015,8 +12385,8 @@ host.__xzGuard = true;
             if (act === 'reset') {
                 state.draft = emptyDraft();
                 state.tpl = emptyTplState();
-                state.editing = { 玄技: null, 玄诀: null, 武器: null };
-                state.tab = '武器';
+                state.editing = { 法术: null, 心法: null, 法宝: null };
+                state.tab = '法宝';
                 /* ★ v465：重置 = 从头再来，所以**回到第 1 页**（DLC + 标题）。
                    ⚠ 别只清 draft 不归位页码：那样玩家会在第 4 页看到一份空白草稿，
                      页签也还停在第 4 页，看起来像"重置把表单弄丢了"而不是"重新开始"。 */
@@ -12069,7 +12439,8 @@ host.__xzGuard = true;
         }
         if (name.length > 8) throw vfail('姓名最多 8 字。');
         if (REALMS.indexOf(d.realm) === -1) throw vfail('境界不合法。');
-        if (ELEMS.indexOf(d.elem) === -1) throw vfail('玄元属性不合法。');
+        /* ★ 2026-11-18：文案跟着字段走 —— 玩家该看到的是「灵根属性」，不是已删除的字段名。 */
+        if (ELEMS.indexOf(d.elem) === -1) throw vfail('灵根属性不合法（只能是 木／水／火／土／风／雷／冰）。');
         var rule = ruleOf(d.realm);
         var used = usedPoints(d);
         if (used > rule.total) throw vfail('四维合计 ' + used + ' 点，超出上限 ' + rule.total + ' 点。'
@@ -12080,7 +12451,7 @@ host.__xzGuard = true;
             if (d.attrs[a] < 1) throw vfail(a + ' 最低 1 点 —— 四维不许出现 0。');
             if (d.attrs[a] > rule.cap) throw vfail(a + ' 超过单项上限 ' + rule.cap + ' 点。');
         });
-        if (!d.items.玄技.length) throw vfail('请至少学一门玄技：在【造化锻造台 → 玄技】里自己起名、选品阶、定目标与消耗、在「效果」里写效果（每行「效果名: 效果串」，或点 🎲 自动填），再点【添加到玄技】。');
+        if (!d.items.法术.length) throw vfail('请至少学一门法术：在【造化锻造台 → 法术】里自己起名、选品阶、定目标与消耗、在「效果」里写效果（每行「效果名: 效果串」，或点 🎲 自动填），再点【添加到法术】。');
         var place = placeOf(d.place);
         /* ★★★ v622：开场白只在「玩家真的要走自定义」时才要求 ★★★
            ── 作者拍板（2026-11-16）：「填单时不该要求」────────────────────────
@@ -12164,8 +12535,8 @@ host.__xzGuard = true;
                 if (String(it.名).length > 8) throw vfail(label + ' 名称超过 8 字。');
                 /* ★ v72：「效果」与「描述」都不在招式六字段里，**只有武器保留这两个**——
                    武器没写就按类别随机一条，玩家写了的一字不改地保留。
-                   玄技/玄诀不再自动生成描述，旧的强制补齐逻辑在此终止。 */
-                if (kind === '武器') {
+                   法术/心法不再自动生成描述，旧的强制补齐逻辑在此终止。 */
+                if (kind === '法宝') {
                     /* ★ v84：清洗的是**效果**（引擎读它），描述同步一份只为兼容旧路径 */
                     var _plain = v2PlainDesc(it.效果 || it.描述 || '', 60);
                     if (!_plain) _plain = v2RollDesc(kind, '', it.名 || '');
@@ -12175,22 +12546,22 @@ host.__xzGuard = true;
                     delete it.描述;   /* 旧档残留的描述字段不带进新结构 */
                 }
 
-                if (kind === '玄技' || kind === '玄诀') {
+                if (kind === '法术' || kind === '心法') {
                     /* ★ v70：字段归一 —— 不查任何固定表，玩家写什么就是什么，
                        只把非法值收敛到合法区间（zod 也会再兜一层）。
                        「类型」由 kind 定死，不给玩家改。 */
-                    it.类型 = (kind === '玄技') ? '主动' : '被动';
+                    it.类型 = (kind === '法术') ? '主动' : '被动';
                     /* ★ v77：v71 起**不再有「流派」**（走哪一路只由「功能」里的效果决定），
                        这里原本还在写一个恒为「通用」的legacy 字段。删掉，别再制造迁移残留。 */
                     delete it.流派;
                     /* ★ v75：「功能」是效果集对象 { 效果名: "效果串" }，
                        不再是 FUNCS 里那个单选字符串。
-                       ⚠ 铁律：**只过滤玄诀的越权效果，其余一律放过** ——
+                       ⚠ 铁律：**只过滤心法的越权效果，其余一律放过** ——
                        玩家可以自起任何效果名（「灼烧」「护盾」「破甲」…），
                        一旦拿固定白名单筛，剩下的会被静默丢掉，等于没收玩家的输入。
-                       玄诀是自身被动，只挡掉「主击 / 伤害 / 控制 / 减益」这类伤人或制人的效果名。 */
+                       心法是自身被动，只挡掉「主击 / 伤害 / 控制 / 减益」这类伤人或制人的效果名。 */
                     var _fallbackSet = (function () {
-                        var o = {}; o[(kind === '玄技') ? '伤害' : '增益'] = ''; return o;
+                        var o = {}; o[(kind === '法术') ? '伤害' : '增益'] = ''; return o;
                     })();
                     function _v75ValText(val) {          // 兜 v74 残留的 {value,备注,持续}
                         if (!val || typeof val !== 'object') return String(val == null ? '' : val).trim();
@@ -12206,16 +12577,16 @@ host.__xzGuard = true;
                             var k = String(k0).trim();
                             if (!k) return;
                             /* ★ v449：这个「玄诀越权」名单里原来有 `控制` 和 `定身`，两个都删了 ——
-                               它们不是"玄诀不许用"，而是**谁都不许用**（定身/禁锢/眩晕 已下架）。
+                               它们不是"心法不许用"，而是**谁都不许用**（定身/禁锢/眩晕 已下架）。
                                留在名单里会让一句 `定身:1` 被静默丢掉，看着像"拦截生效了"，
                                实际是名字已经不存在了 —— 那是拿旧规则掩盖新状况。
-                               ⚠ 别为了消一个红把 `减速` 补进来：减速是玄诀**可以**用的（陆昭华就挂着）。 */
-                            if (kind === '玄诀' && /^(主击|伤害|治疗|增伤|易伤|减益|异效)$/.test(k)) return;  // 玄诀越权效果
+                               ⚠ 别为了消一个红把 `减速` 补进来：减速是心法**可以**用的（陆昭华就挂着）。 */
+                            if (kind === '心法' && /^(主击|伤害|治疗|增伤|易伤|减益|异效)$/.test(k)) return;  // 心法越权效果
                             var _vt = _v75ValText(it.效果[k0]);
                             /* ★ v77：空效果串（玩家只写了「主击:」）直接丢掉 ——
                                以前一路放行，最后落盘一条**零效果招式**，
                                战斗时什么也不发生，玩家只看到「明明写了却没反应」。 */
-                            if (!_vt && !(kind === '玄技' && k === '伤害')) return;
+                            if (!_vt && !(kind === '法术' && k === '伤害')) return;
                             _kept[k] = _vt;
                         });
                         it.效果 = Object.keys(_kept).length ? _kept : _fallbackSet;
@@ -12240,13 +12611,13 @@ host.__xzGuard = true;
                          这里只列 07 **写入过**的历史值白名单，多一个都不认。 */
                     var _legacyTgt = ['单体', '范围', '环境', '我方群体', '敌方单体', '敌方范围', '自身', '友方', '己方', '队友', '群体'];
                     if (_legacyTgt.indexOf(String(it.目标 || '')) === -1) {
-                        it.目标 = (kind === '玄技') ? '敌方单体' : '自身';
+                        it.目标 = (kind === '法术') ? '敌方单体' : '自身';
                     }
-                    if (kind === '玄诀') {
+                    if (kind === '心法') {
                         it.目标 = '自身';   // 被动功法恒作用于自身
                         /* ★ v77：玄诀是**被动**，恒不耗灵力。
-                           原来只夹到 [0,999] 而没强制归零，于是玩家给玄诀填 20 就真存了 20 ——
-                           与 07:249 的注释、玄诀卡不显示灵力标签、21:147 的 schema 注释
+                           原来只夹到 [0,999] 而没强制归零，于是玩家给心法填 20 就真存了 20 ——
+                           与 07:249 的注释、心法卡不显示灵力标签、21:147 的 schema 注释
                            三处口径全矛盾。 */
                         it.消耗 = 0;
                     } else {
@@ -12256,7 +12627,7 @@ host.__xzGuard = true;
                     }
                     if (RANKS.indexOf(it.品质) === -1) it.品质 = '凡阶';
                 }
-                if (kind === '武器') {
+                if (kind === '法宝') {
                     // 武器为自拟条目：名称与描述已在前文校验过
                     if (RANKS.indexOf(it.品质) === -1) it.品质 = '凡阶';
                 }
@@ -12562,14 +12933,14 @@ host.__xzGuard = true;
             }
             var mistNote = scnNote;
             var notes = ['开局配置已写入变量：' + d.realm + ' · ' + d.elem + '系' +
-                ' · 玄技 ' + d.items.玄技.length + ' 门' +
-                (d.items.玄诀.length ? ' · 玄诀 1' : '') + (d.items.武器.length ? ' · 武器 1' : '') + '。'];
+                ' · 法术 ' + d.items.法术.length + ' 门' +
+                (d.items.心法.length ? ' · 心法 1' : '') + (d.items.法宝.length ? ' · 法宝 1' : '') + '。'];
             if (dlcNote) notes.push(dlcNote);
             if (kinNote) notes.push(kinNote);   /* ★ v1.053：人物关系开关的同步失败 */
             if (mistNote) notes.push(mistNote); /* ★ v587：剧本开关的同步结果（原迷雾模式那一份） */
 
             /* ★★★ v363：**不再往输入框追加任何初始化指令** ★★★
-               用户 2026-10-23：「开局不再初始化，而是根据血量和蓝量公式，然后检测玄诀和灵根
+               用户 2026-10-23：「开局不再初始化，而是根据血量和蓝量公式，然后检测心法和灵根
                和武器的效果有没有气血上限，直接一键写入变量，也就是不再追加文本到输入框了。」
 
                以前这里会 `fillComposer(initAttrPrompt())`，把一大段"请按公式重算"的指令
@@ -12578,7 +12949,7 @@ host.__xzGuard = true;
                  ② AI 算的数与脚本算的数不一致时，没有任何一方是权威；
                  ③ 那段文本占着输入框，玩家想直接开口还得先删掉。
                ⇒ 现在脚本自己算准（computedHpMax / computedMpMax 已含
-                 灵根定额与纯度 + 玄诀上限 + 武器上限），开局即落盘，
+                 灵根定额与纯度 + 心法上限 + 武器上限），开局即落盘，
                  输入框**留空**给玩家写第一句话。
                ⚠ 04 那边有配套前提：变量里存在「气血上限」时引擎**照抄不叠加**
                  （`_hpFromVar` 那段注释写着「否则上限被算两遍」）。
@@ -12622,7 +12993,7 @@ host.__xzGuard = true;
                 }
                 notes.push('气血 ' + (built.changes.主角信息.气血上限 || 0)
                     + ' / 灵力 ' + (built.changes.主角信息.灵力上限 || 0)
-                    + ' 已按公式算好写进变量（含灵根定额、玄诀与武器的上限加成），无需再校准。');
+                    + ' 已按公式算好写进变量（含灵根定额、心法与法宝的上限加成、先天气运），无需再校准。');
                 notes.push('请在输入框写下你的第一句话开始游戏。');
 
                 setChatFlag(DONE_KEY, true);
@@ -12716,7 +13087,7 @@ host.__xzGuard = true;
         claimOwnership();
         state.draft = draftFromVars();
         state.tpl = emptyTplState();
-        state.editing = { 玄技: null, 玄诀: null, 武器: null };
+        state.editing = { 法术: null, 心法: null, 法宝: null };
         installDocGuards();
         render(true);
         if (HOST.__XIUXIAN_START_TIMER__) clearInterval(HOST.__XIUXIAN_START_TIMER__);
@@ -12742,8 +13113,8 @@ host.__xzGuard = true;
                         state.bound = false;
                         state.draft = draftFromVars();
                         state.tpl = emptyTplState();
-                        state.editing = { 玄技: null, 玄诀: null, 武器: null };
-                        state.tab = '武器';
+                        state.editing = { 法术: null, 心法: null, 法宝: null };
+                        state.tab = '法宝';
                         state.done = guessDone();
                         state.override = false;
                         state.note = ''; state.errText = '';
