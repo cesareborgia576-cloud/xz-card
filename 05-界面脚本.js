@@ -152,11 +152,11 @@ var XZ_MAINT = false;
               与玄青那档（#071720 系）肉眼分不开 ⇒ 作者认定"深色主题在用玄青当底"。
            ── 改法：chroma=0 的**中性黑**。三档拉开明度层次，不再带任何色相。
               输入框另给 --xz-input（比卡片再深一档），见 07 的 .xz-st-body 输入规则。 */
-        '--xz-void:#000000!important;--xz-bg:#000000!important;--xz-card:#000000!important;' +
+        '--xz-void:#161e28!important;--xz-bg:#1b2430!important;--xz-card:#1b2430!important;' +
         '--xz-bar-hp:linear-gradient(90deg,#ffffff,#ffffff)!important;--xz-bar-mp:linear-gradient(90deg,#ffffff,#ffffff)!important;--xz-bar-exp:linear-gradient(90deg,#ffffff,#ffffff)!important;' +
-        '--xz-card-hover:#111111!important;--xz-input:#000000!important;--xz-nav:#000000!important;' +
-        '--dhl-stage:#000000!important;--dhl-reading:#000000!important;--dhl-card:#000000!important;--dhl-card-hover:#0a0a0a!important;' +
-        '--dhl-header:#000000!important;--dhl-button-active:#141414!important;--dhl-shadow:none!important;--dhl-glow:none!important;' +
+        '--xz-card-hover:#222d3a!important;--xz-input:#151d26!important;--xz-nav:#1b2430!important;' +
+        '--dhl-stage:#1b2430!important;--dhl-reading:#1b2430!important;--dhl-card:#1b2430!important;--dhl-card-hover:#222d3a!important;' +
+        '--dhl-header:#1b2430!important;--dhl-button-active:#25313f!important;--dhl-shadow:none!important;--dhl-glow:none!important;' +
         '--xz-border:rgba(255,255,255,0.22)!important;--xz-border-strong:rgba(255,255,255,0.60)!important;' +
         '--xz-gold:#ffffff!important;--xz-gold-bright:#ffffff!important;' +
         '--xz-gold-fill:#ffffff!important;' +
