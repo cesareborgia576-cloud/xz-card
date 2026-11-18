@@ -51,7 +51,7 @@ var XZ_MAINT = false;
             d.setAttribute('style', [
                 'margin:14px 0', 'padding:18px 16px',
                 'border:1px solid rgba(230,189,118,.45)', 'border-radius:10px',
-                'background:#141922', 'color:#e8e3d3',
+                'background:var(--xz-card,#141416)', 'color:#e8e3d3',
                 'font-family:inherit', 'font-size:15px', 'line-height:1.6',
                 'letter-spacing:.04em', 'text-align:center'
             ].join(';'));
@@ -6571,7 +6571,7 @@ d.attrs[a] = v;
                  所以哪天真的统一了两边，这条也不会假红。 */
             '.xz-st-cem{display:flex;align-items:center;gap:7px;flex-wrap:wrap;'
                 + 'padding:6px 10px;margin:7px 0 0;border-radius:9px 9px 0 0;'
-                + 'background:linear-gradient(90deg,rgba(230,189,118,.10),rgba(230,189,118,.015));'
+                + 'background:var(--xz-card-hover);'
                 + 'border:1px solid rgba(230,189,118,.16);border-bottom-color:rgba(230,189,118,.10);}',
             /* 金标：与 `.xz-st-sect-h::before` **逐字相同**的三条（宽高/渐变/光晕）。
                ⚠ 别写成 `content:none` 或换个颜色 —— 这条的全部意义就是"看起来是同一个头"。 */
@@ -6871,13 +6871,13 @@ d.attrs[a] = v;
                ⚠ 别怕"框变高会超出"：四页是 `min-height` 不是 `height`，
                  第 3 页内容最多（598px）也还有余量，且它自己有限高面板。
                ⚠ 标题栏别超过 8px：再多就变成"标题比内容还重"，喧宾夺主。 */
-            '.xz-st-sect{margin:0 0 9px;border:1px solid rgba(230,189,118,.22);border-radius:9px;'
-                + 'background:linear-gradient(180deg,rgba(255,255,255,.028),rgba(0,0,0,.14));'
+            '.xz-st-sect{margin:0 0 9px;border:1px solid var(--xz-border);border-radius:9px;'
+                + 'background:var(--xz-card);'
                 + 'box-shadow:inset 0 1px 0 rgba(255,255,255,.045),0 2px 10px rgba(0,4,8,.32);}',
             /* 分区标题栏：左侧金色竖标 + 标题 + 右侧可选计数 */
             '.xz-st-sect-h{display:flex;align-items:center;gap:7px;padding:6px 10px;'
-                + 'border-bottom:1px solid rgba(230,189,118,.16);'
-                + 'background:linear-gradient(90deg,rgba(230,189,118,.10),rgba(230,189,118,.015));'
+                + 'border-bottom:1px solid var(--xz-border);'
+                + 'background:var(--xz-card-hover);'
                 + 'border-radius:9px 9px 0 0;'
                 /* ★★★ v470：标题栏在两种分支里是**两种标签**，必须把 button 拉回来 ★★★
                    病历（用户 2026-10-30：「这个美化框怎么回事，和其他的你看，
@@ -7209,7 +7209,7 @@ d.attrs[a] = v;
                `overflow:auto` 里会浮在内容之上、把网格最后一行盖住 —— 作者截图钉的就是这个）。 */
             '.xz-st-body-pick>.xz-st-ovl-ft'
                 + '{flex:none;margin:8px -14px -12px;padding:9px 14px;'
-                + 'background:#141922;border-top:1px solid rgba(230,189,118,.22);'
+                + 'background:var(--xz-card,#141416);border-top:1px solid rgba(230,189,118,.22);'
                 + 'display:flex;gap:8px;align-items:center;}',
             /* 中间可滚的那段：成套 / 网格 / 提示 塞在里面 */
             /* ★★★ v471：必须写 `display:flex;flex-direction:column` ★★★
@@ -9311,7 +9311,7 @@ d.attrs[a] = v;
            `min()` 才能拿到它并真正取小值。
            ⚠ 变量必须写在这个元素自己的 style 上（内联变量对自身可见）。 */
         return '<div class="xz-st-ovl-bg" data-xz-act="' + closeAct + '" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.82);z-index:999999;display:flex;align-items:flex-end;justify-content:center;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;">' +
-            '<div class="xz-st-ovl-box" style="--xz-ovl-maxw:540px;--xz-ovl-maxh:680px;background:#141922;border:1.5px solid var(--xz-gold);border-bottom:none;border-radius:12px 12px 0 0;max-width:540px;width:100%;max-height:min(82vh,680px);display:flex;flex-direction:column;box-shadow:0 -10px 35px rgba(0,0,0,0.9);color:#e2decb;">' +
+            '<div class="xz-st-ovl-box" style="--xz-ovl-maxw:540px;--xz-ovl-maxh:680px;background:var(--xz-card,#141416);border:1.5px solid var(--xz-gold);border-bottom:none;border-radius:12px 12px 0 0;max-width:540px;width:100%;max-height:min(82vh,680px);display:flex;flex-direction:column;box-shadow:0 -10px 35px rgba(0,0,0,0.9);color:#e2decb;">' +
             '<div style="padding:10px 14px;border-bottom:1px solid rgba(230,189,118,.3);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-shrink:0;background:#181e28;border-radius:12px 12px 0 0;">' +
             '<strong style="color:#dcdcdc;font-size:14px;">' + esc(title) + '</strong>' +
             '<button type="button" class="xz-st-mini del" data-xz-act="' + closeAct + '" style="padding:4px 12px;flex:0 0 auto;font-size:11px;">✕ 关闭</button>' +
