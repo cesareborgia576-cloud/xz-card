@@ -151,6 +151,7 @@ var XZ_MAINT = false;
            ── 改法：chroma=0 的**中性黑**。三档拉开明度层次，不再带任何色相。
               输入框另给 --xz-input（比卡片再深一档），见 07 的 .xz-st-body 输入规则。 */
         '--xz-void:#000000!important;--xz-bg:#000000!important;--xz-card:#0c0c0c!important;' +
+        '--xz-bar-hp:linear-gradient(90deg,#ffffff,#ffffff)!important;--xz-bar-mp:linear-gradient(90deg,#ffffff,#ffffff)!important;--xz-bar-exp:linear-gradient(90deg,#ffffff,#ffffff)!important;' +
         '--xz-card-hover:#141414!important;--xz-input:#0a0a0a!important;--xz-nav:#000000!important;' +
         '--xz-border:rgba(255,255,255,0.22)!important;--xz-border-strong:rgba(255,255,255,0.60)!important;' +
         '--xz-gold:#ffffff!important;--xz-gold-bright:#ffffff!important;' +
@@ -214,6 +215,7 @@ var XZ_MAINT = false;
     var DAY_TOKENS =
         ':root[data-xz-theme="day"],.xz-root[data-xz-theme="day"],body[data-xz-theme="day"]{' +
         '--xz-void:#ffffff!important;--xz-bg:#ffffff!important;--xz-card:#ffffff!important;' +
+        '--xz-bar-hp:linear-gradient(90deg,#000000,#000000)!important;--xz-bar-mp:linear-gradient(90deg,#000000,#000000)!important;--xz-bar-exp:linear-gradient(90deg,#000000,#000000)!important;' +
         '--xz-card-hover:#ffffff!important;--xz-input:#ffffff!important;--xz-nav:#ffffff!important;' +
         '--xz-border:rgba(0,0,0,0.26)!important;--xz-border-strong:rgba(0,0,0,0.62)!important;' +
         '--xz-gold:#000000!important;--xz-gold-bright:#000000!important;' +
@@ -5372,9 +5374,9 @@ function xzTypeOf(name, fbT, fbA) {
                 + '<span style="flex:0 0 auto;font-variant-numeric:tabular-nums;">' + right + '</span></div>'
                 + '</div>';
         };
-        h += _barLabel('气血', _hp + ' / ' + _hpM, _pctOf(_hp, _hpM), 'linear-gradient(90deg,#b21f45,#ff8a8a)');
-        h += _barLabel('灵力', _mp + ' / ' + _mpM, _pctOf(_mp, _mpM), 'linear-gradient(90deg,#2a63bb,#60a5fa)');
-        h += _barLabel('经验', exp + ' / 2000', expPct, 'linear-gradient(90deg,var(--xz-gold),var(--xz-gold-bright))');
+        h += _barLabel('气血', _hp + ' / ' + _hpM, _pctOf(_hp, _hpM), 'var(--xz-bar-hp,linear-gradient(90deg,#b21f45,#ff8a8a))');
+        h += _barLabel('灵力', _mp + ' / ' + _mpM, _pctOf(_mp, _mpM), 'var(--xz-bar-mp,linear-gradient(90deg,#2a63bb,#60a5fa))');
+        h += _barLabel('经验', exp + ' / 2000', expPct, 'var(--xz-bar-exp,linear-gradient(90deg,var(--xz-gold),var(--xz-gold-bright)))');
         /* ⚠⚠ v476 这里**不许**先关 div（`h += '</div>'`）：
            属性点那一行要画在**同一个框**里。第一版就是把关闭写在上面、
            属性点写在下面 ⇒ 属性点掉到框外，截图里看起来像"框下面多了一行散字"，
