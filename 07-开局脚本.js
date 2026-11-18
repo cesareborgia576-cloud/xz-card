@@ -213,6 +213,13 @@ var XZ_MAINT = false;
         '--xz-gold-glow:rgba(227,185,111,0.28)!important;' +
         '--xz-jade:#68c5b2!important;--xz-cyan:#7fd2c1!important;' +
         '--xz-bar-hp:linear-gradient(90deg,#b21f45,#ff8a8a)!important;--xz-bar-mp:linear-gradient(90deg,#2a63bb,#60a5fa)!important;--xz-bar-exp:linear-gradient(90deg,#e6bd76,#f2c26f)!important;' +
+        '--dhl-stage:linear-gradient(180deg,#0a1e24,#061418)!important;' +
+        '--dhl-reading:linear-gradient(180deg,#0e232b,#0a1b22)!important;' +
+        '--dhl-card:linear-gradient(145deg,#102a33,#0b1e25)!important;' +
+        '--dhl-card-hover:linear-gradient(145deg,#132f39,#0d232b)!important;' +
+        '--dhl-header:linear-gradient(90deg,#12262c,#0d2027 50%,#0a1a20)!important;' +
+        '--dhl-button-active:linear-gradient(180deg,rgba(230,189,118,.20),rgba(8,22,28,.35))!important;' +
+        '--dhl-shadow:0 4px 16px rgba(0,0,0,.50)!important;--dhl-glow:0 0 10px rgba(227,185,111,.20)!important;' +
         '--xz-purple:#d8899d!important;--xz-crimson:#aa5960!important;' +
         '--xz-text:#f3eee5!important;--xz-text-2:#b7b8b3!important;--xz-muted:#8a9496!important;' +
         /* ★ v635：这里是 QING_DECL（原值），**不是** NIGHT_DECL（去金银）。
@@ -6906,6 +6913,14 @@ d.attrs[a] = v;
             ':root:not([data-xz-theme]) #xz-start-host *,'
               + ':root[data-xz-theme="night"] #xz-start-host *{background-image:none!important;box-shadow:none!important;}',
             ':root[data-xz-theme="day"] #xz-start-host *{background-image:none!important;box-shadow:none!important;}',
+            /* ★★★ v639i：日光弹层也要纯白（作者：又是这么灰，有的看不清）★★★
+               弹层不在 #xz-start-host 里，所以上面那条压不到它。
+               这里把弹层内所有元素压成纯白 + 黑字，只留 1px 黑边做分隔。 */
+            ':root[data-xz-theme="day"] .xz-st-ovl-box,'
+              + ':root[data-xz-theme="day"] .xz-st-ovl-box *{background-image:none!important;box-shadow:none!important;color:#000!important;}',
+            ':root[data-xz-theme="day"] .xz-st-ovl-box,'
+              + ':root[data-xz-theme="day"] .xz-st-ovl-box *{background-color:#ffffff!important;}',
+            ':root[data-xz-theme="day"] .xz-st-ovl-box{border:1px solid #000000!important;}',
             ':root:not([data-xz-theme]) .xz-st-sect-h::before,'
               + ':root[data-xz-theme="night"] .xz-st-sect-h::before{background:#fff!important;}',
             /* 分区标题栏：左侧金色竖标 + 标题 + 右侧可选计数 */
