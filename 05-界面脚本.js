@@ -22283,53 +22283,62 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
          ② 不搬 `.mes_text` 的子节点（酒馆会按原始消息重建）
          ③ 不抢 `.mes_text` 的 ::before/::after（装饰只挂在自建的上下沿元素上） */
     '.xz-ink-scroll{',
-    '--xz-ink-paper:rgba(150,158,170,0.050);',
-    '--xz-ink-fiber:rgba(255,255,255,0.011);',
-    '--xz-ink-rule:rgba(198,206,216,0.32);',
-    '--xz-ink-rule-2:rgba(198,206,216,0.10);',
-    '--xz-ink-edge:rgba(0,0,0,0.22);',
+    '--xz-ink-paper:rgba(158,166,178,0.10);',
+    '--xz-ink-fiber:rgba(255,255,255,0.014);',
+    '--xz-ink-rule:rgba(214,222,232,0.40);',
+    '--xz-ink-rule-2:rgba(214,222,232,0.13);',
+    '--xz-ink-edge:rgba(0,0,0,0.26);',
+    '--xz-ink-tick:rgba(226,232,240,0.30);',
     '--xz-ink-seal-a:#c2402f;--xz-ink-seal-b:#8c241e;',
-    'position:relative;border-radius:3px;',
+    'position:relative;border-radius:4px;',
     'background-color:var(--xz-ink-paper);',
+    /* 十一层叠出来的纸面（从下往上画，浏览器按顺序叠）：
+       ① 上下渐隐 ② 横织纹 ③ 竖织纹 ④ 左右细线 ⑤~⑫ 四角短角标（每角两笔） */
     'background-image:',
-    /* ① 上下渐隐：纸面受光，中间亮、两头沉 —— 手卷的"卷边"感就来自这一层 */
-    'linear-gradient(180deg,var(--xz-ink-edge) 0,rgba(0,0,0,0) 8%,rgba(0,0,0,0) 92%,var(--xz-ink-edge) 100%),',
-    /* ② 织纹：横 3px / 竖 5px 两组交错，alpha 0.011 —— 出来是"绢的经纬"，
-       不是"横格纸"。⚠ 单组横纹会被看成作业本，必须两组交叉。 */
+    'linear-gradient(180deg,var(--xz-ink-edge) 0,rgba(0,0,0,0) 9%,rgba(0,0,0,0) 91%,var(--xz-ink-edge) 100%),',
     'repeating-linear-gradient(0deg,var(--xz-ink-fiber) 0 1px,rgba(0,0,0,0) 1px 3px),',
     'repeating-linear-gradient(90deg,var(--xz-ink-fiber) 0 1px,rgba(0,0,0,0) 1px 5px),',
-    /* ③ 左右各一道细线，贴边 1px —— 不占位，不动换行宽度 */
-    'linear-gradient(90deg,var(--xz-ink-rule-2) 0 1px,rgba(0,0,0,0) 1px calc(100% - 1px),var(--xz-ink-rule-2) calc(100% - 1px) 100%);',
-    'background-repeat:no-repeat,repeat,repeat,no-repeat;',
-    'background-size:100% 100%,100% 3px,5px 100%,100% 100%;',
-    /* 内投影：给纸一点"厚度"。⚠ 别写成 border —— border 会改盒模型、动换行宽度。 */
-    'box-shadow:inset 0 0 28px rgba(0,0,0,0.16);',
+    'linear-gradient(90deg,var(--xz-ink-rule-2) 0 1px,rgba(0,0,0,0) 1px calc(100% - 1px),var(--xz-ink-rule-2) calc(100% - 1px) 100%),',
+    'linear-gradient(90deg,var(--xz-ink-tick) 0 12px,rgba(0,0,0,0) 12px),',
+    'linear-gradient(180deg,var(--xz-ink-tick) 0 12px,rgba(0,0,0,0) 12px),',
+    'linear-gradient(270deg,var(--xz-ink-tick) 0 12px,rgba(0,0,0,0) 12px),',
+    'linear-gradient(180deg,var(--xz-ink-tick) 0 12px,rgba(0,0,0,0) 12px),',
+    'linear-gradient(90deg,var(--xz-ink-tick) 0 12px,rgba(0,0,0,0) 12px),',
+    'linear-gradient(0deg,var(--xz-ink-tick) 0 12px,rgba(0,0,0,0) 12px),',
+    'linear-gradient(270deg,var(--xz-ink-tick) 0 12px,rgba(0,0,0,0) 12px),',
+    'linear-gradient(0deg,var(--xz-ink-tick) 0 12px,rgba(0,0,0,0) 12px);',
+    'background-repeat:no-repeat,repeat,repeat,no-repeat,no-repeat,no-repeat,no-repeat,no-repeat,no-repeat,no-repeat,no-repeat,no-repeat;',
+    'background-size:100% 100%,100% 3px,5px 100%,100% 100%,12px 1px,1px 12px,12px 1px,1px 12px,12px 1px,1px 12px,12px 1px,1px 12px;',
+    'background-position:0 0,0 0,0 0,0 0,left top,left top,right top,right top,left bottom,left bottom,right bottom,right bottom;',
+    /* 内投影 + 1px 内描边：给纸一点厚度。⚠ 别用 border —— 会改盒模型、动换行宽度。 */
+    'box-shadow:inset 0 0 0 1px rgba(255,255,255,.045),inset 0 0 30px rgba(0,0,0,0.18);',
     '}',
-    /* ── 上沿：主横线（两端断口）+ 副横线 + 朱砂印 ── */
-    '.xz-scroll-top{position:relative;height:32px;margin:8px 0 0;',
+    /* ── 上沿：主横线（两端断口，2px）+ 副横线 + 朱砂印 ── */
+    '.xz-scroll-top{position:relative;height:36px;margin:10px 0 0;',
     'display:flex;align-items:center;justify-content:center;}',
-    '.xz-scroll-top::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;',
-    'background:linear-gradient(90deg,rgba(0,0,0,0) 0,var(--xz-ink-rule) 14px,var(--xz-ink-rule) calc(100% - 14px),rgba(0,0,0,0) 100%);}',
-    '.xz-scroll-top::after{content:"";position:absolute;left:12%;right:12%;top:calc(50% + 4px);height:1px;',
+    '.xz-scroll-top::before{content:"";position:absolute;left:0;right:0;top:50%;height:2px;',
+    'background:linear-gradient(90deg,rgba(0,0,0,0) 0,var(--xz-ink-rule) 16px,var(--xz-ink-rule) calc(100% - 16px),rgba(0,0,0,0) 100%);}',
+    '.xz-scroll-top::after{content:"";position:absolute;left:12%;right:12%;top:calc(50% + 6px);height:1px;',
     'background:linear-gradient(90deg,rgba(0,0,0,0),var(--xz-ink-rule-2) 24%,var(--xz-ink-rule-2) 76%,rgba(0,0,0,0));}',
     /* 朱砂印：双色渐变 + 内环 + 暖光晕 + 底部投影线（像"盖"上去而不是浮着）
        ⚠ 印文写在 HTML 里（textContent），不在 CSS 写 content:"墨" ——
          CSS 里的中文在部分宿主字体栈下会变豆腐块。 */
-    '.xz-scroll-seal{position:relative;z-index:1;width:22px;height:22px;border-radius:4px;',
+    '.xz-scroll-seal{position:relative;z-index:1;width:24px;height:24px;border-radius:4px;',
     'display:flex;align-items:center;justify-content:center;',
-    'font-size:11.5px;line-height:1;letter-spacing:0;font-weight:600;',
+    'font-size:12px;line-height:1;letter-spacing:0;font-weight:600;',
     'color:#fbf3e6;background:linear-gradient(160deg,var(--xz-ink-seal-a),var(--xz-ink-seal-b));',
-    'box-shadow:inset 0 0 0 1px rgba(255,255,255,0.18),inset 0 -2px 4px rgba(0,0,0,0.28),0 2px 8px rgba(140,30,24,0.42),0 0 0 3px rgba(176,49,43,0.09);',
-    'text-shadow:0 1px 1px rgba(0,0,0,0.35);}',
-    '.xz-scroll-seal::after{content:"";position:absolute;left:2px;right:2px;bottom:-3px;height:2px;',
-    'border-radius:50%;background:radial-gradient(ellipse at center,rgba(0,0,0,0.34),rgba(0,0,0,0));}',
+    'box-shadow:inset 0 0 0 1px rgba(255,255,255,0.20),inset 0 -2px 5px rgba(0,0,0,0.30),'
+      + '0 2px 10px rgba(150,32,26,0.45),0 0 0 3px rgba(176,49,43,0.10);',
+    'text-shadow:0 1px 1px rgba(0,0,0,0.38);}',
+    '.xz-scroll-seal::after{content:"";position:absolute;left:2px;right:2px;bottom:-4px;height:3px;',
+    'border-radius:50%;background:radial-gradient(ellipse at center,rgba(0,0,0,0.36),rgba(0,0,0,0));}',
     /* ── 下沿：主横线 + 正中菱花结 ── */
-    '.xz-scroll-bot{position:relative;height:18px;margin:2px 0 4px;}',
-    '.xz-scroll-bot::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;',
-    'background:linear-gradient(90deg,rgba(0,0,0,0) 0,var(--xz-ink-rule) 14px,var(--xz-ink-rule) calc(100% - 14px),rgba(0,0,0,0) 100%);}',
-    '.xz-scroll-bot::after{content:"";position:absolute;left:50%;top:50%;width:6px;height:6px;',
-    'margin:-3px 0 0 -3px;transform:rotate(45deg);background:var(--xz-ink-rule);',
-    'box-shadow:0 0 10px var(--xz-ink-rule-2);}',
+    '.xz-scroll-bot{position:relative;height:20px;margin:2px 0 6px;}',
+    '.xz-scroll-bot::before{content:"";position:absolute;left:0;right:0;top:50%;height:2px;',
+    'background:linear-gradient(90deg,rgba(0,0,0,0) 0,var(--xz-ink-rule) 16px,var(--xz-ink-rule) calc(100% - 16px),rgba(0,0,0,0) 100%);}',
+    '.xz-scroll-bot::after{content:"";position:absolute;left:50%;top:50%;width:7px;height:7px;',
+    'margin:-3.5px 0 0 -3.5px;transform:rotate(45deg);background:var(--xz-ink-rule);',
+    'box-shadow:0 0 12px var(--xz-ink-rule-2);}',
     /* ── 玄青：底不动，线条换成暖金（金是这一档专有的）── */
     ':root[data-xz-theme="qing"] .xz-ink-scroll,'
       + '.xz-root[data-xz-theme="qing"] .xz-ink-scroll{',
