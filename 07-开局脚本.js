@@ -151,6 +151,7 @@ var XZ_MAINT = false;
            ── 改法：chroma=0 的**中性黑**。三档拉开明度层次，不再带任何色相。
               输入框另给 --xz-input（比卡片再深一档），见 07 的 .xz-st-body 输入规则。 */
         '--xz-void:#000000!important;--xz-bg:#000000!important;--xz-card:#0c0c0c!important;' +
+        '--xz-bar-hp:linear-gradient(90deg,#ffffff,#ffffff)!important;--xz-bar-mp:linear-gradient(90deg,#ffffff,#ffffff)!important;--xz-bar-exp:linear-gradient(90deg,#ffffff,#ffffff)!important;' +
         '--xz-card-hover:#141414!important;--xz-input:#0a0a0a!important;--xz-nav:#000000!important;' +
         '--xz-border:rgba(255,255,255,0.22)!important;--xz-border-strong:rgba(255,255,255,0.60)!important;' +
         '--xz-gold:#ffffff!important;--xz-gold-bright:#ffffff!important;' +
@@ -214,6 +215,7 @@ var XZ_MAINT = false;
     var DAY_TOKENS =
         ':root[data-xz-theme="day"],.xz-root[data-xz-theme="day"],body[data-xz-theme="day"]{' +
         '--xz-void:#ffffff!important;--xz-bg:#ffffff!important;--xz-card:#ffffff!important;' +
+        '--xz-bar-hp:linear-gradient(90deg,#000000,#000000)!important;--xz-bar-mp:linear-gradient(90deg,#000000,#000000)!important;--xz-bar-exp:linear-gradient(90deg,#000000,#000000)!important;' +
         '--xz-card-hover:#ffffff!important;--xz-input:#ffffff!important;--xz-nav:#ffffff!important;' +
         '--xz-border:rgba(0,0,0,0.26)!important;--xz-border-strong:rgba(0,0,0,0.62)!important;' +
         '--xz-gold:#000000!important;--xz-gold-bright:#000000!important;' +
