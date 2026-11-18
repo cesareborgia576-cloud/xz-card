@@ -3629,6 +3629,7 @@ function xzSkeletonOfSkill(skill) {
             it.目标 = '敌方单体';
             it.效果 = {};
             it.消耗 = 0;
+            it.冷却 = 6;   /* v639：shentongSchema 的默认值，界面与落盘同源 */
         }
         if (kind === '法宝') {
             /* ★ v70：武器没有类型字段 —— 剑刀枪全是旧字段。是什么兵器纯看名字自己写。 */
@@ -8416,7 +8417,7 @@ d.attrs[a] = v;
              且排在自选器**上面**：它是"一键起个底子"，自选器是"精调"。
              两者写的是同一个 `效果` 字段，后点的覆盖先点的 —— 这是设计，
              不是 bug（玩家点预设后再勾两条，就得到"预设 + 微调"）。 */
-        if (kind === '法术') {
+        if (kind === '法术' || kind === '神通') {
             h += effPickerHtml(it, kind);
         } else {
             /* ★★★ v479：这一排「预设」按钮**删掉**（用户 2026-10-31 发了玄诀与武器
@@ -8517,7 +8518,11 @@ d.attrs[a] = v;
             h += '<div class="xz-st-row"><label>品质</label><select data-xz-tpl="品质">' + opts(qualityOptionsFor(kind), it.品质) + '</select></div>';
         }
 
-        if (kind === '法术' || kind === '心法') {
+        /* ★★★ v639：神通也算进来 ★★★
+           作者 2026-11-18 截图：「效果和目標在哪！」—— 神通页签原来只渲染 名/品质，
+           因为这一支只判了 法术/心法 ⇒ 目标、消耗、效果整段没渲染（数据在，界面没有）。
+           神通与法术同构（主动/有目标/有消耗），只多一个「冷却」。 */
+        if (kind === '法术' || kind === '心法' || kind === '神通') {
             /* ★★★ v468：展开选效果时，下面这一段表单**整块隐藏** ★★★
                用户原话：「点击展开选效果的时候，这部分就暂时隐藏，也就是，它选了，
                  然后还要点一个确定按钮，就关闭展开选效果的部分，然后显示那部分，
@@ -8562,6 +8567,10 @@ d.attrs[a] = v;
             if (!isHeartTpl) {
                 h += '<div class="xz-st-row"><label>消耗</label><input type="number" data-xz-tpl="消耗" min="0" max="999" step="5" value="' + Number(it.消耗 || autoMpCost(it.品质, it.目标)) + '">' + dice('消耗') +
                     '<span style="font-size:10px;color:#64748b;margin-left:6px;">灵力</span></div>';
+            }
+            if (kind === '神通') {
+                h += '<div class="xz-st-row"><label>冷却</label><input type="number" data-xz-tpl="冷却" min="0" max="99" step="1" value="' + Number(it.冷却 || 6) + '">' +
+                    '<span style="font-size:10px;color:#64748b;margin-left:6px;">回合</span></div>';
             }
             h += '<div class="xz-st-row" style="align-items:flex-start"><label>效果</label>' +
                 '<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;align-items:stretch;">' +
@@ -11654,7 +11663,7 @@ host.__xzGuard = true;
                     /* ★ v447：换品质要**顺带重算自选** —— 数值与手数、甚至允许的条数
                        都跟着品质走。不重算的话，界面上是「神阶」而效果串还停在凡阶的数上，
                        玩家会以为"换品质没用"。 */
-                    if (kind === '法术' && (state.pickSel || []).length) {
+                    if ((kind === '法术' || kind === '神通') && (state.pickSel || []).length) {
                         var _q2 = it.品质;
                         var _mx2 = EFF_QUAL_MAX[_q2] || 3;
                         if ((state.pickSel || []).length > _mx2) {
@@ -11677,6 +11686,15 @@ host.__xzGuard = true;
                     if (!isFinite(v) || v < 0) v = 0;
                     if (v > 999) v = 999;
                     it.消耗 = v;
+                    return;
+                }
+                /* ★ v639：神通的「冷却」（回合）。缺这一支的话输入框能打字但不进 state，
+                   保存时又回落到默认 6 —— 玩家改了以为生效，其实没生效。 */
+                if (tplField === '冷却') {
+                    var cd = Math.round(Number(t.value));
+                    if (!isFinite(cd) || cd < 0) cd = 0;
+                    if (cd > 99) cd = 99;
+                    it.冷却 = cd;
                     return;
                 }
                 return;
