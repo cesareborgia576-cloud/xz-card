@@ -3591,6 +3591,34 @@ function xzSkeletonOfSkill(skill) {
     /* ★ v222：武器只剩三件 —— 武器名 / 品质 / 效果。
        「描述」整字段删除（用户：「AI 老把效果和描述写一样，还不如把描述删了」）。
        外观与手感并进 `效果` 一句话里写，不再让两栏互相抄。 */
+    /* ★★★ v639j：开局脚本自己把主题属性挂到**本文档** ★★★
+       作者第 14 次：「开局脚本的玄青色你他妈改了」。
+       ── 病根：主题属性由 05 的 sync() 写，写的是它自己那份文档；
+          开局面板若在另一个文档（iframe）里就拿不到 ⇒ 所有 [data-xz-theme] 规则不命中，
+          退回全局兜底（黑）—— 就是他截图里"边边玄青、里面全黑"。
+       ── 做法：本文档开局读一次 localStorage.xzTheme，写到 documentElement 与 body；
+          1.5s 心跳跟随（切主题不用刷新）。 */
+    (function () {
+        function readTheme() {
+            try { var v = localStorage.getItem('xzTheme'); return (v === 'day' || v === 'qing') ? v : 'night'; }
+            catch (e) { return 'night'; }
+        }
+        function apply() {
+            var th = readTheme();
+            try {
+                if (th === 'night') {
+                    document.documentElement.removeAttribute('data-xz-theme');
+                    if (document.body) document.body.removeAttribute('data-xz-theme');
+                } else {
+                    document.documentElement.setAttribute('data-xz-theme', th);
+                    if (document.body) document.body.setAttribute('data-xz-theme', th);
+                }
+            } catch (e) {}
+        }
+        apply();
+        try { setInterval(apply, 1500); } catch (e) {}
+    })();
+
     /* ★ v639：战斗测试套件（6 法术 / 1 心法 / 3 神通）。键名与 emptyItem 逐字一致，
        效果串按《设定-效果表》② 的被动/主动口径写，别写「气血+50」那种自由文本。 */
     function seedBattleTestKit(d) {
@@ -6900,29 +6928,25 @@ d.attrs[a] = v;
             ':root[data-xz-theme="day"] .xz-st-sect{background:#fff!important;border-color:#000!important;box-shadow:none!important;}',
             ':root[data-xz-theme="day"] .xz-st-sect-h{background:#fff!important;border-bottom-color:#000!important;}',
             ':root[data-xz-theme="day"] .xz-st-sect-h::before{background:#000!important;}',
-            ':root:not([data-xz-theme]) .xz-st-sect,'
-              + ':root[data-xz-theme="night"] .xz-st-sect{background:#000!important;border-color:rgba(255,255,255,.42)!important;box-shadow:none!important;}',
-            ':root:not([data-xz-theme]) .xz-st-sect-h,'
-              + ':root[data-xz-theme="night"] .xz-st-sect-h{background:#000!important;border-bottom-color:rgba(255,255,255,.42)!important;}',
+            '[data-xz-theme="night"] .xz-st-sect{background:#000!important;border-color:rgba(255,255,255,.42)!important;box-shadow:none!important;}',
+            '[data-xz-theme="night"] .xz-st-sect-h{background:#000!important;border-bottom-color:rgba(255,255,255,.42)!important;}',
             /* ★★★ v639e：夜墨/日光 = **一个颜色**，不许有任何反光/渐变/阴影 ★★★
                作者 2026-11-18：「夜墨要简约黑色，你又弄这种反光色，你倒是一个颜色啊」。
                向导里 40 多处 background-image 渐变（高光、金渐变、暗角）就是反光的来源。
                ⇒ 这两档把 #xz-start-host 下所有元素的 background-image 与 box-shadow 全掐掉，
                  只剩 background-color（已由令牌压成纯黑/纯白）+ 1px 描边。
                ⚠ 只掐 night/day，玄青一行不动。 */
-            ':root:not([data-xz-theme]) #xz-start-host *,'
-              + ':root[data-xz-theme="night"] #xz-start-host *{background-image:none!important;box-shadow:none!important;}',
-            ':root[data-xz-theme="day"] #xz-start-host *{background-image:none!important;box-shadow:none!important;}',
+            '[data-xz-theme="night"] #xz-start-host *{background-image:none!important;box-shadow:none!important;}',
+            '[data-xz-theme="day"] #xz-start-host *{background-image:none!important;box-shadow:none!important;}',
             /* ★★★ v639i：日光弹层也要纯白（作者：又是这么灰，有的看不清）★★★
                弹层不在 #xz-start-host 里，所以上面那条压不到它。
                这里把弹层内所有元素压成纯白 + 黑字，只留 1px 黑边做分隔。 */
-            ':root[data-xz-theme="day"] .xz-st-ovl-box,'
-              + ':root[data-xz-theme="day"] .xz-st-ovl-box *{background-image:none!important;box-shadow:none!important;color:#000!important;}',
-            ':root[data-xz-theme="day"] .xz-st-ovl-box,'
-              + ':root[data-xz-theme="day"] .xz-st-ovl-box *{background-color:#ffffff!important;}',
-            ':root[data-xz-theme="day"] .xz-st-ovl-box{border:1px solid #000000!important;}',
-            ':root:not([data-xz-theme]) .xz-st-sect-h::before,'
-              + ':root[data-xz-theme="night"] .xz-st-sect-h::before{background:#fff!important;}',
+            '[data-xz-theme="day"] .xz-st-ovl-box,'
+              + '[data-xz-theme="day"] .xz-st-ovl-box *{background-image:none!important;box-shadow:none!important;color:#000!important;}',
+            '[data-xz-theme="day"] .xz-st-ovl-box,'
+              + '[data-xz-theme="day"] .xz-st-ovl-box *{background-color:#ffffff!important;}',
+            '[data-xz-theme="day"] .xz-st-ovl-box{border:1px solid #000000!important;}',
+            '[data-xz-theme="night"] .xz-st-sect-h::before{background:#fff!important;}',
             /* 分区标题栏：左侧金色竖标 + 标题 + 右侧可选计数 */
             '.xz-st-sect-h{display:flex;align-items:center;gap:7px;padding:6px 10px;'
                 + 'border-bottom:1px solid rgba(230,189,118,.16);'
