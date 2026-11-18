@@ -22153,60 +22153,90 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
        ⚠ 竹节边用两道 1px 宽的 repeating-linear-gradient 画，不用 border：
          `border` 只有一条实线，画不出"节"；也不用 `::before/::after` ——
          `.mes_text` 是酒馆的元素，我们不知道它有没有占着伪元素，抢了就是"谁先谁赢"。 */
+    /* ══════════ v639 · 正文美化重构（绢本手卷）══════════
+       作者 2026-11-18：「正文美化你倒是重构啊，我要那种前端美化级别的正文美化，超级好看的那种」
+       ── 设计（四层纸 + 双细线 + 朱砂印）─────────────────────────────────
+         · 纸：底色 + 上下渐隐 + 横向织纹 + 左右细线，四层叠出来。
+           全部是 CSS 渐变，**零图片、零请求**（图床那一套坑不再进来）。
+         · 首尾：主横线两端留 14px 断口（"书口"），下面再压一道更短更淡的副线；
+           上沿正中一枚朱砂印，下沿正中一枚 45° 菱花结。
+         · 三档主题只换 CSS 变量，**结构一个字节不动** ⇒ 不存在"某档少一条线"。
+       ⚠ 三条禁令照旧（写在上面那段长注释里，这里再钉一遍）：
+         ① 不给 `.xz-ink-scroll` 加 padding / margin（会把状态栏挤窄、正文重折行）
+         ② 不搬 `.mes_text` 的子节点（酒馆会按原始消息重建）
+         ③ 不抢 `.mes_text` 的 ::before/::after（装饰只挂在自建的上下沿元素上） */
     '.xz-ink-scroll{',
-    'position:relative;',
-    'border-radius:2px;',
-    /* ★ v590：宣纸底从「金色 2.2%」改成**淡墨灰**（作者：改成水墨灰）。
-       0.022 的 alpha 在深底上等于没上色，整卷只剩左右两道竹节边 = 「就框住了而已」。
-       实测：0.040 叠在 #1f2125 上只有 #24262b，肉眼仍看不出纸 —— 所以给到 **0.14**
-       （叠出来 #2e3135，比正文底亮一档，是纸不是板子；再重就压字了）。 */
-    'background-color:rgba(124,130,138,0.14);',
+    '--xz-ink-paper:rgba(150,158,170,0.050);',
+    '--xz-ink-fiber:rgba(255,255,255,0.011);',
+    '--xz-ink-rule:rgba(198,206,216,0.32);',
+    '--xz-ink-rule-2:rgba(198,206,216,0.10);',
+    '--xz-ink-edge:rgba(0,0,0,0.22);',
+    '--xz-ink-seal-a:#c2402f;--xz-ink-seal-b:#8c241e;',
+    'position:relative;border-radius:3px;',
+    'background-color:var(--xz-ink-paper);',
     'background-image:',
-    'repeating-linear-gradient(180deg,rgba(140,146,154,0.30) 0 2px,transparent 2px 27px),',
-    'repeating-linear-gradient(180deg,rgba(140,146,154,0.30) 0 2px,transparent 2px 27px);',
-    'background-size:1px 100%,1px 100%;',
-    'background-position:0 0,100% 0;',
-    'background-repeat:no-repeat,no-repeat;',
+    /* ① 上下渐隐：纸面受光，中间亮、两头沉 —— 手卷的"卷边"感就来自这一层 */
+    'linear-gradient(180deg,var(--xz-ink-edge) 0,rgba(0,0,0,0) 8%,rgba(0,0,0,0) 92%,var(--xz-ink-edge) 100%),',
+    /* ② 织纹：横 3px / 竖 5px 两组交错，alpha 0.011 —— 出来是"绢的经纬"，
+       不是"横格纸"。⚠ 单组横纹会被看成作业本，必须两组交叉。 */
+    'repeating-linear-gradient(0deg,var(--xz-ink-fiber) 0 1px,rgba(0,0,0,0) 1px 3px),',
+    'repeating-linear-gradient(90deg,var(--xz-ink-fiber) 0 1px,rgba(0,0,0,0) 1px 5px),',
+    /* ③ 左右各一道细线，贴边 1px —— 不占位，不动换行宽度 */
+    'linear-gradient(90deg,var(--xz-ink-rule-2) 0 1px,rgba(0,0,0,0) 1px calc(100% - 1px),var(--xz-ink-rule-2) calc(100% - 1px) 100%);',
+    'background-repeat:no-repeat,repeat,repeat,no-repeat;',
+    'background-size:100% 100%,100% 3px,5px 100%,100% 100%;',
+    /* 内投影：给纸一点"厚度"。⚠ 别写成 border —— border 会改盒模型、动换行宽度。 */
+    'box-shadow:inset 0 0 28px rgba(0,0,0,0.16);',
     '}',
-    /* ── 上沿：一条渐隐横线 + 正中一枚朱砂小印 ──
-       ⚠ 横线两端要渐隐（`transparent → 色 → transparent`），硬边会像"表格分隔线"。 */
-    '.xz-scroll-top{position:relative;height:22px;margin:2px 0 0;',
+    /* ── 上沿：主横线（两端断口）+ 副横线 + 朱砂印 ── */
+    '.xz-scroll-top{position:relative;height:32px;margin:8px 0 0;',
     'display:flex;align-items:center;justify-content:center;}',
     '.xz-scroll-top::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;',
-    'background:linear-gradient(90deg,transparent,rgba(140,146,154,0.46) 16%,rgba(140,146,154,0.46) 84%,transparent);}',
-    /* 朱砂印：方章 + 一个「墨」字。
-       ⚠ 字写在 HTML 里（`textContent`），不在 CSS 里写 `content:"墨"` ——
-         CSS 里的中文在部分宿主字体栈下会变成豆腐块，写进 DOM 至少跟随页面的字体。 */
-    '.xz-scroll-seal{position:relative;z-index:1;width:20px;height:20px;border-radius:3px;',
+    'background:linear-gradient(90deg,rgba(0,0,0,0) 0,var(--xz-ink-rule) 14px,var(--xz-ink-rule) calc(100% - 14px),rgba(0,0,0,0) 100%);}',
+    '.xz-scroll-top::after{content:"";position:absolute;left:12%;right:12%;top:calc(50% + 4px);height:1px;',
+    'background:linear-gradient(90deg,rgba(0,0,0,0),var(--xz-ink-rule-2) 24%,var(--xz-ink-rule-2) 76%,rgba(0,0,0,0));}',
+    /* 朱砂印：双色渐变 + 内环 + 暖光晕 + 底部投影线（像"盖"上去而不是浮着）
+       ⚠ 印文写在 HTML 里（textContent），不在 CSS 写 content:"墨" ——
+         CSS 里的中文在部分宿主字体栈下会变豆腐块。 */
+    '.xz-scroll-seal{position:relative;z-index:1;width:22px;height:22px;border-radius:4px;',
     'display:flex;align-items:center;justify-content:center;',
-    'font-size:11px;line-height:1;letter-spacing:0;font-weight:600;',
-    'color:#f4ece0;background:rgba(176,44,38,0.92);',
-    'box-shadow:inset 0 0 0 1px rgba(255,255,255,0.12),0 1px 4px rgba(0,0,0,0.42);}',
-    /* ── 下沿：一条渐隐横线 + 正中一个收卷小结 ── */
-    '.xz-scroll-bot{position:relative;height:14px;margin:0 0 2px;}',
+    'font-size:11.5px;line-height:1;letter-spacing:0;font-weight:600;',
+    'color:#fbf3e6;background:linear-gradient(160deg,var(--xz-ink-seal-a),var(--xz-ink-seal-b));',
+    'box-shadow:inset 0 0 0 1px rgba(255,255,255,0.18),inset 0 -2px 4px rgba(0,0,0,0.28),0 2px 8px rgba(140,30,24,0.42),0 0 0 3px rgba(176,49,43,0.09);',
+    'text-shadow:0 1px 1px rgba(0,0,0,0.35);}',
+    '.xz-scroll-seal::after{content:"";position:absolute;left:2px;right:2px;bottom:-3px;height:2px;',
+    'border-radius:50%;background:radial-gradient(ellipse at center,rgba(0,0,0,0.34),rgba(0,0,0,0));}',
+    /* ── 下沿：主横线 + 正中菱花结 ── */
+    '.xz-scroll-bot{position:relative;height:18px;margin:2px 0 4px;}',
     '.xz-scroll-bot::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;',
-    'background:linear-gradient(90deg,transparent,rgba(140,146,154,0.46) 16%,rgba(140,146,154,0.46) 84%,transparent);}',
-    '.xz-scroll-bot::after{content:"";position:absolute;left:50%;top:50%;width:5px;height:5px;',
-    'margin:-2.5px 0 0 -2.5px;border-radius:50%;background:rgba(140,146,154,0.58);}',
-    /* ── 日间主题 ──
-       ⚠ 两个必须写对的点（写错就"一条都不命中"，肉眼看不出报错）：
-         ① 本项目的主题开关**不是 class，是属性** `data-xz-theme="day"`
-            （见 v472 那段：写在 `.xz-root` 与 `document.documentElement` 两处）。
-         ② `.mes_text` **不在 `.xz-root` 子树内**（正文属于酒馆消息区）
-            ⇒ 只能靠 `:root[data-xz-theme="day"]` 这条前缀。
-       白底上金线会糊 ⇒ 换成同色相降明度的赭。 */
-    ':root[data-xz-theme="day"] .xz-ink-scroll{background-color:rgba(88,92,98,0.10);',
-    'background-image:',
-    'repeating-linear-gradient(180deg,rgba(88,92,98,0.34) 0 2px,transparent 2px 27px),',
-    'repeating-linear-gradient(180deg,rgba(88,92,98,0.34) 0 2px,transparent 2px 27px);}',
-    ':root[data-xz-theme="day"] .xz-scroll-top::before,'
-      + ':root[data-xz-theme="day"] .xz-scroll-bot::before{'
-      + 'background:linear-gradient(90deg,transparent,rgba(88,92,98,0.48) 16%,rgba(88,92,98,0.48) 84%,transparent);}',
-    ':root[data-xz-theme="day"] .xz-scroll-bot::after{background:rgba(88,92,98,0.58);}',
-    /* 窄屏：印缩一号。⚠ 卷轴本身**不动尺寸**（见上面那条 padding/margin 禁令） */
+    'background:linear-gradient(90deg,rgba(0,0,0,0) 0,var(--xz-ink-rule) 14px,var(--xz-ink-rule) calc(100% - 14px),rgba(0,0,0,0) 100%);}',
+    '.xz-scroll-bot::after{content:"";position:absolute;left:50%;top:50%;width:6px;height:6px;',
+    'margin:-3px 0 0 -3px;transform:rotate(45deg);background:var(--xz-ink-rule);',
+    'box-shadow:0 0 10px var(--xz-ink-rule-2);}',
+    /* ── 玄青：底不动，线条换成暖金（金是这一档专有的）── */
+    ':root[data-xz-theme="qing"] .xz-ink-scroll,'
+      + '.xz-root[data-xz-theme="qing"] .xz-ink-scroll{',
+    '--xz-ink-paper:rgba(104,150,150,0.075);',
+    '--xz-ink-fiber:rgba(230,189,118,0.020);',
+    '--xz-ink-rule:rgba(230,189,118,0.30);',
+    '--xz-ink-rule-2:rgba(230,189,118,0.12);',
+    '--xz-ink-edge:rgba(0,0,0,0.24);}',
+    /* ── 日光：宣纸（暖白）+ 赭线。⚠ 两个前缀都要写 ——
+          `.mes_text` 不在 `.xz-root` 子树内，属性可能落在 html 或 .xz-root 任一处。 */
+    ':root[data-xz-theme="day"] .xz-ink-scroll,'
+      + '.xz-root[data-xz-theme="day"] .xz-ink-scroll{',
+    '--xz-ink-paper:rgba(150,132,96,0.050);',
+    '--xz-ink-fiber:rgba(120,96,48,0.028);',
+    '--xz-ink-rule:rgba(122,85,16,0.38);',
+    '--xz-ink-rule-2:rgba(122,85,16,0.16);',
+    '--xz-ink-edge:rgba(120,96,48,0.10);',
+    /* 日光纸的"厚度"用暖赭投影，别沿用夜墨那道黑投影 —— 白底上 0.16 的黑会读成"框" */
+    'box-shadow:inset 0 0 24px rgba(120,96,48,0.10);}',
+    /* 窄屏：印缩一号、上下沿各收 4px。⚠ 卷身本身**不动尺寸**（见 padding/margin 禁令） */
     '@media (max-width:480px){',
-    '.xz-scroll-top{height:20px;}',
-    '.xz-scroll-seal{width:18px;height:18px;font-size:10px;}',
+    '.xz-scroll-top{height:26px;margin:4px 0 0;}',
+    '.xz-scroll-bot{height:16px;}',
+    '.xz-scroll-seal{width:20px;height:20px;font-size:10.5px;}',
     '}'
   ].join('');
 
