@@ -5403,30 +5403,57 @@ function xzTypeOf(name, fbT, fbA) {
              一条都没有时**整格不画** —— 空框比没框更糟（玩家会以为坏了）。
            ⚠ 不许写成 `z.先天气运 || {}` 后再判 Object.keys —— 单条形态（对象自带 气运名）
              也得认，所以两种形态都过一遍同一支。 */
+        /* ★★★ v639：气运在状态栏里「有设计」地显示 ★★★
+           作者 2026-11-18：「界面脚本的气运显示在哪里，你倒是设计啊」。
+           原来这里只有一个 xz-box 文本行，而且**一条都没有时整块不画** ⇒
+           玩家刚抽完三条气运回到面板，找不到它，以为白抽了。
+           ── 现在 ────────────────────────────────────────────────────────────
+             三张迷你卡（与创角页那三张同族）：品质章带色 / 名字 / 效果两行截断；
+             空槽画虚线「空」占位 ⇒ 永远看得见「还能装几条」。
+           ⚠ 形状两种都认（record 键＝气运名 / 单条自带 `气运名`），别只认一种。
+           ⚠ 效果是机制串原文，这里**不解析** —— 引擎自己解析，面板只负责展示。 */
         var _dstMain = at(p + '.先天气运');
-        if (_dstMain && typeof _dstMain === 'object' && !Array.isArray(_dstMain)) {
-            var _dstLines = [];
-            var _dstAdd = function (o, k) {
+        var _dstList = [];
+        (function () {
+            if (!_dstMain || typeof _dstMain !== 'object' || Array.isArray(_dstMain)) return;
+            var _push = function (o, k) {
                 if (!o || typeof o !== 'object') return;
                 var nm = String(o.气运名 || o.名称 || k || '').trim();
                 if (!nm || nm === '无') return;
-                var q = String(o.品质 || '').trim();
-                var ef = String(o.效果 || '').trim();
-                var ln = '<b style="color:var(--xz-gold-bright);">' + esc(nm) + '</b>';
-                if (q) ln += ' <span class="xz-chip-sm">' + esc(q) + '</span>';
-                if (ef) ln += '<div style="margin-top:2px;color:var(--xz-text-2);font-size:10.5px;word-break:break-word;">' + esc(ef) + '</div>';
-                _dstLines.push(ln);
+                _dstList.push({ n: nm, q: String(o.品质 || '').trim(), e: String(o.效果 || '').trim() });
             };
-            if (_dstMain.气运名) _dstAdd(_dstMain, '');
-            else Object.keys(_dstMain).forEach(function (k) { _dstAdd(_dstMain[k], k); });
-            if (_dstLines.length) {
-                h += '<div class="xz-box" style="grid-column:1 / -1;">';
-                h += '<div class="xz-box-k"><span>先天气运</span></div>';
-                h += '<div class="xz-box-v" style="display:block;line-height:1.55;">'
-                    + _dstLines.join('<div style="height:5px;"></div>') + '</div>';
-                h += '</div>';
+            if (_dstMain.气运名) _push(_dstMain, '');
+            else Object.keys(_dstMain).forEach(function (k) { _push(_dstMain[k], k); });
+        })();
+        var _DYQ = { '凡阶': '#9aa0a6', '黄阶': '#c9a227', '玄阶': '#a855f7', '地阶': '#4aa3c7' };
+        var _dyCards = '';
+        for (var _di = 0; _di < 3; _di++) {
+            var _d = _dstList[_di];
+            if (_d) {
+                var _dc = _DYQ[_d.q] || '#9aa0a6';
+                _dyCards += '<div style="flex:1 1 0;min-width:0;border-radius:8px;padding:6px 7px;'
+                    + 'background:linear-gradient(160deg,rgba(255,255,255,.055),rgba(255,255,255,.015));'
+                    + 'border:1px solid rgba(255,255,255,.12);">'
+                    + '<span style="display:inline-block;font-size:9px;line-height:1;padding:2px 4px;border-radius:3px;'
+                    + 'border:1px solid ' + _dc + ';color:' + _dc + ';margin-bottom:4px;">'
+                    + esc(_d.q || '凡阶') + '</span>'
+                    + '<div style="font-size:12px;font-weight:var(--xz-fw-med);color:var(--xz-text);'
+                    + 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(_d.n) + '</div>'
+                    + '<div style="font-size:10px;line-height:1.45;color:var(--xz-text-2);margin-top:2px;'
+                    + 'display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">'
+                    + esc(_d.e || '（无效果）') + '</div></div>';
+            } else {
+                _dyCards += '<div style="flex:1 1 0;min-width:0;border-radius:8px;padding:6px 7px;'
+                    + 'border:1px dashed rgba(255,255,255,.14);color:var(--xz-muted);font-size:10.5px;'
+                    + 'display:flex;align-items:center;justify-content:center;min-height:58px;">空</div>';
             }
         }
+        h += '<div class="xz-box" style="grid-column:1 / -1;">';
+        h += '<div class="xz-box-k"><span>气运</span>'
+            + '<span style="font-size:10px;color:var(--xz-muted);font-weight:400;">'
+            + _dstList.length + ' / 3</span></div>';
+        h += '<div class="xz-box-v" style="display:flex;gap:6px;align-items:stretch;">' + _dyCards + '</div>';
+        h += '</div>';
 
         /* ★ v71：格10「大道」整格删除。 */
 
