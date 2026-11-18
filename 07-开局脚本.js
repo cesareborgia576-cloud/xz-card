@@ -51,7 +51,7 @@ var XZ_MAINT = false;
             d.setAttribute('style', [
                 'margin:14px 0', 'padding:18px 16px',
                 'border:1px solid rgba(230,189,118,.45)', 'border-radius:10px',
-                'background:#141922', 'color:#e8e3d3',
+                'background:var(--xz-card,#141922)', 'color:var(--xz-text)',
                 'font-family:inherit', 'font-size:15px', 'line-height:1.6',
                 'letter-spacing:.04em', 'text-align:center'
             ].join(';'));
@@ -196,7 +196,8 @@ var XZ_MAINT = false;
        ⚠ 三档共用一个 sync()：属性值 == 'qing'。选择器 [data-xz-theme="qing"]
          特异性高于 NIGHT 的 :root,.xz-root，两者都是 !important ⇒ 玄青能压过夜墨。 */
     var QING_TOKENS =
-        ':root[data-xz-theme="qing"],.xz-root[data-xz-theme="qing"],body[data-xz-theme="qing"]{' +
+        ':root[data-xz-theme="qing"],.xz-root[data-xz-theme="qing"],body[data-xz-theme="qing"],' +
+        ':root[data-xz-theme="qing"] .xz-root,body[data-xz-theme="qing"] .xz-root{' +
         /* ★★★ v638：玄青底**保留**，只有输入框改黑 ★★★
            作者 2026-11-18：「玄青色的输入框别搞青绿色，就搞成深色美化那种黑就行了」。
            ── 为什么底不动 ─────────────────────────────────────────────────────
@@ -211,13 +212,15 @@ var XZ_MAINT = false;
         '--xz-gold-fill:#e6bd76!important;' +
         '--xz-gold-glow:rgba(227,185,111,0.28)!important;' +
         '--xz-jade:#68c5b2!important;--xz-cyan:#7fd2c1!important;' +
+        '--xz-bar-hp:linear-gradient(90deg,#b21f45,#ff8a8a)!important;--xz-bar-mp:linear-gradient(90deg,#2a63bb,#60a5fa)!important;--xz-bar-exp:linear-gradient(90deg,#e6bd76,#f2c26f)!important;' +
         '--xz-purple:#d8899d!important;--xz-crimson:#aa5960!important;' +
         '--xz-text:#f3eee5!important;--xz-text-2:#b7b8b3!important;--xz-muted:#8a9496!important;' +
         /* ★ v635：这里是 QING_DECL（原值），**不是** NIGHT_DECL（去金银）。
            作者：「金色是青玄色专有」⇒ 玄青那一档必须保留全部金色令牌。 */
         QING_DECL + '}';
     var DAY_TOKENS =
-        ':root[data-xz-theme="day"],.xz-root[data-xz-theme="day"],body[data-xz-theme="day"]{' +
+        ':root[data-xz-theme="day"],.xz-root[data-xz-theme="day"],body[data-xz-theme="day"],' +
+        ':root[data-xz-theme="day"] .xz-root,body[data-xz-theme="day"] .xz-root{' +
         '--xz-void:#ffffff!important;--xz-bg:#ffffff!important;--xz-card:#ffffff!important;' +
         '--xz-bar-hp:linear-gradient(90deg,#000000,#000000)!important;--xz-bar-mp:linear-gradient(90deg,#000000,#000000)!important;--xz-bar-exp:linear-gradient(90deg,#000000,#000000)!important;' +
         '--xz-card-hover:#f7f7f7!important;--xz-input:#ffffff!important;--xz-nav:#ffffff!important;' +
@@ -7240,7 +7243,7 @@ d.attrs[a] = v;
                `overflow:auto` 里会浮在内容之上、把网格最后一行盖住 —— 作者截图钉的就是这个）。 */
             '.xz-st-body-pick>.xz-st-ovl-ft'
                 + '{flex:none;margin:8px -14px -12px;padding:9px 14px;'
-                + 'background:#141922;border-top:1px solid rgba(230,189,118,.22);'
+                + 'background:var(--xz-card,#141922);border-top:1px solid var(--xz-border);'
                 + 'display:flex;gap:8px;align-items:center;}',
             /* 中间可滚的那段：成套 / 网格 / 提示 塞在里面 */
             /* ★★★ v471：必须写 `display:flex;flex-direction:column` ★★★
@@ -9342,7 +9345,7 @@ d.attrs[a] = v;
            `min()` 才能拿到它并真正取小值。
            ⚠ 变量必须写在这个元素自己的 style 上（内联变量对自身可见）。 */
         return '<div class="xz-st-ovl-bg" data-xz-act="' + closeAct + '" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.82);z-index:999999;display:flex;align-items:flex-end;justify-content:center;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;">' +
-            '<div class="xz-st-ovl-box" style="--xz-ovl-maxw:540px;--xz-ovl-maxh:680px;background:#141922;border:1.5px solid var(--xz-gold);border-bottom:none;border-radius:12px 12px 0 0;max-width:540px;width:100%;max-height:min(82vh,680px);display:flex;flex-direction:column;box-shadow:0 -10px 35px rgba(0,0,0,0.9);color:#e2decb;">' +
+            '<div class="xz-st-ovl-box" style="--xz-ovl-maxw:540px;--xz-ovl-maxh:680px;background:var(--xz-card,#141922);border:1.5px solid var(--xz-border,#e6bd76);border-bottom:none;border-radius:12px 12px 0 0;max-width:540px;width:100%;max-height:min(82vh,680px);display:flex;flex-direction:column;box-shadow:0 -10px 35px rgba(0,0,0,0.9);color:#e2decb;">' +
             '<div style="padding:10px 14px;border-bottom:1px solid rgba(230,189,118,.3);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-shrink:0;background:#181e28;border-radius:12px 12px 0 0;">' +
             '<strong style="color:#dcdcdc;font-size:14px;">' + esc(title) + '</strong>' +
             '<button type="button" class="xz-st-mini del" data-xz-act="' + closeAct + '" style="padding:4px 12px;flex:0 0 auto;font-size:11px;">✕ 关闭</button>' +
