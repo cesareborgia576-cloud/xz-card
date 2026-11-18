@@ -213,6 +213,13 @@ var XZ_MAINT = false;
         '--xz-gold-glow:rgba(227,185,111,0.28)!important;' +
         '--xz-jade:#68c5b2!important;--xz-cyan:#7fd2c1!important;' +
         '--xz-bar-hp:linear-gradient(90deg,#b21f45,#ff8a8a)!important;--xz-bar-mp:linear-gradient(90deg,#2a63bb,#60a5fa)!important;--xz-bar-exp:linear-gradient(90deg,#e6bd76,#f2c26f)!important;' +
+        '--dhl-stage:linear-gradient(180deg,#0a1e24,#061418)!important;' +
+        '--dhl-reading:linear-gradient(180deg,#0e232b,#0a1b22)!important;' +
+        '--dhl-card:linear-gradient(145deg,#102a33,#0b1e25)!important;' +
+        '--dhl-card-hover:linear-gradient(145deg,#132f39,#0d232b)!important;' +
+        '--dhl-header:linear-gradient(90deg,#12262c,#0d2027 50%,#0a1a20)!important;' +
+        '--dhl-button-active:linear-gradient(180deg,rgba(230,189,118,.20),rgba(8,22,28,.35))!important;' +
+        '--dhl-shadow:0 4px 16px rgba(0,0,0,.50)!important;--dhl-glow:0 0 10px rgba(227,185,111,.20)!important;' +
         '--xz-purple:#d8899d!important;--xz-crimson:#aa5960!important;' +
         '--xz-text:#f3eee5!important;--xz-text-2:#b7b8b3!important;--xz-muted:#8a9496!important;' +
         /* ★ v635：这里是 QING_DECL（原值），**不是** NIGHT_DECL（去金银）。
@@ -22367,6 +22374,8 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
     '--xz-ink-edge:rgba(0,0,0,0.26);',
     '--xz-ink-tick:rgba(226,232,240,0.30);',
     '--xz-ink-seal-a:#c2402f;--xz-ink-seal-b:#8c241e;',
+    /* ★ v639h：正文文字色跟主题（日光白底上原来是宿主灰字，看不清） */
+    'color:var(--xz-text);',
     'position:relative;border-radius:4px;',
     'background-color:var(--xz-ink-paper);',
     /* 十一层叠出来的纸面（从下往上画，浏览器按顺序叠）：
