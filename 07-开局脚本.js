@@ -153,7 +153,7 @@ var XZ_MAINT = false;
            ── 改法：chroma=0 的**中性黑**。三档拉开明度层次，不再带任何色相。
               输入框另给 --xz-input（比卡片再深一档），见 07 的 .xz-st-body 输入规则。 */
         '--xz-void:#161e28!important;--xz-bg:#1b2430!important;--xz-card:#1b2430!important;' +
-        '--xz-bar-hp:linear-gradient(90deg,#ffffff,#ffffff)!important;--xz-bar-mp:linear-gradient(90deg,#ffffff,#ffffff)!important;--xz-bar-exp:linear-gradient(90deg,#ffffff,#ffffff)!important;' +
+        '--xz-bar-hp:linear-gradient(90deg,#b21f45,#ff8a8a)!important;--xz-bar-mp:linear-gradient(90deg,#2a63bb,#60a5fa)!important;--xz-bar-exp:linear-gradient(90deg,#c9c9c9,#ffffff)!important;' +
         '--xz-card-hover:#222d3a!important;--xz-input:#151d26!important;--xz-nav:#1b2430!important;' +
         '--dhl-stage:#1b2430!important;--dhl-reading:#1b2430!important;--dhl-card:#1b2430!important;--dhl-card-hover:#222d3a!important;' +
         '--dhl-header:#1b2430!important;--dhl-button-active:#25313f!important;--dhl-shadow:none!important;--dhl-glow:none!important;' +
@@ -229,7 +229,7 @@ var XZ_MAINT = false;
         ':root[data-xz-theme="day"],.xz-root[data-xz-theme="day"],body[data-xz-theme="day"],' +
         ':root[data-xz-theme="day"] .xz-root,body[data-xz-theme="day"] .xz-root{' +
         '--xz-void:#ffffff!important;--xz-bg:#ffffff!important;--xz-card:#ffffff!important;' +
-        '--xz-bar-hp:linear-gradient(90deg,#000000,#000000)!important;--xz-bar-mp:linear-gradient(90deg,#000000,#000000)!important;--xz-bar-exp:linear-gradient(90deg,#000000,#000000)!important;' +
+        '--xz-bar-hp:linear-gradient(90deg,#9b1c33,#c2402f)!important;--xz-bar-mp:linear-gradient(90deg,#1d4a6b,#3f7fa8)!important;--xz-bar-exp:linear-gradient(90deg,#5a4a2a,#8a6a30)!important;' +
         '--xz-card-hover:#f7f7f7!important;--xz-input:#ffffff!important;--xz-nav:#ffffff!important;' +
         '--dhl-stage:#ffffff!important;--dhl-reading:#ffffff!important;--dhl-card:#ffffff!important;--dhl-card-hover:#f7f7f7!important;' +
         '--dhl-header:#ffffff!important;--dhl-button-active:#f0f0f0!important;--dhl-shadow:none!important;--dhl-glow:none!important;' +
@@ -3036,6 +3036,34 @@ function xzSkeletonOfSkill(skill) {
        ── 品质色 ────────────────────────────────────────────────────────────
          不走 `--xz-gold`：四档要能**互相区分**，全用主题金就分不出玄阶与地阶。
          这四个值是语义色（与品阶章一致），日光档也读得清。 */
+    /* ★★★ v639m：气运预设池（自选用）—— 战斗 / 剧情 / 娱乐 三类 ★★★
+       作者 2026-11-19：「气运新增自选按钮，然后加多点预设，不仅限于战斗的，
+         搞点剧情气运，和娱乐气运」。
+       ⚠ 效果键名只能用《设定-效果表》② 里那 16 个被动机制名，别写自由文本。 */
+    var DY_PRESETS = [
+        /* ── 战斗 ── */
+        { n: '山野遗血', q: '凡阶', e: '减伤:6｜皮实耐造，寻常寒暑不易落病根', t: '战斗' },
+        { n: '雷骨天生', q: '玄阶', e: '增伤:10｜雷气入骨，出手带响', t: '战斗' },
+        { n: '铁打身板', q: '黄阶', e: '气血上限:8｜底子厚，挨得住', t: '战斗' },
+        { n: '快人一步', q: '黄阶', e: '提速:8｜身法天生轻', t: '战斗' },
+        { n: '血气方刚', q: '黄阶', e: '吸血:5｜越战越勇', t: '战斗' },
+        { n: '心如止水', q: '玄阶', e: '抗暴:12｜心神稳，不易被打乱', t: '战斗' },
+        /* ── 剧情 ── */
+        { n: '书香门第', q: '黄阶', e: '回蓝:5｜静得下心，吐纳省力', t: '剧情' },
+        { n: '命里有贵人', q: '玄阶', e: '气血上限:10｜总有人在紧要处拉一把', t: '剧情' },
+        { n: '口舌生花', q: '黄阶', e: '回蓝:6｜话说得漂亮，气也顺', t: '剧情' },
+        { n: '桃花缠身', q: '玄阶', e: '闪避:8｜总有人替你挡一下', t: '剧情' },
+        { n: '旧宅书香', q: '凡阶', e: '回蓝:4｜翻旧书翻出道理', t: '剧情' },
+        { n: '市井耳报', q: '凡阶', e: '提速:4｜消息总比人快半步', t: '剧情' },
+        /* ── 娱乐 ── */
+        { n: '赌运亨通', q: '玄阶', e: '增伤:8｜手气好，掷什么都赢半分', t: '娱乐' },
+        { n: '酒量如海', q: '黄阶', e: '气血上限:6｜喝不倒，也累不垮', t: '娱乐' },
+        { n: '花丛老手', q: '黄阶', e: '闪避:6｜滑不留手', t: '娱乐' },
+        { n: '一夜暴富', q: '地阶', e: '增伤:12｜钱能通神，底气足', t: '娱乐' },
+        { n: '琴心三叠', q: '玄阶', e: '回蓝:8｜一曲安神，灵力自回', t: '娱乐' },
+        { n: '厨神转世', q: '凡阶', e: '回血:4:2｜一碗热汤，气血慢补', t: '娱乐' }
+    ];
+
     var DY_QUALITY_COLOR = { '凡阶': '#9aa0a6', '黄阶': '#c9a227', '玄阶': '#a855f7', '地阶': '#4aa3c7' };
     var DY_SLOTS = 3;
 
@@ -3761,6 +3789,7 @@ function xzSkeletonOfSkill(skill) {
             dyTimer: null,
             /* v639：当前正在编辑的卡（-1＝没有）；dyAnim 只控制入场动画播不播 */
             dyEdit: -1,
+            dyPick: false,
             dyAnim: false,
             /* ★ v1.053c：人物关系预设 —— 默认「六姐与娘」（这卡默认就是这家人）。
                选「无关系」= 这一局不写这段亲缘，《亲缘·六姐与娘》会在确认开局时被关掉。 */
@@ -10304,10 +10333,24 @@ d.attrs[a] = v;
              canvas 里一个字都读不出来，等于这个功能永远没有判据。 */
         h += '<div class="xz-dy-stage">' + destinyCardsHtml(d) + '</div>';
         h += '<div class="xz-dy-bar">'
+            + '<button type="button" class="xz-dy-main" data-xz-act="dy-pick"'
+            + ' style="flex:0 0 96px;letter-spacing:1px;">✎ 自选</button>'
             + '<button type="button" class="xz-dy-main" data-xz-act="draw-destiny"'
             + (state.dyRolling ? ' disabled' : '') + '>'
             + (state.dyRolling ? '抽 签 中 …' : '✦ 抽 三 张') + '</button>'
             + '</div>';
+        if (state.dyPick) {
+            var _pg = '', _lastT = '';
+            DY_PRESETS.forEach(function (pp, pi) {
+                if (pp.t !== _lastT) { _lastT = pp.t; _pg += '<div style="font-size:10px;color:var(--xz-muted);margin:6px 0 3px;">' + esc(pp.t) + '</div>'; }
+                _pg += '<button type="button" class="xz-dy-btn" data-xz-act="dy-preset" data-xz-idx="' + pi + '"'
+                    + ' style="display:block;width:100%;text-align:left;margin:0 0 3px;padding:4px 7px;">'
+                    + '<b style="color:var(--xz-text);font-weight:500;">' + esc(pp.n) + '</b>'
+                    + ' <span style="color:' + (DY_QUALITY_COLOR[pp.q] || '#9aa0a6') + ';font-size:9.5px;">' + esc(pp.q) + '</span>'
+                    + '<span style="color:var(--xz-muted);font-size:10px;"> ' + esc(pp.e) + '</span></button>';
+            });
+            h += '<div style="max-height:150px;overflow-y:auto;margin:6px 0 0;padding:2px 2px 0;border:1px solid var(--xz-border);border-radius:8px;">' + _pg + '</div>';
+        }
         h += foldTip('气运＝出身即带的永久被动，<b>最多三条</b>。<br>'
             + '「抽三张」一次掷满三张；<b>锁住</b>某张后「总随机」不会动它；'
             + '「单抽」只重掷那一张。<br>'
@@ -12866,6 +12909,24 @@ host.__xzGuard = true;
             }
             /* ★ v639：单张编辑（作者：「新增一个编辑气运，也就是卡片都会出现编辑按钮」）
                ⚠ 编辑态**不重绘** —— 输入框每敲一个字重绘一次会把光标顶掉。 */
+            /* ★ v639m：自选面板开关 + 选中一条填进第一个空槽 */
+            if (act === 'dy-pick') {
+                state.dyPick = !state.dyPick;
+                render(true); return;
+            }
+            if (act === 'dy-preset') {
+                var _pi = parseInt(t.getAttribute('data-xz-idx'), 10);
+                var _pp = DY_PRESETS[_pi];
+                if (!_pp) return;
+                var _pl = destinyListOf(d);
+                var _slot = -1;
+                for (var _k = 0; _k < DY_SLOTS; _k++) { if (!_pl[_k].name) { _slot = _k; break; } }
+                if (_slot < 0) { state.note = '三张都满了，先点某张的「✎ 编辑」清空或单抽换掉。'; render(true); return; }
+                _pl[_slot] = { name: _pp.n, quality: _pp.q, effect: _pp.e, locked: _pl[_slot].locked };
+                d.destinies = _pl;
+                state.note = '已选：' + _pp.n + '（' + _pp.q + '）';
+                render(true); return;
+            }
             if (act === 'dy-edit') {
                 var _ei = parseInt(t.getAttribute('data-xz-idx'), 10);
                 if (isNaN(_ei) || _ei < 0 || _ei >= DY_SLOTS) _ei = 0;
