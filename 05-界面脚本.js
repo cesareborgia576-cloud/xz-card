@@ -22376,7 +22376,9 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
     '--xz-ink-seal-a:#c2402f;--xz-ink-seal-b:#8c241e;',
     /* ★ v639h：正文文字色跟主题（日光白底上原来是宿主灰字，看不清） */
     'color:var(--xz-text);',
-    'position:relative;border-radius:4px;',
+    /* ★ v639k：左右对称 —— 宿主可能只给一边留了 padding/margin，
+       显式把外边距与宽度钉死，右边就不会比左边多出一截。 */
+    'position:relative;border-radius:4px;margin-left:0;margin-right:0;max-width:100%;box-sizing:border-box;',
     'background-color:var(--xz-ink-paper);',
     /* 十一层叠出来的纸面（从下往上画，浏览器按顺序叠）：
        ① 上下渐隐 ② 横织纹 ③ 竖织纹 ④ 左右细线 ⑤~⑫ 四角短角标（每角两笔） */
