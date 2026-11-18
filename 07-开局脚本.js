@@ -150,9 +150,11 @@ var XZ_MAINT = false;
               与玄青那档（#071720 系）肉眼分不开 ⇒ 作者认定"深色主题在用玄青当底"。
            ── 改法：chroma=0 的**中性黑**。三档拉开明度层次，不再带任何色相。
               输入框另给 --xz-input（比卡片再深一档），见 07 的 .xz-st-body 输入规则。 */
-        '--xz-void:#000000!important;--xz-bg:#000000!important;--xz-card:#0c0c0c!important;' +
+        '--xz-void:#000000!important;--xz-bg:#000000!important;--xz-card:#000000!important;' +
         '--xz-bar-hp:linear-gradient(90deg,#ffffff,#ffffff)!important;--xz-bar-mp:linear-gradient(90deg,#ffffff,#ffffff)!important;--xz-bar-exp:linear-gradient(90deg,#ffffff,#ffffff)!important;' +
-        '--xz-card-hover:#141414!important;--xz-input:#0a0a0a!important;--xz-nav:#000000!important;' +
+        '--xz-card-hover:#111111!important;--xz-input:#000000!important;--xz-nav:#000000!important;' +
+        '--dhl-stage:#000000!important;--dhl-reading:#000000!important;--dhl-card:#000000!important;--dhl-card-hover:#0a0a0a!important;' +
+        '--dhl-header:#000000!important;--dhl-button-active:#141414!important;--dhl-shadow:none!important;--dhl-glow:none!important;' +
         '--xz-border:rgba(255,255,255,0.22)!important;--xz-border-strong:rgba(255,255,255,0.60)!important;' +
         '--xz-gold:#ffffff!important;--xz-gold-bright:#ffffff!important;' +
         '--xz-gold-fill:#ffffff!important;' +
@@ -216,7 +218,9 @@ var XZ_MAINT = false;
         ':root[data-xz-theme="day"],.xz-root[data-xz-theme="day"],body[data-xz-theme="day"]{' +
         '--xz-void:#ffffff!important;--xz-bg:#ffffff!important;--xz-card:#ffffff!important;' +
         '--xz-bar-hp:linear-gradient(90deg,#000000,#000000)!important;--xz-bar-mp:linear-gradient(90deg,#000000,#000000)!important;--xz-bar-exp:linear-gradient(90deg,#000000,#000000)!important;' +
-        '--xz-card-hover:#ffffff!important;--xz-input:#ffffff!important;--xz-nav:#ffffff!important;' +
+        '--xz-card-hover:#f7f7f7!important;--xz-input:#ffffff!important;--xz-nav:#ffffff!important;' +
+        '--dhl-stage:#ffffff!important;--dhl-reading:#ffffff!important;--dhl-card:#ffffff!important;--dhl-card-hover:#f7f7f7!important;' +
+        '--dhl-header:#ffffff!important;--dhl-button-active:#f0f0f0!important;--dhl-shadow:none!important;--dhl-glow:none!important;' +
         '--xz-border:rgba(0,0,0,0.26)!important;--xz-border-strong:rgba(0,0,0,0.62)!important;' +
         '--xz-gold:#000000!important;--xz-gold-bright:#000000!important;' +
         '--xz-gold-fill:#000000!important;' +
@@ -6888,6 +6892,15 @@ d.attrs[a] = v;
               + ':root[data-xz-theme="night"] .xz-st-sect{background:#000!important;border-color:rgba(255,255,255,.42)!important;box-shadow:none!important;}',
             ':root:not([data-xz-theme]) .xz-st-sect-h,'
               + ':root[data-xz-theme="night"] .xz-st-sect-h{background:#000!important;border-bottom-color:rgba(255,255,255,.42)!important;}',
+            /* ★★★ v639e：夜墨/日光 = **一个颜色**，不许有任何反光/渐变/阴影 ★★★
+               作者 2026-11-18：「夜墨要简约黑色，你又弄这种反光色，你倒是一个颜色啊」。
+               向导里 40 多处 background-image 渐变（高光、金渐变、暗角）就是反光的来源。
+               ⇒ 这两档把 #xz-start-host 下所有元素的 background-image 与 box-shadow 全掐掉，
+                 只剩 background-color（已由令牌压成纯黑/纯白）+ 1px 描边。
+               ⚠ 只掐 night/day，玄青一行不动。 */
+            ':root:not([data-xz-theme]) #xz-start-host *,'
+              + ':root[data-xz-theme="night"] #xz-start-host *{background-image:none!important;box-shadow:none!important;}',
+            ':root[data-xz-theme="day"] #xz-start-host *{background-image:none!important;box-shadow:none!important;}',
             ':root:not([data-xz-theme]) .xz-st-sect-h::before,'
               + ':root[data-xz-theme="night"] .xz-st-sect-h::before{background:#fff!important;}',
             /* 分区标题栏：左侧金色竖标 + 标题 + 右侧可选计数 */
