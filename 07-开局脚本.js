@@ -3040,6 +3040,27 @@ function xzSkeletonOfSkill(skill) {
        作者 2026-11-19：「气运新增自选按钮，然后加多点预设，不仅限于战斗的，
          搞点剧情气运，和娱乐气运」。
        ⚠ 效果键名只能用《设定-效果表》② 里那 16 个被动机制名，别写自由文本。 */
+    /* ★★★ v639o：天命商店（创角第三页底部）★★★
+       作者 2026-11-19：「第三页底下新增天命商店，也就是可以买一些预设法宝、预设护甲、预设饰品」。
+       ── 规则 ────────────────────────────────────────────────────────────
+         · 开局给 3 点「天命」，买一件扣它的 cost（1~3 点），不能重复买同一件。
+         · 法宝进 装备.法宝；护甲与饰品进 装备.防具 与 装备.饰品。
+         · 买下的东西在落盘时由 buildVars 写进变量（见那里的 装备 分支）。
+       ⚠ 品质只到地阶：开局白送神阶会把整条数值曲线打穿。 */
+    var TM_SHOP = [
+        { n: '青锋剑', q: '黄阶', e: '穿防:12｜刃口泛青，破甲顺手', c: 1, cat: '法宝' },
+        { n: '赤铜短刀', q: '黄阶', e: '增伤:10｜近身一刀，火气足', c: 1, cat: '法宝' },
+        { n: '松纹古剑', q: '玄阶', e: '穿防:20｜剑脊有纹，力透护体', c: 2, cat: '法宝' },
+        { n: '雷纹玉牌', q: '地阶', e: '增伤:18｜雷气养在玉里，出手带响', c: 3, cat: '法宝' },
+        { n: '粗布短打', q: '凡阶', e: '减伤:4｜不体面，但挡得住刮蹭', c: 1, cat: '护甲' },
+        { n: '皮甲', q: '黄阶', e: '减伤:8｜熟牛皮，刀砍进去滞一下', c: 1, cat: '护甲' },
+        { n: '玄铁锁子甲', q: '玄阶', e: '减伤:14｜环环相扣，压手但耐打', c: 2, cat: '护甲' },
+        { n: '素银镯', q: '黄阶', e: '回蓝:6｜银气清，吐纳省力', c: 1, cat: '饰品' },
+        { n: '避尘玉佩', q: '玄阶', e: '闪避:8｜身法轻，衣不沾尘', c: 2, cat: '饰品' },
+        { n: '温血石', q: '玄阶', e: '气血上限:10｜贴身暖，底子厚', c: 2, cat: '饰品' }
+    ];
+    var TM_POINTS = 3;
+
     var DY_PRESETS = [
         /* ── 战斗 ── */
         { n: '山野遗血', q: '凡阶', e: '减伤:6｜皮实耐造，寻常寒暑不易落病根', t: '战斗' },
@@ -3790,6 +3811,9 @@ function xzSkeletonOfSkill(skill) {
             /* v639：当前正在编辑的卡（-1＝没有）；dyAnim 只控制入场动画播不播 */
             dyEdit: -1,
             dyPick: false,
+            tmPoints: 3,
+            tmBought: [],
+            tmGear: { 防具: null, 饰品: null },
             dyAnim: false,
             /* ★ v1.053c：人物关系预设 —— 默认「六姐与娘」（这卡默认就是这家人）。
                选「无关系」= 这一局不写这段亲缘，《亲缘·六姐与娘》会在确认开局时被关掉。 */
@@ -5089,9 +5113,22 @@ d.attrs[a] = v;
                     法宝: (artifact && artifact.法宝名 && artifact.法宝名 !== '无')
                         ? { 名称: artifact.法宝名, 品质: artifact.品质 || '黄阶', 效果: artifact.效果 || '' }
                         : { 名称: '无', 品质: '黄阶', 效果: '' },
-                    防具: { 名称: '无', 品质: '黄阶', 效果: '' },
+                    /* ★ v639o：天命商店买的护甲/饰品在这里落盘（没买仍是「无」） */
+                    防具: (d.tmGear && d.tmGear.防具) ? {
+                        名称: String(d.tmGear.防具.名称 || '无'),
+                        品质: String(d.tmGear.防具.品质 || '黄阶'),
+                        效果: String(d.tmGear.防具.效果 || '')
+                    } : { 名称: '无', 品质: '黄阶', 效果: '' },
                     /* 饰品最多 2 件，开局一律空（record 形态，键＝饰品名） */
-                    饰品: {}
+                    饰品: (d.tmGear && d.tmGear.饰品) ? (function () {
+                        var _o = {};
+                        _o[String(d.tmGear.饰品.名称 || '饰品')] = {
+                            名称: String(d.tmGear.饰品.名称 || ''),
+                            品质: String(d.tmGear.饰品.品质 || '黄阶'),
+                            效果: String(d.tmGear.饰品.效果 || '')
+                        };
+                        return _o;
+                    })() : {}
                 },
                 /* ★★★ v656：身份改为「玩家填了就照玩家，留空才交给模型」★★★
                    作者 2026-11-18：「新增填身份」。
@@ -10358,6 +10395,30 @@ d.attrs[a] = v;
             + '能吃的机制名见《设定-效果表》第 ② 节（减伤／闪避／增伤／吸血／回蓝／提速…）。<br>'
             + '写「气血 +50」这种自由文本<b>不会生效</b> —— 认不出来的名字会被直接忽略。');
         h += sectClose('气运');
+        /* ★ v639o：天命商店 —— 预设法宝 / 护甲 / 饰品，用「天命点」买 */
+        var _tmLeft = Number(d.tmPoints == null ? TM_POINTS : d.tmPoints);
+        h += sectOpen('天命商店', '天命 ' + _tmLeft + ' / ' + TM_POINTS);
+        h += '<div style="font-size:10.5px;color:var(--xz-muted);margin:0 0 5px;">'
+            + '开局只有 ' + TM_POINTS + ' 点天命，买定离手。已买的不再重复扣点。</div>';
+        h += '<div style="display:flex;flex-direction:column;gap:4px;">';
+        TM_SHOP.forEach(function (it, ti) {
+            var _own = (d.tmBought || []).indexOf(it.n) >= 0;
+            var _can = !_own && _tmLeft >= it.c;
+            h += '<div style="display:flex;align-items:center;gap:6px;padding:5px 7px;border:1px solid var(--xz-border);border-radius:7px;">'
+                + '<span style="flex:0 0 auto;font-size:9px;color:' + (DY_QUALITY_COLOR[it.q] || '#9aa0a6') + ';border:1px solid currentColor;border-radius:3px;padding:1px 4px;">' + esc(it.q) + '</span>'
+                + '<span style="flex:1 1 auto;min-width:0;">'
+                + '<b style="color:var(--xz-text);font-weight:500;font-size:11.5px;">' + esc(it.n) + '</b>'
+                + '<span style="color:var(--xz-muted);font-size:10px;"> · ' + esc(it.cat) + ' · ' + esc(it.e) + '</span></span>'
+                + '<button type="button" class="xz-dy-btn" data-xz-act="tm-buy" data-xz-idx="' + ti + '"'
+                + (_can ? '' : ' disabled') + ' style="flex:0 0 62px;' + (_own ? 'opacity:.45;' : '') + '">'
+                + (_own ? '已购' : ('天命 ' + it.c)) + '</button>'
+                + '</div>';
+        });
+        h += '</div>';
+        h += foldTip('买下的<b>法宝</b>会直接写进「装备·法宝」，<b>护甲/饰品</b>写进「装备·防具/饰品」。<br>'
+            + '品质只到地阶——开局白送神阶会把整条数值曲线打穿。');
+        h += sectClose('天命商店');
+
 
         /* 框三：四维 */
         h += sectOpen('四维分配', '上限 ' + rule.total + ' 点');
@@ -12910,6 +12971,31 @@ host.__xzGuard = true;
             /* ★ v639：单张编辑（作者：「新增一个编辑气运，也就是卡片都会出现编辑按钮」）
                ⚠ 编辑态**不重绘** —— 输入框每敲一个字重绘一次会把光标顶掉。 */
             /* ★ v639m：自选面板开关 + 选中一条填进第一个空槽 */
+            /* ★ v639o：天命商店购买 */
+            if (act === 'tm-buy') {
+                var _ti = parseInt(t.getAttribute('data-xz-idx'), 10);
+                var _it = TM_SHOP[_ti];
+                if (!_it) return;
+                if (!Array.isArray(d.tmBought)) d.tmBought = [];
+                if (d.tmBought.indexOf(_it.n) >= 0) { state.note = '这件已经买过了。'; render(true); return; }
+                var _left = Number(d.tmPoints == null ? TM_POINTS : d.tmPoints);
+                if (_left < _it.c) { state.note = '天命不够了（剩 ' + _left + ' 点）。'; render(true); return; }
+                d.tmPoints = _left - _it.c;
+                d.tmBought.push(_it.n);
+                if (_it.cat === '法宝') {
+                    if (!d.items) d.items = {};
+                    if (!Array.isArray(d.items.法宝)) d.items.法宝 = [];
+                    d.items.法宝.push({ 名: _it.n, 品质: _it.q, 效果: _it.e });
+                } else if (_it.cat === '护甲') {
+                    d.tmGear = d.tmGear || {};
+                    d.tmGear.防具 = { 名称: _it.n, 品质: _it.q, 效果: _it.e };
+                } else {
+                    d.tmGear = d.tmGear || {};
+                    d.tmGear.饰品 = { 名称: _it.n, 品质: _it.q, 效果: _it.e };
+                }
+                state.note = '已购入：' + _it.n + '（天命 -' + _it.c + '）';
+                render(true); return;
+            }
             if (act === 'dy-pick') {
                 state.dyPick = !state.dyPick;
                 render(true); return;
