@@ -22170,7 +22170,31 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
     ':root[data-xz-theme="qing"] #xz-jjb-overlay .xz-jjb-card{',
     'background:linear-gradient(180deg,#0d232b 0%,#081a20 100%)!important;}',
     /* ── 日光：引擎已有一套宣纸层，这里只补外框底（它写死在 ID 规则里）── */
-    ':root[data-xz-theme="day"] #xz-jjb-frame{background:linear-gradient(180deg,#fbf7ec,#f2ebdb 60%)!important;}'
+    /* ★★★ v639b：日光档战斗界面＝纯白 + 黑线 + 黑字（作者：「别做这种恶心的渐变灰色」）★★★
+       引擎 v593 那套"宣纸铜边"是一层层渐变 + 暖赭投影，作者看图说"哪里来的这么多渐变灰色"。
+       ⇒ 这一档把**所有材质层压平**：底纯白、卡片纯白、线纯黑、阴影全去、氛围层关掉。
+       ⚠ 只压日光档；夜墨/玄青保持各自的深色（那是他自己定的简约黑/玄青）。
+       ⚠ 必须 !important：引擎里那些规则是 ID 选择器 + 行内 background，不压不动。 */
+    ':root[data-xz-theme="day"] #xz-jjb-overlay{',
+    '--xz-bg:#ffffff;--xz-panel:#ffffff;--xz-panel-2:#ffffff;',
+    '--xz-ink:#000000;--xz-ink-2:#111111;--xz-ink-3:#333333;',
+    '--xz-gold:#000000;--xz-gold-2:#000000;--xz-gold-dim:rgba(0,0,0,0);',
+    '--xz-line:#000000;--xz-line-2:#000000;',
+    '--xz-border:#000000;--xz-border-strong:#000000;',
+    '--xz-text:#000000;--xz-text-2:#111111;--xz-muted:#333333;',
+    '--xz-card:#ffffff;--xz-card-hover:#ffffff;',
+    '--dhl-stage:#ffffff;--dhl-reading:#ffffff;--dhl-card:#ffffff;--dhl-card-hover:#ffffff;',
+    '--dhl-header:#ffffff;--dhl-button-active:#f2f2f2;',
+    '--dhl-border:#000000;--dhl-border-strong:#000000;',
+    '--dhl-shadow:none;--dhl-glow:none;',
+    'background:#ffffff!important;',
+    '}',
+    ':root[data-xz-theme="day"] #xz-jjb-overlay .xz-jjb-card{',
+    'background:#ffffff!important;box-shadow:none!important;border:1px solid #000000!important;}',
+    ':root[data-xz-theme="day"] #xz-jjb-overlay .xz-jjb-hpf,',
+    ':root[data-xz-theme="day"] #xz-jjb-overlay .xz-jjb-mpf{box-shadow:none!important;}',
+    ':root[data-xz-theme="day"] #xz-jjb-atmo{display:none!important;}',
+    ':root[data-xz-theme="day"] #xz-jjb-frame{background:#ffffff!important;border:1px solid #000000!important;box-shadow:none!important;}'
   ].join('');
 
   function host() {
@@ -22349,15 +22373,19 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
     '--xz-ink-edge:rgba(0,0,0,0.24);}',
     /* ── 日光：宣纸（暖白）+ 赭线。⚠ 两个前缀都要写 ——
           `.mes_text` 不在 `.xz-root` 子树内，属性可能落在 html 或 .xz-root 任一处。 */
+    /* ★★★ v639b：日光档＝**纯白 + 黑线 + 黑字**，一点色都不带 ★★★
+       作者 2026-11-18：「能不能就一种颜色，我求你了，你就他妈纯白色加黑色线条黑色文字吧」。
+       ── 原来那套暖赭（rgba(150,132,96,.05)）在浅底上被读成"很淡的橙红"，
+          而作者要的是**没有颜色**。⇒ 纸纯白、织纹去掉、线条纯黑、投影去掉。 */
     ':root[data-xz-theme="day"] .xz-ink-scroll,'
       + '.xz-root[data-xz-theme="day"] .xz-ink-scroll{',
-    '--xz-ink-paper:rgba(150,132,96,0.050);',
-    '--xz-ink-fiber:rgba(120,96,48,0.028);',
-    '--xz-ink-rule:rgba(122,85,16,0.38);',
-    '--xz-ink-rule-2:rgba(122,85,16,0.16);',
-    '--xz-ink-edge:rgba(120,96,48,0.10);',
-    /* 日光纸的"厚度"用暖赭投影，别沿用夜墨那道黑投影 —— 白底上 0.16 的黑会读成"框" */
-    'box-shadow:inset 0 0 24px rgba(120,96,48,0.10);}',
+    '--xz-ink-paper:#ffffff;',
+    '--xz-ink-fiber:rgba(0,0,0,0);',
+    '--xz-ink-rule:#000000;',
+    '--xz-ink-rule-2:rgba(0,0,0,0.55);',
+    '--xz-ink-edge:rgba(0,0,0,0);',
+    '--xz-ink-tick:#000000;',
+    'box-shadow:none;}',
     /* 窄屏：印缩一号、上下沿各收 4px。⚠ 卷身本身**不动尺寸**（见 padding/margin 禁令） */
     '@media (max-width:480px){',
     '.xz-scroll-top{height:26px;margin:4px 0 0;}',
