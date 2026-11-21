@@ -29,6 +29,58 @@
    ══════════════════════════════════════════════════════════════════════ */
 var XZ_MAINT = false;
 
+/* ══════════════════════════════════════════════════════════════════════════
+   ★★★ 2026-11-22：版本下限 v1.50（作者拍板：旧卡一律显示「版本过低」）★★★
+   ── 触发链 ──
+     旧卡（v1.30～v1.35）的 loader 探不到 v1.50+ 的 tag，但会走 **latest.json 清单**
+     ⇒ stableTag=v1.51 比卡内版本新 ⇒ 热更到本版 05 ⇒ 这里检查卡版本：
+       · 三位小数（v1.208 那批旧方案卡）⇒ 一律算旧卡；
+       · 两位小数且 < v1.50 ⇒ 旧卡。
+     命中 ⇒ 全屏「版本过低 · 请重新下载最新卡」遮罩，**常驻**（不自动消失）。
+   ── 放行条件 ──
+     · 卡版本 ≥ v1.50（两位小数）⇒ 正常运行；
+     · 读不到卡版本（内嵌版等无 loader 环境）⇒ 放行，不误伤。
+   ⚠ 以后要提高下限：只改 XZ_VER_FLOOR 一处。
+   ══════════════════════════════════════════════════════════════════════════ */
+var XZ_VER_FLOOR = 'v1.50';
+(function () {
+    try {
+        var cv = '';
+        try { cv = String(window.__XZ_CARD_VER__ || ''); } catch (e0) {}
+        if (!cv) { try { cv = String(window.top.__XZ_CARD_VER__ || ''); } catch (e1) { cv = ''; } }
+        if (!/^v\d+\.\d+$/.test(cv)) return;                       /* 读不到/内嵌 ⇒ 放行 */
+        var low = false;
+        if (/^v\d+\.\d{3}$/.test(cv)) low = true;                  /* 旧三位小数方案 ⇒ 旧卡 */
+        else {
+            var a = /^v(\d+)\.(\d+)$/.exec(cv), b = /^v(\d+)\.(\d+)$/.exec(XZ_VER_FLOOR);
+            if (a && b) low = (Number(a[1]) < Number(b[1])) || (Number(a[1]) === Number(b[1]) && Number(a[2]) < Number(b[2]));
+        }
+        if (!low) return;
+        window.__XZ_VER_TOO_LOW__ = 1;
+        var d = (function () {
+            try { if (window.top.document.body) return window.top.document; } catch (eT) {}
+            return document;
+        })();
+        var root = d.body || d.documentElement;
+        var ov = d.createElement('div');
+        ov.id = 'xz-ver-low';
+        ov.setAttribute('style', 'position:fixed;inset:0;z-index:2147483000;background:rgba(5,8,12,.96);'
+            + 'display:flex;align-items:center;justify-content:center;');
+        ov.innerHTML = '<div style="max-width:80vw;padding:28px 32px;border-radius:16px;text-align:center;'
+            + 'background:linear-gradient(160deg,rgba(18,26,32,.98),rgba(9,14,18,.99));'
+            + 'border:1px solid rgba(220,120,110,.5);box-shadow:0 20px 60px rgba(0,0,0,.7);'
+            + 'color:#efe6d2;font-family:var(--xz-font,"PingFang SC","Microsoft YaHei",serif);">'
+            + '<div style="font-size:34px;margin-bottom:12px;">⚠️</div>'
+            + '<div style="font-size:20px;font-weight:700;letter-spacing:.08em;margin-bottom:12px;">版本过低</div>'
+            + '<div style="font-size:13.5px;line-height:2.1;color:rgba(230,220,200,.88);">'
+            + '这张卡的版本（' + cv + '）已停止支持。<br>'
+            + '请<b style="color:#e8cb92;">重新下载最新卡</b>导入后继续游玩。<br>'
+            + '<span style="font-size:11px;color:rgba(200,190,170,.6);">当前版本：' + cv + ' ｜ 最新版本：' + XZ_VER_FLOOR + '</span>'
+            + '</div></div>';
+        root.appendChild(ov);
+    } catch (e) {}
+})();
+
 /* 维护卡片：唯一允许出现在页面上的东西。
    ⚠ 写成 「;(function」 是为了**不被下面那段"给每个顶层 IIFE 插守卫"的注入逻辑误伤** ——
      它自己要跑起来，不能被自己的守卫挡掉。
