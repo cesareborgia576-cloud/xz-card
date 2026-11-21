@@ -4324,6 +4324,12 @@ function xzTypeOf(name, fbT, fbA) {
         '.xz-root .xz-wiki-btn small{font-size:11px;color:var(--xz-cyan);font-weight:normal;}',
 
         /* v298 九州舆图：图片底图 + 分区叠加（旧的三列文字网格已下架） */
+        /* ★ 2026-11-22：战斗界面打开时（引擎在 top <html> 打 data-xz-battle="1"），
+           状态栏整块跳过渲染。实测这是「战斗很卡」的主因：
+           04+05 同跑 37.6 FPS（P95 49.9ms），仅 04 57 FPS；
+           把 .xz-root 设 content-visibility:hidden 后回到 58.5 FPS。
+           弹层是全屏的，状态栏本来就看不见；关面板时引擎会摘掉标记。 */
+        'html[data-xz-battle="1"] .xz-root{content-visibility:hidden!important;visibility:hidden!important;}',
         '.xz-root .xz-map-wrap{display:flex;flex-direction:column;gap:8px;}',
         '.xz-root .xz-map-hint{font-size:11.5px;line-height:1.6;color:var(--xz-muted);background:rgba(0,0,0,0.32);border:1px solid rgba(212,175,55,0.18);border-radius:5px;padding:7px 10px;}',
         '.xz-root .xz-map-hint b{color:var(--xz-gold);}',
@@ -7426,6 +7432,23 @@ function xzTypeOf(name, fbT, fbA) {
            整块直接用 —— 外面再套一层标签会印出两个「卡版本」。 */
         try { h += xzHotVerHtml(); } catch (eHot) {
             h += '<div class="xz-rpg-desc" style="font-size:11px;">卡版本渲染出错：' + esc((eHot && eHot.message) || eHot) + '</div>';
+        }
+        /* ★ 2026-11-22（作者要求，第二次）：「**显示线上版本和实际运行版本**」。
+           上一版只把这两个数放进了下面的诊断块 —— 作者要的是版本页上直接可见的两行。
+           口径：
+             · 实际运行 = loader 实际在用的 ref（tag 优先，否则卡版本）
+             · 线上版本 = loader tag 探针给出的最新 tag（没探到时 = 已是最新，跟运行一致）
+           两行都用与「世界书版本」同一种「左标签 + 右值」排法。 */
+        try {
+            var _runV = xzHotCurVer() || '';
+            var _onlineV = HOTV.err ? '—' : (HOTV.first ? '检查中…' : (HOTV.latest || _runV || '—'));
+            var _onlineNew = !!(HOTV.latest && xzVerNewer(HOTV.latest, _runV));
+            h += _verRow('实际运行', '<span style="font-size:12px;font-weight:700;color:var(--xz-gold-bright);letter-spacing:.03em;">'
+                + esc(_runV || '未知') + '</span>');
+            h += _verRow('线上版本', '<span style="font-size:12px;font-weight:700;letter-spacing:.03em;color:'
+                + (_onlineNew ? 'var(--xz-gold-bright)' : '#7ddc9a') + ';">' + esc(_onlineV) + '</span>');
+        } catch (eRun) {
+            h += '<div class="xz-rpg-desc" style="font-size:11px;">运行/线上版本渲染出错：' + esc((eRun && eRun.message) || eRun) + '</div>';
         }
         /* ③ 世界书版本（＝世界书与卡同不同步）。徽章本身没有标签，这里补一个，排法与上面一致。 */
         try { h += _verRow('世界书版本', xzWbVerHtml()); } catch (eWv) {
