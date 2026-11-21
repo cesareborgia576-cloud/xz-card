@@ -7446,13 +7446,18 @@ function xzTypeOf(name, fbT, fbA) {
             var _onlineNew = !!(HOTV.latest && xzVerNewer(HOTV.latest, _runV));
             h += _verRow('实际运行', '<span style="font-size:12px;font-weight:700;color:var(--xz-gold-bright);letter-spacing:.03em;">'
                 + esc(_runV || '未知') + '</span>');
-            h += _verRow('线上版本', '<span' + (_onlineNew
-                ? ' data-xz-act="hot-refresh" title="有新版本 ' + esc(HOTV.latest) + '，点此刷新页面换脚本"'
-                : '')
-                + ' style="font-size:12px;font-weight:700;letter-spacing:.03em;color:'
-                + (_onlineNew ? 'var(--xz-gold-bright)' : '#7ddc9a') + ';'
-                + (_onlineNew ? 'cursor:pointer;text-decoration:underline;' : '')
-                + '">' + esc(_onlineV) + '</span>');
+            /* ★★★ 2026-11-22 三改（作者：「写个有新版本点击我更新的提示」）★★★
+             有新版时不能只把数字变金下划线——谁看得出来。必须是一枚**带字的按钮**：
+             「📦 有新版本 vX · 点击更新」，点了走 hot-refresh（记 tag + 刷新）。
+             没有新版才是素绿数字。 */
+            h += _verRow('线上版本', _onlineNew
+                ? '<span data-xz-act="hot-refresh" title="点击更新到 ' + esc(HOTV.latest) + '（刷新页面后生效）"'
+                  + ' style="display:inline-block;padding:5px 14px;border:1px solid rgba(212,175,55,.7);'
+                  + 'border-radius:10px;background:rgba(212,175,55,.14);box-shadow:0 0 12px rgba(212,175,55,.25);'
+                  + 'font-size:12.5px;font-weight:700;letter-spacing:.03em;color:var(--xz-gold-bright);'
+                  + 'cursor:pointer;user-select:none;">📦 有新版本 ' + esc(HOTV.latest) + ' · 点击更新</span>'
+                : '<span style="font-size:12px;font-weight:700;letter-spacing:.03em;color:#7ddc9a;">'
+                  + esc(_onlineV) + '</span>');
             /* 📜 更新记录入口保留（原来挂在「更新状态」徽章里，那行删了入口必须还在） */
             h += '<div style="margin-top:6px;text-align:center;">'
                 + '<span data-xz-act="xz-changelog" title="打开可滚动的更新记录" style="display:inline-block;padding:3px 12px;'
