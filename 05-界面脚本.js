@@ -7436,23 +7436,28 @@ function xzTypeOf(name, fbT, fbA) {
             h += _verRow('卡版本', '<span style="font-size:12px;font-weight:700;color:var(--xz-gold-bright);letter-spacing:.03em;">'
                 + esc(xzCardVerFixed() || '未知') + '</span>');
         } catch (eCVf) {}
-        try { h += xzHotVerHtml(); } catch (eHot) {
-            h += '<div class="xz-rpg-desc" style="font-size:11px;">卡版本渲染出错：' + esc((eHot && eHot.message) || eHot) + '</div>';
-        }
-        /* ★ 2026-11-22（作者要求，第二次）：「**显示线上版本和实际运行版本**」。
-           上一版只把这两个数放进了下面的诊断块 —— 作者要的是版本页上直接可见的两行。
-           口径：
-             · 实际运行 = loader 实际在用的 ref（tag 优先，否则卡版本）
-             · 线上版本 = loader tag 探针给出的最新 tag（没探到时 = 已是最新，跟运行一致）
-           两行都用与「世界书版本」同一种「左标签 + 右值」排法。 */
+        /* ★ 2026-11-22 二改（作者：「更新版本给老子去掉，这不是重复多余吗」）：
+           「更新状态」整行删除 —— 卡版本 / 实际运行 / 线上版本三行已经足够，
+           第四个徽章只会让玩家以为有三种版本。
+           有新版时「线上版本」本身变金、可点 = 刷新（hot-refresh 通道不变）。 */
         try {
             var _runV = xzHotCurVer() || '';
             var _onlineV = HOTV.err ? '—' : (HOTV.first ? '检查中…' : (HOTV.latest || _runV || '—'));
             var _onlineNew = !!(HOTV.latest && xzVerNewer(HOTV.latest, _runV));
             h += _verRow('实际运行', '<span style="font-size:12px;font-weight:700;color:var(--xz-gold-bright);letter-spacing:.03em;">'
                 + esc(_runV || '未知') + '</span>');
-            h += _verRow('线上版本', '<span style="font-size:12px;font-weight:700;letter-spacing:.03em;color:'
-                + (_onlineNew ? 'var(--xz-gold-bright)' : '#7ddc9a') + ';">' + esc(_onlineV) + '</span>');
+            h += _verRow('线上版本', '<span' + (_onlineNew
+                ? ' data-xz-act="hot-refresh" title="有新版本 ' + esc(HOTV.latest) + '，点此刷新页面换脚本"'
+                : '')
+                + ' style="font-size:12px;font-weight:700;letter-spacing:.03em;color:'
+                + (_onlineNew ? 'var(--xz-gold-bright)' : '#7ddc9a') + ';'
+                + (_onlineNew ? 'cursor:pointer;text-decoration:underline;' : '')
+                + '">' + esc(_onlineV) + '</span>');
+            /* 📜 更新记录入口保留（原来挂在「更新状态」徽章里，那行删了入口必须还在） */
+            h += '<div style="margin-top:6px;text-align:center;">'
+                + '<span data-xz-act="xz-changelog" title="打开可滚动的更新记录" style="display:inline-block;padding:3px 12px;'
+                + 'border:1px solid rgba(212,175,55,.45);border-radius:9px;font-size:10.5px;'
+                + 'color:var(--xz-gold-bright);cursor:pointer;user-select:none;">📜 更新记录</span></div>';
         } catch (eRun) {
             h += '<div class="xz-rpg-desc" style="font-size:11px;">运行/线上版本渲染出错：' + esc((eRun && eRun.message) || eRun) + '</div>';
         }
@@ -13210,7 +13215,13 @@ var XZ_DM_BOXES=[[360,200,1520,660],
         var y = Math.max(0, Math.min(XZ_DM_H - h, cy - h / 2));
         return [Math.round(x), Math.round(y), Math.round(w), Math.round(h)];
     }
-    function xzDmCam(region, pick, areaPick) {
+    function xzDmCam(region, pick, areaPick, place) {
+        /* ★ 2026-11-22：第三级地点选中 ⇒ 镜头拉到它头顶（作者：「点击也可以动画拉进的，
+           然后显示它下面的小地点」）。以城点为中心收一个小盒子，比例仍由 xzDmFit 锁 16:9。 */
+        if (place) {
+            var pq = XZ_DM_POS[place];
+            if (pq) return xzDmFit([pq[0] - 150, pq[1] - 110, pq[0] + 150, pq[1] + 110], 0.08);
+        }
         if (areaPick) { var b = xzDmBoxOf(areaPick); if (b) return xzDmFit(b, 0.10); }
         var st = region || pick;
         if (st) {
@@ -13270,9 +13281,9 @@ var XZ_DM_BOXES=[[360,200,1520,660],
         return '';
     }
     /* 舆图主体 HTML。cam 写在 data-cam 上，点击时按它反算世界坐标。 */
-    function xzDmHtml(region, pick, areaPick) {
+    function xzDmHtml(region, pick, areaPick, place) {
         xzDmLoadId();
-        var cam = xzDmCam(region, pick, areaPick);
+        var cam = xzDmCam(region, pick, areaPick, place);
         /* ★ 2026-11-22：相机变了要有一个"推近"的入场动画。
            ── 为什么不能用 CSS transition ──
              transition 只对**同一个元素**的属性变化生效；而 pageMap 每次 render 都是
@@ -13359,6 +13370,27 @@ var XZ_DM_BOXES=[[360,200,1520,660],
                 });
             });
         });
+        /* ★★★ 2026-11-22：第三级地点选中 ⇒ 把它**下面的小地点**铺出来 ★★★
+           （作者：「点击也可以动画拉进的，然后显示它下面的小地点」）
+           小地点 = XZ_SECT_DB[城名].places（执事堂/演武场/藏经阁…，楼堂类、没有经纬），
+           位置是**确定性围圈铺开**（以城点为心、半径 52 世界单位、从正上方起顺时针均分）。
+           ⚠ 这些小标签只展示、不接点击（没有 data-xz-act，点击落在舞台空白上
+             会按位图定位，不会乱跳到别的域）；资料卡的「相关人物」仍是它们的入口。 */
+        var _selDb = place && (typeof XZ_SECT_DB !== 'undefined') ? XZ_SECT_DB[place] : null;
+        if (_selDb && _selDb.places && _selDb.places.length && XZ_DM_POS[place]) {
+            var _pc = XZ_DM_POS[place];
+            var _psubs = _selDb.places;
+            for (var _spi = 0; _spi < _psubs.length; _spi++) {
+                var _spa = -Math.PI / 2 + _spi * (Math.PI * 2 / _psubs.length);
+                var _spr = 52;
+                var _spx = _pc[0] + Math.cos(_spa) * _spr;
+                var _spy = _pc[1] + Math.sin(_spa) * _spr * 0.8;
+                if (!inView(_spx, _spy)) continue;
+                h += '<span class="xz-dm-dot is-minor" style="left:' + lx(_spx) + ';top:' + ly(_spy) + '"></span>'
+                    + '<span class="xz-dm-plabel" style="left:' + lx(_spx) + ';top:' + ly(_spy)
+                    + ';pointer-events:none;font-size:9px;color:#d8e4da;">' + esc(_psubs[_spi].name) + '</span>';
+            }
+        }
         /* ★ v663 常驻工具条：三州 + 全图。
            放在 stage 里（不是外面），这样它跟着地图一起缩；`data-xz-act` 会被
            `xzDmBindOnce` 的捕获分支让给主路由（`hit !== st` 就 return），不会误判成"点空白"。
@@ -13644,7 +13676,7 @@ var XZ_DM_BOXES=[[360,200,1520,660],
            ⚠ `xzDmBindOnce()` 是 document 级委托，只绑一次；页签重渲染不会重复绑。 */
         xzDmBindOnce();
         /* 先算 HTML 再拼 class：xzDmHtml 会把"相机变了没有"写在 `xzDmHtml._zoom` 上 */
-        var _dmHtml = xzDmHtml(state.mapRegion || '', state.mapPick || '', state.mapAreaPick || '');
+        var _dmHtml = xzDmHtml(state.mapRegion || '', state.mapPick || '', state.mapAreaPick || '', state.mapPlace || '');
         h += '<div class="xz-map-canvas is-dm' + (xzDmHtml._zoom ? ' is-zoom' : '') + '">' + _dmHtml + '</div>';
 
         /* ── ★ v535：情报块降到地图下面（作者 2026-11-02「上面这些全部放地图下面」）──
@@ -14269,7 +14301,6 @@ var XZ_DM_BOXES=[[360,200,1520,660],
     /* ★★★ 2026-11-03：`/main/` → `/refs/heads/main/`（与 loader 同一个坑）★★★
        实测同一分钟：`/main/` 给 v1.053（旧值，带 query 不换），`/refs/heads/main/` 给 v1.055。
        写成 `/main/` 的话，作者推完新版看不到号变化 —— 「实时刷新」这条就永远是假的。 */
-    var HOTV_URL = 'https://raw.githubusercontent.com/cesareborgia576-cloud/xz-card/refs/heads/main/version.json';
     function xzHotVerHtml() {
         /* ⚠ 不能读 CARD_VER：它声明在**第一个 IIFE**里，状态栏这个 IIFE 看不见 ——
            直接引用会抛 ReferenceError，整页渲染在这里断掉（lint 的 undef 就是抓这个）。
@@ -15397,7 +15428,7 @@ var XZ_DM_BOXES=[[360,200,1520,660],
                    state 变，改属性等于维护两套渲染路径 —— 那是「同一个东西两个口径」的老坑。 */
                 if (act === 'map-enter') {
                     var _mr = el.getAttribute('data-map-region') || '';
-                    if (_mr) { state.mapRegion = _mr; state.mapPick = ''; state.mapAreaPick = ''; state.mapNotice = ''; render(true); }
+                    if (_mr) { state.mapRegion = _mr; state.mapPick = ''; state.mapAreaPick = ''; state.mapPlace = ''; state.mapNotice = ''; render(true); }
                     return;
                 }
                 /* ★ v307：点地图 = **选中并放大**，不再直接跳层。
@@ -15416,6 +15447,7 @@ var XZ_DM_BOXES=[[360,200,1520,660],
                     if (_pa) {
                         if (state.mapRegion !== _pn) { state.mapRegion = _pn; state.mapPick = ''; }
                         state.mapAreaPick = (state.mapAreaPick === _pa ? '' : _pa);
+                        state.mapPlace = '';   /* 2026-11-22：换了域，地点选中态必须清（否则镜头还停在旧地点） */
                     } else if (_pn) {
                         /* 九州全图上点州：只改选中，不换层（换层是 map-enter 的事） */
                         state.mapPick = (state.mapPick === _pn ? '' : _pn);
@@ -22895,10 +22927,19 @@ var XZ_DM_BOXES=[[360,200,1520,660],
     return false;
   }
 
+  var _busyAt = 0;
   function beat() {
     try {
       if (!isOn()) { applySwitch(); return; }   /* 关着：只在刚关那一下做一次还原 */
-      if (isBusy()) return;
+      if (isBusy()) {
+        /* ★ 2026-11-22：busy 卡死自恢复 —— generation_started 之后 stop/message
+           两个事件一个都没回来（生成中断/事件没发）的话，这个闸会**永远关着**，
+           症状就是「某张图没了之后，切到哪页都不再渲染，刷新才好」。
+           2 分钟还 busy 就判它卡死，强制放行一轮。 */
+        if (!_busyAt) _busyAt = Date.now();
+        if (Date.now() - _busyAt < 120000) return;
+      }
+      _busyAt = 0;
       var list = allMes();
       var any = false;
       for (var i = 0; i < list.length; i++) {
@@ -22914,10 +22955,10 @@ var XZ_DM_BOXES=[[360,200,1520,660],
     try {
       var w = HOST;
       if (w.eventOn) {
-        w.eventOn('generation_started', function () { HOST.__xzdlBusy = true; });
-        w.eventOn('generation_stopped', function () { HOST.__xzdlBusy = false; setTimeout(beat, 80); });
-        w.eventOn('message_received', function () { HOST.__xzdlBusy = false; setTimeout(beat, 80); });
-        w.eventOn('chat_changed', function () { setTimeout(beat, 120); });
+        w.eventOn('generation_started', function () { HOST.__xzdlBusy = true; _busyAt = Date.now(); });
+        w.eventOn('generation_stopped', function () { HOST.__xzdlBusy = false; _busyAt = 0; setTimeout(beat, 80); });
+        w.eventOn('message_received', function () { HOST.__xzdlBusy = false; _busyAt = 0; setTimeout(beat, 80); });
+        w.eventOn('chat_changed', function () { HOST.__xzdlBusy = false; _busyAt = 0; setTimeout(beat, 120); });
       }
     } catch (eE) {}
     try {
@@ -23614,10 +23655,16 @@ var XZ_DM_BOXES=[[360,200,1520,660],
     return true;
   }
 
+  var _busyAt = 0;
   function beat() {
     try {
       if (!isOn()) { applySwitch(); return; }   /* 关着：只在刚关那一下拆一次 */
-      if (isBusy()) return;
+      if (isBusy()) {
+        /* ★ 2026-11-22：同上 —— busy 卡死 2 分钟自恢复（插图/立绘/楼层全都不渲染的根） */
+        if (!_busyAt) _busyAt = Date.now();
+        if (Date.now() - _busyAt < 120000) return;
+      }
+      _busyAt = 0;
       var list = allMes(), any = false;
       for (var i = 0; i < list.length; i++) {
         if (needWork(list[i])) { any = true; break; }
@@ -23632,10 +23679,10 @@ var XZ_DM_BOXES=[[360,200,1520,660],
     try {
       var w = HOST;
       if (w.eventOn) {
-        w.eventOn('generation_started', function () { HOST.__xzscrollBusy = true; });
-        w.eventOn('generation_stopped', function () { HOST.__xzscrollBusy = false; setTimeout(beat, 90); });
-        w.eventOn('message_received', function () { HOST.__xzscrollBusy = false; setTimeout(beat, 90); });
-        w.eventOn('chat_changed', function () { setTimeout(beat, 140); });
+        w.eventOn('generation_started', function () { HOST.__xzscrollBusy = true; _busyAt = Date.now(); });
+        w.eventOn('generation_stopped', function () { HOST.__xzscrollBusy = false; _busyAt = 0; setTimeout(beat, 90); });
+        w.eventOn('message_received', function () { HOST.__xzscrollBusy = false; _busyAt = 0; setTimeout(beat, 90); });
+        w.eventOn('chat_changed', function () { HOST.__xzscrollBusy = false; _busyAt = 0; setTimeout(beat, 140); });
       }
     } catch (eE) {}
     try {
@@ -25234,8 +25281,20 @@ var XZ_DM_BOXES=[[360,200,1520,660],
     return false;
   }
 
+  var _busyAt = 0;
   function beat() {
-    try { if (isBusy()) return; scanAll(); } catch (e) {}
+    try {
+      if (isBusy()) {
+        /* ★ 2026-11-22：busy 卡死自恢复 —— generation_started 之后 stop/message
+           一个都没回来（生成中断/事件没发）的话，这个闸永远关着，
+           症状就是「某张图没了之后，切到哪页都不再出图，刷新才好」。
+           2 分钟还 busy 就判它卡死，强制扫描一轮。 */
+        if (!_busyAt) _busyAt = Date.now();
+        if (Date.now() - _busyAt < 120000) return;
+      }
+      _busyAt = 0;
+      scanAll();
+    } catch (e) {}
   }
 
   function init() {
@@ -25243,10 +25302,10 @@ var XZ_DM_BOXES=[[360,200,1520,660],
     try {
       var w = HOST;
       if (w.eventOn) {
-        w.eventOn('generation_started', function () { HOST.__thilluBusy = true; });
-        w.eventOn('generation_stopped', function () { HOST.__thilluBusy = false; setTimeout(beat, 100); });
-        w.eventOn('message_received', function () { HOST.__thilluBusy = false; setTimeout(beat, 100); });
-        w.eventOn('chat_changed', function () { setTimeout(beat, 140); });
+        w.eventOn('generation_started', function () { HOST.__thilluBusy = true; _busyAt = Date.now(); });
+        w.eventOn('generation_stopped', function () { HOST.__thilluBusy = false; _busyAt = 0; setTimeout(beat, 100); });
+        w.eventOn('message_received', function () { HOST.__thilluBusy = false; _busyAt = 0; setTimeout(beat, 100); });
+        w.eventOn('chat_changed', function () { HOST.__thilluBusy = false; _busyAt = 0; setTimeout(beat, 140); });
       }
     } catch (eE) {}
     try {
@@ -25490,8 +25549,20 @@ var XZ_DM_BOXES=[[360,200,1520,660],
     return false;
   }
 
+  var _busyAt = 0;
   function beat() {
-    try { if (isBusy()) return; scanAll(); } catch (e) {}
+    try {
+      if (isBusy()) {
+        /* ★ 2026-11-22：busy 卡死自恢复 —— generation_started 之后 stop/message
+           一个都没回来（生成中断/事件没发）的话，这个闸永远关着，
+           症状就是「某张图没了之后，切到哪页都不再出图，刷新才好」。
+           2 分钟还 busy 就判它卡死，强制扫描一轮。 */
+        if (!_busyAt) _busyAt = Date.now();
+        if (Date.now() - _busyAt < 120000) return;
+      }
+      _busyAt = 0;
+      scanAll();
+    } catch (e) {}
   }
 
   function init() {
@@ -25499,10 +25570,10 @@ var XZ_DM_BOXES=[[360,200,1520,660],
     try {
       var w = HOST;
       if (w.eventOn) {
-        w.eventOn('generation_started', function () { HOST.__xzSceneBusy = true; });
-        w.eventOn('generation_stopped', function () { HOST.__xzSceneBusy = false; setTimeout(beat, 100); });
-        w.eventOn('message_received', function () { HOST.__xzSceneBusy = false; setTimeout(beat, 100); });
-        w.eventOn('chat_changed', function () { setTimeout(beat, 140); });
+        w.eventOn('generation_started', function () { HOST.__xzSceneBusy = true; _busyAt = Date.now(); });
+        w.eventOn('generation_stopped', function () { HOST.__xzSceneBusy = false; _busyAt = 0; setTimeout(beat, 100); });
+        w.eventOn('message_received', function () { HOST.__xzSceneBusy = false; _busyAt = 0; setTimeout(beat, 100); });
+        w.eventOn('chat_changed', function () { HOST.__xzSceneBusy = false; _busyAt = 0; setTimeout(beat, 140); });
       }
     } catch (eE) {}
     try {
