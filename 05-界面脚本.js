@@ -7428,8 +7428,14 @@ function xzTypeOf(name, fbT, fbA) {
                 + '<span style="flex:0 0 auto;font-size:10.5px;color:var(--xz-muted);letter-spacing:.04em;padding-top:5px;white-space:nowrap;">' + label + '</span>'
                 + '<div style="flex:1 1 auto;min-width:0;text-align:right;">' + inner + '</div></div>';
         };
-        /* ② 卡版本：`xzHotVerHtml` **自带**左侧「卡版本」标签与「更新记录」入口，
-           整块直接用 —— 外面再套一层标签会印出两个「卡版本」。 */
+        /* ② 卡版本（发布那一刻的版本，热更不变）→ 更新状态（是否最新/可刷新）。
+           ★ 2026-11-22：作者口径 —— 卡版本不等于"正在跑的版本"。
+             卡版本读 xzCardVerFixed()（打包注入的 __XZ_CARD_VER__）；
+             实际运行 / 线上版本各有独立两行（见下）。 */
+        try {
+            h += _verRow('卡版本', '<span style="font-size:12px;font-weight:700;color:var(--xz-gold-bright);letter-spacing:.03em;">'
+                + esc(xzCardVerFixed() || '未知') + '</span>');
+        } catch (eCVf) {}
         try { h += xzHotVerHtml(); } catch (eHot) {
             h += '<div class="xz-rpg-desc" style="font-size:11px;">卡版本渲染出错：' + esc((eHot && eHot.message) || eHot) + '</div>';
         }
@@ -14249,6 +14255,17 @@ var XZ_DM_BOXES=[[360,200,1520,660],
         try { v = (typeof window !== 'undefined' && window.__XZ_CARD_VER__) ? String(window.__XZ_CARD_VER__) : ''; } catch (eHt2) { v = ''; }
         return v;
     }
+    /* ★★★ 2026-11-22（作者口径）：「卡版本 = 发布那一刻的版本，永远不变」★★★
+       热更只换 05/07/08 的**运行脚本**，不改卡里打包注入的版本号；
+       下次重导一张新卡才会变。⇒ 版本页「卡版本」必须读这个，不能读 __XZ_HOT_TAG__。
+       读取顺序：top → 本 window → parent（loader 在另一个 iframe，只广播到 top）。 */
+    function xzCardVerFixed() {
+        var v = '';
+        try { if (window.top && window.top !== window) v = window.top.__XZ_CARD_VER__ || ''; } catch (e0) {}
+        if (!v) { try { v = window.__XZ_CARD_VER__ || ''; } catch (e1) {} }
+        if (!v) { try { v = (window.parent && window.parent !== window && window.parent.__XZ_CARD_VER__) || ''; } catch (e2) {} }
+        return String(v || '');
+    }
     /* ★★★ 2026-11-03：`/main/` → `/refs/heads/main/`（与 loader 同一个坑）★★★
        实测同一分钟：`/main/` 给 v1.053（旧值，带 query 不换），`/refs/heads/main/` 给 v1.055。
        写成 `/main/` 的话，作者推完新版看不到号变化 —— 「实时刷新」这条就永远是假的。 */
@@ -14312,7 +14329,7 @@ var XZ_DM_BOXES=[[360,200,1520,660],
             + 'color:var(--xz-gold-bright);cursor:pointer;user-select:none;">📜 更新记录</span></div>';
         return '<div>'
             + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-top:4px;">'
-            + '<span style="flex:0 0 auto;font-size:10.5px;color:var(--xz-muted);letter-spacing:.04em;padding-top:9px;">卡版本</span>'
+            + '<span style="flex:0 0 auto;font-size:10.5px;color:var(--xz-muted);letter-spacing:.04em;padding-top:9px;">更新状态</span>'
             + '<span' + attrs + '>' + esc(txt) + '</span></div>'
             + _noteHtml + _logBtn + '</div>';
     }
