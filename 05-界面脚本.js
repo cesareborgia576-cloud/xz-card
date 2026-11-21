@@ -7440,10 +7440,16 @@ function xzTypeOf(name, fbT, fbA) {
            —— 光有「有新版本」这句话，没法判断是"没查到"、"查到了旧的"、还是"点不动"。
            ⇒ 把四个实情直接印出来：卡版本 / 当前从哪个 ref 加载 / 线上报的号 / 上次检查时刻。
              下次再出问题，一眼能看出卡在哪一段，不用猜。 */
-        var _ref = '', _chan = '', _cv2 = '';
-        try { _cv2 = (window.__XZ_CARD_VER__ ? String(window.__XZ_CARD_VER__) : ''); } catch (eA) {}
-        try { _ref = (window.__XZ_HOT_TAG__ ? String(window.__XZ_HOT_TAG__) : ''); } catch (eB) {}
-        try { _chan = (window.__XZ_CHAN__ ? String(window.__XZ_CHAN__) : ''); } catch (eC) {}
+        /* ★ 2026-11-22：loader 跑在**另一个 iframe**，它只把这三个量广播到 top。
+           只读本 window 会永远是空 ⇒「卡版本：未知」「本页脚本来自：未知」。
+           读取顺序：top → 本 window → parent（三处任一有值就用）。 */
+        var _hotG = function (k) {
+            try { if (window.top && window.top !== window && window.top[k]) return String(window.top[k]); } catch (e0) {}
+            try { if (window[k]) return String(window[k]); } catch (e1) {}
+            try { if (window.parent && window.parent !== window && window.parent[k]) return String(window.parent[k]); } catch (e2) {}
+            return '';
+        };
+        var _ref = _hotG('__XZ_HOT_TAG__'), _chan = _hotG('__XZ_CHAN__'), _cv2 = _hotG('__XZ_CARD_VER__');
         var _last = HOTV.at ? (function () {
             var d = new Date(HOTV.at), p2 = function (n) { return (n < 10 ? '0' : '') + n; };
             return p2(d.getHours()) + ':' + p2(d.getMinutes()) + ':' + p2(d.getSeconds());
@@ -14288,199 +14294,41 @@ var XZ_DM_BOXES=[[360,200,1520,660],
             + _noteHtml + _logBtn + '</div>';
     }
     function xzHotCheck() {
+        /* ★★★ 2026-11-22：版本页改吃 **loader 的探针结果**，不再自己发任何请求 ★★★
+           ── 病 ──
+             旧实现只拉 COS 的 ver.js（后面那段 jsDelivr 轮询被一句早退 return 挡死，
+             从来没跑过）。COS 欠费 451 ⇒ 版本页永远「检查失败」，
+             连「运行中 / 线上」都不显示。
+           ── 现在 ──
+             loader 每 60 秒探不可变 tag，结果写在 __XZ_OSS_VER__（线上最新）
+             与 __XZ_NEW_VER__（有更新时的 tag）；运行版本看 __XZ_HOT_TAG__ / 卡版本。
+             这里只**读**这几个量，**不发请求**（轮询交给 loader，一处真相）。
+             没信号 ⇒ 按「已是最新 + 当前版本」显示，不再印“检查失败”。
+           ⚠ 只负责显示，不 reload、不碰面板。 */
         try {
-            /* ★★★ v610：每 20 秒真去问一次「线上有没有新版本」★★★
-               上一版（v607）在这里直接拿 __XZ_HOT_TAG__（= 当前正在跑的版本）当线上最新，
-               于是永远显示「已是最新」—— 推了新版也毫无反应（作者 2026-11-14 报的就是这个）。
-               现在：每次检查都用 <script> 拉一次 COS 的 ver.js（脚本不走 XHR ⇒ 不受跨域/节点缓存影响），
-               拿到的号与**当前运行版本**比：
-                 · 更新 → HOTV.note 写「有新版本 vX，刷新页面后生效」，刷不刷由玩家决定
-                 · 相同 → 「已是最新」
-                 · 拉不到 → 记 err（不编数字）
-               ⚠ 这一分支只负责显示，**不 reload、不碰任何面板**。 */
-            var _ossBase = 'https://123-1532053135.cos.ap-guangzhou.myqcloud.com';
-            var _curVer = '';
+            var _curVer = String(xzHotCurVer() || '');
+            if (!/^v[\d.]+$/.test(_curVer)) {
+                try {
+                    var _t = window.top || window;
+                    _curVer = String(_t.__XZ_CARD_VER__ || window.__XZ_CARD_VER__ || '');
+                } catch (eCV) { _curVer = ''; }
+            }
+            var _live = '';
             try {
                 var _tw = window.top || window;
-                _curVer = String(_tw.__XZ_OSS_CUR__ || _tw.__XZ_HOT_TAG__ || '');
-            } catch (eHT) { _curVer = ''; }
-            if (!/^v[\d.]+$/.test(_curVer)) {
-                try { _curVer = String(window.__XZ_CARD_VER__ || ''); } catch (eCV1) { _curVer = ''; }
-                if (!/^v[0-9.]+$/.test(_curVer)) { try { _curVer = String((window.top && window.top.__XZ_CARD_VER__) || ''); } catch (eCV2) {} }
-                if (!/^v[0-9.]+$/.test(_curVer)) { try { _curVer = String((window.parent && window.parent.__XZ_CARD_VER__) || ''); } catch (eCV3) {} }
+                _live = String(_tw.__XZ_NEW_VER__ || _tw.__XZ_OSS_VER__ || window.__XZ_OSS_VER__ || '');
+            } catch (eLV) { _live = ''; }
+            if (!/^v[\d.]+$/.test(_live)) _live = _curVer;   /* 没有 tag 信号 ⇒ 视为已是最新 */
+            var _isNew = xzVerNewer(_live, _curVer);
+            var _before = [HOTV.latest, HOTV.err, HOTV.first, HOTV.note].join('|');
+            HOTV.first = false;
+            HOTV.at = Date.now();
+            HOTV.err = false;
+            HOTV.latest = _live;
+            HOTV.note = _isNew ? ('有新版本 ' + _live + '，刷新页面后生效') : '已是最新';
+            if ([HOTV.latest, HOTV.err, HOTV.first, HOTV.note].join('|') !== _before) {
+                try { render(true); } catch (eR0) {}
             }
-            var _cmpVer = function (a, b) {
-                var x = String(a).replace(/^v/i, '').split('.').map(Number);
-                var y = String(b).replace(/^v/i, '').split('.').map(Number);
-                var n = Math.max(x.length, y.length), i, p, q;
-                for (i = 0; i < n; i++) {
-                    p = x[i] || 0; q = y[i] || 0;
-                    if (p > q) return 1; if (p < q) return -1;
-                }
-                return 0;
-            };
-            var _setHot = function (v, err) {
-                var _before = [HOTV.latest, HOTV.err, HOTV.first, HOTV.note].join('|');
-                HOTV.first = false;
-                HOTV.at = Date.now();
-                if (err) { HOTV.err = true; }
-                else {
-                    HOTV.err = false;
-                    HOTV.latest = v;
-                    HOTV.note = (_curVer && _cmpVer(v, _curVer) > 0)
-                        ? ('有新版本 ' + v + '，刷新页面后生效') : '已是最新';
-                }
-                if ([HOTV.latest, HOTV.err, HOTV.first, HOTV.note].join('|') !== _before) {
-                    try { render(true); } catch (eR0) {}
-                }
-            };
-            (function () {
-                var done = false;
-                function fin(v) {
-                    if (done) return;
-                    done = true;
-                    if (/^v[\d.]+$/.test(v)) _setHot(v, false);
-                    else _setHot('', true);
-                }
-                try {
-                    var el = document.createElement('script');
-                    el.src = _ossBase + '/ver.js?t=' + Date.now();
-                    el.onload = function () {
-                        var v = '';
-                        try { v = String(window.__XZ_OSS_VER__ || ''); } catch (eV3) { v = ''; }
-                        fin(v);
-                    };
-                    el.onerror = function () { fin(''); };
-                    (document.head || document.documentElement).appendChild(el);
-                    setTimeout(function () { fin(''); }, 4000);
-                } catch (eO) { fin(''); }
-            })();
-            return;
-            /* ★★★ v541：页面不可见时**不发请求** ★★★
-               这条按 20 秒一次跑、永不停止（作者口径：v1.051「20 秒一次」）。
-               玩家挂机不看屏幕时它照样每 20 秒打一次 GitHub raw：
-               8 小时 1440 次，而 raw 对同一出口 IP 是**限速**的 ——
-               打多了会开始返 429/空，于是徽章显示「检查失败」，
-               玩家回来一看以为卡坏了。这是"省的是别人的服务器、坑的是自己"那类开销。
-               ⚠ 只跳过**不可见**的那些次，不改 20 秒的节奏：
-                 玩家切回来时 `visibilitychange` 会立刻补一次，看不到延迟。
-               ⚠ 不能用 `document.visibilityState` 直接判：本脚本可能跑在 iframe 里，
-                 iframe 的 visibilityState 恒为 visible（父页面被隐藏它也不知道）。
-                 必须问**最外层可见的那个 window**。 */
-            var _vis = true;
-            try {
-                var _vw = window;
-                try { if (window.top && window.top.document) _vw = window.top; } catch (eTop) { _vw = window; }
-                if (_vw.document && _vw.document.visibilityState) {
-                    _vis = (_vw.document.visibilityState === 'visible');
-                }
-            } catch (eVis) { _vis = true; }
-            /* 不可见 ⇒ 直接返回，但**不**清掉已有结果：
-               HOTV.latest / err 保持上一次的值，玩家切回来看到的还是上次检查的结论，
-               而不是闪一下「…」。 */
-            if (!_vis) return;
-            /* ★ v1.22：raw 在国内连 SSL 握手都过不去 ⇒ jsDelivr 四镜像优先、raw 兜底。
-               每换一路都重建 XHR，回调用闭包捕获的那一只，避免竞态读到上一条响应。 */
-            var _hvHosts = ['https://cdn.jsdelivr.net', 'https://fastly.jsdelivr.net',
-                            'https://testingcf.jsdelivr.net', 'https://gcore.jsdelivr.net'];
-            var _hvUrls = [], _hvi;
-            /* ⚠ 这一处**不能**走 GitHub API：xzHotCheck 是 20 秒轮询，
-               API 匿名限流只有 60 次/小时/IP ⇒ 三个小时就把玩家自己的额度打光，
-               版本页从此恒显「检查失败」。
-               ⇒ 轮询走 jsDelivr 四镜像（12h 缓存，版本号本来就不常变），raw 兜底。
-               需要「推完立刻可见」的是 loader 的 latest.json 与更新记录弹层，那两处才用 API。 */
-            /* ★ v604：先问 @latest（最新 tag，节点无旧缓存），再问 @main（可变引用，各节点 12h 缓存
-               且 purge 不保证生效 —— 实测 fastly/testingcf/gcore 停十小时前的值），raw 兜底。 */
-            for (_hvi = 0; _hvi < _hvHosts.length; _hvi++) {
-                _hvUrls.push(_hvHosts[_hvi] + '/gh/cesareborgia576-cloud/xz-card@latest/version.json');
-            }
-            for (_hvi = 0; _hvi < _hvHosts.length; _hvi++) {
-                _hvUrls.push(_hvHosts[_hvi] + '/gh/cesareborgia576-cloud/xz-card@main/version.json');
-            }
-            _hvUrls.push(HOTV_URL);
-            /* ★ v603：四个节点**同时问，取版本号最高的答案**。
-               实测（2026-11-14 03:05）同一次推送后：cdn=v1.23，fastly/testingcf/gcore 还是
-               十小时前的 v1.21。旧写法「谁先回就用谁」⇒ 玩家连到慢/旧节点时，
-               版本页永远显示旧号，玩家只会认为热更坏了。 */
-            var _hvBest = null, _hvLeft = _hvUrls.length, _hvFired = false;
-            function hvNum(s) {
-                var m = /(\d+(?:\.\d+)*)/.exec(String(s || ''));
-                return m ? m[1].split('.').map(Number) : null;
-            }
-            function hvCmp(a, b) {
-                var x = hvNum(a), y = hvNum(b), i, n, p, q;
-                if (!x) return -1;
-                if (!y) return 1;
-                n = Math.max(x.length, y.length);
-                for (i = 0; i < n; i++) {
-                    p = x[i] || 0; q = y[i] || 0;
-                    if (p !== q) return p > q ? 1 : -1;
-                }
-                return 0;
-            }
-            function hvSettle() {
-                if (_hvFired) return;
-                _hvFired = true;
-                if (_hvBest) done(true, _hvBest.st, _hvBest.nt); else done(false);
-            }
-            setTimeout(hvSettle, 3200);
-            var done = function (ok, latest, note) {
-                /* ★ v564：note 也进签名 —— 说明换了要重绘版本页，别等版本号变才刷 */
-                var before = [HOTV.latest, HOTV.err, HOTV.first, HOTV.note].join('|');
-                HOTV.first = false;
-                HOTV.at = Date.now();   /* ★ v1.056：诊断用，页面上印"上次检查 hh:mm:ss" */
-                if (ok) { HOTV.err = false; HOTV.latest = latest; HOTV.note = String(note || ''); } else { HOTV.err = true; }
-                if ([HOTV.latest, HOTV.err, HOTV.first, HOTV.note].join('|') !== before) {
-                    try { render(true); } catch (e) {}
-                }
-            };
-            function hvB64(s) {
-                try {
-                    var b = atob(String(s || '').replace(/\s+/g, ''));
-                    var u8 = new Uint8Array(b.length), i;
-                    for (i = 0; i < b.length; i++) u8[i] = b.charCodeAt(i) & 255;
-                    return JSON.parse(new TextDecoder('utf-8').decode(u8));
-                } catch (e) { return null; }
-            }
-            function hvParse(cur) {
-                var j = null;
-                try { j = JSON.parse(cur.responseText); } catch (e) { j = null; }
-                if (j && j.content && j.encoding === 'base64') j = hvB64(j.content);
-                /* ★ v1.056：开发卡读 `dev`、玩家卡读 `stable` ——
-                   `stable` 只会在**真的打了 tag**时前进，开发推永远不碰它。
-                   否则玩家会看到"开发中有新版"并被引去拉一个不存在的 tag。 */
-                var _isDev = '';
-                try { _isDev = String((window && window.__XZ_CHAN__) || ''); } catch (eCh2) { _isDev = ''; }
-                var st = (_isDev === 'dev')
-                    ? ((j && j.dev) ? String(j.dev) : '')
-                    : ((j && j.stable) ? String(j.stable) : '');
-                /* ★ v564：一句话更新说明按同一条通道挑 —— 开发卡读 devNote、玩家卡读 note。
-                   极简：只留一行、最多 40 字，远端写坏了也不会把版本页撑爆。 */
-                var _nt = (_isDev === 'dev')
-                    ? ((j && j.devNote) ? String(j.devNote) : ((j && j.note) ? String(j.note) : ''))
-                    : ((j && j.note) ? String(j.note) : '');
-                _nt = String(_nt || '').replace(/\s+/g, ' ').trim().slice(0, 40);
-                if (cur.status !== 200 || !/^v[\d.]+$/.test(st)) {
-                    if (--_hvLeft <= 0) hvSettle();
-                    return;
-                }
-                if (!_hvBest || hvCmp(st, _hvBest.st) > 0) _hvBest = { st: st, nt: _nt };
-                if (--_hvLeft <= 0) hvSettle();
-            }
-            function hvNext() {
-                /* v603：改成**四路并发**（原先是串行取第一个成功的） */
-                _hvUrls.forEach(function (_u) {
-                    try {
-                        var _x = new XMLHttpRequest();
-                        _x.open('GET', _u + (_u.indexOf('raw.githubusercontent') >= 0 ? '?t=' + Date.now() : ''), true);
-                        _x.timeout = 3000;
-                        _x.onload = function () { hvParse(_x); };
-                        _x.onerror = _x.ontimeout = function () { if (--_hvLeft <= 0) hvSettle(); };
-                        _x.send();
-                    } catch (eHv) { if (--_hvLeft <= 0) hvSettle(); }
-                });
-            }
-            hvNext();
         } catch (e) { }
     }
     (function bootHotVer() {
