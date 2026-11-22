@@ -4087,67 +4087,53 @@ function xzTypeOf(name, fbT, fbA) {
            ⚠ 颜色走 `--eq-q / --eq-line`，由 `data-q` 一键换档；
              日光档不必另写 —— 令牌会跟着主题走，框仍是黑白灰。
            ══════════════════════════════════════════════════════════════════ */
-        '.xz-root .xz-eq-card{--eq-q:var(--xz-gold);--eq-line:rgba(213,180,121,.30);',
-        'position:relative;display:flex;flex-direction:column;gap:4px;padding:8px 9px 8px;',
-        'border-radius:10px;border:1px solid var(--eq-line);overflow:hidden;cursor:pointer;',
-        'background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(0,0,0,.22)),var(--dhl-reading,var(--xz-card));',
-        'box-shadow:0 6px 18px rgba(0,0,0,.42),inset 0 0 0 1px rgba(255,255,255,.03);',
+        /* ══════════ 2026-11-22 · 装备页重做成 RPG 装备栏（作者指着帕罗亚村庄截图）══════════
+           原话：「弄的像游戏，别他妈搞那个➕号，难看的要死，你要自己绘制图标」+「要弄的像rpg游戏的装备页一样」。
+           ── 造型（照截图）──────────────────────────────────────────────────
+             · 一格 = 一张圆角描边卡：图标居中在上、名字居中、品质小字在右下、换装是左下角一颗淡字按钮；
+             · 图标全部是**自绘线稿 SVG**（剑/甲/坠），stroke=currentColor + fill:none，
+               颜色吃品质档 --eq-q ⇒ 换品质只换色，图一个字节不动；零图片、零请求；
+             · 空槽 = 虚线框 + 同款图标压暗，**不再画「＋」**；
+             · 四格定宽自适应（auto-fill 190px），手机保持两列。
+           ⚠ 闸契约（_v1051_tab_sweep）：每张卡恰好 2 个 data-xz-act="equip"（卡本体 + 换装），
+             共 4 格；空槽文案仍是（未执宝器）/（未着护具）/（未佩饰物）。 */
+        '.xz-root .xz-card-grid.xz-eq-grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:9px;}',
+        '.xz-root .xz-eq-card{--eq-q:#c9a05a;--eq-line:rgba(201,160,90,.42);',
+        'position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;',
+        'padding:12px 10px 25px;border-radius:10px;border:1.5px solid var(--eq-line);',
+        'background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(0,0,0,.26)),var(--dhl-reading,var(--xz-card));',
+        'cursor:pointer;overflow:hidden;min-height:100px;',
         'transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;}',
         '.xz-root .xz-eq-card:hover{transform:translateY(-1px);border-color:var(--eq-q);',
-        'box-shadow:0 8px 22px rgba(0,0,0,.50),0 0 14px rgba(230,189,118,.18);}',
-        /* 四角短标：四角各一横一竖，像道具栏的铆角 */
-        '.xz-root .xz-eq-card::before{content:"";position:absolute;inset:0;pointer-events:none;border-radius:10px;',
-        'opacity:.55;background-repeat:no-repeat;',
-        'background-image:linear-gradient(90deg,var(--eq-q) 0 12px,rgba(0,0,0,0) 12px),linear-gradient(180deg,var(--eq-q) 0 12px,rgba(0,0,0,0) 12px),linear-gradient(270deg,var(--eq-q) 0 12px,rgba(0,0,0,0) 12px),linear-gradient(180deg,var(--eq-q) 0 12px,rgba(0,0,0,0) 12px),linear-gradient(90deg,var(--eq-q) 0 12px,rgba(0,0,0,0) 12px),linear-gradient(0deg,var(--eq-q) 0 12px,rgba(0,0,0,0) 12px),linear-gradient(270deg,var(--eq-q) 0 12px,rgba(0,0,0,0) 12px),linear-gradient(0deg,var(--eq-q) 0 12px,rgba(0,0,0,0) 12px);',
-        'background-size:12px 1px,1px 12px,12px 1px,1px 12px,12px 1px,1px 12px,12px 1px,1px 12px;',
-        'background-position:left top,left top,right top,right top,left bottom,left bottom,right bottom,right bottom;}',
-        '.xz-root .xz-eq-inner{position:absolute;inset:3px;border:1px solid rgba(230,189,118,.12);',
-        'border-radius:7px;pointer-events:none;}',
-        '.xz-root .xz-eq-top{position:relative;z-index:1;display:flex;align-items:center;gap:8px;min-width:0;}',
-        '.xz-root .xz-eq-head{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:6px;}',
-        '.xz-root .xz-eq-qtag{flex:none;font-size:9px;line-height:1.2;padding:2px 6px;border-radius:3px;',
-        'color:var(--eq-q);border:1px solid var(--eq-line);background:rgba(230,189,118,.06);white-space:nowrap;}',
-        '.xz-root .xz-eq-ico{flex:none;width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;',
-        'font-size:15px;font-weight:600;line-height:1;color:var(--eq-q);',
-        'background:radial-gradient(circle at 32% 22%,rgba(255,255,255,.12),rgba(0,0,0,.34));',
-        'border:1px solid var(--eq-line);box-shadow:inset 0 0 0 1px rgba(255,255,255,.04),0 2px 6px rgba(0,0,0,.35);}',
-        '.xz-root .xz-eq-name{position:relative;z-index:1;font-size:12.5px;font-weight:var(--xz-fw-med);color:var(--xz-text);',
-        'line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
-        '.xz-root .xz-eq-meta{display:flex;gap:4px;align-items:center;min-width:0;}',
-        '.xz-root .xz-eq-tag{font-size:9px;line-height:1.2;padding:1px 5px;border-radius:3px;',
-        'border:1px solid rgba(230,189,118,.26);color:var(--xz-gold);background:rgba(230,189,118,.07);',
-        'white-space:nowrap;}',
-        '.xz-root .xz-eq-tag.xz-eq-q{color:var(--eq-q);border-color:var(--eq-line);}',
-        '.xz-root .xz-eq-btn{flex:none;width:100%;margin-top:auto;font-family:inherit;font-size:10px;line-height:1.2;padding:3px 8px;',
-        'border-radius:5px;cursor:pointer;border:1px solid var(--eq-line);text-align:center;',
-        'background:rgba(0,0,0,.24);color:var(--xz-gold-bright);}',
-        '.xz-root .xz-eq-btn:hover{background:rgba(230,189,118,.16);border-color:var(--eq-q);}',
-        '.xz-root .xz-eq-note{position:relative;z-index:1;font-size:10px;color:var(--xz-muted);}',
-        '.xz-root .xz-eq-eff{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:4px;max-height:38px;overflow:hidden;}',
-        /* 装备格：手机上**保持两列**（道具栏的观感）。
-           全局 `.xz-card-grid` 在窄屏会退成一列（那是给别的长卡片定的），
-           这里单独放行两列 —— 四格正好 2×2，一屏看完不用滚。 */
-        '@media (max-width:560px){.xz-root .xz-card-grid.xz-eq-grid{grid-template-columns:1fr 1fr;gap:7px;grid-auto-rows:1fr;}',
-        '.xz-root .xz-eq-card{padding:6px 7px;gap:3px;}',
-        '.xz-root .xz-eq-ico{width:26px;height:26px;font-size:13px;border-radius:6px;}',
-        '.xz-root .xz-eq-name{font-size:12px;}',
-        '.xz-root .xz-eq-eff{max-height:36px;gap:3px;}',
-        '.xz-root .xz-eq-chip{font-size:9px;padding:1px 5px;}',
-        '.xz-root .xz-eq-btn{font-size:9.5px;padding:2px 6px;}}',
-        '.xz-root .xz-eq-chip{max-width:100%;font-size:9.5px;line-height:1.3;padding:2px 6px;border-radius:4px;',
-        'border:1px solid rgba(230,189,118,.20);background:rgba(230,189,118,.06);color:var(--xz-text-2);',
-        'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
-        '.xz-root .xz-eq-chip.is-void{border-style:dashed;background:transparent;color:var(--xz-muted);}',
-        '.xz-root .xz-eq-card.is-empty{border-style:dashed;background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(0,0,0,.12)),var(--dhl-reading,var(--xz-card));}',
-        '.xz-root .xz-eq-card.is-empty .xz-eq-ico{color:var(--xz-muted);border-style:dashed;}',
-        '.xz-root .xz-eq-card.is-empty .xz-eq-name{color:var(--xz-muted);}',
-        /* 品质档：一条规则改两个变量，框/角标/图标/品质章同时换色 */
-        '.xz-root .xz-eq-card[data-q*="神"]{--eq-q:var(--xz-gold-bright);--eq-line:rgba(242,194,111,.62);}',
-        '.xz-root .xz-eq-card[data-q*="天"]{--eq-q:var(--xz-purple);--eq-line:rgba(216,137,157,.55);}',
-        '.xz-root .xz-eq-card[data-q*="地"]{--eq-q:var(--xz-cyan);--eq-line:rgba(127,210,193,.52);}',
-        '.xz-root .xz-eq-card[data-q*="玄"]{--eq-q:var(--xz-gold);--eq-line:rgba(230,189,118,.48);}',
-        '.xz-root .xz-eq-card[data-q*="黄"]{--eq-q:#c9a05a;--eq-line:rgba(201,160,90,.40);}',
-        '.xz-root .xz-eq-card[data-q*="凡"]{--eq-q:#9aa0a6;--eq-line:rgba(154,160,166,.30);}',
+        'box-shadow:0 6px 18px rgba(0,0,0,.45),0 0 12px rgba(230,189,118,.10);}',
+        '.xz-root .xz-eq-ico{display:flex;align-items:center;justify-content:center;width:34px;height:34px;color:var(--eq-q);}',
+        '.xz-root .xz-eq-ico svg{width:30px;height:30px;display:block;stroke:currentColor;fill:none;',
+        'stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;}',
+        '.xz-root .xz-eq-name{max-width:100%;font-size:12.5px;font-weight:var(--xz-fw-med);color:var(--xz-text);',
+        'line-height:1.3;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
+        '.xz-root .xz-eq-eff{max-width:100%;font-size:9.5px;line-height:1.4;color:var(--xz-muted);',
+        'text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
+        '.xz-root .xz-eq-eff.is-void{opacity:.7;}',
+        '.xz-root .xz-eq-qtag{position:absolute;right:9px;bottom:7px;font-size:9.5px;line-height:1;',
+        'color:var(--eq-q);letter-spacing:.5px;}',
+        '.xz-root .xz-eq-btn{position:absolute;left:7px;bottom:4px;font-family:inherit;font-size:9.5px;line-height:1.4;',
+        'padding:1px 3px;border:none;background:transparent;color:var(--xz-muted);cursor:pointer;border-radius:3px;}',
+        '.xz-root .xz-eq-btn:hover{color:var(--xz-gold-bright);background:rgba(230,189,118,.10);}',
+        '.xz-root .xz-eq-card.is-empty{border-style:dashed;background:rgba(0,0,0,.10);}',
+        '.xz-root .xz-eq-card.is-empty .xz-eq-ico{opacity:.35;}',
+        '.xz-root .xz-eq-card.is-empty .xz-eq-name{color:var(--xz-muted);font-weight:400;}',
+        '@media (max-width:560px){.xz-root .xz-card-grid.xz-eq-grid{grid-template-columns:1fr 1fr;gap:7px;}',
+        '.xz-root .xz-eq-card{padding:9px 7px 22px;min-height:88px;}',
+        '.xz-root .xz-eq-ico{width:28px;height:28px;}',
+        '.xz-root .xz-eq-ico svg{width:24px;height:24px;}',
+        '.xz-root .xz-eq-name{font-size:11.5px;}}',
+        /* 品质档：一条规则一个色 —— 与截图同一套「灰/绿/蓝/紫/金/赤」，框与字同色 */
+        '.xz-root .xz-eq-card[data-q*="神"]{--eq-q:#e06262;--eq-line:rgba(224,98,98,.55);}',
+        '.xz-root .xz-eq-card[data-q*="天"]{--eq-q:#e9c46a;--eq-line:rgba(233,196,106,.55);}',
+        '.xz-root .xz-eq-card[data-q*="地"]{--eq-q:#b07ce8;--eq-line:rgba(176,124,232,.55);}',
+        '.xz-root .xz-eq-card[data-q*="玄"]{--eq-q:#5aa9e6;--eq-line:rgba(90,169,230,.52);}',
+        '.xz-root .xz-eq-card[data-q*="黄"]{--eq-q:#6fbf73;--eq-line:rgba(111,191,115,.45);}',
+        '.xz-root .xz-eq-card[data-q*="凡"]{--eq-q:#9aa4ad;--eq-line:rgba(154,164,173,.38);}',
         '.xz-root .xz-eq-card[data-q="—"]{--eq-q:#8a9496;--eq-line:rgba(138,148,150,.24);}',
         /* ★ v510：space-between → flex-start。品质原来被顶到卡片最右端，
            用户 2026-10-31：「为什么品质又跑右上角去了」。
@@ -6043,36 +6029,41 @@ function xzTypeOf(name, fbT, fbA) {
              ② 空槽文案仍是「（未执宝器）/（未着护具）/（未佩饰物）」，
                 判据按这几个字找补位；
              ③ 整卡可点、内层按钮各自带 act（closest 先命中更近的，不会双触发）。 */
+        /* 自绘线稿图标（作者 2026-11-22：「你自己绘制图标，像人家这样」）。
+           stroke=currentColor / fill=none，颜色吃 --eq-q；剑=法宝、甲=防具、坠=饰品。
+           ⚠ 空槽用同一枚图标压暗，**不画「＋」** —— 那是作者点名要删的。 */
+        function eqIconSvg(kind) {
+            var d;
+            if (kind === '防具') {
+                d = '<path d="M12 3c-1.6 1.5-3.9 2.1-6.3 2.3V12c0 4.3 2.6 7 6.3 8.6 3.7-1.6 6.3-4.3 6.3-8.6V5.3C15.9 5.1 13.6 4.5 12 3z"/>'
+                  + '<path d="M9.4 5.7c.7 1.7 4.5 1.7 5.2 0"/>';
+            } else if (kind === '饰品') {
+                d = '<path d="M4.2 4.2c1.6 4 4.4 5.9 7.8 5.9s6.2-1.9 7.8-5.9"/>'
+                  + '<path d="M12 10.1l2.7 3.6-2.7 5.3-2.7-5.3z"/>';
+            } else {
+                d = '<path d="M12 2.6l2.4 4.8v7.2H9.6V7.4z"/>'
+                  + '<path d="M6.6 14.6h10.8"/><path d="M12 14.6v5.6"/><path d="M9.8 20.2h4.4"/>';
+            }
+            return '<svg viewBox="0 0 24 24" aria-hidden="true">' + d + '</svg>';
+        }
+
         function gearCard(kind, nm, q, elem, desc, note) {
             var isEmpty = /^（未/.test(String(nm || ''));
-            var glyph = (kind === '防具') ? '甲' : (kind === '饰品' ? '佩' : '法');
             var qq = String(q || '—');
             var s = '<div class="xz-eq-card' + (isEmpty ? ' is-empty' : '') + '"'
                 + ' data-q="' + esc(qq) + '" data-xz-act="equip" role="button"'
                 + ' title="点击打开装备台">';
-            /* 内嵌细线 + 四角短标（纯 CSS，不加节点） */
-            s += '<span class="xz-eq-inner" aria-hidden="true"></span>';
-            s += '<div class="xz-eq-head">';
-            s += '<span class="xz-eq-ico" aria-hidden="true">' + (isEmpty ? '＋' : glyph) + '</span>';
-            if (!isEmpty) s += '<span class="xz-eq-qtag">' + esc(qq) + '</span>';
-            s += '</div>';
-            s += '<div class="xz-eq-name">' + esc(nm) + '</div>';
-            if (!isEmpty && elem && elem !== '无' && elem !== '—') {
-                s += '<div class="xz-eq-meta"><span class="xz-eq-tag">' + esc(elem) + '系</span></div>';
-            }
-            if (note) s += '<div class="xz-eq-note">' + note + '</div>';
-            if (desc && desc !== '无' && desc !== '暂无描述' && desc !== '暂无武器描述') {
-                /* 效果拆成一枚枚小框：按「，/、」分条，每条一个框。
-                   ⚠ 没有分隔符时整条进一个框 —— 不能为了"多几个框"硬切句子。 */
-                var parts = String(desc).split(/[，,、]/).map(function (x) { return String(x).trim(); })
-                    .filter(function (x) { return !!x; });
-                s += '<div class="xz-eq-eff">';
-                parts.forEach(function (p) {
-                    s += '<span class="xz-eq-chip">' + esc(p) + '</span>';
-                });
-                s += '</div>';
-            } else if (isEmpty) {
-                s += '<div class="xz-eq-eff"><span class="xz-eq-chip is-void">空槽</span></div>';
+            s += '<span class="xz-eq-ico" aria-hidden="true">' + eqIconSvg(kind) + '</span>';
+            s += '<span class="xz-eq-name">' + esc(nm) + '</span>';
+            if (!isEmpty) {
+                var eff = desc
+                    ? String(desc).split(/[，,、]/).map(function (x) { return String(x).trim(); })
+                        .filter(function (x) { return !!x; }).join(' · ')
+                    : '';
+                if (eff) s += '<span class="xz-eq-eff" title="' + esc(eff) + '">' + esc(eff) + '</span>';
+                s += '<span class="xz-eq-qtag">' + esc(qq) + '</span>';
+            } else {
+                s += '<span class="xz-eq-eff is-void">空槽</span>';
             }
             s += '<button type="button" class="xz-eq-btn" data-xz-act="equip">换装</button>';
             s += '</div>';
@@ -6174,7 +6165,7 @@ function xzTypeOf(name, fbT, fbA) {
            所以这里不再单列装备卡，直接看下面「已学本领」即可。
            所以这里不再单列装备卡，直接看下面「已学本领」即可。 */
 
-        /* ══════ ② 已学本领：默认折叠，想看再点开 ══════ */
+        /* ══════ ② 已学本领：法术 / 神通 / 心法三组常开 ══════ */
         var nSk = Object.keys(at('主角信息.已学本领.法术') || {}).length;
         var nHr = Object.keys(at('主角信息.已学本领.心法') || {}).length;
         /* ★★★ v657：神通补上（作者 2026-11-18：「界面脚本……已学本领的神通呢」）★★★
@@ -6193,47 +6184,13 @@ function xzTypeOf(name, fbT, fbA) {
              读的顺序按「主动 → 主动 → 被动」：法术（主动）→ 神通（主动）→ 心法（被动）。
              神通和法术一样是主动技、一样吃灵力，摆在被动心法后面会让人以为它是被动。 */
         var nSt = Object.keys(at('主角信息.已学本领.神通') || {}).length;
-        /* ★★★ v493（用户 2026-10-31 原话）★★★
-           「状态栏里的装备分页的已学本领的 emoji 删了，然后这句，改成已学本领，
-             就四个字就行了，什么都别写，用个美化相框框住，然后加个▼就行了，
-             然后外层美化框要紧凑，不能变得很宽很长，它四个字，所有肯定很短，窄，也不要高。」
-           ⇒ 三处一起改，缺一条都不像他要的样子：
-             ① 📚 删掉；②「（法术 N · 心法 N）」与「▼ 点击展开 / 折叠」**全删** ——
-                这四个字之外一个字都不留（计数在展开后的两个小标题里本来就有）；
-             ③ 外框从 `display:flex;justify-content:space-between` 改成**内联自适应**：
-                flex 会把 summary 撑满整行（父级是块级），四个字就被拉成一条长框。
-                改成 `display:inline-flex;width:auto` + 左右内距收窄 + 上下不垫高，
-                框就只包住「已学本领 ▼」这一点点。
-             ⚠ `▼` 用 css 旋转做开合指示（summary 内 span），不写两套文字。
-           ★★★ v540：**原生 `<details>` 换成受控折叠** ★★★
-             原生 details 的 `open` 只是 DOM 上的一个布尔，整块重建就没了；
-             而那个记状态的 `toggle` 监听在 v517 已经被删（见文件末尾那段注释）。
-             ⇒ 玩家点开「已学本领」，AI 一回话（变量必变 ⇒ 重建）就自己关上。
-             改成：普通 div + `data-xz-act="fold-skill"`，点击走已验证的 document 委托，
-             翻 `state.foldSkill` 再 render(true)。没有原生行为参与，就没有时序可争。 */
-        var _skOpen = !!state.foldSkill;
-        h += '<div class="xz-details xz-sk-fold" data-fold="skill" style="margin-top:14px;">' +
-             '<div class="xz-sk-fold-hd" data-xz-act="fold-skill" role="button" tabindex="0"' +
-             ' style="display:inline-flex;align-items:center;gap:4px;width:auto;' +
-             'padding:3px 9px;font-size:12px;font-weight:var(--xz-fw-med);color:var(--xz-gold-bright);' +
-             'background:rgba(212,175,55,0.10);border:1px solid rgba(212,175,55,0.35);' +
-             'border-radius:6px;cursor:pointer;user-select:none;">' +
-             '<span>已学本领</span><span class="xz-sk-fold-ar"' + (_skOpen ? ' style="transform:rotate(180deg);"' : '') + '>▼</span>' +
-             '</div>' +
-             (_skOpen ? ('<div style="margin-top:10px;">' +
-             '<div class="xz-sub-head" style="margin-top:4px;">✦ 法术（主动 · ' + nSk + ' 门）</div>' + renderSkillsGroup('主角信息.已学本领.法术', false) +
-             /* ★ v657：神通这一段是新加的，见上面 `nSt` 那段病历。
-                ⚠ 顺序不能挪到心法后面：神通是主动技（吃灵力、有冷却），
-                  摆在被动心法之后就变成"看着像被动"，玩家会以为它不耗灵力。 */
-             '<div class="xz-sub-head" style="margin-top:8px;">✦ 神通（主动 · ' + nSt + ' 门）</div>' + renderSkillsGroup('主角信息.已学本领.神通', false) +
-             /* ★ v528：学了几部 ≠ 上场几部。玩家 2026-11-01：「弄了三个玄诀，
-                但是战斗界面就显示一个」—— 引擎现在**每部都吃**（v528），这里说清楚，
-                玩家才知道自己学的那几部都在算。
-                ⚠ **不在这里算任何加成**：那是引擎的事，抄第二份必漏改一处
-                  （本项目「两条并行判据是漏改温床」的铁律）。这里只讲结论。 */
-             '<div class="xz-sub-head" style="margin-top:8px;">✦ 心法（被动 · ' + nHr + ' 部'
-                 + (nHr > 1 ? ' · 每部都生效' : '') + '）</div>' + renderSkillsGroup('主角信息.已学本领.心法', false) +
-             '</div>') : '') + '</div>';
+        /* 2026-11-22（作者：「法术也是，别默认折叠了，要弄的像rpg游戏的装备页一样」）：
+           整条「已学本领 ▼」折叠条删除 —— 法术/神通/心法三组**常开**直排。
+           原折叠态 state.foldSkill 保留声明（清不掉历史渲染，也无害），但不再读写。 */
+        h += '<div class="xz-sub-head" style="margin-top:14px;">✦ 法术（主动 · ' + nSk + ' 门）</div>' + renderSkillsGroup('主角信息.已学本领.法术', false);
+        h += '<div class="xz-sub-head" style="margin-top:8px;">✦ 神通（主动 · ' + nSt + ' 门）</div>' + renderSkillsGroup('主角信息.已学本领.神通', false);
+        h += '<div class="xz-sub-head" style="margin-top:8px;">✦ 心法（被动 · ' + nHr + ' 部'
+            + (nHr > 1 ? ' · 每部都生效' : '') + '）</div>' + renderSkillsGroup('主角信息.已学本领.心法', false);
 
         h += '</div>';
         return h;
