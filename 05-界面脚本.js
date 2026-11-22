@@ -4254,15 +4254,17 @@ function xzTypeOf(name, fbT, fbA) {
            ⚠ Safari 16 以下不支持 —— 不支持时这条属性被忽略，退化成原来的行为，不会坏。 */
         '.xz-root .xz-npc-card{background:var(--xz-card);border:1px solid rgba(212,175,55,0.18);border-radius:5px;padding:10px;margin-bottom:8px;display:flex;flex-direction:column;gap:6px;content-visibility:auto;contain-intrinsic-size:auto 84px;}',
         /* 2026-11-23 人物页：卡片进网格（游戏式人物栏），不再一条条往下堆。 */
-        '.xz-root .xz-npc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:9px;align-items:start;}',
-        '.xz-root .xz-npc-grid .xz-npc-card{margin-bottom:0;min-width:0;}',
+        /* 2026-11-23（作者：人物档案要「一个个格子」，短的就成格子，不要宽条）：
+       固定格宽 248px、左对齐流式排；1 个人物就是 1 个小格，不再铺满整行。 */
+        '.xz-root .xz-npc-grid{display:grid;grid-template-columns:repeat(auto-fill,248px);justify-content:start;gap:9px;align-items:start;}',
+        '.xz-root .xz-npc-grid .xz-npc-card{margin-bottom:0;min-width:0;padding:8px 8px 8px;}',
         '.xz-root .xz-npc-toprow{display:flex;align-items:flex-start;gap:8px;min-width:0;}',
-        '.xz-root .xz-npc-ava{flex:none;width:40px;height:40px;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;',
+        '.xz-root .xz-npc-ava{position:relative;flex:none;width:38px;height:38px;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;',
         'background:radial-gradient(circle at 32% 22%,rgba(255,255,255,.12),rgba(0,0,0,.34));border:1px solid rgba(212,175,55,.30);',
-        'color:var(--xz-gold-bright);font-size:16px;font-weight:var(--xz-fw-med);}',
-        '.xz-root .xz-npc-ava img{width:100%;height:100%;object-fit:cover;display:block;}',
+        'color:var(--xz-gold-bright);font-size:15px;font-weight:var(--xz-fw-med);}',
+        '.xz-root .xz-npc-ava img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top center;display:block;background:var(--dhl-reading,#171310);}',
         '.xz-root .xz-npc-fields{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1;}',
-        '@media (max-width:560px){.xz-root .xz-npc-grid{grid-template-columns:1fr 1fr;gap:7px;}',
+        '@media (max-width:560px){.xz-root .xz-npc-grid{grid-template-columns:1fr 1fr;gap:7px;justify-content:stretch;}',
         '.xz-root .xz-npc-ava{width:32px;height:32px;border-radius:6px;font-size:14px;}}',
         '.xz-root .xz-npc-header{display:flex;justify-content:space-between;align-items:center;}',
         '.xz-root .xz-npc-name{font-size:13.5px;font-weight:var(--xz-fw-med);color:var(--xz-gold);}',
@@ -6595,12 +6597,15 @@ function xzTypeOf(name, fbT, fbA) {
                 s += '<div class="xz-npc-card">';
                 /* 2026-11-23（作者：「人物资料界面也重新排版一下，搞成格子的啊，老是用长条干嘛，
                    弄的像游戏一样的面板」）：卡片改成**头像 + 字段**的游戏式卡头，卡片本身进网格。 */
-                var _thumb = '';
-                try { if (typeof window !== 'undefined' && typeof window.XZ_PORTRAIT_THUMB === 'function') _thumb = String(window.XZ_PORTRAIT_THUMB(name) || ''); } catch (eTh) {}
+                /* 2026-11-23：头像优先**立绘原图**（cover + top 天然截上半身）；没图/图挂
+                   ⇒ 露出底下的首字（图片只是盖上去的一层，不是"有图才画框"）。 */
+                var _avUrl = '';
+                try { if (typeof window !== 'undefined' && typeof window.XZ_PORTRAIT_LOOKUP === 'function') _avUrl = String(window.XZ_PORTRAIT_LOOKUP(name) || ''); } catch (eAv1) {}
+                if (!_avUrl) { try { if (typeof window !== 'undefined' && typeof window.XZ_PORTRAIT_THUMB === 'function') _avUrl = String(window.XZ_PORTRAIT_THUMB(name) || ''); } catch (eAv2) {} }
                 s += '<div class="xz-npc-toprow">';
-                s += '<span class="xz-npc-ava">' + (_thumb
-                    ? '<img src="' + esc(_thumb) + '" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.remove()">'
-                    : esc(String(name).slice(0, 1))) + '</span>';
+                s += '<span class="xz-npc-ava">' + esc(String(name).slice(0, 1))
+                    + (_avUrl ? '<img src="' + esc(_avUrl) + '" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.remove()">' : '')
+                    + '</span>';
                 s += '<div class="xz-npc-fields">';
                 s += '<div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px; min-width:0;">';
                 /* ★★★ v479：四个字段各给一个**简约小框**（用户 2026-10-31 原话：
@@ -7396,12 +7401,42 @@ function xzTypeOf(name, fbT, fbA) {
         }
         return null;
     }
+    /* ★ 2026-11-23（作者：「实际上是生效了，但没搞实时刷新 CSS」）：
+       只把值写进 `documentElement` 的 CSS 变量并不能保证聊天区立刻变 ——
+       气泡/插图/立绘的样式表是别的 IIFE 注入的，谁先谁后、变量从哪一层继承，
+       在不同酒馆版本里都可能对不上。⇒ 改成**直接维护一块实时样式表**
+       （id=xz-size-live），每次改值就重写它的 textContent：宁可多一次样式重算，
+       也不要再出现"值变了、画面没变"。CSS 变量仍然写（供外部读），但不再是唯一依赖。 */
+    var XZ_SIZE_STYLE_ID = 'xz-size-live';
+    function xzSizeCssText() {
+        var ava = xzSizeOf('ava'), illu = xzSizeOf('illu'), pic = xzSizeOf('pic');
+        return '.mes_text .thdl-ava{width:' + ava + 'px !important;height:' + ava + 'px !important;}'
+             + '.mes_text .thillu-frame{width:' + illu + '% !important;max-width:' + illu + '% !important;}'
+             + '.mes_text .xz-pic-frame{width:' + pic + '% !important;max-width:' + pic + '% !important;}';
+    }
     function xzSizeApplyAll() {
         try {
-            var root = (HOST && HOST.document && HOST.document.documentElement) || document.documentElement;
-            for (var i = 0; i < XZ_SIZE_KEYS.length; i++) {
-                var c = XZ_SIZE_KEYS[i];
-                root.style.setProperty(c.vn, xzSizeOf(c.key) + c.unit);
+            var docs = [];
+            try { if (HOST && HOST.document) docs.push(HOST.document); } catch (e0) {}
+            try { if (document && document !== (HOST && HOST.document)) docs.push(document); } catch (e1) {}
+            var css = xzSizeCssText();
+            for (var di = 0; di < docs.length; di++) {
+                var d = docs[di];
+                if (!d || !d.createElement) continue;
+                var st = d.getElementById(XZ_SIZE_STYLE_ID);
+                if (!st) {
+                    st = d.createElement('style');
+                    st.id = XZ_SIZE_STYLE_ID;
+                    (d.head || d.documentElement).appendChild(st);
+                }
+                if (String(st.textContent || '') !== css) st.textContent = css;
+                var root = d.documentElement;
+                if (root && root.style) {
+                    for (var i = 0; i < XZ_SIZE_KEYS.length; i++) {
+                        var c = XZ_SIZE_KEYS[i];
+                        root.style.setProperty(c.vn, xzSizeOf(c.key) + c.unit);
+                    }
+                }
             }
         } catch (e) {}
     }
@@ -14884,6 +14919,8 @@ var XZ_DM_BOXES=[[360,200,1520,660],
     function render(force) {
         var doc = getDoc();
         ensureStyle(doc);
+        /* 2026-11-23：尺寸样式随每次重绘对齐（值没变就是一个字符串比较）。 */
+        try { xzSizeApplyAll(); } catch (eSz) {}
         /* ★ v494：换页签 ⇒ 滚动记忆清零（新页签从顶部开始）。
            ⚠ 必须放在**画之前**：放到画之后会把刚恢复的位置又清掉。
            ⚠ 用模块级 `_lastScrollTab` 比对，不往 `state` 里加字段（理由同 `_viewScroll`）。 */
