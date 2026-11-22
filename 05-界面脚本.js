@@ -16447,6 +16447,13 @@ var XZ_DM_BOXES=[[360,200,1520,660],
             globalThis.__XZ05__.xzOpenPortraitByName = xzOpenPortraitByName;
             globalThis.__XZ05__.xzImgObserve = xzImgObserve;
             globalThis.__XZ05__.HOST_ID = HOST_ID;
+            /* ★ 2026-11-22：`xzMapHereParts` 必须挂**运行时通道** ——
+               《地点》渲染 IIFE 的 resolveScene 跨块取「当前城」就认 `__XZ05__.xzMapHereParts`；
+               以前它只出现在上面的 `__XZ_STATUS_TEST__`（离线闸钩子，运行时没人读）⇒
+               resolveScene 永远拿不到、永远 retry ⇒ `<地点>` 一次都没渲染过。
+               这是本项目第三次踩「测试钩子 ≠ 运行时通道」（v385 xzMapPlaceTree、v526
+               xzOpenPortrait 之后第三次），静态闸抓不到，只有真跑能抓到。 */
+            globalThis.__XZ05__.xzMapHereParts = xzMapHereParts;
             /* ⚠ v1.06：这里**不许**再加 `xzWbVerState`。
                那个函数要读 `state.wbVer`，而 `state`（带 wbVer 的那个，07 行附近声明）
                只存在于「状态栏」那个 IIFE —— 本块是**人物管理器** IIFE，够不着。
@@ -22271,6 +22278,27 @@ var XZ_DM_BOXES=[[360,200,1520,660],
             } catch (eSel) {
                 try { nodes = d.querySelectorAll('.mes_text'); } catch (e2) { return; }
             }
+            /* ★★★ 2026-11-22 补扫：滑出「最近 2 楼」窗口、正文里还躺着没渲染的
+               <人物立绘> 的楼，也要补画 ★★★
+               什么时候会有这种楼：变量晚到那一拍没画成（保留原文等下一轮）、
+               或渲染竞速里输掉一次 —— 之后这楼一滑出窗口，主流程就再也不碰它，
+               裸标签永远挂在正文里（作者报的「标签出来了但偶尔没渲染」的第二个根源）。
+               规矩：正文含「人物立绘」、且**没有框**（.xz-pic-box）的 AI 楼才补；
+               用户楼不碰；画不出的（在场的人里没图）照旧保留原文，
+               代价只是兜底轮询时多扫几楼文本。 */
+            try {
+                var _rest = d.querySelectorAll('.mes_text');
+                for (var _r1 = 0; _r1 < _rest.length; _r1++) {
+                    var _h2 = _rest[_r1];
+                    if (!_h2 || nodes.indexOf(_h2) >= 0) continue;
+                    var _m2 = _h2.closest ? _h2.closest('.mes') : null;
+                    if (_m2 && (_m2.getAttribute('is_user') === 'true'
+                        || (_m2.classList && _m2.classList.contains('is_user')))) continue;
+                    if ((_h2.textContent || '').indexOf('人物立绘') < 0) continue;
+                    try { if (_h2.querySelector('.xz-pic-box')) continue; } catch (eQ1) { continue; }
+                    nodes.push(_h2);
+                }
+            } catch (eQ0) {}
             for (var i = 0; i < nodes.length; i++) {
                 var host = nodes[i];
                 if (!host) continue;
@@ -22469,9 +22497,11 @@ var XZ_DM_BOXES=[[360,200,1520,660],
       于是 `{名}「话」` 在 DOM 里被劈成两个节点，单节点正则永远匹配不到。
       ⇒ 从含 `{…}` 的文本节点出发，把后续**行内**节点缝成一段逻辑文本再解析。
       块级元素是硬边界，缝到那儿必须停（绝不跨段抓别人的话）。
-   ③ **跳过名单必须与邻居一致**：插图 IIFE 的 `SKIP_SEL` 里已经写着 `.thdl-wrap`
-      （那是源卡同一套脚本共用的类名），本模块产出必须**就叫这个类名**；
-      反过来这里也要跳过 `.thillu` / `.xz-pic-box` / `.xz-root` 等一切已有渲染产物。
+   ③ **跳过名单与邻居的关系**：插图 IIFE 的 `SKIP_SEL` **曾经**写着 `.thdl-wrap`
+      （2026-11-22 已去掉——它把被本模块包住的 `<插图>`/`<地点>` 永久挡在了渲染之外，
+        见那边名单处的注释）。方向反转：现在是**本模块**要跳过一切邻居的产物
+      （`.thillu` / `.xz-pic-box` / `.xz-root` / `.xz-tc-wrap` / `.xz-scene`），
+      而邻居**不再**跳 `.thdl-wrap` —— 包进去的裸标签必须还能被各自的扫描器够到。
       两边各写对一半就等于互相踩。
 
    ── 幂等与流式 ──────────────────────────────────────────────────────────
@@ -22702,9 +22732,12 @@ var XZ_DM_BOXES=[[360,200,1520,660],
   }
 
   /* ── 跳过名单 ──
-     ⚠ 与插图 IIFE 的 `SKIP_SEL`（`.thillu,.thdl-wrap,#th-place-modal`）必须**互相对上**：
-       本模块产出 `.thdl-wrap`（那边已经在跳了），这边要跳它的 `.thillu`；
-       立绘框是 `.xz-pic-box`，状态栏是 `.xz-root`。
+     ⚠ 方向（2026-11-22 定稿）：**本模块**要跳过一切邻居的产物——
+       自己的 `.thdl-wrap`、插图的 `.thillu`、立绘的 `.xz-pic-box`、状态栏 `.xz-root`、
+       十合一正则的 `.xz-tc-wrap`。
+       反过来，插图/地点的 `SKIP_SEL` **不再**跳 `.thdl-wrap`：被本模块包进旁白的
+       裸标签（`<插图>`／`<地点>`）必须还能被它们各自的扫描器够到，否则就是
+       「标签出来了但偶尔没渲染」（那次竞速是本模块先到，谁先谁赢，所以是"偶尔"）。
      少一个就会"把别人渲染好的东西再当文本处理一遍"，表现为图像变文字或套娃。 */
   var SKIP_SEL = '.thdl-wrap,.thillu,.xz-pic-box,.xz-root,#th-place-modal,.xz-tc-wrap,.mes_text script,.mes_text style';
 
@@ -25200,8 +25233,15 @@ var XZ_DM_BOXES=[[360,200,1520,660],
        ② **解析**：缝合后的字符串里有真正的 `</插图>`，正则就能正常匹配；
           替换时把那串节点整体换掉，不留半截残渣。 */
   /* ⚠ 自己产出的块就叫 `.thillu`（不是 .thillu-wrap），跳过名单必须写对，
-     否则每轮都会把渲染好的插图块再扫一遍。 */
-  var SKIP_SEL = '.thillu,.thdl-wrap,#th-place-modal';
+     否则每轮都会把渲染好的插图块再扫一遍。
+     ★ 2026-11-22：**从名单里去掉 `.thdl-wrap`** ——
+       气泡模块（`{名}「话」` → 头像气泡）会把带对白楼层的旁白一起包进 `.thdl-wrap`，
+       而它触发比本扫描器快（MutationObserver + message_received+80ms vs +100ms）。
+       名单里有 .thdl-wrap 的年代，只要模型把 `<插图>` 写在带对白楼层的旁白段落里，
+       就被气泡先包住 ⇒ 这边永远跳过 ⇒ 裸标签一直挂在正文里（作者报的
+       「标签出来了但偶尔没渲染」的主因）。去掉后：包住的照样渲染；
+       自己的产物靠 `.thillu` 这一条跳，不会重扫、不会套娃。 */
+  var SKIP_SEL = '.thillu,#th-place-modal';
 
   /* 把「文本节点 + 可能的注释节点 + 后续文本节点」缝成完整字符串。
      返回 { text, nodes } —— nodes 是参与拼接的全部节点（按文档顺序）。
@@ -25500,8 +25540,11 @@ var XZ_DM_BOXES=[[360,200,1520,660],
     return wrap;
   }
 
-  /* 已渲染块与对话框不碰，避免每轮重扫把渲染好的场景块再拆一遍。 */
-  var SKIP_SEL = '.xz-scene,.thillu,.xz-pic-box,.thdl-wrap,#th-place-modal';
+  /* 已渲染块与对话框不碰，避免每轮重扫把渲染好的场景块再拆一遍。
+     ★ 2026-11-22：**去掉 `.thdl-wrap`** —— 同《插图》那条：气泡模块会把旁白连同
+       `<地点>` 一起包进 `.thdl-wrap`，包住就永远跳过 ⇒ `<地点>` 偶尔整段裸着。
+       自己的产物靠 `.xz-scene` 跳，互不干扰。 */
+  var SKIP_SEL = '.xz-scene,.thillu,.xz-pic-box,#th-place-modal';
   function insideSkip(node, box) {
     var p = node.parentNode;
     while (p && p !== box) {
