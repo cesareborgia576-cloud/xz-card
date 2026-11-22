@@ -4256,7 +4256,7 @@ function xzTypeOf(name, fbT, fbA) {
         /* 2026-11-23 人物页：卡片进网格（游戏式人物栏），不再一条条往下堆。 */
         /* 2026-11-23（作者：人物档案要「一个个格子」，短的就成格子，不要宽条）：
        固定格宽 248px、左对齐流式排；1 个人物就是 1 个小格，不再铺满整行。 */
-        '.xz-root .xz-npc-grid{display:grid;grid-template-columns:repeat(auto-fill,248px);justify-content:start;gap:9px;align-items:start;}',
+        '.xz-root .xz-npc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:10px;align-items:start;}',
         '.xz-root .xz-npc-grid .xz-npc-card{margin-bottom:0;min-width:0;padding:8px 8px 8px;}',
         '.xz-root .xz-npc-toprow{display:flex;align-items:flex-start;gap:8px;min-width:0;}',
         '.xz-root .xz-npc-ava{position:relative;flex:none;width:38px;height:38px;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;',
@@ -6600,7 +6600,10 @@ function xzTypeOf(name, fbT, fbA) {
                 /* 2026-11-23：头像优先**立绘原图**（cover + top 天然截上半身）；没图/图挂
                    ⇒ 露出底下的首字（图片只是盖上去的一层，不是"有图才画框"）。 */
                 var _avUrl = '';
-                try { if (typeof window !== 'undefined' && typeof window.XZ_PORTRAIT_LOOKUP === 'function') _avUrl = String(window.XZ_PORTRAIT_LOOKUP(name) || ''); } catch (eAv1) {}
+                /* 2026-11-23（作者：「鹿柔的呢」）：模型现编的角色没有内置图 ——
+                   先查**玩家自定义上传**（管理器里传的立绘），再走内置表。 */
+                try { var _q5av = (typeof globalThis !== 'undefined') ? globalThis.__XZ05__ : null; if (_q5av && typeof _q5av.xzCustomPicOf === 'function') _avUrl = String(_q5av.xzCustomPicOf(name) || ''); } catch (eAv0) {}
+                if (!_avUrl) { try { if (typeof window !== 'undefined' && typeof window.XZ_PORTRAIT_LOOKUP === 'function') _avUrl = String(window.XZ_PORTRAIT_LOOKUP(name) || ''); } catch (eAv1) {} }
                 if (!_avUrl) { try { if (typeof window !== 'undefined' && typeof window.XZ_PORTRAIT_THUMB === 'function') _avUrl = String(window.XZ_PORTRAIT_THUMB(name) || ''); } catch (eAv2) {} }
                 s += '<div class="xz-npc-toprow">';
                 s += '<span class="xz-npc-ava">' + esc(String(name).slice(0, 1))
@@ -6739,13 +6742,18 @@ function xzTypeOf(name, fbT, fbA) {
                 if (_nHpM > 0 || _nMpM > 0) {
                     var _hpP = _nHpM > 0 ? Math.max(0, Math.min(100, Math.round(_nHp / _nHpM * 100))) : 0;
                     var _mpP = _nMpM > 0 ? Math.max(0, Math.min(100, Math.round(_nMp / _nMpM * 100))) : 0;
-                    s += _nBox('气血 / 灵力',
-                        '<div style="font-size:11px;color:var(--xz-text-2);">'
-                        + '<div style="display:flex;justify-content:space-between;"><span style="color:#ff8a8a;">气血</span><b style="color:var(--xz-text);">' + _nHp + ' / ' + _nHpM + '</b></div>'
-                        + '<div class="xz-progress"><div class="xz-progress-fill" style="width:' + _hpP + '%;background:linear-gradient(90deg,#c2264a,#ff8a8a);"></div></div>'
-                        + '<div style="display:flex;justify-content:space-between;margin-top:3px;"><span style="color:#60a5fa;">灵力</span><b style="color:var(--xz-text);">' + _nMp + ' / ' + _nMpM + '</b></div>'
-                        + '<div class="xz-progress"><div class="xz-progress-fill" style="width:' + _mpP + '%;background:linear-gradient(90deg,#2f6fd0,#60a5fa);"></div></div>'
-                        + '</div>', true);
+                    /* 2026-11-23（作者：「人物展示的信息里面，是格子」）：
+                       原来两条血条合在一个**跨整行**的宽条里 —— 现在各占一格。 */
+                    s += _nBox('气血',
+                        '<div style="display:flex;justify-content:space-between;align-items:baseline;">'
+                        + '<b style="color:var(--xz-text);font-size:12px;font-variant-numeric:tabular-nums;">' + _nHp + '</b>'
+                        + '<span style="color:var(--xz-muted);font-size:10px;">/ ' + _nHpM + '</span></div>'
+                        + '<div class="xz-progress"><div class="xz-progress-fill" style="width:' + _hpP + '%;background:linear-gradient(90deg,#c2264a,#ff8a8a);"></div></div>');
+                    s += _nBox('灵力',
+                        '<div style="display:flex;justify-content:space-between;align-items:baseline;">'
+                        + '<b style="color:var(--xz-text);font-size:12px;font-variant-numeric:tabular-nums;">' + _nMp + '</b>'
+                        + '<span style="color:var(--xz-muted);font-size:10px;">/ ' + _nMpM + '</span></div>'
+                        + '<div class="xz-progress"><div class="xz-progress-fill" style="width:' + _mpP + '%;background:linear-gradient(90deg,#2f6fd0,#60a5fa);"></div></div>');
                 }
 
                 /* ★ v296：`战斗临时状态` 字段删除（用户：「你既然输出了标签了，那为什么不以标签为主呢？
@@ -6765,7 +6773,8 @@ function xzTypeOf(name, fbT, fbA) {
                     var _bc = xzSpiritRootTierColor(_blT);
                     var _blHtml = '<b style="color:' + _bc + ';">' + esc(_blT) + (_blA ? ' · ' + esc(_blA) + '系' : '') + '</b>';
                     /* ★ v296：`说明` 字段删除 —— 设定性的句子已经并进 `效果` 里 `｜` 之后那半句。 */
-                    s += _nBox('灵根', _blHtml, true);
+                    /* 2026-11-23：灵根从跨整行改成**一格**。 */
+                    s += _nBox('灵根', _blHtml);
                 }
 
                 if (npc.外貌) s += _nBox('外貌', esc(npc.外貌), true);
@@ -22661,6 +22670,13 @@ var XZ_DM_BOXES=[[360,200,1520,660],
     var n = String(name || '').trim();
     if (!n) return '';
     if (isSelf(n)) return '';
+    try {
+      var q5c = HOST.__XZ05__;
+      if (q5c && typeof q5c.xzCustomPicOf === 'function') {
+        var uc = String(q5c.xzCustomPicOf(n) || '');
+        if (uc) return uc;
+      }
+    } catch (eC0) {}
     try {
       if (typeof HOST.XZ_PORTRAIT_LOOKUP === 'function') {
         var u = HOST.XZ_PORTRAIT_LOOKUP(n);
