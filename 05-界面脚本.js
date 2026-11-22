@@ -6605,6 +6605,7 @@ function xzTypeOf(name, fbT, fbA) {
                 try { var _q5av = (typeof globalThis !== 'undefined') ? globalThis.__XZ05__ : null; if (_q5av && typeof _q5av.xzCustomPicOf === 'function') _avUrl = String(_q5av.xzCustomPicOf(name) || ''); } catch (eAv0) {}
                 if (!_avUrl) { try { if (typeof window !== 'undefined' && typeof window.XZ_PORTRAIT_LOOKUP === 'function') _avUrl = String(window.XZ_PORTRAIT_LOOKUP(name) || ''); } catch (eAv1) {} }
                 if (!_avUrl) { try { if (typeof window !== 'undefined' && typeof window.XZ_PORTRAIT_THUMB === 'function') _avUrl = String(window.XZ_PORTRAIT_THUMB(name) || ''); } catch (eAv2) {} }
+                if (!_avUrl) { try { _avUrl = poolPicOf(name) || ''; } catch (eAv3) {} }
                 s += '<div class="xz-npc-toprow">';
                 s += '<span class="xz-npc-ava">' + esc(String(name).slice(0, 1))
                     + (_avUrl ? '<img src="' + esc(_avUrl) + '" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.remove()">' : '')
@@ -22689,8 +22690,33 @@ var XZ_DM_BOXES=[[360,200,1520,660],
         if (u2) return String(u2);
       }
     } catch (e) {}
+    try { var u3 = poolPicOf(n); if (u3) return String(u3); } catch (e5) {}
     return '';
   }
+  /* 动作插图池兜底：《设定-插图系统》名单里的角色（鹿柔/豹妍…）没有立绘，
+     但动作图是同一批真人素材 —— 取该人物**任意一组动作的第一张**当头像完全够用。 */
+  function poolPicOf(name) {
+    try {
+      var R2 = HOST.__thIlluRender;
+      var pools = R2 && R2.pools;
+      if (!pools) return '';
+      var n = String(name || '').trim();
+      var tail = n.split(/[·・‧∙]/).pop().trim();
+      for (var k in pools) {
+        if (!Object.prototype.hasOwnProperty.call(pools, k)) continue;
+        var who = k.split('|')[0];
+        if ((who === n || (tail && who === tail)) && pools[k] && pools[k].length) return String(pools[k][0]);
+      }
+      /* 精确没中再试「名字包含」（池键是全名，正文里可能是简称） */
+      for (var k2 in pools) {
+        if (!Object.prototype.hasOwnProperty.call(pools, k2)) continue;
+        var who2 = k2.split('|')[0];
+        if ((n.indexOf(who2) >= 0 || (tail && who2.indexOf(tail) >= 0)) && pools[k2] && pools[k2].length) return String(pools[k2][0]);
+      }
+      return '';
+    } catch (e) { return ''; }
+  }
+
   /* 该角色的全部立绘（新版表 / 老多图表 / 尾段匹配都认）——「换」按钮的数据源。 */
   function picsOf(name) {
     try {
@@ -22705,6 +22731,9 @@ var XZ_DM_BOXES=[[360,200,1520,660],
              || [];
       if (!arr.length) {
         try { var u = HOST.XZ_PORTRAIT_LOOKUP ? HOST.XZ_PORTRAIT_LOOKUP(n) : ''; if (u) arr = [String(u)]; } catch (e3) {}
+      }
+      if (!arr.length) {
+        try { var up = poolPicOf(n); if (up) arr = [up]; } catch (e4) {}
       }
       return arr;
     } catch (e) { return []; }
