@@ -4254,7 +4254,7 @@ function xzTypeOf(name, fbT, fbA) {
            ⚠ Safari 16 以下不支持 —— 不支持时这条属性被忽略，退化成原来的行为，不会坏。 */
         '.xz-root .xz-npc-card{background:var(--xz-card);border:1px solid rgba(212,175,55,0.18);border-radius:5px;padding:10px;margin-bottom:8px;display:flex;flex-direction:column;gap:6px;content-visibility:auto;contain-intrinsic-size:auto 84px;}',
         /* 2026-11-23 人物页：卡片进网格（游戏式人物栏），不再一条条往下堆。 */
-        '.xz-root .xz-npc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:9px;align-items:start;}',
+        '.xz-root .xz-npc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:9px;align-items:start;}',
         '.xz-root .xz-npc-grid .xz-npc-card{margin-bottom:0;min-width:0;}',
         '.xz-root .xz-npc-toprow{display:flex;align-items:flex-start;gap:8px;min-width:0;}',
         '.xz-root .xz-npc-ava{flex:none;width:40px;height:40px;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;',
@@ -7380,9 +7380,9 @@ function xzTypeOf(name, fbT, fbA) {
          --xz-pic-w     立绘框最大宽(%)
        三个模块的 CSS 都吃变量 ⇒ 调完立刻生效，不用刷新。 */
     var XZ_SIZE_KEYS = [
-        { key: 'ava', label: '正文头像大小', ls: 'xzSizeAva', vn: '--xz-ava-size', def: 52, min: 28, max: 96, step: 4, unit: 'px' },
-        { key: 'illu', label: '插图大小', ls: 'xzSizeIllu', vn: '--xz-illu-w', def: 88, min: 40, max: 100, step: 4, unit: '%' },
-        { key: 'pic', label: '立绘大小', ls: 'xzSizePic', vn: '--xz-pic-w', def: 88, min: 40, max: 100, step: 4, unit: '%' }
+        { key: 'ava', label: '正文头像', ls: 'xzSizeAva', vn: '--xz-ava-size', def: 52, min: 28, max: 96, step: 4, unit: 'px', presets: [36, 44, 52, 60, 72, 88] },
+        { key: 'illu', label: '插图', ls: 'xzSizeIllu', vn: '--xz-illu-w', def: 88, min: 40, max: 100, step: 4, unit: '%', presets: [55, 70, 80, 88, 100] },
+        { key: 'pic', label: '立绘', ls: 'xzSizePic', vn: '--xz-pic-w', def: 88, min: 40, max: 100, step: 4, unit: '%', presets: [55, 70, 80, 88, 100] }
     ];
     function xzSizeOf(k) {
         for (var i = 0; i < XZ_SIZE_KEYS.length; i++) {
@@ -7448,25 +7448,28 @@ function xzTypeOf(name, fbT, fbA) {
             h += '</div>';
         }
 
-        /* ── 2026-11-23：尺寸调节（头像 / 插图 / 立绘）── */
+        /* ── 2026-11-23（作者：「搞成一个个格子按钮」）：尺寸区 = 三个格子，
+           每格里一排**尺寸按钮**，当前档高亮。点一下立刻生效并记进浏览器。 ── */
         h += '<div class="xz-sub-head" style="margin-top:14px;">✦ 尺寸</div>';
         h += '<div style="font-size:10.5px;color:var(--xz-muted);line-height:1.7;margin:-2px 0 8px;">'
-            + '调完立刻生效，记在<b>浏览器</b>里（所有存档共用，不隔离）。</div>';
+            + '点一个格子按钮即生效，记在<b>浏览器</b>里（所有存档共用）。</div>';
+        h += '<div class="xz-size-grid">';
         for (var _si = 0; _si < XZ_SIZE_KEYS.length; _si++) {
             var _sc = XZ_SIZE_KEYS[_si];
             var _sv = xzSizeOf(_sc.key);
-            h += '<div class="xz-box" style="margin:0 0 8px;padding:8px 11px;display:flex;align-items:center;gap:8px;">'
-                + '<span style="flex:1;font-size:12px;color:var(--xz-gold-bright);">' + esc(_sc.label) + '</span>'
-                + '<button type="button" class="xz-tianji-goto-btn" data-xz-act="size-step" data-size-key="' + esc(_sc.key) + '" data-dir="-1"'
-                + ' style="padding:2px 10px;font-size:12px;min-width:30px;">−</button>'
-                + '<span style="min-width:58px;text-align:center;font-size:12px;color:var(--xz-text);font-variant-numeric:tabular-nums;">'
-                + _sv + _sc.unit + '</span>'
-                + '<button type="button" class="xz-tianji-goto-btn" data-xz-act="size-step" data-size-key="' + esc(_sc.key) + '" data-dir="1"'
-                + ' style="padding:2px 10px;font-size:12px;min-width:30px;">＋</button>'
-                + '<button type="button" class="xz-tianji-goto-btn" data-xz-act="size-reset" data-size-key="' + esc(_sc.key) + '"'
-                + ' style="padding:2px 8px;font-size:10px;color:var(--xz-muted);border-color:rgba(150,150,150,.4);">重置</button>'
-                + '</div>';
+            h += '<div class="xz-size-cell">';
+            h += '<div class="xz-size-cell-h">' + esc(_sc.label)
+                + '<em>' + _sv + _sc.unit + '</em></div>';
+            h += '<div class="xz-size-chips">';
+            for (var _sj = 0; _sj < _sc.presets.length; _sj++) {
+                var _pv = _sc.presets[_sj];
+                h += '<button type="button" class="xz-size-chip' + (_pv === _sv ? ' is-on' : '') + '"'
+                    + ' data-xz-act="size-set" data-size-key="' + esc(_sc.key) + '" data-size-val="' + _pv + '">'
+                    + _pv + _sc.unit + '</button>';
+            }
+            h += '</div></div>';
         }
+        h += '</div>';
 
         /* ★★★ v657：整块「对白写法的样子」**删除**（作者 2026-11-18 附截图）★★★
            作者原话：「还有，界面脚本里的功能的这部分直接删。」
@@ -15581,16 +15584,16 @@ var XZ_DM_BOXES=[[360,200,1520,660],
                      ⚠ 不能"先记下来等模块起来再用"：那次刷新之后模块才起来，
                        而 localStorage 是**跨刷新**的 —— 提前写等于替玩家按了一次开关，
                        他下次进来生效，但他从没看见按钮变过。 */
-                /* 2026-11-23：尺寸步进 / 重置（功能页三行）。改完立刻 apply + 强刷。 */
-                if (act === 'size-step' || act === 'size-reset') {
+                /* 2026-11-23：尺寸格子按钮（预设值直取）。改完立刻 apply + 强刷。 */
+                if (act === 'size-set') {
                     var _sk2 = el.getAttribute('data-size-key') || '';
+                    var _v2 = parseInt(el.getAttribute('data-size-val'), 10);
                     for (var _si2 = 0; _si2 < XZ_SIZE_KEYS.length; _si2++) {
                         var _sc2 = XZ_SIZE_KEYS[_si2];
                         if (_sc2.key !== _sk2) continue;
-                        var _nv = (act === 'size-reset') ? _sc2.def
-                            : xzSizeOf(_sk2) + (el.getAttribute('data-dir') === '1' ? _sc2.step : -_sc2.step);
-                        _nv = Math.max(_sc2.min, Math.min(_sc2.max, _nv));
-                        try { HOST.localStorage.setItem(_sc2.ls, String(_nv)); } catch (eLS) {}
+                        if (!isFinite(_v2)) _v2 = _sc2.def;
+                        _v2 = Math.max(_sc2.min, Math.min(_sc2.max, _v2));
+                        try { HOST.localStorage.setItem(_sc2.ls, String(_v2)); } catch (eLS) {}
                         break;
                     }
                     xzSizeApplyAll();
@@ -17298,6 +17301,16 @@ var XZ_DM_BOXES=[[360,200,1520,660],
         '.xz-pet-ico svg{width:34px;height:34px;stroke:currentColor;fill:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;}',
         '.xz-pet-empty-t{font-size:11.5px;color:rgba(214,178,132,.72);letter-spacing:1px;}',
         '.xz-pet-empty-s{font-size:9.5px;color:var(--xz-muted);text-align:center;line-height:1.5;}',
+        /* 2026-11-23 功能页尺寸格子：一格一个维度，格内一排尺寸按钮，当前档高亮 */
+        '.xz-root .xz-size-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;}',
+        '.xz-root .xz-size-cell{border:1px solid rgba(212,175,55,.22);border-radius:8px;padding:7px 9px;background:var(--xz-card);}',
+        '.xz-root .xz-size-cell-h{display:flex;align-items:baseline;gap:6px;font-size:11px;color:var(--xz-gold-bright);margin-bottom:6px;}',
+        '.xz-root .xz-size-cell-h em{font-style:normal;font-size:9.5px;color:var(--xz-muted);margin-left:auto;font-variant-numeric:tabular-nums;}',
+        '.xz-root .xz-size-chips{display:flex;flex-wrap:wrap;gap:5px;}',
+        '.xz-root .xz-size-chip{font-family:inherit;font-size:10px;line-height:1.4;padding:3px 8px;border-radius:5px;cursor:pointer;',
+        'border:1px solid rgba(212,175,55,.32);background:rgba(212,175,55,.06);color:var(--xz-text-2);}',
+        '.xz-root .xz-size-chip:hover{border-color:rgba(243,217,153,.7);background:rgba(212,175,55,.16);}',
+        '.xz-root .xz-size-chip.is-on{background:var(--xz-gold);border-color:var(--xz-gold);color:#0b0f17;font-weight:var(--xz-fw-med);}',
         '@media (max-width:560px){.xz-pet-grid{grid-template-columns:1fr 1fr;gap:7px;}',
         '.xz-pet-slot{min-height:150px;}}',
         '.xz-forge .xz-tp-head{gap:6px;justify-content:flex-start;}',
