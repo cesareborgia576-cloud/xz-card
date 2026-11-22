@@ -5637,10 +5637,10 @@ function xzTypeOf(name, fbT, fbA) {
                     + '<span style="flex:none;font-size:9px;line-height:1;padding:2px 4px;border-radius:3px;'
                     + 'border:1px solid ' + _dc + ';color:' + _dc + ';">' + esc(_d.q || '凡阶') + '</span>'
                     + '<span style="flex:1 1 auto;min-width:0;font-size:11px;font-weight:var(--xz-fw-med);'
-                    + 'color:var(--xz-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(_d.n) + '</span>'
+                    + 'color:var(--xz-text);white-space:normal;word-break:break-word;line-height:1.35;">' + esc(_d.n) + '</span>'
                     + '</div>'
-                    + '<span style="font-size:9.5px;line-height:1.25;color:var(--xz-text-2);'
-                    + 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(_d.e || '—') + '</span>'
+                    + '<span style="font-size:9.5px;line-height:1.45;color:var(--xz-text-2);'
+                    + 'white-space:normal;word-break:break-word;display:block;">' + esc(_d.e || '—') + '</span>'
                     + '</div>';
             } else {
                 _dyCards += '<div style="flex:1 1 0;min-width:0;display:flex;align-items:center;justify-content:center;'
@@ -7372,6 +7372,40 @@ function xzTypeOf(name, fbT, fbA) {
         return out.join(',');
     }
 
+    /* ═══ 2026-11-23（作者：「功能分页里新增调节正文头像/插图/立绘大小的按钮，
+       一定要能点；永久缓存，没有存档隔离」）═══
+       三个尺寸各自记 localStorage（全局，不进存档），写成宿主根元素的 CSS 变量：
+         --xz-ava-size  气泡头像边长(px)
+         --xz-illu-w    插图框最大宽(%)
+         --xz-pic-w     立绘框最大宽(%)
+       三个模块的 CSS 都吃变量 ⇒ 调完立刻生效，不用刷新。 */
+    var XZ_SIZE_KEYS = [
+        { key: 'ava', label: '正文头像大小', ls: 'xzSizeAva', vn: '--xz-ava-size', def: 52, min: 28, max: 96, step: 4, unit: 'px' },
+        { key: 'illu', label: '插图大小', ls: 'xzSizeIllu', vn: '--xz-illu-w', def: 88, min: 40, max: 100, step: 4, unit: '%' },
+        { key: 'pic', label: '立绘大小', ls: 'xzSizePic', vn: '--xz-pic-w', def: 88, min: 40, max: 100, step: 4, unit: '%' }
+    ];
+    function xzSizeOf(k) {
+        for (var i = 0; i < XZ_SIZE_KEYS.length; i++) {
+            var c = XZ_SIZE_KEYS[i];
+            if (c.key !== k) continue;
+            try {
+                var v = parseInt(HOST.localStorage.getItem(c.ls), 10);
+                if (!isFinite(v)) return c.def;
+                return Math.max(c.min, Math.min(c.max, v));
+            } catch (e) { return c.def; }
+        }
+        return null;
+    }
+    function xzSizeApplyAll() {
+        try {
+            var root = (HOST && HOST.document && HOST.document.documentElement) || document.documentElement;
+            for (var i = 0; i < XZ_SIZE_KEYS.length; i++) {
+                var c = XZ_SIZE_KEYS[i];
+                root.style.setProperty(c.vn, xzSizeOf(c.key) + c.unit);
+            }
+        } catch (e) {}
+    }
+    xzSizeApplyAll();
     function pageFunc() {
         var h = '<div class="xz-sub-head">✦ 功能</div>';
         h += '<div style="font-size:10.5px;color:var(--xz-muted);line-height:1.7;margin:-2px 0 10px;">'
@@ -7412,6 +7446,26 @@ function xzTypeOf(name, fbT, fbA) {
                     + '开关暂时不能点，刷新页面后再来。</div>';
             }
             h += '</div>';
+        }
+
+        /* ── 2026-11-23：尺寸调节（头像 / 插图 / 立绘）── */
+        h += '<div class="xz-sub-head" style="margin-top:14px;">✦ 尺寸</div>';
+        h += '<div style="font-size:10.5px;color:var(--xz-muted);line-height:1.7;margin:-2px 0 8px;">'
+            + '调完立刻生效，记在<b>浏览器</b>里（所有存档共用，不隔离）。</div>';
+        for (var _si = 0; _si < XZ_SIZE_KEYS.length; _si++) {
+            var _sc = XZ_SIZE_KEYS[_si];
+            var _sv = xzSizeOf(_sc.key);
+            h += '<div class="xz-box" style="margin:0 0 8px;padding:8px 11px;display:flex;align-items:center;gap:8px;">'
+                + '<span style="flex:1;font-size:12px;color:var(--xz-gold-bright);">' + esc(_sc.label) + '</span>'
+                + '<button type="button" class="xz-tianji-goto-btn" data-xz-act="size-step" data-size-key="' + esc(_sc.key) + '" data-dir="-1"'
+                + ' style="padding:2px 10px;font-size:12px;min-width:30px;">−</button>'
+                + '<span style="min-width:58px;text-align:center;font-size:12px;color:var(--xz-text);font-variant-numeric:tabular-nums;">'
+                + _sv + _sc.unit + '</span>'
+                + '<button type="button" class="xz-tianji-goto-btn" data-xz-act="size-step" data-size-key="' + esc(_sc.key) + '" data-dir="1"'
+                + ' style="padding:2px 10px;font-size:12px;min-width:30px;">＋</button>'
+                + '<button type="button" class="xz-tianji-goto-btn" data-xz-act="size-reset" data-size-key="' + esc(_sc.key) + '"'
+                + ' style="padding:2px 8px;font-size:10px;color:var(--xz-muted);border-color:rgba(150,150,150,.4);">重置</button>'
+                + '</div>';
         }
 
         /* ★★★ v657：整块「对白写法的样子」**删除**（作者 2026-11-18 附截图）★★★
@@ -15527,6 +15581,22 @@ var XZ_DM_BOXES=[[360,200,1520,660],
                      ⚠ 不能"先记下来等模块起来再用"：那次刷新之后模块才起来，
                        而 localStorage 是**跨刷新**的 —— 提前写等于替玩家按了一次开关，
                        他下次进来生效，但他从没看见按钮变过。 */
+                /* 2026-11-23：尺寸步进 / 重置（功能页三行）。改完立刻 apply + 强刷。 */
+                if (act === 'size-step' || act === 'size-reset') {
+                    var _sk2 = el.getAttribute('data-size-key') || '';
+                    for (var _si2 = 0; _si2 < XZ_SIZE_KEYS.length; _si2++) {
+                        var _sc2 = XZ_SIZE_KEYS[_si2];
+                        if (_sc2.key !== _sk2) continue;
+                        var _nv = (act === 'size-reset') ? _sc2.def
+                            : xzSizeOf(_sk2) + (el.getAttribute('data-dir') === '1' ? _sc2.step : -_sc2.step);
+                        _nv = Math.max(_sc2.min, Math.min(_sc2.max, _nv));
+                        try { HOST.localStorage.setItem(_sc2.ls, String(_nv)); } catch (eLS) {}
+                        break;
+                    }
+                    xzSizeApplyAll();
+                    render(true);
+                    return;
+                }
                 if (act === 'beauty-toggle') {
                     var _bk = el.getAttribute('data-beauty') || '';
                     var _sw = null;
@@ -21551,7 +21621,7 @@ var XZ_DM_BOXES=[[360,200,1520,660],
             el.id = STYLE_ID;
             el.textContent = [
                 '.xz-pic-box{margin:12px 0;text-align:center;line-height:0;}',
-                '.xz-pic-frame{position:relative;display:inline-block;max-width:88%;border-radius:10px;',
+                '.xz-pic-frame{position:relative;display:inline-block;max-width:var(--xz-pic-w,88%);border-radius:10px;',
                 'overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.35);',
                 'border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.2);line-height:0;}',
                 '.xz-pic-wrap{display:block;line-height:0;cursor:zoom-in;}',
@@ -22534,17 +22604,55 @@ var XZ_DM_BOXES=[[360,200,1520,660],
 
   /* 玩家不上头像；其余一律走 05 挂出来的缩略图出口。
      ⚠ 出口可能还没挂上（脚本加载顺序），取不到就返回空串走降级 —— 不许抛错。 */
+  /* 2026-11-23（作者：「正文的头像，都没有图！！我需要你把每个的立绘的上半身截取当头像」）：
+     缩略图只给少数人配过 ⇒ 大多数气泡头像是空的。改成：该角色的立绘直接当头像，
+     .thdl-ava 的 object-fit:cover + object-position:top center 天然就是「上半身裁切」。 */
   function avatarOf(name) {
     var n = String(name || '').trim();
     if (!n) return '';
     if (isSelf(n)) return '';
     try {
-      if (typeof HOST.XZ_PORTRAIT_THUMB === 'function') {
-        var u = HOST.XZ_PORTRAIT_THUMB(n);
+      if (typeof HOST.XZ_PORTRAIT_LOOKUP === 'function') {
+        var u = HOST.XZ_PORTRAIT_LOOKUP(n);
         if (u) return String(u);
+      }
+    } catch (e2) {}
+    try {
+      if (typeof HOST.XZ_PORTRAIT_THUMB === 'function') {
+        var u2 = HOST.XZ_PORTRAIT_THUMB(n);
+        if (u2) return String(u2);
       }
     } catch (e) {}
     return '';
+  }
+  /* 该角色的全部立绘（新版表 / 老多图表 / 尾段匹配都认）——「换」按钮的数据源。 */
+  function picsOf(name) {
+    try {
+      var n = String(name || '').trim();
+      if (!n || isSelf(n)) return [];
+      var S = HOST.XZ_ILLU_STAND || {}, G = HOST.XZ_GALLERY || {};
+      var tail = n.split(/[·・‧∙]/).pop().trim();
+      var arr = (S[n] && S[n].length ? S[n].slice() : null)
+             || (G[n] && G[n].length ? G[n].slice() : null)
+             || (tail && S[tail] && S[tail].length ? S[tail].slice() : null)
+             || (tail && G[tail] && G[tail].length ? G[tail].slice() : null)
+             || [];
+      if (!arr.length) {
+        try { var u = HOST.XZ_PORTRAIT_LOOKUP ? HOST.XZ_PORTRAIT_LOOKUP(n) : ''; if (u) arr = [String(u)]; } catch (e3) {}
+      }
+      return arr;
+    } catch (e) { return []; }
+  }
+  /* 换头像的选择记 localStorage（作者口径：永久缓存、没有存档隔离）。 */
+  function avaIdxGet(name, len) {
+    try {
+      var v = parseInt(HOST.localStorage.getItem('xzAvaIdx:' + String(name)), 10);
+      if (!isFinite(v) || v < 0) v = 0;
+      return len ? (v % len) : v;
+    } catch (e) { return 0; }
+  }
+  function avaIdxSet(name, idx) {
+    try { HOST.localStorage.setItem('xzAvaIdx:' + String(name), String(idx)); } catch (e) {}
   }
   function isSelf(n) {
     var s = String(n || '').trim();
@@ -22565,11 +22673,15 @@ var XZ_DM_BOXES=[[360,200,1520,660],
     '.thdl-wrap{margin:9px 0;display:flex;gap:9px;align-items:flex-start;font-family:inherit;}',
     '.thdl-wrap.is-narr{display:block;margin:8px 0;}',
     /* 头像框：顶部裁切 —— 立绘/画像是半身透明 PNG，头在上部约 20% */
-    '.thdl-ava{flex:0 0 auto;width:52px;height:52px;border-radius:11px;overflow:hidden;',
+    '.thdl-ava{flex:0 0 auto;width:var(--xz-ava-size,52px);height:var(--xz-ava-size,52px);position:relative;border-radius:11px;overflow:hidden;',
     'background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.30);',
     'box-shadow:0 2px 8px rgba(0,0,0,0.4);position:relative;}',
     '.thdl-ava img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;}',
     /* 没头像的人：首字占位，左边距保持一致不跳动 */
+    '.xz-ava-sw{position:absolute;right:2px;bottom:2px;z-index:2;font-size:9px;line-height:1;padding:2px 5px;',
+    'border-radius:6px;border:1px solid rgba(212,175,55,.55);background:rgba(12,16,28,.82);color:#f0c07a;',
+    'cursor:pointer;font-family:inherit;}',
+    '.xz-ava-sw:hover{background:rgba(212,175,55,.28);color:#ffd89a;}',
     '.thdl-ava.is-ph{display:flex;align-items:center;justify-content:center;',
     'font-size:15px;font-weight:600;color:rgba(240,234,216,0.66);letter-spacing:.5px;}',
     '.thdl-main{flex:1 1 auto;min-width:0;}',
@@ -22624,7 +22736,7 @@ var XZ_DM_BOXES=[[360,200,1520,660],
     ':root[data-xz-theme="day"] .thdl-main.is-self .thdl-bubble::before{background:rgba(102,124,146,0.24);border-color:rgba(66,100,134,0.36);}',
     /* 窄屏（手机）：头像缩到 44，名字小一号，别让气泡被挤成一条缝 */
     '@media (max-width:480px){',
-    '.thdl-ava{width:44px;height:44px;border-radius:9px;}',
+    '.thdl-ava{width:var(--xz-ava-size,44px);height:var(--xz-ava-size,44px);border-radius:9px;}',
     '.thdl-wrap{gap:7px;margin:8px 0;}',
     '.thdl-name{font-size:11px;}',
     '.thdl-bubble{padding:6px 9px;}',
@@ -22765,7 +22877,9 @@ var XZ_DM_BOXES=[[360,200,1520,660],
         count++;
         var row = el('div', 'thdl-wrap');
         var ava = el('div', 'thdl-ava');
-        var url = avatarOf(p.who);
+        var _pics = picsOf(p.who);
+        var _pIdx = avaIdxGet(p.who, _pics.length);
+        var url = _pics.length ? String(_pics[_pIdx]) : avatarOf(p.who);
         if (url) {
           var img = el('img');
           img.src = url;
@@ -22779,6 +22893,24 @@ var XZ_DM_BOXES=[[360,200,1520,660],
           ava.appendChild(img);
         } else {
           degradeAvatar(ava, labelOf(p.who));
+        }
+        /* 换头像：只有该角色有多张立绘才出现；点了换下一张，选择记浏览器（不按存档隔离）。 */
+        if (_pics.length > 1) {
+          var swb = el('button', 'xz-ava-sw');
+          swb.type = 'button';
+          swb.textContent = '换';
+          swb.title = '换头像（该角色共 ' + _pics.length + ' 张立绘）';
+          swb.addEventListener('click', function (ev) {
+            try {
+              ev.stopPropagation();
+              ev.preventDefault();
+              var ni = (avaIdxGet(p.who, _pics.length) + 1) % _pics.length;
+              avaIdxSet(p.who, ni);
+              var im = ava.querySelector('img');
+              if (im) im.src = _pics[ni];
+            } catch (eSw) {}
+          });
+          ava.appendChild(swb);
         }
         var main = el('div', 'thdl-main' + (isSelf(p.who) ? ' is-self' : ''));
         var nmEl = el('div', 'thdl-name');
@@ -24894,7 +25026,7 @@ var XZ_DM_BOXES=[[360,200,1520,660],
 
   var CSS = [
     '.thillu{margin:12px 0;text-align:center;}',
-    '.thillu-frame{position:relative;display:inline-block;max-width:88%;border-radius:10px;overflow:hidden;',
+    '.thillu-frame{position:relative;display:inline-block;max-width:var(--xz-illu-w,88%);border-radius:10px;overflow:hidden;',
     'box-shadow:0 4px 14px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.12);',
     'background:rgba(0,0,0,.2);line-height:0;}',
     '.thillu-frame img{max-width:100%;height:auto;display:block;}',
