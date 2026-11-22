@@ -4596,7 +4596,9 @@ d.attrs[a] = v;
             guard++;
             var cut = false;
             for (var i = ATTRS.length - 1; i >= 0; i--) {
-                if (d.attrs[ATTRS[i]] > 0) { d.attrs[ATTRS[i]]--; cut = true; break; }
+                /* 2026-11-23 bug 修：原来是 `> 0` ⇒ 一直加某项时，预算裁减会把**别的项一路裁到 0**。
+                   口径：四维每项最低 1 点，裁剪只准动 > 1 的项。 */
+                if (d.attrs[ATTRS[i]] > 1) { d.attrs[ATTRS[i]]--; cut = true; break; }
             }
             if (!cut) break;
         }
@@ -12502,7 +12504,13 @@ host.__xzGuard = true;
             if (field === 'attr') {
                 var key = t.getAttribute('data-xz-attr');
                 if (!key) return;
-                d.attrs[key] = Math.max(0, Math.round(Number(t.value) || 0));
+                /* 2026-11-23：手填也按「最低 1 / 剩多少预算就最多填多少」收口 ——
+                   原来只 Math.max(0) ⇒ 填大了靠 clampAttrs 裁别人，现在裁不动（别人最低 1）
+                   ⇒ 会留下总额超预算的四维。 */
+                var _ir = ruleOf(d.realm);
+                var _iothers = usedPoints(d) - (Number(d.attrs[key]) || 0);
+                var _imax = Math.max(1, Math.min(_ir.cap, (_ir.total || 0) - _iothers));
+                d.attrs[key] = Math.max(1, Math.min(_imax, Math.round(Number(t.value) || 0)));
                 clampAttrs(d);
                 var box = getDoc().getElementById(HOST_ID);
                 if (box) ATTRS.forEach(function (a) {
@@ -12865,7 +12873,16 @@ host.__xzGuard = true;
             if (act === 'attr-inc' || act === 'attr-dec') {
                 var ak = t.getAttribute('data-xz-attr');
                 if (!ak) return;
-                d.attrs[ak] = (Number(d.attrs[ak]) || 0) + (act === 'attr-inc' ? 1 : -1);
+                /* 2026-11-23：加之前先算预算（满了就不加），减之前先挡最低 1 点。
+                   原来是无条件加减再 clampAttrs —— 超额裁剪会把人挤成 0。 */
+                var _ar = ruleOf(d.realm);
+                var _cur = Math.round(Number(d.attrs[ak]) || 0);
+                if (act === 'attr-inc') {
+                    if (usedPoints(d) >= _ar.total || _cur >= _ar.cap) return;
+                } else {
+                    if (_cur <= 1) return;
+                }
+                d.attrs[ak] = _cur + (act === 'attr-inc' ? 1 : -1);
                 clampAttrs(d);
                 var bx = getDoc().getElementById(HOST_ID);
                 if (bx) ATTRS.forEach(function (a2) {
