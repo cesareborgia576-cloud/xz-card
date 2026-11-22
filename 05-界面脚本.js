@@ -1020,7 +1020,7 @@ try { window.__XZ_MAP_ID__ = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAA
         ③ 装备台（原 CORE-6）   读：主角信息.已学本领 / 主角信息.装备法宝  写：同上（换装只改这两处）  触发：面板按钮
         ④ 世界推演（原 CORE-8）  读：主角信息 / 人物列表 / 全局 / 时间 / 地理
                                 写：事件传讯（按境界**现算**，不落变量 —— v1.052 起「近期大事件」这个变量已删）  触发：面板按钮 + 每轮自动结算
-      跨脚本调用一律走 window 全局（__XIUXIAN_ATB_BRIDGE__ / __XIUXIAN_EQUIP_OPEN__ / __XIUXIAN_WORLD_DEDUCE__），
+      跨脚本调用一律走 window 全局（__XIUXIAN_ATB_BRIDGE__ / __XIUXIAN_WORLD_DEDUCE__），
       与合并前一致。字段与规则清单见项目文档，不随卡导出。 */
 
 /* ============================ 事件总表 · 玩家可见的展示表 ============================
@@ -3233,15 +3233,6 @@ function xzTypeOf(name, fbT, fbA) {
         return ok || broadcast('xz-worldsim-open');
     }
 
-    function openEquip() {
-        var ok = callAcrossWindows(function (w) {
-            if (typeof w.__XIUXIAN_EQUIP_OPEN__ === 'function') { w.__XIUXIAN_EQUIP_OPEN__(); return true; }
-            if (w.XzEquip && typeof w.XzEquip.open === 'function') { w.XzEquip.open(); return true; }
-            return false;
-        });
-        return ok || broadcast('xz-equip-open');
-    }
-
     /* ═══ 外置变量补全：悬浮球已废，入口改到状态栏顶栏那颗常驻按钮 ═══
        为什么不用悬浮球：它是挂宿主 body 的裸 position:fixed div，
        iframe 里 fixed 的基准不一定是真视口（祖先 transform/filter/contain 会把它接管），
@@ -4116,7 +4107,8 @@ function xzTypeOf(name, fbT, fbA) {
         '.xz-root .xz-eq-eff.is-void{opacity:.7;}',
         '.xz-root .xz-eq-qtag{position:absolute;right:9px;bottom:7px;font-size:9.5px;line-height:1;',
         'color:var(--eq-q);letter-spacing:.5px;}',
-        '.xz-root .xz-eq-btn{position:absolute;left:7px;bottom:4px;font-family:inherit;font-size:9.5px;line-height:1.4;',
+        '.xz-root .xz-eq-ops{position:absolute;left:7px;bottom:4px;display:flex;gap:4px;}',
+        '.xz-root .xz-eq-btn{font-family:inherit;font-size:9.5px;line-height:1.4;',
         'padding:1px 3px;border:none;background:transparent;color:var(--xz-muted);cursor:pointer;border-radius:3px;}',
         '.xz-root .xz-eq-btn:hover{color:var(--xz-gold-bright);background:rgba(230,189,118,.10);}',
         '.xz-root .xz-eq-card.is-empty{border-style:dashed;background:rgba(0,0,0,.10);}',
@@ -6052,7 +6044,7 @@ function xzTypeOf(name, fbT, fbA) {
             var qq = String(q || '—');
             var s = '<div class="xz-eq-card' + (isEmpty ? ' is-empty' : '') + '"'
                 + ' data-q="' + esc(qq) + '" data-xz-act="equip" role="button"'
-                + ' title="点击打开装备台">';
+                + ' title="去背包更换">';
             s += '<span class="xz-eq-ico" aria-hidden="true">' + eqIconSvg(kind) + '</span>';
             s += '<span class="xz-eq-name">' + esc(nm) + '</span>';
             if (!isEmpty) {
@@ -6065,7 +6057,9 @@ function xzTypeOf(name, fbT, fbA) {
             } else {
                 s += '<span class="xz-eq-eff is-void">空槽</span>';
             }
-            s += '<button type="button" class="xz-eq-btn" data-xz-act="equip">换装</button>';
+            s += '<span class="xz-eq-ops">';
+            if (!isEmpty) s += '<button type="button" class="xz-eq-btn" data-xz-act="unequip-slot" data-eq-slot="' + esc(kind) + '" data-eq-name="' + esc(nm) + '">卸下</button>';
+            s += '<button type="button" class="xz-eq-btn" data-xz-act="equip">去背包</button></span>';
             s += '</div>';
             return s;
         }
@@ -9484,10 +9478,19 @@ function xzTypeOf(name, fbT, fbA) {
                     /* ★ 2026-11-18：三槽口径。at() 返回的是**对象**，直接 String() 比会得到
                        "[object Object]"，永远不等于名字 —— 必须取 .名称（老档 .法宝名）。
                        （自己踩过一次，别再改回去。） */
+                    /* 2026-11-22：三槽都要认 —— 原来只看法宝槽，于是背上的防具/饰品
+                       明明穿着，背包里还显示「装备」按钮，再点一次等于白装。 */
                     var _curEq = at('主角信息.装备');
-                    var _curW = (_curEq && typeof _curEq === 'object' && _curEq.法宝) ? _curEq.法宝 : at('主角信息.装备法宝');
-                    var _curWName = (_curW && typeof _curW === 'object') ? String(_curW.名称 || _curW.法宝名 || '') : String(_curW || '');
-                    _wEquipped = (!!_curWName) && _curWName !== '无' && _curWName === name;
+                    if (_curEq && typeof _curEq === 'object') {
+                        var _slots = [_curEq.法宝, _curEq.防具];
+                        var _acc3 = _curEq.饰品;
+                        if (_acc3 && typeof _acc3 === 'object') Object.keys(_acc3).forEach(function (k3) { _slots.push(_acc3[k3]); });
+                        _slots.forEach(function (w3) {
+                            if (!w3 || typeof w3 !== 'object') return;
+                            var n3 = String(w3.名称 || w3.法宝名 || '');
+                            if (n3 && n3 !== '无' && n3 === name) _wEquipped = true;
+                        });
+                    }
                 } catch (eWQ) {}
                 if (_wEquipped) {
                     h += '<span class="xz-chip-sm" style="color:#fcd34d;border-color:rgba(212,175,55,.55);">已装备</span>';
@@ -15881,7 +15884,21 @@ var XZ_DM_BOXES=[[360,200,1520,660],
                     });
                     return;
                 }
-                if (act === 'equip') { if (!openEquip()) openTermModal('法门详情'); return; }
+                /* 2026-11-22（作者：「不要装备弹层了。搞成背包界面，有一个装备按钮」）：
+                   装备卡不再是弹层入口，点一下直接跳到「背包」页 —— 装备/卸下都在那边完成。 */
+                if (act === 'equip') {
+                    state.tab = XZ_TAB_NAMES.indexOf('背包');
+                    render(true);
+                    return;
+                }
+                if (act === 'unequip-slot') {
+                    var _uqK = el.getAttribute('data-eq-slot') || '';
+                    var _uqN = el.getAttribute('data-eq-name') || '';
+                    var _uqFn = (typeof globalThis !== 'undefined' && globalThis.__XZ05__) ? globalThis.__XZ05__.unequipSlot : null;
+                    if (typeof _uqFn === 'function') _uqFn(_uqK, _uqN);
+                    else toast('装备模块未就绪，稍后再试', 'warn');
+                    return;
+                }
                 /* ★ v535：淬炼页「说明」折叠（作者 2026-11-02：这些默认折叠起来，点击说明按钮才展开）。
                    受控折叠，**不用原生 `<details>`** —— 那条路在状态栏里已经证明不可靠
                    （v517：toggle 不冒泡 + 重建 DOM 后 open 丢失，玩家"展开又自己收起"）。
@@ -16337,7 +16354,7 @@ var XZ_DM_BOXES=[[360,200,1520,660],
                         if (typeof w.__XIUXIAN_EQUIP_BAG__ === 'function') { w.__XIUXIAN_EQUIP_BAG__(bn); return true; }
                         return false;
                     });
-                    if (!okBag) toast('装备台脚本未就绪，无法从背包装备', 'warn');
+                    if (!okBag) toast('装备模块未就绪，无法从背包装备', 'warn');
                     else setTimeout(function () { try { render(true); } catch (eR) {} }, 180);
                     return;
                 }
@@ -16784,7 +16801,6 @@ var XZ_DM_BOXES=[[360,200,1520,660],
         };
     }
 
-    function isNone(name) { return !name || name === '无' || name === '—'; }
 
     /* ★ v77：ensureStructure 原本顺手造 主角信息.装备法术 / .装备心法 两个字段。
        ★ v70 起「装备」只剩一件兵器（21-变量结构.js 的 schema 里根本没有那两个字段），
@@ -16946,26 +16962,19 @@ var XZ_DM_BOXES=[[360,200,1520,660],
         return { 名称: it.名称 || it.法宝名 || '无名法宝', 品质: it.品质 || '黄阶', 效果: it.效果 || '' };
     }
 
-    /* 槽位是否为空 */
-
     /* ============================ 操作 ============================ */
     /* ★ v77：法术/心法**没有装配层**（学会即永久可用，见 pageGear 的说明文案）。
        ★ 2026-11-18（超级大更新）：法宝改成三槽之后，**法宝也不再从「已学本领」里装配** ——
        它压根不在 已学本领 里（21 的 schema 只有 法术/心法/神通 三类）。
        法宝从**背包**上身，那条路是 doEquipFromBag（背包「装备」按钮走的也是它）。
-       ⇒ 这个函数收成一层薄壳：留着它是因为 bindPanel 上还绑着 [data-eq-kind]
-         这条委托（历史绑定），删函数就得连带删绑定，属于无谓的连锁改动。
-         ⚠ 别再往这里塞第二套装备逻辑 —— 装备只有一条写入路径（doEquipFromBag）。
-         两条路径 = 两处实现，一漂就是「背包少了一件、身上没多」。 */
-    function doEquip(kind, learnedName, slotKey) {
-        if (kind !== '法宝') { toast('法术心法纳于识海，即刻生效，无须另行装配。', 'warn'); return; }
-        doEquipFromBag(learnedName);
-    }
-
+       ⚠ 装备只有一条写入路径（doEquipFromBag）；本函数只负责**卸下**，
+         入口是装备页卡片上的「卸下」按钮（经 __XZ05__.unequipSlot）。
+         两条装备路径 = 两处实现，一漂就是「背包少了一件、身上没多」。 */
     function doUnequip(kind, slotKey) {
         if (kind !== '法宝' && kind !== '防具' && kind !== '饰品') { toast('法术心法既已纳入识海，无从卸下。', 'warn'); return; }
         try {
             var r = readVars(), vars = r.vars;
+            migrateLearned(vars);   /* 老档顶层 已学本领 搬进 主角信息（写盘前先迁一次） */
             var z = ensureStructure(vars);
             var eq = z.装备;
             /* ★ v10 换装闭环：卸下即写回背包，避免东西凭空消失（之前直接清空单格会丢）。
@@ -16986,7 +16995,7 @@ var XZ_DM_BOXES=[[360,200,1520,660],
             }
             writeVars(r.scopes, vars);
             toast('已卸下。');
-            refresh(true);
+            try { var _q5u = globalThis.__XZ05__; if (_q5u && _q5u.xzForceRender) _q5u.xzForceRender(); } catch (eR1) {}
         } catch (e) { fail(e); }
     }
 
@@ -17062,17 +17071,15 @@ var XZ_DM_BOXES=[[360,200,1520,660],
             else if (bk) delete bag[bk];
             writeVars(r.scopes, vars);
             toast('已装备【' + name + '】');
-            refresh(true);
+            /* 装备弹层已移除：写盘后直接刷状态栏，让装备页/背包页立刻变样。
+               （状态栏那边 1.5s 心跳也会补，但玩家点完就想马上看到结果。） */
+            try { var _q5e = globalThis.__XZ05__; if (_q5e && _q5e.xzForceRender) _q5e.xzForceRender(); } catch (eR0) {}
         } catch (e) { fail(e); }
     }
 
     function fail(e) {
-        state.errored = true;
-        state.errText = (e && e.stack) ? e.stack : String(e);
-        warn('装备台出错', e);
-        /* ★ v397b：显式传 `fail` 标记，让 render() 知道"这个错误是外面来的、
-           必须显示，别在开头清掉"。见 render() 里 errored 清零那段说明。 */
-        render('fail');
+        log('装备操作出错', e);
+        toast('操作失败：' + ((e && e.message) ? e.message : String(e)), 'warn');
     }
 
     function toast(msg, kind) {
@@ -17148,168 +17155,6 @@ var XZ_DM_BOXES=[[360,200,1520,660],
     }
 
     /* ============================ 渲染 ============================ */
-    function hostBlock() {
-        var doc = getDoc();
-        var host = doc.getElementById(HOST_ID);
-        if (host) return host;
-        host = doc.createElement('div');
-        host.id = HOST_ID;
-        // 悬浮面板：直接挂 body，避免祖先 transform 使 position:fixed 失效
-        try { (doc.body || doc.documentElement).appendChild(host); } catch (e) {}
-        return host;
-    }
-
-    function esc(s) { var d = getDoc().createElement('div'); d.textContent = String(s == null ? '' : s); return d.innerHTML; }
-
-    function render(why) {
-        injectStyle();
-        var host = hostBlock();
-        var e = state.open ? '' : 'none';
-
-        /* ★★★ v397b：`errored` 必须**每次重绘前先清零重判** ★★★
-           原逻辑：`if (state.errored)` 用上一次留下的值决定这一帧画什么。
-           而 renderPanel() 内部 readVars() 抛错时会把 `state.errored = true` 之后 return。
-           于是一条真实的失败链：
-             ① 第一次打开 → errored=false → renderPanel() → readVars 抛错
-                → errored=true + 返回错误 HTML → **错误正常显示**（这步是对的）
-             ② 玩家关掉再打开 → 6724 行看到 errored 还是 true
-                → 直接画那块**旧的**错误 HTML，根本不再调 renderPanel()
-             ③ 变量恢复正常了也没用：`state.errored` 没有任何地方清回 false
-           结果就是「一次读变量失败 → 装备台永久瘫死，且一直显示那条旧 stack」。
-           ⇒ 每帧先把 errored 清掉，让**这一帧**的 renderPanel() 重新判；
-             真出错它会重新置 true 并返回错误 HTML，于是错误照常显示、且会自愈。
-           ⚠ 但 `fail()` 传进来的错误是**外面来的**（写变量/装备时抛错），
-             它不在这一帧的 renderPanel() 里产生 ⇒ 必须保留，不能用 `why === 'fail'` 挡掉。 */
-        if (why !== 'fail') {
-            state.errored = false;
-            state.errText = '';
-        }
-
-        var inner = '';
-        if (state.errored) {
-            /* 只有 fail() 那条路会走到这里（外部失败，必须显示）。 */
-            inner = '<div class="xz-eq-panel"><button class="xz-eq-close" data-act="close">✕ 关闭</button>' +
-                    '<div class="xz-eq-body"><div class="xz-eq-sec">装备台出错</div><div class="xz-eq-err">' + esc(state.errText) + '</div></div></div>';
-        } else if (state.open) {
-            inner = renderPanel();
-        }
-
-        /* ★ v44：去掉右下角常驻「⚙ 装备台」悬浮球（用户要求）。
-           装备台入口保留在：状态栏装备页的卡片点击（data-xz-act="equip"）与
-           window.__XIUXIAN_EQUIP_OPEN__ / XzEquip.open —— 面板本身照常弹。 */
-        host.innerHTML =
-            '<div style="display:' + e + '">' + inner + '</div>';
-
-        // ESC 也能关闭
-        if (state.open && !getDoc().__xzEqEscBound) {
-            getDoc().__xzEqEscBound = true;
-            getDoc().addEventListener('keydown', function (ev) {
-                if (ev && ev.key === 'Escape' && state.open) { state.open = false; state.tpMsg = ''; render(); }
-            });
-        }
-        var closeBtns = host.querySelectorAll('[data-act="close"]');
-        closeBtns.forEach(function (cb) { cb.addEventListener('click', function () { state.open = false; state.tpMsg = ''; render(); }); });
-        var back = host.querySelector('[data-act="backdrop"]');
-        if (back) back.addEventListener('click', function () { state.open = false; render(); });
-        if (state.open && !state.errored) bindPanel(host);
-
-        // 打开时滚入视野，避免挂在长楼层底部看不见
-        if (state.open) {
-            try { host.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (e) {}
-        }
-    }
-
-    /* ★ v10（用户口径）：装备台只处理**法宝**——只有法宝才可以装备。
-       ★ 2026-11-18（超级大更新）：三槽 —— 法宝(1) / 防具(1) / 饰品(≤2)。
-       法术 / 心法是已学本领，领悟即得、永久可用，不走装备台、不在这里装配。 */
-    function renderPanel() {
-        var r, vars;
-        try { r = readVars(); vars = r.vars; } catch (err) { state.errored = true; state.errText = err && err.message ? err.message : String(err); return '<div class="xz-eq-err">' + esc(state.errText) + '</div>'; }
-        migrateLearned(vars);
-        var z = ensureStructure(vars);
-
-        var h = '<div class="xz-eq-panel">';
-        h += '<button class="xz-eq-close" data-act="close">✕ 关闭</button>';
-        h += '<div class="xz-eq-body" style="margin-top:6px;">';
-
-        /* 当前装备：三槽 —— 法宝(1) / 防具(1) / 饰品(≤2)。
-           ⚠ 空槽也要画一行：玩家要能看见「这里还有个位置」，否则他永远不知道自己缺什么。 */
-        h += '<div class="xz-eq-sec">当前装备</div>';
-        var eq0 = z.装备 || (z.装备 = emptyEquip());
-        var aa = eq0.法宝 || {}, ad = eq0.防具 || {};
-        if (!aa || isNone(aa.名称)) {
-            h += '<div class="xz-eq-row"><span class="xz-eq-name xz-eq-none">法宝 · 空（尚无宝器）</span></div>';
-            h += '<div class="xz-eq-row"><span class="xz-eq-name xz-eq-none" style="font-size:11px;line-height:1.5;">法宝／防具／饰品都在背包里点「装备」上身；开局脚本的【造化锻造台】锻造出来的也进背包。法术 / 心法属「已学本领」，领悟即得、不在此台。</span></div>';
-        } else {
-            h += row('法宝', '法宝槽', aa.名称, aa.品质);
-        }
-        if (ad && !isNone(ad.名称)) h += row('防具', '防具槽', ad.名称, ad.品质);
-        else h += '<div class="xz-eq-row"><span class="xz-eq-name xz-eq-none">防具 · 空</span></div>';
-        var _trs = eq0.饰品 || {};
-        var _trsKs = Object.keys(_trs), _trsN = 0;
-        for (var _ti = 0; _ti < _trsKs.length; _ti++) {
-            var _te = _trs[_trsKs[_ti]] || {};
-            if (isNone(_te.名称)) continue;
-            _trsN++;
-            h += row('饰品', _trsKs[_ti], _te.名称, _te.品质);
-        }
-        if (_trsN < 2) h += '<div class="xz-eq-row"><span class="xz-eq-name xz-eq-none">饰品 · 还可戴 ' + (2 - _trsN) + ' 件</span></div>';
-
-        /* ★ v378：淬炼台（洗练 + 升级）—— 玄技/玄诀的地盘，武器没有效果集所以不在这里。
-           位置在武器卡之后：先看"我拿的是什么"，再看"我这一招能练到哪"。
-           ⚠ 传 `vars`：预览函数要从**同一份**变量树取数，不许它自己再读一遍 MVU。 */
-        h += renderTemper(z, vars);
-
-        /* 上一次淬炼的结果。放在最后：玩家点的是上面的按钮，视线往下落正好接住结果。
-           ⚠ 用**独立的** `state.tpMsg`，别跟别的状态混用一个字段。
-             （原来这里还有个 `state.diag` 装「装备台出错的诊断文本」，v404 核过：
-               三个写点、零个读点，已删。别再加回来当垃圾桶 —— 重绘、关闭、出错
-               三条路径都会顺手清它，淬炼结果混进去就会出现）
-             「洗完看到结果，1.5 秒后轮询重绘一次，结果没了」。
-             toast 会自己消失，面板上这条是玩家唯一能回头看的东西，不能被顺手清掉。 */
-        if (state.tpMsg) {
-            h += '<div class="xz-tp-result">' + esc(state.tpMsg) + '</div>';
-        }
-
-        h += '</div>';  // .xz-eq-body
-        h += '</div>';  // .xz-eq-panel
-        return h;
-    }
-
-    /* ══════════════════════════════════════════════════════════════════════
-       ★★★ v378 · 淬炼台（洗练 + 升级）★★★
-
-       用户 2026-10-24：「做一个装备升级系统脚本（融合在界面脚本里），就是像地下城
-       与勇士的那种，效果洗练，以及效果升级……材料嘛，你来设计，也就是打的材料，
-       可以拿来融合，根据品阶。」
-
-       ── 这一侧**只做三件事**，多一件都不做 ─────────────────────────────
-       ① 把「这一招现在长什么样」画出来（当前值 / 上限 / 需要哪种淬晶 / 手上有几份）
-       ② 点按钮 → 调 04 的 `xzTemperApply`（唯一真入口）
-       ③ 把它的 `msg` 原样念给玩家，然后重画
-
-       扣材料、改招式、回读校验**全在 04**。这里绝不碰变量、绝不自己算数值 ——
-       界面参与写入就等于「同一件事两处实现」，两边一漂就是「材料扣了、招式没变」。
-
-       ── 最容易做坏的三种形态（本项目都踩过）──────────────────────────
-       ① **拿「我发出的意图」当结果**：点了升级就写"升级成功"，可 04 可能 `noCost`
-          早退（到顶了 / 材料不够 / 玩家自填的招）。⇒ 必须读返回值 `ok` / `noCost`，
-          而且 `msg` 要**原样**念，不许自己拼一句更好听的。
-       ② **召唤到一半断链就说"没找到"**：`__XZ_SHARED__` 与 05 不一定同一个 window。
-          ⇒ 走 `callAcrossWindows` 全窗口链找，找不到才报（并说清该去做什么）。
-       ③ **洗完不重画**：`refresh()` 的签名原来只有 `[装备法宝, Object.keys(已学本领)]`，
-          洗练改的是**效果对象内部**，键没变 ⇒ 签名一样 ⇒ 面板纹丝不动，
-          玩家会以为"点了没用"，然后再点三次。⇒ 签名必须把效果值也算进去。
-       ══════════════════════════════════════════════════════════════════════ */
-
-    /* 取 04 的能力。05 与 04 不一定同一个 window（05 可能挂主页面、04 在 iframe 里），
-       直接读 globalThis 会拿到 null。`callAcrossWindows` 是 IIFE② 的私有函数，
-       已由 `__XZ05__` 出口过来（见那边注释），**不另抄一份**。
-
-       ⚠ 只缓存**找到了的**结果，不缓存 null。
-         拿 null 去缓存的话：04 比 05 晚一步加载（两个脚本各自异步注入，顺序不保证），
-         05 第一次查找落空 ⇒ 永久记成"没有" ⇒ 淬炼台整个会话都显示"接口未找到"，
-         而 04 明明好好的。这种「一次落空、永久失效」比多扫几次窗口链贵得多。 */
     var TP_API_CACHE = {};
     function temperApi(name) {
         if (TP_API_CACHE[name]) return TP_API_CACHE[name];
@@ -17532,117 +17377,21 @@ var XZ_DM_BOXES=[[360,200,1520,660],
            toast 会自己消失，玩家点完低头看面板时什么都读不到。
            ⇒ 结果同时进 tpMsg，重画后仍在（关面板即清，见 render 的关闭分支）。 */
         state.tpMsg = r.msg || '';
-        refresh(true);
-    }
-
-        function row(kind, slotKey, name, quality, unequipKey) {
-        var empty = isNone(name);
-        var h = '<div class="xz-eq-row"><span class="xz-eq-name">' + (slotKey ? '<b>' + slotKey.replace('槽位', '槽') + '</b> ' : '') +
-                (empty ? '<span class="xz-eq-none">— 空 —</span>' : esc(name) + '<span class="xz-eq-tag">' + esc(quality || '') + '</span>') + '</span>';
-        if (!empty) {
-            h += '<button class="xz-eq-btn off" data-uneq-kind="' + kind + '"' + (slotKey ? ' data-uneq-slot="' + slotKey + '"' : '') + '>卸下</button>';
-        }
-        h += '</div>';
-        return h;
-    }
-
-    function bindPanel(host) {
-        host.querySelectorAll('[data-tab]').forEach(function (b) {
-            b.addEventListener('click', function () { state.tab = parseInt(b.dataset.tab, 10); render(); });
-        });
-        host.querySelectorAll('[data-eq-kind]').forEach(function (b) {
-            b.addEventListener('click', function () { doEquip(b.dataset.eqKind, b.dataset.eqName, b.dataset.eqSlot); });
-        });
-        host.querySelectorAll('[data-uneq-kind]').forEach(function (b) {
-            b.addEventListener('click', function () { doUnequip(b.dataset.uneqKind, b.dataset.uneqSlot); });
-        });
-        /* ★ v378：淬炼按钮。属性名是 `data-tp-act` / `data-tp-kind` / `data-tp-name`，
-           对应 dataset.tpAct / tpKind / tpName（连字符转驼峰是 DOM 的规矩，不是笔误）。
-           ★★★ v379：必须 `:not([data-xz-act])` ★★★
-           淬炼页那两颗按钮同时带 `data-xz-act="tp-do"` 和 `data-tp-act="upgrade"`：
-           `data-xz-act` 走状态栏总委托（跨 IIFE 调 `__XZ05__.doTemper`），
-           `data-tp-act` 走本函数（装备台弹窗内直调 `doTemper`）。
-           不排除就是**一次点击跑两遍 = 扣两份料**——而玩家只会看到界面上少了一份。 */
-        host.querySelectorAll('[data-tp-act]:not([data-xz-act])').forEach(function (b) {
-            b.addEventListener('click', function () {
-                if (b.disabled) return;   /* 双保险：disabled 已经拦住了，但别依赖它 */
-                doTemper(b.dataset.tpAct, b.dataset.tpKind, b.dataset.tpName);
-            });
-        });
-    }
-
-    /* ============================ 刷新 ============================ */
-    function refresh(force) {
-        try {
-            var r = readVars();
-            var p = (r.vars.主角信息) || {};
-            /* ★ v77：变更签名只认「装备法宝 + 已学本领」—— 玄技/玄诀的装配层 v70 已废除，
-       把废止字段留在签名里只会让外部脏键误判成「有更新」，触发无意义重绘。
-               ★★★ v378：签名必须带上**效果值本身** ★★★
-               淬炼改的是 `已学本领.{kind}.{名}.效果` 里的字（键与招名都不变），
-               原来只算 `Object.keys(已学本领)` ⇒ 洗练前后签名一模一样 ⇒ 面板不重绘。
-               后果不是"少刷新一次"，而是玩家看到旧数值、以为按钮没生效，再点三次 ——
-               而材料是真的扣了的。这是本项目最贵的失效形态：「看起来在工作，其实一次没跑」。
-               ⚠ 只取 效果 / 品质 / origin 三样，不整个 JSON.stringify 招式对象：
-                 对象里可能有 AI 随时在改的字段（描写之类），全塞进签名会让面板无谓重绘、
-                 而且和「这一页该不该变」无关。 */
-            /* ★ 2026-11-18：三槽口径 —— 签名里放整个 装备 对象（法宝/防具/饰品 任一变动都要重绘）。
-               ⚠ 别只放 装备.法宝：换防具时签名不变 ⇒ 面板不重绘 ⇒ 玩家以为按钮没生效。 */
-            var sig = JSON.stringify([p.装备, Object.keys(p.已学本领 || {}),
-                /* ⚠ 只在面板开着时才算这部分：关着的时候没人看，而这里要跨窗口找 04
-                   （`temperApi` 会扫一遍窗口链和 iframe）。refresh 是 1.5 秒一次的轮询，
-                   关着面板还每轮扫一遍就是纯浪费。打开面板时 `opener` 会直接 render，
-                   不依赖这个签名。 */
-                state.open ? (function () {
-                    var l = p.已学本领 || {}, out = {};
-                    ['法术', '心法'].forEach(function (k) {
-                        var box = l[k];
-                        if (!box || typeof box !== 'object') { out[k] = null; return; }
-                        var one = {};
-                        Object.keys(box).forEach(function (nm) {
-                            var it = box[nm];
-                            if (!it || typeof it !== 'object') { one[nm] = null; return; }
-                            one[nm] = [it.品质 || '', String(it.origin || 'story'), it.效果 || null];
-                        });
-                        out[k] = one;
-                    });
-                    /* 材料份数也要进签名：打完一场掉了几份淬晶，按钮的"缺料"置灰要跟着变，
-                       否则玩家得关掉面板再开才看得到"现在够料了"。
-                       ⚠ 用**批量口**且共用 `r.vars`：refresh 本来就刚读过一次，
-                         这里再调单项口就是同一轮里又多读几遍 MVU。 */
-                    var have = [];
-                    var haveFn = temperApi('xzTemperHaveIn');
-                    if (typeof haveFn === 'function') {
-                        for (var t = 0; t < 3; t++) { try { have.push(haveFn(r.vars, t) || 0); } catch (eH) { have.push(0); } }
-                    }
-                    return [out, have];
-                })() : null]);
-            if (!force && sig === state.sig) return;
-            state.sig = sig;
-            state.errored = false;
-            render();
-        } catch (e) {
-            /* ★ v397b：这里必须传 'fail'。
-               它是**外面来的**失败（读 MVU / 拼签名时抛错），不在 renderPanel() 里产生；
-               render() 开头会把 errored 清零重判，不清零的话这条错误会被擦掉
-               ⇒ 玩家点了装备台，什么都不显示、也不报错，只有一个什么都没发生的面板。 */
-            if (!state.errored) { state.errored = true; state.errText = e && e.message ? e.message : String(e); render('fail'); }
-        }
+        /* 弹层没了 ⇒ 结果留在 state.tpMsg 里，由状态栏「淬炼」页下一次重绘读出来；
+           这里顺手强刷一帧，别等 1.5s 心跳。 */
+        try { var _q5t = globalThis.__XZ05__; if (_q5t && _q5t.xzForceRender) _q5t.xzForceRender(); } catch (eR2) {}
     }
 
     /* ============================ 启动 ============================ */
     function start() {
-        var opener = function () {
-            try {
-                state.open = true;
-                state.errored = false;
-                render();                       // 确保 host 被创建出来
-                log('装备台已被外部按钮唤出');
-            } catch (e) { fail(e); }
-        };
-        try { HOST.__XIUXIAN_EQUIP_OPEN__ = opener; } catch (e) {}
-        try { window.__XIUXIAN_EQUIP_OPEN__ = opener; } catch (e) {}
-        try { window.__XIUXIAN_EQUIP_BAG__ = doEquipFromBag; } catch (e) {}   // ★ v10：背包→装备（三槽）桥接
+        /* 2026-11-22（作者：「不要装备弹层了。搞成背包界面，有一个装备按钮」）：
+           装备弹层整块删除，只留**数据层**（读变量 / 写变量 / 三槽判定 / 淬炼）。
+           入口现在只有两个，都在状态栏里：
+             · 背包页「装备」按钮 → __XZ05__.equipFromBag(物品名)
+             · 装备页「卸下」按钮 → __XZ05__.unequipSlot(槽, 名字)
+           ⚠ 旧的 __XIUXIAN_EQUIP_OPEN__ / XzEquip.open / __XIUXIAN_EQUIP_BAG__ 一并撤掉：
+             前两个是弹层入口，留着就是"点开一个已经被删掉的面板"。
+             __XIUXIAN_EQUIP_BAG__ 由状态栏改用 __XZ05__ 通道（见 act==='equip-bag'）。 */
         /* ★★★ v379：把淬炼动作交给状态栏那一层。
            为什么必须走这条通道：状态栏在 IIFE⑤、装备台在 IIFE⑦ —— 是两个模块，
            状态栏里裸调 `doTemper` 是**跨 IIFE 悬空名**（`_v344_iife_scope` 那条闸
@@ -17663,18 +17412,12 @@ var XZ_DM_BOXES=[[360,200,1520,660],
                 globalThis.__XZ05__.toggleTpHelp = function () {
                     try { state.tpHelp = state.tpHelp ? 0 : 1; return state.tpHelp ? 1 : 0; } catch (e2) { return 0; }
                 };
+                /* 2026-11-22：背包/装备页的两个运行入口（唯一真身在这里）。 */
+                globalThis.__XZ05__.equipFromBag = doEquipFromBag;
+                globalThis.__XZ05__.unequipSlot = doUnequip;
             }
         } catch (eTp) {}
-        refresh(true);
-        if (HOST.__XIUXIAN_EQUIP_TIMER__) { clearInterval(HOST.__XIUXIAN_EQUIP_TIMER__); }
-        HOST.__XIUXIAN_EQUIP_TIMER__ = setInterval(function () { refresh(false); }, 1500);
-        try {
-            if (typeof eventOn === 'function' && typeof tavern_events !== 'undefined') {
-                eventOn(tavern_events.CHARACTER_MESSAGE_RENDERED, function () { setTimeout(function () { refresh(false); }, 200); });
-                eventOn(tavern_events.MESSAGE_UPDATED, function () { setTimeout(function () { refresh(false); }, 200); });
-            }
-        } catch (e) {}
-        log('装备台已加载就绪 v' + VERSION);
+        log('装备模块已就绪 v' + VERSION);
     }
 
     if (getDoc().readyState === 'loading') getDoc().addEventListener('DOMContentLoaded', start);
