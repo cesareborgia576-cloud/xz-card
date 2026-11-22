@@ -23257,11 +23257,11 @@ var XZ_DM_BOXES=[[360,200,1520,660],
    · 上沿：`.mes_text` 的**第一个有内容的节点之前**（跳过 `<style>`/`<script>`/空白文本/自己的装饰）
      —— 这样插图、立绘、十合一卡片这些「正文里的东西」全部落在卷轴之内，
         先出图后出字的楼层也是从图开始卷，不会出现"卷轴从半截开始"。
-   · 下沿：**状态栏 `.xz-root` 之前**（状态栏是 appendChild 到 `.mes_text` 末尾的，
-     见 11293 那段的挂载逻辑）。找不到 `.xz-root` 就挂末尾。
-     ⇒ 视觉上「正文卷起来 → 下面是状态栏」，状态栏不被卷轴吞掉。
-     ⚠ 不能简单 `appendChild(bot)`：那样下沿会跑到状态栏**下面**去，
-       玩家看到的是卷轴把状态栏也包了，但状态栏带自己的 margin 与背景，会顶穿两道边。
+   · 下沿：**整张纸的最末尾**（`appendChild`，落在状态栏之后）。
+     ★ 2026-11-22 满铺重构后改的：纸就是 `.mes_text` 自己，状态栏天然在纸内 ——
+       下沿插在状态栏之前会变成"纸中间横一道线、下面还拖着一块状态栏"。
+     ⇒ 视觉上「上沿 → 正文 → 状态栏 → 下沿」一整张纸（帕罗亚同款），
+       状态栏与正文的呼吸位靠 CSS `.xz-ink-scroll > .xz-root{margin-top:16px}` 给。
 
    ── 空楼不装 ──────────────────────────────────────────────────────────────
    有些 AI 楼只有 `<UpdateVariable>`（正则把它删了）或只有状态栏 —— 正文是空的。
@@ -23280,7 +23280,7 @@ var XZ_DM_BOXES=[[360,200,1520,660],
   'use strict';
     if (typeof XZ_MAINT === 'boolean' && XZ_MAINT) return;   /* v629 维护中：整段不执行（开关在文件顶部） */
 
-  var VER = 'v578';
+  var VER = 'v670-满铺圆角';
   var STYLE_ID = 'xz-ink-scroll-styles';
   var POLL_MS = 1200;
   var STABLE_MS = 600;
@@ -23289,6 +23289,10 @@ var XZ_DM_BOXES=[[360,200,1520,660],
      玩家可能只想要其中一个。合成一个键就是"开一个必须开另一个"。 */
   var LS_ON = 'xzInkScroll';
   var CLS_ON = 'xz-ink-scroll';
+  /* ★ 2026-11-22 满铺（帕罗亚范式）：给宿主楼层（.mes）也挂类，
+     CSS 把楼层的 padding/圆角/底色清掉、隐藏头像占位列，
+     纸（.mes_text 自己）直接顶到楼层边缘。 */
+  var CLS_MES = 'xz-ink-mes';
   var MARK = 'data-xzscroll';
 
   var CSS = [
@@ -23322,66 +23326,92 @@ var XZ_DM_BOXES=[[360,200,1520,660],
     '--xz-ink-rule:rgba(214,222,232,0.40);',
     '--xz-ink-rule-2:rgba(214,222,232,0.13);',
     '--xz-ink-edge:rgba(0,0,0,0.26);',
-    '--xz-ink-tick:rgba(226,232,240,0.30);',
     '--xz-ink-seal-a:#c2402f;--xz-ink-seal-b:#8c241e;',
     /* ★ v639h：正文文字色跟主题（日光白底上原来是宿主灰字，看不清） */
     'color:var(--xz-text);',
-    /* ★★★ 2026-11-19：纸面从 .mes_text 挪到独立 .xz-ink-paper ★★★
-       作者原话：「正文美化别连界面脚本都美化啊……状态栏标签明明在 content 之后，
-         结果正文美化还是直接连接了界面脚本进行美化，我要你只美化 content 里的内容」。
-       ── 病根 ──────────────────────────────────────────────────────────────
-         纸底与左右细线画在 `.mes_text` 上，而状态栏 `.xz-root` 是它的子节点
-         ⇒ 纸把状态栏一起包了进去，看起来"界面脚本也被美化"。
-       ── 修法 ──────────────────────────────────────────────────────────────
-         纸面交给一个**绝对定位的 .xz-ink-paper**（JS 按 `.xz-scroll-bot` 的顶边
-         算高度，正好停在状态栏之前）；`.mes_text` 只留 `position:relative` 与
-         `isolation:isolate`，让纸面用 z-index:-1 压在正文下面、状态栏外面。
-       ⚠ 仍然**不给** `.mes_text` 加 padding / margin（会把状态栏挤窄、正文重折行）。 */
-    'position:relative;isolation:isolate;max-width:100%;box-sizing:border-box;',
-    '}',
-    /* ── 纸面：宣纸底 + 左右细线 + 四角短角标 + 上下渐隐 ──
-       ⚠ 高度由 JS 写（`sizeInkPaper`），别在这里写 100% —— 那会把状态栏又包进去。 */
-    '.xz-ink-paper{position:absolute;left:0;right:0;top:0;height:0;z-index:-1;pointer-events:none;',
-    'border-radius:10px;box-sizing:border-box;',
+    /* ★★★ 2026-11-22：满铺重构（照抄《帕罗亚村庄》正文美化 v3 的范式）★★★
+       作者原话：「正文美化改为铺满酒馆的聊天界面，具体参考帕罗亚村庄这张卡的正文美化」
+       +「美化一定要改成圆角的，四个角」。
+       ── 病根（v639 那条路的终点）──────────────────────────────────────────
+         纸面是独立绝对定位的 .xz-ink-paper，left/right/height 全靠 JS 量：
+         宿主给 .mes_text 的 padding 左右不对称（真机 左44/右12 → v664 修过一次，
+         又修出"探出去被 .mes_block 的 overflow 裁角"）—— 量错一次就是新 bug，
+         而这类错误**不报错**。帕罗亚 v3 的头注把这条死循环写得很清楚。
+       ── 修法（帕罗亚 v3 范式）─────────────────────────────────────────────
+         **没有纸面元素。纸就是 .mes_text 自己**：
+           · 加 .xz-ink-scroll 类，CSS 直接给它 padding / 圆角 / 背景
+           · 左右内边距是自己写的对称值（20px），!important 压过宿主
+         ⇒ 两侧天然相等；纸宽 = 楼层宽，天然铺满；
+         ⇒ 圆角长在容器自己身上，物理上不可能被裁；
+         ⇒ 一行几何计算都不需要。sizeInkPaper / watchInkPaper / INK_GUTTER
+           全部删除 —— 别再"为了保险"加回来。
+       ── 状态栏 ──────────────────────────────────────────────────────────
+         .xz-root 是 .mes_text 的子节点，纸面变成容器之后它自然落在纸内
+         （帕罗亚同款观感：「纸里嵌了一块状态栏」）。 */
+    'position:relative;box-sizing:border-box;max-width:100%;',
+    /* ★★ 对称内边距 —— 全文件的核心 ★★
+       左右都是 20px，写在 !important 里压过宿主那份不对称的
+       （真机实测 .mes_text padding `5px 30px 5px 0` ⇒ 右比左多 30px，
+         v664「右边比左边宽」的根源）。
+       ⇒ 字距纸左 = 字距纸右 = 20px，肉眼绝对对称，一行几何计算都不需要。
+       状态栏 .xz-root 在纸内，会被这两侧 padding 一起收窄 —— 与帕罗亚同款观感，
+       状态栏布局是弹性宽度，收窄不出错。 */
+    'padding:18px 20px 16px !important;',
+    'margin:0 !important;',
+    /* ★★ 作者 2026-11-22 点名：四角圆角（帕罗亚是方角，本卡不同）★★
+       圆角长在容器自己身上，物理上不可能被裁 —— 旧纸面元素"探出去被裁角"
+       那一类问题（v664 之前"左边连角都没有"）从根上不存在了。 */
+    'border-radius:16px !important;',
     'background-color:var(--xz-ink-paper);',
-    /* 十一层叠出来的纸面（从下往上画，浏览器按顺序叠）：
-       ① 上下渐隐 ② 横织纹 ③ 竖织纹 ④ 左右细线 ⑤~⑫ 四角短角标（每角两笔） */
+    /* 纸面三层（从下往上画）：上下渐隐 + 横织纹 + 竖织纹。全 CSS 渐变，零图片。 */
     'background-image:',
     'linear-gradient(180deg,var(--xz-ink-edge) 0,rgba(0,0,0,0) 9%,rgba(0,0,0,0) 91%,var(--xz-ink-edge) 100%),',
     'repeating-linear-gradient(0deg,var(--xz-ink-fiber) 0 1px,rgba(0,0,0,0) 1px 3px),',
-    'repeating-linear-gradient(90deg,var(--xz-ink-fiber) 0 1px,rgba(0,0,0,0) 1px 5px),',
-    'linear-gradient(90deg,var(--xz-ink-rule-2) 0 1px,rgba(0,0,0,0) 1px calc(100% - 1px),var(--xz-ink-rule-2) calc(100% - 1px) 100%),',
-    'linear-gradient(90deg,var(--xz-ink-tick) 0 12px,rgba(0,0,0,0) 12px),',
-    'linear-gradient(180deg,var(--xz-ink-tick) 0 12px,rgba(0,0,0,0) 12px),',
-    'linear-gradient(270deg,var(--xz-ink-tick) 0 12px,rgba(0,0,0,0) 12px),',
-    'linear-gradient(180deg,var(--xz-ink-tick) 0 12px,rgba(0,0,0,0) 12px),',
-    'linear-gradient(90deg,var(--xz-ink-tick) 0 12px,rgba(0,0,0,0) 12px),',
-    'linear-gradient(0deg,var(--xz-ink-tick) 0 12px,rgba(0,0,0,0) 12px),',
-    'linear-gradient(270deg,var(--xz-ink-tick) 0 12px,rgba(0,0,0,0) 12px),',
-    'linear-gradient(0deg,var(--xz-ink-tick) 0 12px,rgba(0,0,0,0) 12px);',
-    'background-repeat:no-repeat,repeat,repeat,no-repeat,no-repeat,no-repeat,no-repeat,no-repeat,no-repeat,no-repeat,no-repeat,no-repeat;',
-    'background-size:100% 100%,100% 3px,5px 100%,100% 100%,12px 1px,1px 12px,12px 1px,1px 12px,12px 1px,1px 12px,12px 1px,1px 12px;',
-    'background-position:0 0,0 0,0 0,0 0,left top,left top,right top,right top,left bottom,left bottom,right bottom,right bottom;',
-    /* 内投影 + 1px 内描边：给纸一点厚度。⚠ 别用 border —— 会改盒模型、动换行宽度。 */
-    'box-shadow:inset 0 0 0 1px rgba(255,255,255,.045),inset 0 0 30px rgba(0,0,0,0.18);',
+    'repeating-linear-gradient(90deg,var(--xz-ink-fiber) 0 1px,rgba(0,0,0,0) 1px 5px);',
+    'background-repeat:no-repeat,repeat,repeat;',
+    'background-size:100% 100%,100% 3px,5px 100%;',
+    /* 内描边 + 内投影：给纸一点厚度。⚠ 别用 border —— 会改盒模型、动换行宽度。 */
+    'box-shadow:inset 0 0 0 1px rgba(255,255,255,.045),inset 0 0 0 1.5px var(--xz-ink-rule-2),inset 0 0 30px rgba(0,0,0,0.18);',
     '}',
+    /* ── 满铺的另一半：把宿主楼层自己的 padding/圆角/底色清掉，
+       纸（.mes_text 自己）直接顶到楼层边缘 —— 「铺满酒馆的聊天界面」。
+       ★ 真机实测（127.0.0.1:8000，帕罗亚同款）：.mes(5px 内边距) 里还夹着一层
+         .mes_block，它自己还带 ~12px 横向占位 —— 不清它，纸两边永远各剩一条宿主底色。
+       楼层间 10px 垂直间距保留（楼与楼的分隔）。楼层原 border/阴影清透明。 */
+    '.mes.xz-ink-mes{',
+    'padding:0 !important;',
+    'margin:10px 0 !important;',
+    'border-radius:0 !important;',
+    'background:transparent !important;',
+    'border-color:transparent !important;',
+    'box-shadow:none !important;',
+    '}',
+    '.mes.xz-ink-mes .mes_block{padding:0 !important;margin:0 !important;}',
+    /* 楼层左侧的头像占位列（.mesAvatarWrapper）把纸顶出一条缝 ——
+       满铺楼层直接隐藏（状态栏里本来就有头像）。 */
+    '.mes.xz-ink-mes .mesAvatarWrapper{display:none !important;}',
     /* ★ 引用说话的内容不许跟主题金走（日光白纸上金句根本看不清）。
        Tavern 会把「」包成 <q>，宿主主题常给 q 上色 ⇒ 这里强制继承正文色。 */
     '.xz-ink-scroll q,.xz-ink-scroll q *{color:inherit!important;font-style:normal;}',
     '.xz-ink-scroll .thdl-bubble{color:var(--xz-text);}',
-    /* ── 上沿：主横线（两端断口，2px）+ 副横线 ──
-       ★ 2026-11-19：朱砂印（红方块 + 墨字）整块删掉（作者点名）。 */
-    '.xz-scroll-top{position:relative;height:26px;margin:8px 0 0;}',
-    '.xz-scroll-top::before{content:"";position:absolute;left:0;right:0;top:50%;height:2px;',
+    /* ── 状态栏在纸内：与正文之间留呼吸位（帕罗亚同款）。
+       下沿贴在纸的最末尾（append 后是最后一个子节点），收掉自己的下边距，
+       别在纸底留一条空缝。 */
+    '.xz-ink-scroll > .xz-root{margin-top:16px !important;}',
+    '.xz-ink-scroll > .xz-scroll-bot:last-child{margin-bottom:0 !important;}',
+    /* ── 上下沿装饰 ──
+       ⚠ 高度写成 0，线条用绝对定位画 —— 装饰件**不许占正文的垂直空间**，
+         否则每楼凭空多出几十 px，长对话稀稀拉拉（帕罗亚同款做法）。
+       ★ 2026-11-19：朱砂印（红方块 + 墨字）整块删掉（作者点名），下沿正中只留菱花结。 */
+    '.xz-scroll-top,.xz-scroll-bot{position:relative;height:0;margin:0;}',
+    '.xz-scroll-top::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;',
     'background:linear-gradient(90deg,rgba(0,0,0,0) 0,var(--xz-ink-rule) 16px,var(--xz-ink-rule) calc(100% - 16px),rgba(0,0,0,0) 100%);}',
-    '.xz-scroll-top::after{content:"";position:absolute;left:12%;right:12%;top:calc(50% + 6px);height:1px;',
+    '.xz-scroll-top::after{content:"";position:absolute;left:12%;right:12%;top:7px;height:1px;',
     'background:linear-gradient(90deg,rgba(0,0,0,0),var(--xz-ink-rule-2) 24%,var(--xz-ink-rule-2) 76%,rgba(0,0,0,0));}',
-    /* ── 下沿：主横线 + 正中菱花结 ── */
-    '.xz-scroll-bot{position:relative;height:20px;margin:2px 0 6px;}',
-    '.xz-scroll-bot::before{content:"";position:absolute;left:0;right:0;top:50%;height:2px;',
+    '.xz-scroll-bot::before{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;',
     'background:linear-gradient(90deg,rgba(0,0,0,0) 0,var(--xz-ink-rule) 16px,var(--xz-ink-rule) calc(100% - 16px),rgba(0,0,0,0) 100%);}',
-    '.xz-scroll-bot::after{content:"";position:absolute;left:50%;top:50%;width:7px;height:7px;',
-    'margin:-3.5px 0 0 -3.5px;transform:rotate(45deg);background:var(--xz-ink-rule);',
+    '.xz-scroll-bot::after{content:"";position:absolute;left:50%;bottom:3px;width:7px;height:7px;',
+    'margin:0 0 0 -3.5px;transform:rotate(45deg);background:var(--xz-ink-rule);',
     'box-shadow:0 0 12px var(--xz-ink-rule-2);}',
     /* ── 玄青：底不动，线条换成暖金（金是这一档专有的）── */
     ':root[data-xz-theme="qing"] .xz-ink-scroll,'
@@ -23394,7 +23424,6 @@ var XZ_DM_BOXES=[[360,200,1520,660],
     '--xz-ink-fiber:rgba(230,189,118,0.022);',
     '--xz-ink-rule:rgba(230,189,118,0.48);',
     '--xz-ink-rule-2:rgba(230,189,118,0.20);',
-    '--xz-ink-tick:rgba(230,189,118,0.42);',
     '--xz-ink-edge:rgba(0,0,0,0.28);}',
     /* ── 日光：宣纸（暖白）+ 赭线。⚠ 两个前缀都要写 ——
           `.mes_text` 不在 `.xz-root` 子树内，属性可能落在 html 或 .xz-root 任一处。 */
@@ -23409,20 +23438,14 @@ var XZ_DM_BOXES=[[360,200,1520,660],
     '--xz-ink-rule:#000000;',
     '--xz-ink-rule-2:rgba(0,0,0,0.55);',
     '--xz-ink-edge:rgba(0,0,0,0);',
-    '--xz-ink-tick:#000000;',
     '}',
-    /* 日光档：纸面去投影（原来这条挂在 .xz-ink-scroll 上，纸面搬走后必须跟着搬） */
-    ':root[data-xz-theme="day"] .xz-ink-paper,'
-      + '.xz-root[data-xz-theme="day"] .xz-ink-paper{box-shadow:none;}',
     /* 日光档：对白姓名原来是暖金 #e3c98a，白纸上几乎看不见 ⇒ 改深墨。
        （作者 2026-11-19：「引用说话的符号包裹的内容别搞成金色，根本看不清」） */
     ':root[data-xz-theme="day"] .xz-ink-scroll .thdl-name,'
       + '.xz-root[data-xz-theme="day"] .xz-ink-scroll .thdl-name{color:#2b2118;}',
-    /* 窄屏：上下沿各收 4px。⚠ 卷身本身**不动尺寸**（见 padding/margin 禁令） */
+    /* 窄屏：内边距收一档，圆角收 12px */
     '@media (max-width:480px){',
-    '.xz-scroll-top{height:22px;margin:4px 0 0;}',
-    '.xz-scroll-bot{height:16px;}',
-    '.xz-ink-paper{border-radius:8px;}',
+    '.xz-ink-scroll{padding:14px 14px 12px !important;border-radius:12px !important;}',
     '}'
   ].join('');
 
@@ -23436,11 +23459,18 @@ var XZ_DM_BOXES=[[360,200,1520,660],
 
   function ensureStyles() {
     var doc = getDoc();
-    if (doc.getElementById(STYLE_ID)) return;
-    var st = doc.createElement('style');
-    st.id = STYLE_ID;
-    st.textContent = CSS;
-    (doc.head || doc.documentElement).appendChild(st);
+    if (!doc) return;
+    var el = doc.getElementById(STYLE_ID);
+    if (!el) {
+      var st = doc.createElement('style');
+      st.id = STYLE_ID;
+      st.textContent = CSS;
+      (doc.head || doc.documentElement).appendChild(st);
+      return;
+    }
+    /* ★ 2026-11-22 满铺重构：旧卡残留的 style 节点（v639 方角纸面那套）会把
+       新样式挡在外面 ⇒ 内容不一致时强制同步（帕罗亚同款做法）。 */
+    if (String(el.textContent || '') !== CSS) el.textContent = CSS;
   }
 
   /* ── 开关：localStorage，按浏览器缓存 ──
@@ -23511,8 +23541,8 @@ var XZ_DM_BOXES=[[360,200,1520,660],
       if (isDecor(k)) continue;
       try { if (k.matches && k.matches('.xz-root')) continue; } catch (e0) {}
       if (String(k.textContent || '').trim()) return true;
-      /* 插图/立绘块可能是纯图、无文字 —— `textContent` 为空但它是正文 */
-      try { if (k.matches && k.matches('.thillu,.xz-pic-box')) return true; } catch (e1) {}
+      /* 插图/立绘/地点块可能是纯图、无文字 —— textContent 为空但它是正文 */
+      try { if (k.matches && k.matches('.thillu,.xz-pic-box,.xz-scene')) return true; } catch (e1) {}
     }
     return false;
   }
@@ -23528,93 +23558,16 @@ var XZ_DM_BOXES=[[360,200,1520,660],
       try { if (o.parentNode) { o.parentNode.removeChild(o); n++; } } catch (e0) {}
     }
     try { box.classList.remove(CLS_ON); } catch (e1) {}
+    try { mesEl.classList.remove(CLS_MES); } catch (e1b) {}
     try { mesEl.removeAttribute(MARK); } catch (e2) {}
     return n;
   }
 
-  /* ★★★ 2026-11-19：纸面高度 = 从 .mes_text 顶边到「下沿」顶边 ★★★
-     纸是绝对定位的（不占位、不影响换行），所以必须由 JS 量一次；
-     这样它正好停在状态栏之前，状态栏不会被卷进纸里。
-     ⚠ 用 getBoundingClientRect 而不是 offsetTop：宿主可能给 .mes_text 加 padding，
-       offsetTop 相对的是 padding 边，会多算/少算一截。 */
-  /* ★★★ v664（作者 2026-11-21）：「正文美化右边比左边宽，参考春日狂想曲，它左右正常」★★★
-     ── 真机量出来的数（127.0.0.1:8000，.mes_text）────────────────────────
-        `.mes` padding 10px · `.mes_block` padding-left 10px · `.mes_text` padding `5px 30px 5px 0`
-        ⇒ 文字左边距 = 10+10+0 = 20px，右边距 = 10+0+30 = 50px，**右比左多 30px**。
-     ── 为什么春日正常 ────────────────────────────────────────────────────
-        春日的 13-正文美化 是 `padding:16px 18px 14px !important` **直接盖掉宿主的 padding**，
-        左右自然一样。我们盖不了：状态栏 `.xz-root` 是 `.mes_text` 的子节点，
-        给 `.mes_text` 加 padding 会把状态栏一起挤窄（这条禁令写在上面那段长注释里）。
-     ── 所以改成「让纸面去贴文字栏」──────────────────────────────────────
-        纸面左右各内缩 `padding - GUTTER`：文字左缘离纸左缘 = GUTTER，右缘同理 = GUTTER。
-        文字栏本身的 20/50 不对称被纸面的偏移吃掉，肉眼看到的是左右一样宽。
-        GUTTER=12 与春日那 18px 同量级；宿主 padding 为 0 时纸面外扩 12px，
-        仍在 `.mes` 的 10px 内边距里，不会压到头像列。
-     ⚠ 别改回 `left:0;right:0` —— 那就是这次要修的 bug。
-     ⚠ 也别在这里写死 px：宿主题/手机端会改 `.mes_text` 的 padding，必须每次量。 */
-  var INK_GUTTER = 12;
-  function sizeInkPaper(box) {
-    try {
-      var paper = box.querySelector('.xz-ink-paper');
-      var bot = box.querySelector('.xz-scroll-bot');
-      if (!paper || !bot) return;
-      var br = box.getBoundingClientRect();
-      var bb = bot.getBoundingClientRect();
-      var h = Math.max(0, Math.round(bb.top - br.top));
-      paper.style.height = h + 'px';
-      /* 左右对称：纸边 = 文字边 -/+ GUTTER */
-      var cs = null;
-      try { cs = window.getComputedStyle(box); } catch (eC) { cs = null; }
-      if (cs) {
-        var padL = parseFloat(cs.paddingLeft) || 0;
-        var padR = parseFloat(cs.paddingRight) || 0;
-        var bL = parseFloat(cs.borderLeftWidth) || 0;
-        var bR = parseFloat(cs.borderRightWidth) || 0;
-        /* ★ 探出去的那一侧会被宿主裁掉 —— 真机上 `.mes_block` 是 `overflow:hidden`，
-           纸面从 `.mes_text` 左缘再往左探 12px，会越过 `.mes_block` 的 10px 内边距，
-           左边那条 1px 细线直接被切掉（比不对称更难看）。
-           ⇒ 先算「这一侧最多能探多少」：padding + 父级的内边距（父级真裁的话）；
-             两侧取同一个 g（对称优先），再大就两边一起收。
-           ⚠ 父级不裁时（overflow:visible）就不设上限 —— 有些主题把 `.mes_block` 的 padding 设成 0。 */
-        var g = INK_GUTTER;
-        try {
-          var pb = box.parentElement;
-          if (pb) {
-            var pcs = window.getComputedStyle(pb);
-            var clips = /hidden|clip/.test(String(pcs.overflowX || ''));
-            var availL = padL + (clips ? (parseFloat(pcs.paddingLeft) || 0) : 999);
-            var availR = padR + (clips ? (parseFloat(pcs.paddingRight) || 0) : 999);
-            g = Math.min(g, availL, availR);
-          }
-        } catch (eG) {}
-        if (!(g > 0)) g = 0;
-        var inL = Math.round(padL + bL - g);
-        var inR = Math.round(padR + bR - g);
-        paper.style.left = inL + 'px';
-        paper.style.right = inR + 'px';
-        /* ★ 上下那两道横线必须跟纸面同宽 —— 它们是 `.mes_text` 的普通子节点（不随纸走），
-           纸一内缩、线还按满宽画，就会从卡片左边探出去一截（左右各探 12px）。
-           ⚠ 它们的包含块是**内容盒**（已经被 padding 缩过），所以 margin 要再减掉 padding：
-             marginLeft = inL - padL、marginRight = inR - padR。
-             直接写 `inL/inR` 会让右端短掉整整一个 padR（实测短 30px）。
-           用 margin 而不是 left/right：它们不是绝对定位，left 只会平移、不会变宽。 */
-        var mInL = inL - Math.round(padL + bL);
-        var mInR = inR - Math.round(padR + bR);
-        var topEl = box.querySelector('.xz-scroll-top');
-        if (topEl) { topEl.style.marginLeft = mInL + 'px'; topEl.style.marginRight = mInR + 'px'; }
-        bot.style.marginLeft = mInL + 'px';
-        bot.style.marginRight = mInR + 'px';
-      }
-    } catch (e) {}
-  }
-  /* 图片/字体晚到会把正文撑高，纸面必须跟着长（否则正文后半截没有纸底） */
-  function watchInkPaper(box) {
-    try {
-      if (!box || box.__xzInkRO || typeof ResizeObserver !== 'function') return;
-      box.__xzInkRO = new ResizeObserver(function () { sizeInkPaper(box); });
-      box.__xzInkRO.observe(box);
-    } catch (e) {}
-  }
+  /* ★★★ 2026-11-22 满铺重构：sizeInkPaper / watchInkPaper / INK_GUTTER 整块删除 ★★★
+     纸面不再是独立元素 —— 纸就是 .mes_text 自己，圆角和背景长在容器身上，
+     高度由内容自然撑开，一行几何计算都不需要。
+     ⚠ 它们存在的唯一目的，是补偿一个本来就不该存在的纸面元素。
+       删了就是删了，别再"为了保险"加回来（帕罗亚 v3 头注里的原话）。 */
 
   function renderOne(mesEl) {
     if (!mesEl) return 0;
@@ -23632,18 +23585,23 @@ var XZ_DM_BOXES=[[360,200,1520,660],
       if (String(mesEl.getAttribute('mesid')) === '0') { strip(mesEl); return 0; }
     } catch (e0) {}
 
-    /* 幂等：标记 + 类 + 上下沿 + 纸面，五样缺一就重来（酒馆重绘会只丢其中几样） */
+    /* 幂等：标记 + 容器类 + 楼层类 + 上下沿，五样缺一就重来（酒馆重绘会只丢其中几样）。
+       ★★ 2026-11-22 满铺重构 ★★
+       ① 楼层类 CLS_MES 必须进幂等判据：老楼层带着 v639 的旧标记、缺 CLS_MES，
+          不查它就永远 return 0，玩家更新了也看不见满铺（帕罗亚那边的血教训同款）。
+       ② 纸面元素 .xz-ink-paper 不再存在 —— 老楼里残留的那一份由下面的 strip 清掉。
+       ③ 楼层类的 check 也放 needWork（否则 scanAll 都不会被叫起来）。 */
     var intact = false;
     try {
       intact = mesEl.getAttribute(MARK) === '1'
         && box.classList && box.classList.contains(CLS_ON)
+        && mesEl.classList && mesEl.classList.contains(CLS_MES)
         && !!box.querySelector('.xz-scroll-top')
-        && !!box.querySelector('.xz-scroll-bot')
-        && !!box.querySelector('.xz-ink-paper');
+        && !!box.querySelector('.xz-scroll-bot');
     } catch (eI) { intact = false; }
-    if (intact) { sizeInkPaper(box); return 0; }
+    if (intact) return 0;
 
-    /* 走到这里 = 首次 或 重绘过 ⇒ 先把可能残留的清掉，避免套娃 */
+    /* 走到这里 = 首次 或 重绘过 或 旧版残留 ⇒ 先把可能残留的清掉（含旧纸面），避免套娃 */
     strip(mesEl);
 
     /* 第 0 楼为空 first_mes 壳不装；此路径只按消息序号/正文判定，不依赖开局触发词。 */
@@ -23651,11 +23609,6 @@ var XZ_DM_BOXES=[[360,200,1520,660],
     if (!hasBody(box)) return 0;
 
     var doc = getDoc();
-    /* 纸面：绝对定位，压在所有正文下面（z-index:-1 + 父级 isolation） */
-    var paper = doc.createElement('div');
-    paper.className = 'xz-ink-paper';
-    paper.setAttribute('aria-hidden', 'true');
-
     var top = doc.createElement('div');
     top.className = 'xz-scroll-top';
     top.setAttribute('aria-hidden', 'true');
@@ -23666,21 +23619,22 @@ var XZ_DM_BOXES=[[360,200,1520,660],
 
     try {
       var first = firstContentNode(box);
-      if (first && first.parentNode === box) box.insertBefore(paper, first);
-      else box.appendChild(paper);
       if (first && first.parentNode === box) box.insertBefore(top, first);
       else box.appendChild(top);
 
-      /* 下沿插在状态栏**之前**：卷轴只卷正文，状态栏在外面 */
-      var root = box.querySelector('.xz-root');
-      if (root && root.parentNode === box) box.insertBefore(bot, root);
-      else box.appendChild(bot);
+      /* 下沿挂在**整张纸的最末尾**（状态栏之后）。
+         ── 为什么不再插在状态栏之前 ──
+           旧版纸面是独立元素、高度只量到状态栏顶边，所以下沿必须在状态栏前面
+           才"封得住"纸。现在纸就是容器本身（帕罗亚范式），状态栏天然在纸内 ——
+           下沿如果插在它前面，就变成"纸中间横一道线、下面还拖着一块状态栏"。
+         ⇒ 下沿永远 appendChild 到末尾，形成「上沿 → 正文 → 状态栏 → 下沿」一整张。
+           状态栏的呼吸位靠 CSS 的 `.xz-ink-scroll > .xz-root{margin-top}` 给。 */
+      try { box.appendChild(bot); } catch (eB) { return 0; }
     } catch (e1) { return 0; }
 
     try { box.classList.add(CLS_ON); } catch (e2) {}
+    try { mesEl.classList.add(CLS_MES); } catch (e4) {}
     try { mesEl.setAttribute(MARK, '1'); } catch (e3) {}
-    sizeInkPaper(box);
-    watchInkPaper(box);
     return 1;
   }
 
@@ -23739,6 +23693,7 @@ var XZ_DM_BOXES=[[360,200,1520,660],
     try {
       if (m.getAttribute(MARK) === '1'
           && box.classList && box.classList.contains(CLS_ON)
+          && m.classList && m.classList.contains(CLS_MES)
           && box.querySelector('.xz-scroll-top')
           && box.querySelector('.xz-scroll-bot')) return false;
     } catch (e1) { return true; }
