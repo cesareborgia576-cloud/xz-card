@@ -21166,13 +21166,16 @@ var XZ_DM_BOXES=[[360,200,1520,660],
         var seen = {};
         function push(name, urls) {
             if (!name || seen[name]) return;
-            /* v503：自定义立绘优先，且只保留这一张（不参与多人多图翻页） */
+            /* 2026-11-23（作者：「原本两三张的，现在都变成 1 张」）：
+               v503 的老规则「有自定义就只留那一张」把传过图的角色压成了 1 张。
+               改成：自定义排第一，原有的照常跟在后面。 */
             var _cu = '';
             try {
                 var _q = (typeof globalThis !== 'undefined') ? globalThis.__XZ05__ : null;
                 if (_q && typeof _q.xzCustomPicOf === 'function') _cu = _q.xzCustomPicOf(name) || '';
             } catch (eCu) { _cu = ''; }
-            var arr = _cu ? [_cu] : (urls || []).filter(function (u) { return !!u; });
+            var arr = (urls || []).filter(function (u) { return !!u && u !== _cu; });
+            if (_cu) arr.unshift(_cu);
             if (!arr.length) return;
             seen[name] = 1;
             out.push({ name: name, urls: arr });
@@ -25506,7 +25509,37 @@ var XZ_DM_BOXES=[[360,200,1520,660],
         if (Date.now() - _busyAt < 120000) return;
       }
       _busyAt = 0;
+      try { refillEmptyAvatars(); } catch (eR0) {}
       scanAll();
+    } catch (e) {}
+  }
+
+  /* ★★★ 2026-11-23：气泡空头像自动补图 ★★★
+     作者报「正文的头像都没有图」。真因：气泡第一次渲染可能发生在立绘表
+     （__thIlluRender / 内置表导出）就绪之前，那时取不到图、画了首字占位，
+     而该楼已被 data-xzdl 标记 ⇒ 之后再也不重试，空到永远。
+     ⇒ 每轮心跳把「还是 is-ph 占位」的头像重查：能取到图了就撕掉该楼标记
+       让 scanAll 重画；真没图的保持首字（不会死循环）。 */
+  function refillEmptyAvatars() {
+    try {
+      var doc = getDoc();
+      if (!doc || !doc.querySelectorAll) return;
+      if (!HOST.__thIlluRender) return;
+      var ph = doc.querySelectorAll('#chat .thdl-ava.is-ph');
+      if (!ph.length) return;
+      var need = false;
+      for (var i = 0; i < ph.length; i++) {
+        var row = ph[i].closest ? ph[i].closest('.thdl-wrap') : null;
+        var nmEl = row ? row.querySelector('.thdl-name') : null;
+        var nm = nmEl ? String(nmEl.textContent || '').trim() : '';
+        if (!nm) continue;
+        var url = '';
+        try { url = avatarOf(nm) || poolPicOf(nm) || ''; } catch (eA) { url = ''; }
+        if (!url) continue;
+        var mes = row.closest ? row.closest('.mes') : null;
+        if (mes && mes.getAttribute('data-xzdl') === '1') { mes.removeAttribute('data-xzdl'); need = true; }
+      }
+      if (need) scanAll();
     } catch (e) {}
   }
 
