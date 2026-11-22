@@ -4253,6 +4253,17 @@ function xzTypeOf(name, fbT, fbA) {
              （元素仍有布局盒，只是跳过内容渲染），所以判据不会因此读到 0。
            ⚠ Safari 16 以下不支持 —— 不支持时这条属性被忽略，退化成原来的行为，不会坏。 */
         '.xz-root .xz-npc-card{background:var(--xz-card);border:1px solid rgba(212,175,55,0.18);border-radius:5px;padding:10px;margin-bottom:8px;display:flex;flex-direction:column;gap:6px;content-visibility:auto;contain-intrinsic-size:auto 84px;}',
+        /* 2026-11-23 人物页：卡片进网格（游戏式人物栏），不再一条条往下堆。 */
+        '.xz-root .xz-npc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:9px;align-items:start;}',
+        '.xz-root .xz-npc-grid .xz-npc-card{margin-bottom:0;min-width:0;}',
+        '.xz-root .xz-npc-toprow{display:flex;align-items:flex-start;gap:8px;min-width:0;}',
+        '.xz-root .xz-npc-ava{flex:none;width:40px;height:40px;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;',
+        'background:radial-gradient(circle at 32% 22%,rgba(255,255,255,.12),rgba(0,0,0,.34));border:1px solid rgba(212,175,55,.30);',
+        'color:var(--xz-gold-bright);font-size:16px;font-weight:var(--xz-fw-med);}',
+        '.xz-root .xz-npc-ava img{width:100%;height:100%;object-fit:cover;display:block;}',
+        '.xz-root .xz-npc-fields{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1;}',
+        '@media (max-width:560px){.xz-root .xz-npc-grid{grid-template-columns:1fr 1fr;gap:7px;}',
+        '.xz-root .xz-npc-ava{width:32px;height:32px;border-radius:6px;font-size:14px;}}',
         '.xz-root .xz-npc-header{display:flex;justify-content:space-between;align-items:center;}',
         '.xz-root .xz-npc-name{font-size:13.5px;font-weight:var(--xz-fw-med);color:var(--xz-gold);}',
         /* ★ v479：人物卡四个字段的小框。**四者共用一套几何**，只有字号与色相不同 ——
@@ -6582,12 +6593,15 @@ function xzTypeOf(name, fbT, fbA) {
                    只渲染「属性+系」，不再有任何后缀拼接。*/
 
                 s += '<div class="xz-npc-card">';
-                
-                // --- 默认显示的六个字段区 ---
-                s += '<div style="display:flex; flex-direction:column; gap:6px;">';
-                
-                // 第一行：名字 境界 玄元属性 势力 + 移除按钮
-                s += '<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">';
+                /* 2026-11-23（作者：「人物资料界面也重新排版一下，搞成格子的啊，老是用长条干嘛，
+                   弄的像游戏一样的面板」）：卡片改成**头像 + 字段**的游戏式卡头，卡片本身进网格。 */
+                var _thumb = '';
+                try { if (typeof window !== 'undefined' && typeof window.XZ_PORTRAIT_THUMB === 'function') _thumb = String(window.XZ_PORTRAIT_THUMB(name) || ''); } catch (eTh) {}
+                s += '<div class="xz-npc-toprow">';
+                s += '<span class="xz-npc-ava">' + (_thumb
+                    ? '<img src="' + esc(_thumb) + '" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.remove()">'
+                    : esc(String(name).slice(0, 1))) + '</span>';
+                s += '<div class="xz-npc-fields">';
                 s += '<div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px; min-width:0;">';
                 /* ★★★ v479：四个字段各给一个**简约小框**（用户 2026-10-31 原话：
                    「得加个简约的小框框住这些人物的名字，境界，属性，势力」）★★★
@@ -6608,7 +6622,8 @@ function xzTypeOf(name, fbT, fbA) {
                     s += '<span class="xz-npc-sect" style="flex:none;word-break:break-all;">' + esc(npc.势力) + '</span>';
                 }
                 s += '</div>';
-                s += '</div>';
+                s += '</div>';   /* .xz-npc-fields */
+                s += '</div>';   /* .xz-npc-toprow */
                 /* ★★★ v476（用户 2026-10-30）：这里原来有一颗「移除」按钮 ★★★
                    `<button data-xz-act="del-person" data-person-name="…">移除</button>`
                    —— 每张 NPC 卡一颗，几十张就是几十个按钮一起参与布局；
@@ -6620,7 +6635,6 @@ function xzTypeOf(name, fbT, fbA) {
                      管理器那份新按钮走的还是同一个 act，只是换了宿主 DOM。 */
                 /* ★ v272：`好感度` / `心里话` 两个字段已随女角色剧情体系退场整体删除，
                    这块渲染恒不触发（字段恒 undefined），整段清掉，别再往回加。 */
-                s += '</div>';
 
                 // --- 其余字段折叠区 ---
                 /* ★★★ v493：展开态必须**记在 state 里**（用户 2026-10-31：
@@ -7092,7 +7106,7 @@ function xzTypeOf(name, fbT, fbA) {
                 s += '</div>';   /* ← .xz-npc-fold 收尾（v517：原来是 </details>） */
                 s += '</div>';
             }
-            return s;
+            return '<div class="xz-npc-grid">' + s + '</div>';;
         }
 
         var h = _bar;   /* ★ v357：DLC 开关条固定在人物页最上面 */
@@ -25305,4 +25319,55 @@ var XZ_DM_BOXES=[[360,200,1520,660],
   } catch (eX) {}
 
   init();
+})();
+
+/* ══════════════════════════════════════════════════════════════════════════
+   2026-11-23 · 十合一标签卡的「美化执行器」（从 08 正则搬进脚本）
+
+   ── 为什么搬 ────────────────────────────────────────────────────────────
+     原实现把 13KB JS 塞进 `<img src="data:gif" onerror="…">`，靠图片加载失败触发。
+     酒馆的 showdown → DOMPurify 对**超长属性**与**属性内 < **的处理因版本而异：
+     实测有版本把属性内容**当正文吐出来**（作者截图：整段 JS 出现在聊天里，
+     就在 <人物面板> 的正文后面）。这条链路只要属性被截断一次，就必然爆代码。
+   ⇒ 显示层的事回归脚本：正则只画卡片壳，这里每 1.2 秒扫一遍**未美化**的卡，
+     调同一份美化函数（函数体是从 08 的 .html 里原样抠出来的，别重写）。
+   ⚠ 幂等靠卡片自己打的 `data-beautified`；选择器用 `:not([data-beautified])`，
+     与函数内部写的标记是同一个属性。
+   ══════════════════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+  if (typeof XZ_MAINT === 'boolean' && XZ_MAINT) return;
+
+  var HOST = (function () {
+    try { if (window.top && window.top.document && window.top.document.body) return window.top; } catch (e) {}
+    try { if (window.parent && window.parent.document && window.parent.document.body) return window.parent; } catch (e) {}
+    return window;
+  })();
+  function getDoc() { try { return HOST.document || document; } catch (e) { return document; } }
+
+  var BEAUTIFY = ((function(el){try{var wrap=el.closest('.xz-tc-wrap');if(!wrap||wrap.dataset.beautified)return;wrap.dataset.beautified='true';var tag=wrap.getAttribute('data-tag');var body=wrap.querySelector('.xz-tc-body');if(!body)return;var raw=body.innerText.trim();if(!raw)return;var pipes=raw.split(/[｜|]/).map(function(s){return s.trim();}).filter(Boolean);var lines=raw.split('\n').map(function(l){return l.trim();}).filter(Boolean);var kv={};lines.forEach(function(l){var m=l.match(/^([^:：]+)[:：]\s*(.*)$/);if(m)kv[m[1].trim()]=m[2].trim().replace(/^【|】$/g,'');});var h='';if(tag==='法术学习'||tag==='玄技学习'){var target=kv['目标']||(pipes.length>=2?pipes[0]:'');var name=kv['法术名']||kv['技能名']||kv['功法名']||kv['功法']||(pipes.length>=2?pipes[1]:(pipes[0]||raw));var route=kv['流派']||'';var sQ=kv['品质']||(pipes.length>=3?pipes[2]:'');var sCd=kv['冷却']||(pipes.length>=8?pipes[7]:'');name=name.replace(/[《》]/g,'');h='<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;"><span style="font-size:14px;font-weight:700;color:#ffd700;">《'+name+'》</span>'+(route?'<span style="font-size:10.5px;padding:1px 6px;border-radius:3px;background:rgba(212,175,55,0.15);color:#d4af37;border:1px solid rgba(212,175,55,0.4);">'+route+'路</span>':'')+(sQ?'<span style="font-size:10.5px;padding:1px 6px;border-radius:3px;background:rgba(212,175,55,0.15);color:#d4af37;border:1px solid rgba(212,175,55,0.4);">'+sQ+'</span>':'')+(sCd?'<span style="font-size:10.5px;padding:1px 6px;border-radius:3px;background:rgba(148,163,184,0.15);color:#cbd5e1;border:1px solid rgba(148,163,184,0.4);">冷却 '+sCd+'</span>':'')+(target?'<span style="font-size:11px;color:#a9a390;margin-left:auto;">习得者：'+target+'</span>':'')+'</div>';var sEff=kv['效果']||kv['描述']||(pipes.length>=7?pipes.slice(5,7).join(' ｜ '):(pipes.length>5?pipes.slice(5).join(' ｜ '):''));if(sEff){h+='<div style="font-size:12px;color:#cfc9b8;line-height:1.5;">'+sEff+'</div>';}body.innerHTML=h;}else if(tag==='心法学习'||tag==='玄诀学习'){var target=kv['目标']||(pipes.length>=2?pipes[0]:'');var name=kv['心法名']||kv['功法名']||kv['玄诀名']||(pipes.length>=2?pipes[1]:(pipes[0]||raw));var q=kv['品质']||(pipes.length>=3?pipes[2]:'');var terms=kv['效果']||kv['词条']||(pipes.length>=6?pipes[5]:'');name=name.replace(/[《》]/g,'');h='<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;"><span style="font-size:14px;font-weight:700;color:#60a5fa;">《'+name+'》</span>'+(q?'<span style="font-size:10.5px;padding:1px 6px;border-radius:3px;background:rgba(59,130,246,0.15);color:#93c5fd;border:1px solid rgba(59,130,246,0.4);">'+q+'</span>':'')+(target?'<span style="font-size:11px;color:#a9a390;margin-left:auto;">参透者：'+target+'</span>':'')+'</div>';if(terms)h+='<div style="font-size:11px;color:#93c5fd;margin-bottom:4px;">道藏词条：'+terms+'</div>';if(kv['描述']||pipes.length>=8){h+='<div style="font-size:12px;color:#cfc9b8;line-height:1.5;">'+(kv['描述']||pipes.slice(7).join(' ｜ '))+'</div>';}body.innerHTML=h;}else if(tag==='神通学习'){var target=kv['目标']||(pipes.length>=2?pipes[0]:'');var name=kv['神通名']||kv['神名']||(pipes.length>=2?pipes[1]:(pipes[0]||raw));var route=kv['流派']||'';var sQ=kv['品质']||(pipes.length>=3?pipes[2]:'');var sCd=kv['冷却']||(pipes.length>=8?pipes[7]:'');name=name.replace(/[《》]/g,'');h='<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;"><span style="font-size:14px;font-weight:700;color:#fbbf24;">⚡ 《'+name+'》</span>'+(sQ?'<span style="font-size:10.5px;padding:1px 6px;border-radius:3px;background:rgba(251,191,36,0.15);color:#fde047;border:1px solid rgba(251,191,36,0.4);">'+sQ+'</span>':'')+(route?'<span style="font-size:10.5px;padding:1px 6px;border-radius:3px;background:rgba(251,191,36,0.15);color:#fde047;border:1px solid rgba(251,191,36,0.4);">'+route+'路杀招</span>':'')+(target?'<span style="font-size:11px;color:#a9a390;margin-left:auto;">领悟者：'+target+'</span>':'')+(sCd?'<span style="font-size:10.5px;padding:1px 6px;border-radius:3px;background:rgba(148,163,184,0.15);color:#cbd5e1;border:1px solid rgba(148,163,184,0.4);">冷却 '+sCd+'</span>':'')+'</div>';var stEff=kv['效果']||(pipes.length>=7?pipes[5]:'');var stDesc=kv['描述']||(pipes.length>=9?pipes.slice(8).join(' ｜ '):'');if(stEff||stDesc){h+='<div style="font-size:12px;color:#cfc9b8;line-height:1.5;">'+(stEff?'<span style="color:#fde047;">'+stEff+'</span> ':'')+stDesc+'</div>';}body.innerHTML=h;}else if(tag==='人物面板'){var name=kv['姓名']||'未知修玄者';var realm=kv['境界']||'练气初期';var root=kv['灵根']||'';var race=kv['种族']||'人族';var nature=kv['性格']||'';var attrs=kv['四维']||'';var ident=kv['身份']||'';var luck=kv['先天气运']||kv['气运']||'';h='<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(56,189,248,0.25);padding-bottom:5px;margin-bottom:8px;"><div><span style="font-size:14.5px;font-weight:700;color:#38bdf8;">'+name+'</span>'+(race||nature?'<span style="font-size:11px;color:#94a3b8;margin-left:8px;">'+race+(nature?' · '+nature:'')+'</span>':'')+'</div><span style="font-size:11px;padding:2px 8px;border-radius:4px;background:rgba(56,189,248,0.15);color:#7dd3fc;border:1px solid rgba(56,189,248,0.4);font-weight:600;">'+realm+'</span></div>';if(ident)h+='<div style="font-size:11.5px;color:#a5b4fc;margin-bottom:5px;"><b>身份：</b>'+ident+'</div>';if(root)h+='<div style="font-size:11.5px;color:#cbd5e1;margin-bottom:5px;"><b>灵根：</b>'+root+'</div>';if(luck&&luck!=='无')h+='<div style="font-size:11.5px;color:#fcd34d;margin-bottom:5px;"><b>先天气运：</b>'+luck+'</div>';if(attrs)h+='<div style="font-size:11.5px;color:#93c5fd;background:rgba(0,0,0,0.3);padding:4px 8px;border-radius:4px;margin-bottom:6px;"><b>四维道基：</b>'+attrs+'</div>';var _sk=kv['法术']||kv['装备功法']||'';var _xf=kv['心法']||kv['装备心法']||'';var _st=kv['神通']||'';var _eq=kv['装备']||'';if(!_eq){var _ep=[];var _eb=kv['法宝']||kv['装备法宝']||'';var _ea=kv['防具']||kv['装备防具']||'';var _er=kv['饰品']||kv['装备饰品']||'';if(_eb&&_eb!=='无')_ep.push('法宝《'+_eb.replace(/[《》]/g,'')+'》');if(_ea&&_ea!=='无')_ep.push('防具《'+_ea.replace(/[《》]/g,'')+'》');if(_er&&_er!=='无')_ep.push('饰品《'+_er.replace(/[《》]/g,'')+'》');_eq=_ep.join(' ｜ ');}if(_sk&&_sk!=='无')h+='<div style="font-size:11px;color:#cfc9b8;margin-top:3px;"><b>主修法术：</b>'+_sk+'</div>';if(_xf&&_xf!=='无')h+='<div style="font-size:11px;color:#93c5fd;margin-top:3px;"><b>本命心法：</b>'+_xf+'</div>';if(_st&&_st!=='无')h+='<div style="font-size:11px;color:#ffd700;margin-top:3px;"><b>本命神通：</b>'+_st+'</div>';if(_eq&&_eq!=='无')h+='<div style="font-size:11px;color:#c084fc;margin-top:3px;"><b>随身装备：</b>'+_eq+'</div>';if(kv['外貌'])h+='<div style="font-size:11px;color:#94a3b8;margin-top:5px;border-left:2px solid rgba(56,189,248,0.4);padding-left:6px;">'+kv['外貌']+'</div>';body.innerHTML=h;}else if(tag==='战利品'||tag==='法宝获取'||tag==='武器获取'||tag==='道具获取'||tag==='材料获取'||tag==='物品获取'){var target=kv['目标']||'';var iname=kv['道具名称']||kv['材料名称']||kv['法宝名']||kv['防具名']||kv['饰品名']||kv['获得清单']||(pipes.length>=2?pipes[1]:'');var iq=kv['品质']||(pipes.length>=3?pipes[2]:'');var inum=kv['数量']||(pipes.length>=5?pipes[4]:'');var iterms=kv['词条']||'';var idesc=kv['描述']||(pipes.length>5?pipes.slice(5).join(' ｜ '):'');h='<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;"><span style="font-size:13.5px;font-weight:700;color:#f59e0b;">✦ '+(iname||raw)+'</span>'+(inum?'<span style="font-size:11px;color:#10b981;font-weight:700;">x'+inum+'</span>':'')+(iq?'<span style="font-size:10px;padding:1px 5px;border-radius:3px;background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.4);">'+iq+'</span>':'')+(target?'<span style="font-size:11px;color:#a9a390;margin-left:auto;">归属：'+target+'</span>':'')+'</div>';if(iterms&&iterms!=='[]')h+='<div style="font-size:11px;color:#38bdf8;margin-bottom:4px;">词条：'+iterms+'</div>';if(idesc)h+='<div style="font-size:11.5px;color:#cfc9b8;line-height:1.5;">'+idesc+'</div>';body.innerHTML=h;}else if(tag==='接取任务'||tag==='完成任务'){var isDone=(tag==='完成任务');var accent=isDone?'#fbbf24':'#38bdf8';var bgc=isDone?'rgba(251,191,36,0.14)':'rgba(56,189,248,0.14)';var bdc=isDone?'rgba(251,191,36,0.45)':'rgba(56,189,248,0.45)';var mark=isDone?'✓':'◈';var headline=isDone?'任务了结':'接取任务';var tname=kv['任务名']||kv['任务']||kv['悬赏']||'';var tgrade=kv['阶位']||kv['等级']||kv['品阶']||'';var tfrom=kv['发布人']||kv['委托人']||kv['所属']||kv['地点']||'';var treward=kv['奖励']||kv['酬劳']||kv['报酬']||'';var tgoal=kv['目标']||'';var tdesc=kv['描述']||kv['说明']||'';var h='<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;">'+'<span style="font-size:11px;font-weight:700;padding:1px 7px;border-radius:3px;background:'+bgc+';color:'+accent+';border:1px solid '+bdc+';letter-spacing:.5px;">'+mark+' '+headline+'</span>'+'<span style="font-size:13.5px;font-weight:700;color:'+accent+';word-break:break-all;">'+((tname||raw).replace(/^[《【](.*?)[》】]$/g,'$1'))+'</span>'+(tgrade?'<span style="font-size:10px;padding:1px 5px;border-radius:3px;background:rgba(212,175,55,0.14);color:#d4af37;border:1px solid rgba(212,175,55,0.38);">'+tgrade+'</span>':'')+(tfrom?'<span style="font-size:10.5px;color:#a9a390;margin-left:auto;">'+tfrom+'</span>':'')+'</div>';if(tgoal)h+='<div style="font-size:11.5px;color:#e2decb;line-height:1.55;margin-bottom:3px;"><span style="color:'+accent+';font-weight:700;">目标 ▸ </span>'+tgoal+'</div>';if(tdesc)h+='<div style="font-size:11px;color:#cfc9b8;line-height:1.55;">'+tdesc+'</div>';if(treward)h+='<div style="font-size:11px;color:#10b981;line-height:1.55;margin-top:4px;"><span style="font-weight:700;">酬劳 ▸ </span>'+treward+'</div>';/* 没有键值对时（模型只写一句话）至少把原文摆出来，绝不留空卡 */if(!tname&&!tgoal&&!treward)h+='<div style="font-size:12px;color:#e2decb;line-height:1.6;">'+raw.replace(/\n/g,'<br>')+'</div>';body.innerHTML=h;}else if(tag==='秘境探索'){var mname=kv['名称']||kv['秘境']||kv['秘境名']||(pipes.length>=1?pipes[0]:'');var mfl=kv['层数']||kv['总层']||kv['层']||(pipes.length>=2?pipes[1]:'');mname=String(mname).replace(/[《》【】]/g,'');var h='<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;">'+'<span style="font-size:11px;font-weight:700;padding:1px 7px;border-radius:3px;background:rgba(45,212,191,0.14);color:#2dd4bf;border:1px solid rgba(45,212,191,0.45);letter-spacing:.5px;">◇ 秘境</span>'+'<span style="font-size:14px;font-weight:700;color:#5eead4;word-break:break-all;">'+(mname||raw)+'</span>'+(mfl?'<span style="font-size:10.5px;padding:1px 6px;border-radius:3px;background:rgba(212,175,55,0.14);color:#d4af37;border:1px solid rgba(212,175,55,0.38);">共 '+mfl+' 层</span>':'')+'</div>';if(kv['描述']||pipes.length>2){h+='<div style="font-size:11.5px;color:#cfc9b8;line-height:1.55;">'+(kv['描述']||pipes.slice(2).join(' ｜ '))+'</div>';}/* 没有键值对时至少把原文摆出来，绝不留空卡 */if(!mname||mname===raw&&!mfl){h='<div style="font-size:12px;color:#e2decb;line-height:1.6;">'+raw.replace(/\n/g,'<br>')+'</div>';}body.innerHTML=h;}else if(tag==='秘境归来'){var rname=String(kv['秘境']||'无名秘境');var rfloor='';var rf=/第\s*\d+\s*(?:\/\s*\d+\s*)?层/.exec(rname);if(rf){rfloor=rf[0];rname=rname.replace(rf[0],'').replace(/(?:停留|至此|止于)[至到于]?[　\s]*$/,'').replace(/\s+/g,'');if(!rname)rname='无名秘境';}var rloot=kv['斩获']||kv['战利品']||'';var rkill=kv['斩敌']||kv['击败']||'';var rhp=kv['气血']||'';var rstate=kv['状态']||'';var rfree=lines.filter(function(l){return !/^[^:：]+[:：]/.test(l);}).join('\n');var h='<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:7px;"><span style="font-size:11px;font-weight:700;padding:1px 7px;border-radius:3px;background:rgba(243,217,153,0.15);color:#f3d999;border:1px solid rgba(243,217,153,0.45);letter-spacing:.5px;">◇ 归来</span><span style="font-size:14px;font-weight:700;color:#f3d999;word-break:break-all;">'+rname+'</span>'+(rfloor?'<span style="font-size:10.5px;padding:1px 6px;border-radius:3px;background:rgba(45,212,191,0.14);color:#2dd4bf;border:1px solid rgba(45,212,191,0.38);">'+rfloor+'</span>':'')+'</div>';var rrow=function(k,v,c){return v?'<div style="display:flex;gap:7px;font-size:11.5px;line-height:1.65;margin-bottom:2px;"><span style="flex:none;color:#8d97a8;">'+k+'</span><span style="color:'+c+';word-break:break-word;">'+v+'</span></div>':'';};h+=rrow('斩获',rloot,'#8fd18a');h+=rrow('斩敌',rkill,'#cfc9b8');h+=rrow('气血',rhp,'#e35b4f');h+=rrow('去向',rstate,'#7ec8e3');if(rfree)h+='<div style="font-size:11px;color:#a9a390;line-height:1.6;margin-top:5px;border-left:2px solid rgba(243,217,153,0.35);padding-left:7px;">'+rfree.replace(/\n/g,'<br>')+'</div>';if(!rloot&&!rstate&&!rfree){h+='<div style="font-size:12px;color:#e2decb;line-height:1.6;">'+raw.replace(/\n/g,'<br>')+'</div>';}body.innerHTML=h;}else if(tag==='战斗开始'){body.innerHTML='<div style="text-align:center;padding:6px 0;font-size:13px;font-weight:700;color:#ef4444;letter-spacing:0.1em;">⚔ 剑拔弩张 · 斗法交锋 ⚔</div><div style="font-size:12px;color:#e2decb;line-height:1.6;">'+raw.replace(/\n/g,'<br>')+'</div>';}}catch(ePB){}}));
+
+  function beat() {
+    try {
+      var doc = getDoc();
+      if (!doc || !doc.querySelectorAll) return;
+      var list = doc.querySelectorAll('.mes_text .xz-tc-wrap:not([data-beautified])');
+      for (var i = 0; i < list.length; i++) {
+        var w = list[i];
+        try { BEAUTIFY({ closest: function () { return w; } }); } catch (eB) {}
+      }
+    } catch (e) {}
+  }
+  try {
+    if (HOST.__xzTcFlag) clearInterval(HOST.__xzTcFlag);
+    HOST.__xzTcFlag = setInterval(beat, 1200);
+  } catch (eT) {}
+  setTimeout(beat, 500);
+  try {
+    if (HOST.eventOn) {
+      HOST.eventOn('message_received', function () { setTimeout(beat, 120); });
+      HOST.eventOn('character_message_rendered', function () { setTimeout(beat, 160); });
+      HOST.eventOn('chat_changed', function () { setTimeout(beat, 200); });
+    }
+  } catch (eE) {}
 })();
