@@ -19861,6 +19861,16 @@ var XZ_DM_BOXES=[[360,200,1520,660],
                 return ta < tb ? -1 : (ta > tb ? 1 : 0);
             });
             S.entries = out;
+            /* 2026-11-23（作者：「查看所有立绘的 dlc 格子放在原创后面」）：
+               从条目里攒出 **DLC 人名集合**（「dlc-包-人物-名字」→ 名字）
+               立绘视图 / 插图视图 / 已结识人物 都按它把 DLC 排到原创后面。 */
+            S.dlcNames = {};
+            out.forEach(function (e) {
+                if (groupOf(e) === '') return;
+                var t = entryTitle(e);
+                var nm = t.split('-人物-').pop();
+                if (nm) S.dlcNames[String(nm).trim()] = 1;
+            });
             /* 2026-11-23：**回放玩家的开/关记录**（重导卡 / 热更后世界书被卡默认状态
                整体覆盖 ⇒ 玩家手动的开关全被冲掉，作者报的「重新导入更新后就自动关上，
                如开局的剧本开启」就是它）。只回放玩家**亲手动过**的条目：
@@ -20220,6 +20230,20 @@ var XZ_DM_BOXES=[[360,200,1520,660],
          搬进管理器就得复刻那套 class 与 CSS —— 反而不如在这里写清楚十行。
          ⚠ 但**大图的切换逻辑必须复用 `galShow`**（它管 data-at 回绕、计数、左右键
            可用性，还带着 localStorage 记忆），所以下面 stage 的 class 名与相册对齐。 */
+    /* 2026-11-23：把 DLC 的人排到原创后面（组内保持原顺序） */
+    function _dlcLast(arr, nameOf) {
+        try {
+            var dn = (S && S.dlcNames) || {};
+            if (!Object.keys(dn).length) return arr;
+            var a0 = [], a1 = [];
+            for (var i = 0; i < arr.length; i++) {
+                var nm = String(nameOf(arr[i]) || '').trim();
+                (dn[nm] ? a1 : a0).push(arr[i]);
+            }
+            return a0.concat(a1);
+        } catch (e) { return arr; }
+    }
+
     function renderGalView(d, p, bd) {
         var list = [];
         try { list = xzCemAllPortraits() || []; } catch (e0) { list = []; }
@@ -20228,7 +20252,15 @@ var XZ_DM_BOXES=[[360,200,1520,660],
             return;
         }
         var idx = -1;
-        try { idx = galAt(); } catch (e1) { idx = -1; }
+        try {
+            var _selNm = localStorage.getItem('xzCemGalName') || '';
+            if (_selNm) {
+                for (var _gi = 0; _gi < list.length; _gi++) {
+                    if (String((list[_gi] && list[_gi].name) || '') === _selNm) { idx = _gi; break; }
+                }
+            }
+        } catch (e0n) {}
+        if (idx < 0) { try { idx = galAt(); } catch (e1) { idx = -1; } }
         if (!(idx >= 0 && idx < list.length)) idx = -1;
 
         var h = '';
@@ -20341,7 +20373,8 @@ var XZ_DM_BOXES=[[360,200,1520,660],
             if (act && it.acts.indexOf(act) < 0) it.acts.push(act);
             for (var j = 0; j < arr.length; j++) it.urls.push(arr[j]);
         }
-        return out;
+        /* 2026-11-23：同上，排序收进数据源，点击按 data-gal 索引取的就是同一份。 */
+        return _dlcLast(out, function (it) { return it && it.who; });
     }
 
     function renderIlluView(d, p, bd) {
@@ -20357,8 +20390,19 @@ var XZ_DM_BOXES=[[360,200,1520,660],
         /* 与立绘不同：这里**默认选第一组**并把大图显示出来。
            立绘页首次进来是空的（"点下面的人名看大图"），因为那是玩家的角色名单；
            插图页进来就是要看图的，先给一张比先给一片空白有用。 */
-        var idx = Number(S.illuAt);
-        if (!isFinite(idx) || idx < 0 || idx >= list.length) idx = 0;
+        var idx = -1;
+        try {
+            var _selI = localStorage.getItem('xzCemIlluName') || '';
+            if (_selI) {
+                for (var _ii = 0; _ii < list.length; _ii++) {
+                    if (String((list[_ii] && list[_ii].who) || '') === _selI) { idx = _ii; break; }
+                }
+            }
+        } catch (e0ii) {}
+        if (idx < 0) {
+            idx = Number(S.illuAt);
+            if (!isFinite(idx) || idx < 0 || idx >= list.length) idx = 0;
+        }
 
         var h = '';
         h += '<div class="gal-stage" data-at="0" style="position:relative;margin:2px 0 8px;">'
@@ -20405,8 +20449,23 @@ var XZ_DM_BOXES=[[360,200,1520,660],
         return galAt();
     }
     function galCurSet(i) {
-        if (S.view === 'illu') { S.illuAt = i; return; }
+        if (S.view === 'illu') {
+            S.illuAt = i;
+            try {
+                var LI = xzCemAllIllus() || [];
+                var itI = LI[i];
+                if (itI && itI.who) localStorage.setItem('xzCemIlluName', String(itI.who));
+            } catch (e0i) {}
+            return;
+        }
         galSet(i);
+        /* 2026-11-23：记住**人名**。排序（原创/DLC）一变，裸下标就指向别人了 ——
+           作者报的「预览图是 A，点进去是 B」就是下标错位。 */
+        try {
+            var L = xzCemAllPortraits() || [];
+            var it = L[i];
+            if (it && it.name) localStorage.setItem('xzCemGalName', String(it.name));
+        } catch (e0g) {}
     }
 
     /* ★★★ v527：`renderDlcView()` **整个函数删掉** ★★★
@@ -20517,6 +20576,8 @@ var XZ_DM_BOXES=[[360,200,1520,660],
                 /* 读得到（哪怕 0 人）⇒ 把标记清掉，下次真读不到时还能再走一遍重试 */
                 _plRetryArmed = 0;
             }
+            /* 2026-11-23：已结识名单也按「原创在前、DLC 在后」排。 */
+            try { _names = _dlcLast(_names, function (x) { return x; }); } catch (eNL) {}
             if (_names.length) {
                 _pListHtml = '<div class="cem-sec"><b>已结识人物</b><i>'
                     + _names.length + ' 人 · 删档案不影响世界书</i></div>'
@@ -21283,7 +21344,9 @@ var XZ_DM_BOXES=[[360,200,1520,660],
             }
             out.push({ name: nm, urls: arr });
         });
-        return out;
+        /* 2026-11-23：**排序在这里做**（数据源唯一）——
+           渲染和点击都走本函数，两边顺序必须同源；只排渲染那份 = 点了换成别的人。 */
+        return _dlcLast(out, function (it) { return it && it.name; });
     }
 
     function galStyle(d) {
