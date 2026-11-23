@@ -4607,6 +4607,12 @@ function xzTypeOf(name, fbT, fbA) {
         '  #xz-wiki-modal .xz-wiki-list, #' + MODAL_ID + ' .xz-modal-body{-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}',
         '  #xz-wiki-modal .xz-wiki-list{grid-template-columns:1fr !important;}',
         '  .xz-root .xz-grid-2{grid-template-columns:1fr 1fr;}',
+        /* 2026-11-23（作者转发 App 版玩家截图：主角页内容互相叠字）：
+           App 内核会把 .xz-view 的定高样式覆盖掉 ⇒ 桌面那套「固定 380px 高 +
+           内部 1fr 行」在这里塌掉、内容溢出叠到下一格。手机端一律改自然流：
+           高度自适应、行高 auto、跟随页签滚动 —— 任何内核都不可能叠字。 */
+        '.xz-root .xz-view{height:auto !important;min-height:0 !important;max-height:none !important;overflow:visible !important;}',
+        '.xz-root .xz-main-stats{height:auto;grid-template-rows:auto auto auto;}',
         '  .xz-root .xz-card-grid{grid-template-columns:1fr;}',
         '  .xz-root .xz-top-strip{gap:5px;padding:7px 10px;}',
         '  .xz-root .xz-top-time{width:100%;margin-left:0;margin-top:2px;font-size:10.5px;}',
@@ -19846,7 +19852,37 @@ var XZ_DM_BOXES=[[360,200,1520,660],
                 if (entryIsConstant(e) && /^人物-(总览|名录|人物总览)$/.test(c)) return;
                 out.push(e);
             });
+            /* 2026-11-23（作者：「原创必须全部在前面，dlc 全部在后面」）：
+               条目列表顺序 = 原创（按名排序）在前，DLC（按名排序）在后。 */
+            out.sort(function (a, b) {
+                var ga = groupOf(a), gb = groupOf(b);
+                if ((ga === '') !== (gb === '')) return ga === '' ? -1 : 1;
+                var ta = entryTitle(a), tb = entryTitle(b);
+                return ta < tb ? -1 : (ta > tb ? 1 : 0);
+            });
             S.entries = out;
+            /* 2026-11-23：**回放玩家的开/关记录**（重导卡 / 热更后世界书被卡默认状态
+               整体覆盖 ⇒ 玩家手动的开关全被冲掉，作者报的「重新导入更新后就自动关上，
+               如开局的剧本开启」就是它）。只回放玩家**亲手动过**的条目：
+               记录里有、当前状态和记录不一致 ⇒ 改回玩家要的状态。 */
+            try {
+                var _tgMap = JSON.parse(HOST.localStorage.getItem('xzWBUserToggles') || '{}') || {};
+                var _onU = [], _offU = [];
+                out.forEach(function (e) {
+                    var t = entryTitle(e);
+                    if (!(t in _tgMap)) return;
+                    var want = !!_tgMap[t];
+                    var cur = !(e.disable === true) && (e.enabled !== false);
+                    if (cur !== want) { if (want) _onU.push(e.uid); else _offU.push(e.uid); }
+                });
+                if (_onU.length || _offU.length) {
+                    /* 回放走 setEnabled（它自己会写 localStorage + 刷新），先开后关 */
+                    return Promise.resolve()
+                        .then(function () { if (_onU.length) return setEnabled(_onU, true); })
+                        .then(function () { if (_offU.length) return setEnabled(_offU, false); })
+                        .then(function () { return null; });
+                }
+            } catch (eTg) {}
             /* ★ 顺手留个诊断口：面板上「一个都没有」时，能一眼分清是
                「书里真没有」还是「字段没读对」—— 这两件事以前长得一模一样。 */
             S.diag = { book: name, total: (list || []).length, hit: out.length };
@@ -19875,6 +19911,19 @@ var XZ_DM_BOXES=[[360,200,1520,660],
                 if (typeof c.disable === 'boolean') c.disable = wanted;   /* 兜底：万一拿到原始形状 */
                 return c;
             });
+            /* 2026-11-23：玩家这次的开/关记进 localStorage（键＝条目标题）。
+               重导卡 / 热更之后 loadEntries 会照这份记录**回放**，
+               玩家手动的开/关不再被卡里的默认状态冲掉。 */
+            try {
+                var map = {};
+                try { map = JSON.parse(HOST.localStorage.getItem('xzWBUserToggles') || '{}') || {}; } catch (eLS0) {}
+                uids.forEach(function (u) {
+                    var e2 = (S.entries || []).filter(function (x) { return x.uid === u; })[0];
+                    var t2 = e2 ? entryTitle(e2) : '';
+                    if (t2) map[t2] = !!on;
+                });
+                HOST.localStorage.setItem('xzWBUserToggles', JSON.stringify(map));
+            } catch (eLS1) {}
         })).then(function () {
             /* ★★★ v499（用户 2026-10-31）：「一键开启点了根本没反应，弹出个提示说开启了，
                实则假开启」★★★
@@ -21164,30 +21213,37 @@ var XZ_DM_BOXES=[[360,200,1520,660],
     function xzCemAllPortraits() {
         var out = [];
         var seen = {};
+        /* 2026-11-23（作者：「某些角色立绘缺少，如云疏月、白长雪」）：
+           三个表按**人名合并**：同一人在 新版立绘表 / 老多图表 / 单图表 里都可能有图，
+           老逻辑 first-seen 就把名字占掉 ⇒ 后面表里的图整批丢弃。
+           新口径：每张表都往同一个人的 URL 池里**追加**（去重保序），
+           玩家自定义图排第一。 */
+        var byName = {};          /* name → {urls:[], custom:'', doneCustom:bool} */
+        var order = [];
         function push(name, urls) {
-            if (!name || seen[name]) return;
-            /* 2026-11-23（作者：「原本两三张的，现在都变成 1 张」）：
-               v503 的老规则「有自定义就只留那一张」把传过图的角色压成了 1 张。
-               改成：自定义排第一，原有的照常跟在后面。 */
+            if (!name) return;
             var _cu = '';
             try {
                 var _q = (typeof globalThis !== 'undefined') ? globalThis.__XZ05__ : null;
                 if (_q && typeof _q.xzCustomPicOf === 'function') _cu = _q.xzCustomPicOf(name) || '';
             } catch (eCu) { _cu = ''; }
-            var arr = (urls || []).filter(function (u) { return !!u && u !== _cu; });
-            if (_cu) arr.unshift(_cu);
-            if (!arr.length) return;
-            seen[name] = 1;
-            out.push({ name: name, urls: arr });
+            var slot = byName[name];
+            if (!slot) {
+                slot = byName[name] = { urls: [], custom: _cu || '', doneCustom: false };
+                order.push(name);
+            }
+            if (_cu && !slot.doneCustom) { slot.urls.unshift(_cu); slot.doneCustom = true; }
+            (urls || []).forEach(function (u) {
+                if (!u || slot.urls.indexOf(u) >= 0) return;
+                slot.urls.push(u);
+            });
         }
         var G = null, P = null, I = null;
         try { G = (typeof window !== 'undefined' && window.XZ_GALLERY) || null; } catch (eG0) { G = null; }
         try { P = (typeof window !== 'undefined' && window.XZ_PORTRAITS) || null; } catch (eP0) { P = null; }
         try { I = (typeof window !== 'undefined' && window.XZ_ILLU_STAND) || null; } catch (eI0) { I = null; }
-        /* ① 新版画像表**最先走** —— 它优先级最高（与 xzGalleryUrls 同一条链：
-              自定义 > XZ_ILLU_STAND > XZ_GALLERY），而且是这批新图唯一的出口。
-              ⚠ 顺序要紧：先收进来的人占住 seen，后面 ②③ 就不会用老图把它盖掉。
-                以前把 ②③ 放前面，同一角色会显示成老图 —— 正是这次的病根。 */
+        /* ① 新版画像表最先走（优先级最高），②老多图 ③单图 依次追加 ——
+           全部**合并**进同一个人的 URL 池，谁也不吞谁。 */
         try {
             if (I && typeof I === 'object') {
                 Object.keys(I).forEach(function (k) {
@@ -21217,6 +21273,16 @@ var XZ_DM_BOXES=[[360,200,1520,660],
                 });
             }
         } catch (eP) {}
+                /* 落成列表：自定义图排第一（新加的），其余按首次出现顺序 */
+        order.forEach(function (nm) {
+            var slot = byName[nm];
+            if (!slot || !slot.urls.length) return;
+            var arr = slot.urls.slice();
+            if (slot.custom && arr.indexOf(slot.custom) >= 0) {
+                arr = [slot.custom].concat(arr.filter(function (u) { return u !== slot.custom; }));
+            }
+            out.push({ name: nm, urls: arr });
+        });
         return out;
     }
 
@@ -25511,7 +25577,24 @@ var XZ_DM_BOXES=[[360,200,1520,660],
         var nm = nmEl ? String(nmEl.textContent || '').trim() : '';
         if (!nm) continue;
         var url = '';
-        try { url = avatarOf(nm) || ''; } catch (eA) { url = ''; }
+        /* ⚠ avatarOf 是**气泡 IIFE 的私有函数**，这里调不到（跨 IIFE 悬空名）——
+           直接按同一套优先级读 window 导出表：自定义 > 新版立绘表 > 老多图 > 单图。 */
+        try {
+          var S2 = HOST.XZ_ILLU_STAND || {}, G2 = HOST.XZ_GALLERY || {};
+          var tail2 = nm.split(/[·・‧∙]/).pop().trim();
+          url = (S2[nm] && S2[nm][0]) || (S2[tail2] && S2[tail2][0]) || '';
+          if (!url) url = (G2[nm] && G2[nm][0]) || (G2[tail2] && G2[tail2][0]) || '';
+          if (!url) {
+            var hit2 = '', bl2 = -1;
+            for (var k2 in S2) {
+              if (!S2[k2] || !S2[k2].length || nm.indexOf(k2) === -1) continue;
+              if (k2.length > bl2) { bl2 = k2.length; hit2 = S2[k2][0]; }
+            }
+            if (hit2) url = hit2;
+          }
+          if (!url && hit2) url = hit2;
+          if (!url && HOST.XZ_PORTRAIT_LOOKUP) url = String(HOST.XZ_PORTRAIT_LOOKUP(nm) || '');
+        } catch (eA) { url = ''; }
         if (!url) continue;
         var mes = row.closest ? row.closest('.mes') : null;
         if (mes && mes.getAttribute('data-xzdl') === '1') { mes.removeAttribute('data-xzdl'); need = true; }
