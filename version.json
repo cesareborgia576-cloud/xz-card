@@ -1,8 +1,8 @@
 {
-  "stable": "v1.56",
-  "dev": "v1.56",
+  "stable": "v1.57",
+  "dev": "v1.57",
   "note": "立绘实时渲染（MutationObserver）；人物面板缺闭标签也能渲染",
   "devNote": "立绘实时渲染（MutationObserver）；人物面板缺闭标签也能渲染",
   "engine": "05d18deba279645c546f3c804b6d501f8cdd6861",
-  "at": "2026-11-23T04:38:40.573Z"
+  "at": "2026-11-23T04:41:45.337Z"
 }
