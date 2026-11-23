@@ -10474,7 +10474,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
       "白长雪": "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/image-hosting@main/blog/1791499528667.png",
       /* ~~2026-10-09 按要求删除：云疏月的图床（人仍在场，只是不再出立绘）~~
          [v473] 用户 2026-10-30 给了新图，补回。 */
-      "云疏月": "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E7%96%8F%E6%9C%88/%E4%BA%91%E7%96%8F%E6%9C%88_%E7%AB%8B%E7%BB%98_2.png",
+      "云疏月": "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E7%96%8F%E6%9C%88/%E4%BA%91%E7%96%8F%E6%9C%88_%E7%AB%8B%E7%BB%98_2s.png",
       /* [v473] 司幽怜原来**没有这个键**（幽月宗主一直没立绘），本次补上 */
       "司幽怜": "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/image-hosting@main/blog/XL_siyoulian_20261030.jpg",
       /* 2026-10-09（第二轮）按要求补回：陆昭华立绘 */
@@ -10784,7 +10784,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E8%8D%AF%E4%BB%99%E5%84%BF/%E8%8D%AF%E4%BB%99%E5%84%BF_%E7%AB%8B%E7%BB%98_1.webp"
       ],
       "云疏月": [
-        "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E7%96%8F%E6%9C%88/%E4%BA%91%E7%96%8F%E6%9C%88_%E7%AB%8B%E7%BB%98_2.png"
+        "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E7%96%8F%E6%9C%88/%E4%BA%91%E7%96%8F%E6%9C%88_%E7%AB%8B%E7%BB%98_2s.png"
       ],
       "云韵": [
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E4%BA%91%E9%9F%B5/%E4%BA%91%E9%9F%B5_%E8%B6%B3%E4%BA%A4_1.webp"
@@ -10797,7 +10797,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%9C%B1%E7%AB%B9%E6%B8%85/%E6%9C%B1%E7%AB%B9%E6%B8%85_%E7%AB%8B%E7%BB%98_2.webp"
       ],
       "巳眠": [
-        "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%B7%B3%E7%9C%A0/%E5%B7%B3%E7%9C%A0_%E7%AB%8B%E7%BB%98_1.png"
+        "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%B7%B3%E7%9C%A0/%E5%B7%B3%E7%9C%A0_%E7%AB%8B%E7%BB%98_1s.png"
       ],
       "紫姬": [
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%B4%AB%E5%A7%AC/%E7%B4%AB%E5%A7%AC_%E7%AB%8B%E7%BB%98_1.webp"
