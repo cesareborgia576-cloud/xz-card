@@ -26165,3 +26165,6 @@ var BEAUTIFY = (function (el) {
     }
   } catch (eE) {}
 })();
+
+/* XZ_05_TAIL —— loader 完整性尾标（必须在文件最后一行；半截文件没有它） */
+try { if (typeof globalThis !== "undefined") { (globalThis.__XZ05__ = globalThis.__XZ05__ || {}).TAIL = "xz05-tail"; } } catch (eTail) {}
