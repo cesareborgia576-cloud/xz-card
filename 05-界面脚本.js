@@ -7246,21 +7246,23 @@ function xzTypeOf(name, fbT, fbA) {
            只控制**显示**：标签照常被渲染器吃掉（不会露出 <插图> / <人物立绘> 原文），
            只是把已经建好的框用 display:none 藏起来；打开瞬间恢复，不用刷新。
            值存 localStorage（按浏览器，不按存档），与尺寸调节同口径。 */
+        /* ★ 2026-11-24（作者：「功能分页加上2个按钮，立绘屏蔽，和屏蔽插图。
+           开启时，有立绘或插图只会显示已开启插图/立绘屏蔽所以不显示一行字在扁框里」）★★
+           语义 = **屏蔽**（开=不显示，关=正常显示）；默认关。
+           只换显示：标签照常被渲染器吃掉（不会露原文）；纯 CSS 换壳，开关瞬间生效、可逆。 */
         {
-            key: 'illu',
-            ls: 'xzShowIllu',
-            title: '正文插图',
-            desc: '正文里写的<b>动作插图标签</b>（「插图｜动作」那种）。'
-                + '关掉后不显示；标签仍会被正常吃掉，不会在正文里露出原文。',
-            note: '与「对话头像气泡」「正文卷轴」互不影响；开关记在<b>浏览器</b>里。'
+            key: 'hide-pic',
+            ls: 'xzHidePic',
+            title: '立绘屏蔽',
+            desc: '开启后，正文里的立绘框不再显示，改为一行「已开启立绘屏蔽，所以不显示」。',
+            note: '只影响显示，标签照常吃掉；开关记在<b>浏览器</b>里。'
         },
         {
-            key: 'pic',
-            ls: 'xzShowPic',
-            title: '正文立绘',
-            desc: '正文里写的<b>角色立绘标签</b>（四个字加尖括号、独占一行的那种）。'
-                + '关掉后不显示；标签仍会被正常吃掉，不会在正文里露出原文。',
-            note: '立绘「看到第几张」的记忆不受影响；开关记在<b>浏览器</b>里。'
+            key: 'hide-illu',
+            ls: 'xzHideIllu',
+            title: '屏蔽插图',
+            desc: '开启后，正文里的动作插图不再显示，改为一行「已开启插图屏蔽，所以不显示」。',
+            note: '只影响显示，标签照常吃掉；开关记在<b>浏览器</b>里。'
         },
         /* ★★★ v657：对白格式条目（作者 2026-11-18）★★★
            作者原话：「思维链里的对白格式单独做成一个条目，当界面脚本里的功能页开启时，
@@ -7315,7 +7317,13 @@ function xzTypeOf(name, fbT, fbA) {
        ★ v657：带 `ls` 的（世界书类）自己就是真相源，不存在"模块没就绪"这回事。 */
     function xzBeautyOn(sw) {
         if (sw && sw.ls) {
-            try { return localStorage.getItem(sw.ls) !== '0'; } catch (e) { return true; }
+            try {
+                var _bv = localStorage.getItem(sw.ls);
+                /* 2026-11-24：屏蔽类（立绘屏蔽/屏蔽插图）默认**关**，只有存 '1' 才算开；
+                   其余 ls 类保持旧口径（存 '0' 才算关，默认开）。 */
+                if (sw.key === 'hide-pic' || sw.key === 'hide-illu') return _bv === '1';
+                return _bv !== '0';
+            } catch (e) { return !(sw && (sw.key === 'hide-pic' || sw.key === 'hide-illu')); }
         }
         try {
             var api = xzBeautyApi(sw.api);
@@ -7335,7 +7343,7 @@ function xzTypeOf(name, fbT, fbA) {
             /* ★ 2026-11-23：只有真·世界书类（带 wb）才去开/关条目。
                插图/立绘是纯显示开关，调 xzDialogFmtApply 会误开《设定-对白格式》。 */
             if (sw.wb) xzDialogFmtApply(!!v);
-            if (sw.key === 'illu' || sw.key === 'pic') xzVisApplyAll();
+            if (sw.key === 'hide-pic' || sw.key === 'hide-illu') xzVisApplyAll();
             return true;
         }
         try {
@@ -7449,10 +7457,11 @@ function xzTypeOf(name, fbT, fbA) {
     /* ★ 2026-11-23：插图 / 立绘显示开关。
        ⚠ 只藏、不拆：框仍然建出来（标签照常吃掉，不会露原文），
          藏的是 documentElement 上的一个类；打开瞬间恢复。 */
+    /* 2026-11-24：true = **屏蔽**（开）；默认 false（正常显示） */
     function xzVisOn(k) {
         try {
-            return (HOST.localStorage || localStorage).getItem(k === 'illu' ? 'xzShowIllu' : 'xzShowPic') !== '0';
-        } catch (e) { return true; }
+            return (HOST.localStorage || localStorage).getItem(k === 'illu' ? 'xzHideIllu' : 'xzHidePic') === '1';
+        } catch (e) { return false; }
     }
     function xzVisApplyAll() {
         try {
@@ -7463,8 +7472,8 @@ function xzTypeOf(name, fbT, fbA) {
             for (var di = 0; di < docs.length; di++) {
                 var de = docs[di] && docs[di].documentElement;
                 if (!de || !de.classList) continue;
-                try { if (onI) de.classList.remove('xz-hide-illu'); else de.classList.add('xz-hide-illu'); } catch (e2) {}
-                try { if (onP) de.classList.remove('xz-hide-pic'); else de.classList.add('xz-hide-pic'); } catch (e3) {}
+                try { if (onI) de.classList.add('xz-hide-illu'); else de.classList.remove('xz-hide-illu'); } catch (e2) {}
+                try { if (onP) de.classList.add('xz-hide-pic'); else de.classList.remove('xz-hide-pic'); } catch (e3) {}
             }
             xzSizeApplyAll();
         } catch (e4) {}
@@ -7476,8 +7485,18 @@ function xzTypeOf(name, fbT, fbA) {
         return '.mes_text .thdl-ava{width:' + ava + 'px !important;height:' + ava + 'px !important;}'
              + '.mes_text .thillu-frame{width:' + illu + '% !important;max-width:' + illu + '% !important;}'
              + '.mes_text .xz-pic-frame{width:' + pic + '% !important;max-width:' + pic + '% !important;}'
-             + (xzVisOn('illu') ? '' : '.xz-hide-illu .thillu{display:none !important;}')
-             + (xzVisOn('pic') ? '' : '.xz-hide-pic .xz-pic-box{display:none !important;}');
+             + '.xz-hide-illu .thillu{display:block !important;margin:10px 0 !important;padding:10px 14px !important;'
+             + 'border:1px solid rgba(212,175,55,.28) !important;border-radius:3px !important;background:rgba(0,0,0,.25) !important;'
+             + 'text-align:center !important;font-size:12px !important;line-height:1.5 !important;color:#8d97a8 !important;'
+             + 'letter-spacing:.06em !important;white-space:normal !important;}'
+             + '.xz-hide-illu .thillu>*{display:none !important;}'
+             + '.xz-hide-illu .thillu::before{content:"已开启插图屏蔽，所以不显示";}'
+             + '.xz-hide-pic .xz-pic-box{display:block !important;margin:10px 0 !important;padding:10px 14px !important;'
+             + 'border:1px solid rgba(212,175,55,.28) !important;border-radius:3px !important;background:rgba(0,0,0,.25) !important;'
+             + 'text-align:center !important;font-size:12px !important;line-height:1.5 !important;color:#8d97a8 !important;'
+             + 'letter-spacing:.06em !important;white-space:normal !important;}'
+             + '.xz-hide-pic .xz-pic-box>*{display:none !important;}'
+             + '.xz-hide-pic .xz-pic-box::before{content:"已开启立绘屏蔽，所以不显示";}';
     }
     function xzSizeApplyAll() {
         try {
@@ -7510,7 +7529,7 @@ function xzTypeOf(name, fbT, fbA) {
     function pageFunc() {
         var h = '<div class="xz-sub-head">✦ 功能</div>';
         h += '<div style="font-size:10.5px;color:var(--xz-muted);line-height:1.7;margin:-2px 0 10px;">'
-            + '这些都是「正文美化」的附加效果，<b>默认全部开启</b>。'
+            + '这些都是「正文美化」的附加效果；除「立绘屏蔽 / 屏蔽插图」默认关闭外，其余默认开启。'
             + '开关记在<b>浏览器</b>里（不是存档里）—— 换设备、清缓存会回到默认，换存档不受影响。</div>';
 
         for (var i = 0; i < XZ_BEAUTY_SWITCHES.length; i++) {
