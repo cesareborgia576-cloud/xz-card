@@ -5209,6 +5209,7 @@
     _hbLastTick = Date.now();
     _hbTimer = setInterval(function () {
       _hbLastTick = Date.now();
+      /* ★ 2026-11-25 OOM：后台不跑嗅探/推演；tick 时间照记，看门狗才不会误判重挂。 */
       /* 每个动作各包一层 try：换档判定失败不许把嗅探一起带下去，
          嗅探失败也不许让「换档后归零」这条永远不跑。 */
       try { watchChatSwitch(); } catch (e1) {}
@@ -5216,7 +5217,13 @@
       /* ★ v576：后台推演那一拍。放在嗅探之后 —— 补算是「修错」，推演是「加分」，
          同一拍里补算优先，不让推演抢在前面把 token 花掉。 */
       try { bgTick(); } catch (e3) {}
-    }, 700);
+    }, (function () {
+      /* 2026-11-25 移动端：心跳降频，桌面仍 700ms。
+         pollSniff 内部还有 2 秒节流，这里只是少空转几拍。 */
+      try { if (window.__XZ_MOBILE__) return 1500; } catch (e) {}
+      try { if (/Android|iPhone|iPad|iPod|Mobile|HarmonyOS/i.test(navigator.userAgent || '')) return 1500; } catch (e2) {}
+      return 700;
+    })());
     /* 自愈看门狗：宿主清掉定时器（某些酒馆版本重载 iframe 会）时自动重挂。
        ⚠ 判据用「上次 tick 距今多久」而不是「_hbTimer 是否为空」——
          定时器被静默挂死（对象还在、但不跳）时问它没用。
