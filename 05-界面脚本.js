@@ -29,6 +29,22 @@
    ══════════════════════════════════════════════════════════════════════ */
 var XZ_MAINT = false;
 
+/* ★ 2026-11-25 移动端内存保护档位。
+   TauriTavern/Android WebView 的渲染进程有独立硬上限，整机内存再大也没用。
+   这里只用于「降低持续图片解码/轮播频率」，不改任何功能；
+   桌面端 XZ_MOBILE=false，行为与原来逐字一致。 */
+var XZ_MOBILE = (function () {
+    try {
+        var ua = String(navigator.userAgent || '');
+        if (/Android|iPhone|iPad|iPod|Mobile|HarmonyOS/i.test(ua)) return true;
+        var dm = Number(navigator.deviceMemory || 0);
+        if (dm && dm <= 4) return true;
+    } catch (e) {}
+    return false;
+})();
+try { window.__XZ_MOBILE__ = XZ_MOBILE; } catch (e) {}
+
+
 /* ══════════════════════════════════════════════════════════════════════════
    ★★★ 2026-11-22：版本下限 v1.50（作者拍板：旧卡一律显示「版本过低」）★★★
    ── 触发链 ──
@@ -11342,6 +11358,9 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
     }
     function xzGalleryPreload(nm) {
         try {
+            /* 2026-11-25 移动端：预取下一张 1024px 立绘会把离屏图也塞进解码缓存，
+               而状态栏那张本来就要等轮播才换；移动端直接不预取。 */
+            if (XZ_MOBILE) return;
             if (_GAL_PRE_BUSY) return;
             var arr = xzGalleryOf(nm);
             if (arr.length < 2) return;
@@ -11432,7 +11451,7 @@ var V75_TARGETS = { '单体': 1, '范围': 1, '自身': 1, '环境': 1 };
                 }
                 xzGalleryPreload(nm);
             } catch (eG) {}
-        }, 1000);
+        }, XZ_MOBILE ? 5000 : 1000);
     }
     /* 状态栏立绘条：只换 src 与「第几张」角标。
        ⚠ 找不到那个 img 时**什么都不做**（说明这一帧状态栏不在屏幕上），
@@ -16703,7 +16722,13 @@ var XZ_DM_BOXES=[[360,200,1520,660],
     try {
     } catch (eTg) {}
 
-    setInterval(render, 1500);
+    /* ★ 2026-11-25 OOM：App 切到后台时停掉这颗 1.5 秒心跳。
+       旧写法不管页面可不可见，每 1.5 秒都对 5 棵大变量子树做一次 JSON.stringify + 重绘，
+       TauriTavern 的 WebView 在后台继续 churn，渲染进程堆只涨不降。
+       页面可见时行为完全不变。 */
+    /* 2026-11-25 移动端：每次 render 都要跨桥读 229KB 变量并对 5 棵子树做 JSON.stringify；
+       手机降到 3 秒一次，桌面仍 1.5 秒。render 自身有 sig 脏检查，不会因此多画。 */
+    setInterval(render, XZ_MOBILE ? 3000 : 1500);
     render();
     /* ★ v503：自定义立绘是**异步**读的（IndexedDB / localStorage），
        读完自己会 render(true) 补一次。延后 800ms 是为了让首屏先画出来 ——
@@ -24198,7 +24223,7 @@ var XZ_DM_BOXES=[[360,200,1520,660],
      ★ v536：2 秒 → 3.5 秒（作者 2026-11-02：「玩家反应插图变速太快」）。
      ⚠ 这段原来写着「源卡实测值，别调，玩家已经习惯这个节奏」—— 那是**另一张卡**的玩家，
        本卡玩家明确说快。别照抄旧结论当护身符。 */
-  var ROTATE_MS = 3500;
+  var ROTATE_MS = XZ_MOBILE ? 10000 : 3500;
 
   /* ★★★ v536：插图也要「跨楼层记住玩家停在哪一张」★★★
      作者 2026-11-02：「没有立绘一样的暂停缓存，总是新楼层就又自动了，
