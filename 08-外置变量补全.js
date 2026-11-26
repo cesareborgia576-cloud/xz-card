@@ -3200,7 +3200,11 @@
   /* 找「卡自己的那本世界书」。
      ⚠ 别写成"拿第一本"：玩家可能挂了好几本补充书，
        写错书 = AI 永远看不到（因为那本书可能没启用），而界面上一切正常。
-     优先级：角色卡绑定（primary）→ 角色卡附加 → 书名含「天元」的那本。 */
+     优先级：角色卡绑定（primary）→ 角色卡附加 → 书名含「天元」的那本。
+     ★ 2026-11-26：宿主导入同名世界书时会自动加序号（`天元录 (1)`）。
+       那种副本**不能当主书**：往里写等于玩家机子上又多一本分叉的书。
+       所以挑书时先躲开 `名字 (数字)` 这种副本，优先用不带序号的那本。 */
+  function _isWbCopy(n) { return /[（(]\s*\d+\s*[)）]\s*$/.test(String(n || '')); }
   function tickerBookName() {
     var names = [];
     try {
@@ -3210,11 +3214,17 @@
         if (bn && Array.isArray(bn.additional)) bn.additional.forEach(function (x) { if (x) names.push(x); });
       }
     } catch (e0) {}
-    if (names.length) return names[0];
-    var all = [];
-    try { if (typeof getWorldbookNames === 'function') all = getWorldbookNames() || []; } catch (e1) {}
-    if (!Array.isArray(all)) all = [];
-    for (var i = 0; i < all.length; i++) { if (/天元/.test(String(all[i]))) return all[i]; }
+    if (!names.length) {
+      var all = [];
+      try { if (typeof getWorldbookNames === 'function') all = getWorldbookNames() || []; } catch (e1) {}
+      if (Array.isArray(all)) names = all.slice();
+    }
+    /* ① 先找**不是副本**且含「天元」的那本（正主） */
+    for (var i = 0; i < names.length; i++) {
+      if (!_isWbCopy(names[i]) && /天元/.test(String(names[i]))) return names[i];
+    }
+    /* ② 没有正主就退一步，用第一本非副本的 */
+    for (var j = 0; j < names.length; j++) { if (!_isWbCopy(names[j])) return names[j]; }
     /* 2026-11-26：找不到就返回空 —— **绝不拿"第一本"凑数**。
        抓一本别的书去写，或者在空名字上写，都会让宿主新建世界书。 */
     return '';
