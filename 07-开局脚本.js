@@ -340,8 +340,8 @@ var XZ_MAINT = false;
     function themeNow() {
         try {
             var v = localStorage.getItem('xzTheme');
-            return (v === 'day' || v === 'qing') ? v : 'night';
-        } catch (e) { return 'night'; }
+            return (v === 'day' || v === 'qing' || v === 'night') ? v : 'qing';
+        } catch (e) { return 'qing'; }
     }
     /* 循环顺序：夜墨 → 玄青 → 日光 → 夜墨。
        为什么玄青排在夜墨之后：两者都是深色，连着看一眼就知道差在底色冷暖和金色明度，
@@ -769,8 +769,8 @@ var XZ_MAINT = false;
         } catch (eV0) {}
         try {
             var v = localStorage.getItem('xzTheme');
-            return (v === 'day' || v === 'qing') ? v : 'night';
-        } catch (e) { return 'night'; }
+            return (v === 'day' || v === 'qing' || v === 'night') ? v : 'qing';
+        } catch (e) { return 'qing'; }
     }
     function xzStartThemeNext(t) {
         try {
@@ -816,6 +816,16 @@ var XZ_MAINT = false;
         /* 05 那边有 `/^v\d+(?:\.\d+)?$/` 自校验，这里照样卡一遍：占位符/空值都不许当版本号印出去 */
         return /^v\d+(?:\.\d+)?$/.test(v) ? v : 'v0';
     })();
+    /* 2026-11-26：VERSION 在脚本加载那一刻就定死了。内嵌卡里 07 可能比 05 先跑完，
+       那时 __XZ_CARD_VER__ 还没广播 ⇒ 永远显示 v0。渲染前再读一次。 */
+    function refreshVersion() {
+        if (VERSION && VERSION !== 'v0') return;
+        var v = '';
+        try { v = (window && window.__XZ_CARD_VER__) || ''; } catch (eR1) {}
+        if (!v) { try { v = (window.top && window.top.__XZ_CARD_VER__) || ''; } catch (eR2) {} }
+        if (!v) { try { v = (window.parent && window.parent.__XZ_CARD_VER__) || ''; } catch (eR3) {} }
+        if (/^v\d+(?:\.\d+)?$/.test(v)) VERSION = v;
+    }
     /* ══════════════════════════════════════════════════════════════════════
        ★★★ v1.04：开局第 1 页也印世界书版本状态 ★★★
        用户 2026-11-01：「开局脚本的第一页也是，如果世界书跟不上，就显示非最新版本，
@@ -831,12 +841,62 @@ var XZ_MAINT = false;
        ⚠ 不许把"没读到"印成"非最新"：那会让玩家白去导入一遍世界书。
        ══════════════════════════════════════════════════════════════════════ */
     var _wbVerRetry = 0;
+    var _wbKick = 0;
     function wbVerState() {
         try {
             var f = XZ05('xzWbVerState');
-            if (typeof f === 'function') return f() || null;
+            if (typeof f === 'function') {
+                var st = f() || null;
+                if (!st || !st.ok) {
+                    var now = Date.now();
+                    if (now - _wbKick > 5000) {
+                        _wbKick = now;
+                        var rf = XZ05('xzWbVerRefresh');
+                        if (typeof rf === 'function') { try { rf(false); } catch (eR0) {} }
+                    }
+                }
+                return st;
+            }
         } catch (e) {}
         return null;
+    }
+    /* 开始游玩闸门：世界书已检测到且与卡对齐。 */
+    function xzStartGateOk() {
+        var st = null;
+        try { st = wbVerState(); } catch (e) {}
+        return !!(st && st.ok && st.same);
+    }
+    /* 异步读回后只更新那颗按钮，不整块重绘（重绘会打断正在编辑的输入框）。 */
+    var _gateTries = 0;
+    function xzStartGateRefresh() {
+        try {
+            var doc = getDoc();
+            if (!doc) return;
+            var btn = doc.querySelector('[data-xz-start-gate]');
+            var stt = doc.querySelector('[data-xz-wb-status]');
+            if (!btn && !stt) return;                      /* 不在第 1 页，不重试 */
+            var st = null;
+            try { st = wbVerState(); } catch (e0) {}
+            var ok = !!(st && st.ok && st.same);
+            if (btn) {
+                btn.disabled = !ok;
+                btn.style.opacity = ok ? '' : '.45';
+                btn.style.cursor = ok ? '' : 'not-allowed';
+                btn.title = ok ? '世界书已对齐，开始游玩' : '世界书未对齐或未检测到，不能开始';
+                btn.textContent = ok ? '开始游玩' : '开始游玩（世界书未对齐）';
+            }
+            /* 2026-11-26：读回来以后**原地刷这两行**，不再等玩家切页/切主题重绘。 */
+            if (stt) {
+                var txt = !st ? '核对中…'
+                    : (!st.ok ? ('未检测到' + (st.msg ? '：' + st.msg : ''))
+                        : ('世界书 ' + st.ver + (st.same ? ' · 已对齐' : ' · 未对齐（卡 ' + st.build + '）')));
+                stt.textContent = txt;
+                stt.style.color = ok ? '#4ade80' : '#fbbf24';
+            }
+            var cur = doc.querySelector('[data-xz-wb-cur]');
+            if (cur) cur.textContent = (st && st.ver) ? st.ver : '—';
+            if (!ok && _gateTries < 30) { _gateTries++; setTimeout(xzStartGateRefresh, 1500); }
+        } catch (e) {}
     }
     /* ★★★ v629：世界书版本标签 = **只算一份文案**，两处共用 ★★★
        ── 为什么必须抽出来（作者 2026-11-17 报的病）──────────────────────────
@@ -872,8 +932,7 @@ var XZ_MAINT = false;
         } catch (eCh) {}
         var tip = same
             ? ('本卡 ' + st.build + '，已是最新版本。脚本与引擎会自动热更新，不需要重新导入卡。')
-            : ('本卡 ' + st.build + '。世界书还是 ' + st.ver + '，没跟上 —— 世界书不能热更新，'
-               + '请去酒馆「导入卡内世界书」覆盖一次。');
+            : ('没同步，请删掉旧世界书再替换更新卡（直接删卡无用）');
         return { txt: txt, tip: tip, color: same ? '#4ade80' : '#fbbf24' };
     }
     function wbVerLabelHtml() {
@@ -3747,8 +3806,8 @@ function xzSkeletonOfSkill(skill) {
           1.5s 心跳跟随（切主题不用刷新）。 */
     (function () {
         function readTheme() {
-            try { var v = localStorage.getItem('xzTheme'); return (v === 'day' || v === 'qing') ? v : 'night'; }
-            catch (e) { return 'night'; }
+            try { var v = localStorage.getItem('xzTheme'); return (v === 'day' || v === 'qing' || v === 'night') ? v : 'qing'; }
+            catch (e) { return 'qing'; }
         }
         function apply() {
             var th = readTheme();
@@ -4117,6 +4176,15 @@ function xzSkeletonOfSkill(skill) {
             item.目标 = '自身';                       // 被动功法恒作用于自身（v468：界面显示「保持自身」）
         } else if (kind === '法宝') {
             rollQuality(item);
+            /* 2026-11-26：法宝总随机也必须带效果 —— 原来只掷品质，
+               效果栏永远是空的（玩家报「总随机没有添加效果」）。 */
+            var _q0 = item.品质 || '黄阶';
+            var _max0 = EFF_QUAL_MAX[_q0] || 3;
+            var _sel0 = effRollPasSel(_q0, _max0);
+            if (_sel0.length) {
+                _sel0.sort(function (a0, b0) { return EFF_PAS_ORDER.indexOf(a0) - EFF_PAS_ORDER.indexOf(b0); });
+                item.效果 = _sel0.map(function (k0) { return effPasLineFor(k0, ''); }).join('\n');
+            }
         }
         if (withName) {
             /* 属性取草稿的玄元属性、目标取掷完之后的值 —— 这两个参数决定从哪个名字池抽，
@@ -6343,7 +6411,35 @@ d.attrs[a] = v;
                    **不是**把这个数抬到 830。
                ⚠ 别再手工调。改字体/间距/@media → 跑 `node 工具/_v471_maxh.mjs` 取新值
                  → 改这里 → 再跑 `_v471_overflow.mjs` 确认手机/桌面两档都等高。 */
-            '.xz-st-card.xz-st-fixh{min-height:1324px;}',   /* ★ v613：第 4 页新增「预设开局」纵向滑轮（max-height:min(46vh,320px) + 每条一句简介）⇒ 第 4 页从 926 涨到 1306.94（390 宽）/1323.11（560、820 宽）。`node 工具/_v471_maxh.mjs` 现取：全宽度最大实高 1323.11 ⇒ 基准抬到 1324。血脉（灵根）同时整块从第 2 页搬到第 3 页：第 3 页 926.11（390）/942.8（360），第 1/2 页 573/595.53，都不超过基准。★ 旧值 926 是 v587 定的（当时第 4 页「剧本选择」换六颗矩形按钮、实测 925.41）；再往前 897（v1.053）、768（v471）、743、690、650 均已作废 */
+            /* 2026-11-26：作者要**固定高度**，四页不许变高变矮。
+               卡片定高 + 正文区内部滚动，翻页条钉在卡片底部。 */
+            '.xz-st-card.xz-st-fixh{height:948px;min-height:948px;display:flex;flex-direction:column;overflow:hidden;}',
+            '.xz-st-head{flex:none;}',
+            '.xz-st-pager{flex:none;}',
+            /* 2026-11-26：开始游玩按钮 —— 金箔浮雕 + 内描边 + 缓慢扫光。 */
+                        '.xz-start-wrap{padding:8px 12px 0;}',
+            '.xz-start-btn{position:relative;width:100%;overflow:hidden;border:1px solid rgba(255,255,255,.55)!important;border-radius:10px;'
+                + 'background:linear-gradient(135deg,#2e2e2e 0%,#161616 55%,#000 100%)!important;'
+                + 'color:#f5f5f5!important;font-size:17px!important;font-weight:700!important;letter-spacing:.22em!important;padding:15px 0!important;'
+                + 'box-shadow:0 10px 26px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.28)!important;text-shadow:none!important;}',
+            '.xz-start-btn:before{content:"";position:absolute;inset:3px;border:1px solid rgba(255,255,255,.28);border-radius:7px;pointer-events:none;}',
+            '.xz-start-btn:after{content:"";position:absolute;top:-60%;left:-40%;width:36%;height:220%;'
+                + 'background:linear-gradient(90deg,transparent,rgba(255,255,255,.26),transparent);'
+                + 'transform:rotate(20deg);animation:xzStartShine 3.4s ease-in-out infinite;}',
+            '@keyframes xzStartShine{0%,52%{left:-45%}78%,100%{left:120%}}',
+            '.xz-start-btn:disabled{filter:grayscale(.55);opacity:.5;animation:none;}',
+            /* 玄青：金箔 */
+            '[data-xz-theme="qing"] .xz-start-btn{background:linear-gradient(135deg,#f6e3a8 0%,#ddb75e 34%,#bd8f33 68%,#8d651d 100%)!important;'
+                + 'border-color:rgba(255,232,176,.6)!important;color:#1b1406!important;'
+                + 'box-shadow:0 10px 28px rgba(212,175,55,.30),inset 0 1px 0 rgba(255,255,255,.65),inset 0 -2px 6px rgba(90,60,10,.25)!important;'
+                + 'text-shadow:0 1px 0 rgba(255,255,255,.35)!important;}',
+            '[data-xz-theme="qing"] .xz-start-btn:before{border-color:rgba(255,255,255,.38);}',
+            /* 日光：白纸黑字 */
+            '[data-xz-theme="day"] .xz-start-btn{background:linear-gradient(135deg,#ffffff 0%,#f4f4f4 55%,#dedede 100%)!important;'
+                + 'border-color:rgba(0,0,0,.55)!important;color:#111!important;'
+                + 'box-shadow:0 8px 22px rgba(0,0,0,.12),inset 0 1px 0 #fff!important;text-shadow:none!important;}',
+            '[data-xz-theme="day"] .xz-start-btn:before{border-color:rgba(0,0,0,.18);}',
+            '[data-xz-theme="day"] .xz-start-btn:after{background:linear-gradient(90deg,transparent,rgba(0,0,0,.10),transparent);}',
             '.xz-st-head{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--xz-border);background:var(--dhl-header);box-shadow:0 4px 15px rgba(0,0,0,0.45);}',
             /* ★ v595：开局面板的主题开关（与 05 顶栏那颗同款：图标 + 两字） */
             '.xz-st-theme{display:inline-flex;align-items:center;gap:3px;flex:none;padding:3px 8px;'
@@ -6403,7 +6499,7 @@ d.attrs[a] = v;
                  真正会超高的是第 3 页（598px 内容），它自己吃 `.xz-st-pickpanel` 的限高。
                ⚠ 也别把行距写成 `gap` 之外的东西：`.xz-st-row` 是 flex，
                  `margin` 与 `gap` 会叠加，改一处就够（这里只动 margin）。 */
-            '.xz-st-body{padding:12px 12px 14px;font-size:12px;line-height:1.72;}',
+            '.xz-st-body{padding:10px 10px 10px;font-size:12px;line-height:1.55;flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;}',
             /* ★ v466：`.xz-st-sec` / `.xz-st-sec-sub` 已**不再被任何页使用**
                （v466 把第 2/3/4 页的分节从"2px 竖线 + 金色小字"换成了
                真正的分区框 `.xz-st-sect`，见下方 v466 那一段）。
@@ -6412,7 +6508,7 @@ d.attrs[a] = v;
             '.xz-st-sec{margin:10px 0 6px;padding-left:7px;border-left:2px solid rgba(230,189,118,.55);color:var(--xz-gold);font-size:12px;letter-spacing:.04em;font-weight:var(--xz-fw-med);}',
             '.xz-st-sec:first-child{margin-top:2px;}',
             '.xz-st-sec-sub{margin:8px 0 4px;font-size:11.5px;color:var(--xz-text-2);font-weight:var(--xz-fw-med);}',
-            '.xz-st-row{display:flex;align-items:center;gap:6px;margin:6px 0;}',
+            '.xz-st-row{display:flex;align-items:center;gap:6px;margin:2px 0;}',
             '.xz-st-row>label{flex:0 0 56px;color:var(--xz-text-2);font-size:11px;}',
             /* ★★★ v469：输入框内边距还回去（v466 从 6 压到 3，现在回 5）★★★
                3px 时输入框只有 22px 高，字贴着边框，看着"被夹住了"。
@@ -6445,7 +6541,7 @@ d.attrs[a] = v;
             '.xz-st-body input[type=number]{flex:0 0 58px;text-align:center;}',
             '.xz-st-body textarea{min-height:46px;resize:vertical;border-radius:8px;}',
             /* ★ v469：hint 的上下间距还回去（3/1 → 6/3），它原来是紧贴上一行的 */
-            '.xz-st-hint{margin:6px 0 3px;font-size:11px;color:var(--xz-muted);}',
+            '.xz-st-hint{margin:4px 0 2px;font-size:11px;color:var(--xz-muted);}',
             /* ★ v466 紧凑：一行放两个字段的容器。
                ★★ 这里踩过一次反向优化，记下来 ★★
                  第一版写成 `flex-direction:column`（label 在上、控件在下），
@@ -6476,6 +6572,20 @@ d.attrs[a] = v;
                  46 是「两位数字」的舒适宽，92 是它的两倍 —— 再宽就变成一个空长条，
                  玩家会以为那格能填长文本。 */
             '.xz-st-attr>input{flex:1 1 46px;min-width:40px;max-width:92px;}',
+            /* 2026-11-26：四维 = 四张紧凑小卡（标签在上、− 数字 + 在下），
+               不再拉成大宽条；窄屏 2×2。 */
+            '.xz-st-attrs{display:grid;grid-template-columns:1fr 1fr;gap:7px;}',
+            '.xz-st-attrs .xz-st-attr{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px;padding:6px 10px;border:1px solid rgba(230,189,118,.22);border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(0,0,0,.10));}',
+            '.xz-st-attrs .xz-st-attr>label{font-size:11.5px;letter-spacing:.04em;color:var(--xz-text-2);white-space:nowrap;}',
+            '.xz-attr-ctrl{display:flex;align-items:center;justify-content:center;gap:4px;}',
+            '.xz-st-attrs .xz-st-attr>input{width:32px;min-width:0;flex:none;text-align:center;font-size:16px;font-weight:600;color:var(--xz-gold-bright);background:transparent;border:none;padding:0;appearance:textfield;-moz-appearance:textfield;}',
+            '.xz-st-attrs .xz-st-attr>input::-webkit-outer-spin-button,.xz-st-attrs .xz-st-attr>input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}',
+            '@media (max-width:360px){.xz-st-attrs{grid-template-columns:1fr 1fr;}}',
+            /* 2026-11-26：血脉三格等宽，天骄预计不再被拉成竖条。 */
+            '.xz-st-blood-row{display:grid;grid-template-columns:1.1fr 1fr 120px;gap:8px;align-items:end;}',
+            '.xz-st-blood-row .xz-st-cell{min-width:0;}',
+            '.xz-st-blood-row .xz-st-cell>label{white-space:nowrap;}',
+            '.xz-st-blood-row .xz-st-cell>select{height:32px;box-sizing:border-box;}',
             /* ★★★ v466 第三轮压扁：**自适应换行流**（用户：「要尽量扁，紧凑」）★★★
                上一版用 JS 把字段两两分组（每 2 个硬包一层 `.xz-st-row`），
                结果在 760px 宽下仍然只放两个 —— 四维本来 4 个 × 130px = 520px，
@@ -6813,7 +6923,7 @@ d.attrs[a] = v;
                 + 'background:rgba(230,189,118,.10);color:#e8cb92;border:1px solid rgba(201,168,106,.6);'
                 + 'font-family:inherit;-webkit-tap-highlight-color:transparent;touch-action:manipulation;line-height:1.5;}',
             /* 手机：说明让位给按钮（三行说明比两个按钮更占地方） */
-            '@media (max-width:430px){.xz-st-cem-d{display:none;}.xz-st-cem-t{margin-right:2px;}}',
+            '@media (max-width:430px){.xz-st-cem-t{margin-right:2px;}.xz-st-cem-d{flex-basis:100%;}}',
             '.xz-st-cem-b:hover{background:rgba(230,189,118,.20);}',
             '.xz-st-cem-b.alt{background:rgba(155,180,220,.10);color:#b9cde8;border-color:rgba(155,180,220,.55);}',
             '.xz-st-cem-b.alt:hover{background:rgba(155,180,220,.20);}',
@@ -7167,7 +7277,7 @@ d.attrs[a] = v;
                ⚠ 别怕"框变高会超出"：四页是 `min-height` 不是 `height`，
                  第 3 页内容最多（598px）也还有余量，且它自己有限高面板。
                ⚠ 标题栏别超过 8px：再多就变成"标题比内容还重"，喧宾夺主。 */
-            '.xz-st-sect{margin:0 0 9px;border:1px solid rgba(230,189,118,.22);border-radius:9px;'
+            '.xz-st-sect{margin:0 0 4px;border:1px solid rgba(230,189,118,.22);border-radius:9px;'
                 + 'background:linear-gradient(180deg,rgba(255,255,255,.028),rgba(0,0,0,.14));'
                 + 'box-shadow:inset 0 1px 0 rgba(255,255,255,.045),0 2px 10px rgba(0,4,8,.32);}',
             /* ★★★ v639d：夜墨/日光只许「一种颜色 + 相反色」★★★
@@ -7289,7 +7399,7 @@ d.attrs[a] = v;
             '.xz-st-sect-h{flex-wrap:wrap;row-gap:2px;}',
             '.xz-st-sect-h>.xz-st-sect-t,.xz-st-sect-h .xz-st-sect-n{'
                 + 'white-space:normal;overflow:visible;text-overflow:clip;word-break:break-word;}',
-            '.xz-st-sect-b{padding:7px 11px 9px;}',
+            '.xz-st-sect-b{padding:4px 10px 4px;}',
             /* ★ v470：第 1 页「版本号 / 前言 / 注意事项」三块的正文样式 ★
                ⚠ 必须给 `.xz-st-about` 写样式：它是本轮新加的类，不写就是
                  "HTML 里在用、样式表里从未定义" —— `_v468_css_cls.mjs` 会直接报红。
@@ -7602,9 +7712,9 @@ d.attrs[a] = v;
             /* ② 折叠说明
                ★ v469：折叠条也还回去（2px → 5px 内边距、10.5 → 11px 字）。
                  它现在和其它字段的间距一致了，不再像贴在框底的一行小注。 */
-            '.xz-st-fold{margin:6px 0 2px;border:1px dashed rgba(230,189,118,.26);border-radius:6px;'
+            '.xz-st-fold{margin:4px 0 2px;border:1px dashed rgba(230,189,118,.26);border-radius:6px;'
                 + 'background:rgba(0,0,0,.20);}',
-            '.xz-st-fold>summary{list-style:none;cursor:pointer;padding:5px 9px;'
+            '.xz-st-fold>summary{list-style:none;cursor:pointer;padding:2px 9px;'
                 + 'font-size:11px;color:var(--xz-muted);display:flex;align-items:center;gap:6px;'
                 + 'user-select:none;border-radius:6px;}',
             '.xz-st-fold>summary::-webkit-details-marker{display:none;}',
@@ -7977,7 +8087,7 @@ d.attrs[a] = v;
     function renderEquippedBox(d, noHead) {
         var skills = d.items.法术 || [];
         var hearts = d.items.心法 || [];
-        var _count = '法术 ' + skills.length + ' 门 · 心法 ' + hearts.length + ' 部 · 法宝 ' + (d.items.法宝 || []).length + ' 件';
+        var _count = '法术 ' + skills.length + ' 门 · 心法 ' + hearts.length + ' 部 · 法宝 ' + (d.items.法宝 || []).length + ' 件 · 神通 ' + (d.items.神通 || []).length + ' 门';
         var h = '<div class="xz-st-equipped-box">';
         if (!noHead) {
             h += '<div class="xz-st-equipped-head">' +
@@ -8090,6 +8200,17 @@ d.attrs[a] = v;
             hearts.forEach(function (it, i) { h += _slotItem(it, i, '心法'); });
         }
 
+        /* v1.72：神通也要在「已配 · 核心专区」里列出来（玩家报：加了神通这里没有）。 */
+        var _sshen = d.items.神通 || [];
+        if (_sshen.length === 0) {
+            h += '<div class="xz-st-slot-item empty">' +
+                '<span class="xz-st-slot-badge empty">神通</span>' +
+                '<span class="xz-st-slot-empty-tip">空着</span>' +
+                '</div>';
+        } else {
+            _sshen.forEach(function (it, i) { h += _slotItem(it, i, '神通'); });
+        }
+
         // 武器玄技栏
         var art = d.items.法宝[0];
         if (art) {
@@ -8104,6 +8225,7 @@ d.attrs[a] = v;
                 '</div></div>' +
                 '<div class="xz-st-slot-details">' + (art.法宝类型 ? ('<span class="xz-st-tag-term" style="color:var(--xz-cyan);">' + esc(art.法宝类型) + '</span> ') : '') + '</div>' +
                 '<div class="xz-st-slot-desc-text" style="color:var(--xz-cyan);border-left:2px solid rgba(120,180,150,0.45);padding-left:6px;margin-top:4px;line-height:1.4;">描述：' + esc(art.描述 || '—') + '</div>' +
+                (art.效果 ? ('<div class="xz-st-slot-desc-text" style="color:var(--xz-gold-bright);border-left:2px solid rgba(230,189,118,0.45);padding-left:6px;margin-top:4px;line-height:1.4;">效果：' + esc(typeof art.效果 === 'string' ? art.效果 : setToText(art.效果)) + '</div>') : '') +
                 '</div>';
         } else {
             h += '<div class="xz-st-slot-item empty">' +
@@ -8989,7 +9111,7 @@ d.attrs[a] = v;
                 '<div style="flex:1;min-width:0;display:flex;gap:6px;align-items:flex-start;">' +
                 '<textarea data-xz-tpl="效果" maxlength="80" placeholder="' + esc(_ph) + '" style="flex:1;min-width:0;box-sizing:border-box;background:var(--xz-input,#0e0e10);border:1px solid rgba(230,189,118,.3);border-radius:6px;padding:7px 9px;color:var(--xz-text);font-size:12.5px;line-height:1.5;resize:vertical;font-family:inherit;">' +
                 text(it.效果 || it.描述) + '</textarea>' +
-                '<button type="button" class="xz-st-mini" data-xz-act="roll-desc" title="随机一条效果" style="flex:none;padding:6px 9px;">🎲</button>' +
+                '<button type="button" class="xz-st-mini" data-xz-act="roll-eff-tpl" title="随机一条效果" style="flex:none;padding:6px 9px;">🎲</button>' +
                 '</div></div>';
         }
 
@@ -10443,11 +10565,16 @@ d.attrs[a] = v;
         for (var i = 0; i < XZ_WIZ_PAGES.length; i++) {
             var cls = 'xz-st-wiz-dot' + (i === cur ? ' on' : (i < cur ? ' done' : ''));
             /* 页签可点：允许直接跳回上一步改东西（填错了再往前走，别逼人一路退） */
-            h += '<button type="button" class="' + cls + '" data-xz-act="page" data-xz-page="' + i + '"' +
-                 ' title="第 ' + (i + 1) + ' 页 · ' + esc(XZ_WIZ_PAGES[i]) + '">' +
-                 '<span class="xz-st-wiz-n">' + (i + 1) + '</span>' +
-                 '<span class="xz-st-wiz-t">' + esc(XZ_WIZ_PAGES[i]) + '</span>' +
-                 '</button>';
+            var _wdInner = '<span class="xz-st-wiz-n">' + (i + 1) + '</span>' +
+                 '<span class="xz-st-wiz-t">' + esc(XZ_WIZ_PAGES[i]) + '</span>';
+            if (cur === 0) {
+                /* 第 1 页未开始：页签只展示，禁止跳步；过了第 1 页才允许页签互跳。 */
+                h += '<span class="' + cls + '" title="先通过第 1 页的世界书检测">' + _wdInner + '</span>';
+            } else {
+                h += '<button type="button" class="' + cls + '" data-xz-act="page" data-xz-page="' + i + '"' +
+                     ' title="第 ' + (i + 1) + ' 页 · ' + esc(XZ_WIZ_PAGES[i]) + '">' + _wdInner +
+                     '</button>';
+            }
         }
         h += '</div>';
         return h;
@@ -10459,6 +10586,7 @@ d.attrs[a] = v;
         var cur = Number(state.page) || 0, last = XZ_WIZ_PAGES.length - 1;
         if (cur >= last) return '';
         var h = '<div class="xz-st-pager">';
+        if (cur === 0) return '';
         if (cur > 0) {
             h += '<button type="button" class="xz-st-main xz-st-ghost" data-xz-act="page" data-xz-page="' + (cur - 1) + '">◀ 上一步</button>';
         }
@@ -10512,11 +10640,6 @@ d.attrs[a] = v;
            ⚠ 右边那条 `extra` **不写版本号**，只写一处：标题栏右侧已经是读数的位置，
              框内再写一次就是"同一件事两个真相源"（本项目最忌，玩家也会觉得重复）。
              ⇒ 版本号放框内（醒目、能选中复制），标题栏右侧留空。 */
-        h += sectOpen('当前版本号', '');
-        h += '<div class="xz-st-about-row"><span class="xz-st-about-k">版本</span>' +
-             '<span class="xz-st-about-v">' + esc(VERSION) + '</span></div>';
-        h += sectClose();
-
         /* ② 前言 */
         h += sectOpen('前言', '测试版');
         h += '<div class="xz-st-about">' +
@@ -10535,6 +10658,39 @@ d.attrs[a] = v;
              '<p>DLC 根据自己喜好开启。</p>' +
              '</div>';
         h += sectClose();
+
+        /* ★ 2026-11-26：世界书检测 + 版本检测。世界书对齐才允许开始游玩。 */
+        var _wst = wbVerState();
+        var _wbOk = !!(_wst && _wst.ok && _wst.same);
+        var _wbText = !_wst ? '核对中…'
+            : (!_wst.ok ? ('未检测到' + (_wst.msg ? '：' + _wst.msg : ''))
+                : ('世界书 ' + _wst.ver + (_wst.same ? ' · 已对齐' : ' · 未对齐（卡 ' + _wst.build + '）')));
+        var _runV = '';
+        try { _runV = String((window && window.__XZ_HOT_TAG__) || ''); } catch (eRV0) {}
+        if (!/^vd+(?:.d+)?$/.test(_runV)) _runV = VERSION;
+        h += sectOpen('世界书检测', '');
+        h += '<div class="xz-st-about-row"><span class="xz-st-about-k">状态</span>' +
+             '<span class="xz-st-about-v" data-xz-wb-status="1" style="color:' + (_wbOk ? '#4ade80' : '#fbbf24') + ';">' + esc(_wbText) + '</span></div>';
+        h += '<div class="xz-st-about-row"><span class="xz-st-about-k">当前版本</span>' +
+             '<span class="xz-st-about-v" data-xz-wb-cur="1">' + esc(_wst && _wst.ver ? _wst.ver : '—') + '</span></div>';
+        h += sectClose();
+        h += sectOpen('版本检测', '');
+        h += '<div class="xz-st-about-row"><span class="xz-st-about-k">卡版本</span>' +
+             '<span class="xz-st-about-v">' + esc(VERSION) + '</span></div>';
+        h += '<div class="xz-st-about-row"><span class="xz-st-about-k">实际运行</span>' +
+             '<span class="xz-st-about-v">' + esc(_runV) + '</span></div>';
+        h += '<div class="xz-st-about-row"><span class="xz-st-about-k">状态</span>' +
+             '<span class="xz-st-about-v" style="color:' + (_runV === VERSION ? '#4ade80' : '#fbbf24') + ';">' +
+             (_runV === VERSION ? '一致' : '已热更') + '</span></div>';
+        h += sectClose();
+        /* 2026-11-26：开始游玩放在「版本检测」下面，留 8px 缝、左右 12px 边距。 */
+        var _gok0 = xzStartGateOk();
+        h += '<div class="xz-start-wrap">'
+            + '<button type="button" class="xz-st-main xz-start-btn" data-xz-act="start-play" data-xz-start-gate="1"'
+            + (_gok0 ? '' : ' disabled')
+            + ' title="' + (_gok0 ? '世界书已对齐，开始游玩' : '世界书未对齐或未检测到，不能开始') + '">'
+            + (_gok0 ? '开始游玩' : '开始游玩（世界书未对齐）') + '</button></div>';
+        try { _gateTries = 0; setTimeout(xzStartGateRefresh, 1200); } catch (eGT) {}
         return h;
     }
 
@@ -10575,10 +10731,7 @@ d.attrs[a] = v;
              正文 flow 区（9533 行附近）已有「天骄预计 [非天骄]」那颗金框读数，
              且它在折叠区外、一直显示。名称/品阶/纯度更是下面四格的原值本身。
            ⇒ 标题栏只留「血脉 · 灵根」+ 随机血脉按钮（v620 作者钦定留在标题栏）。 */
-        h += sectOpen('血脉 · 灵根', '', '灵根',
-            '<button type="button" class="xz-st-dice" data-xz-act="roll-blood"'
-            + ' style="padding:3px 9px;font-size:11px;" title="品阶、纯度、名称、效果一起掷；掷完仍可逐格手改">'
-            + '🎲 随机血脉</button>');
+        h += sectOpen('灵根', '');
         /* ★★★ v466 第四轮压扁：灵根从 3 行 → 2 行 ★★★
            第三轮量出来的真相（`工具/_v466_flow.mjs`，760px 宽、卡片内可用 720px）：
              行1 名称(720，独占)  ← 就是这一行白占的
@@ -10610,11 +10763,11 @@ d.attrs[a] = v;
            ── 布局 ──────────────────────────────────────────────────────
              三格：品阶（均分）+ 属性（均分）+ 天骄预计（定宽 104）。
              宽屏一行三个，390px 窄屏按 DOM 顺序折成 2+1，不会再挤。 */
-        h += '<div class="xz-st-flow" style="margin-top:0;">' +
+        h += '<div class="xz-st-blood-row" style="margin-top:0;">' +
              '<div class="xz-st-cell"><label>品阶</label><select data-xz-field="spiritRootRank">' + opts(SPIRIT_ROOT_RANKS, d.spiritRootRank || '伪灵根') + '</select></div>' +
              '<div class="xz-st-cell"><label>属性</label><select data-xz-field="elem">' + opts(ELEMS, d.elem) + '</select></div>' +
             '<div class="xz-st-cell" style="flex:0 0 104px;"><label>天骄预计</label>' +
-            '<div style="padding:5px 8px;border:1px solid rgba(212,175,55,.45);border-radius:8px;background:rgba(212,175,55,.10);color:var(--xz-gold-bright);font-size:12.5px;font-weight:var(--xz-fw-med);text-align:center;">' +
+            '<div style="min-height:32px;padding:5px 8px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;white-space:nowrap;align-self:stretch;border:1px solid rgba(212,175,55,.45);border-radius:8px;background:rgba(212,175,55,.10);color:var(--xz-gold-bright);font-size:12.5px;font-weight:var(--xz-fw-med);text-align:center;">' +
             esc((tjNow && tjNow.name) || '非天骄') + '</div></div>' +
              '</div>';
              /* ★ 效果 + 说明是两个 80 字短文本，宽屏并排一行、窄屏自动折。
@@ -10884,16 +11037,17 @@ d.attrs[a] = v;
            ⚠ `updateReadouts()` 里 `host.querySelectorAll('[data-xz-attr]')` 会同时
              抓到**按钮和输入框**（原来就这样，它设的是 `.max`，按钮上设了也无害）。
              这里没有改变选择器语义 —— 每个 cell 仍自带完整三件套，没做共享控件优化。 */
-        var _ab = 'width:24px;height:24px;flex:none;border-radius:5px;border:1px solid rgba(230,189,118,.35);background:rgba(230,189,118,.10);color:#ffd88a;font-size:15px;font-weight:var(--xz-fw-med);line-height:1;cursor:pointer;';
-        h += '<div class="xz-st-flow">';
+        var _ab = 'width:22px;height:22px;flex:none;border-radius:5px;border:1px solid rgba(230,189,118,.35);background:rgba(230,189,118,.10);color:#ffd88a;font-size:14px;font-weight:var(--xz-fw-med);line-height:1;cursor:pointer;';
+        h += '<div class="xz-st-attrs">';
         for (var _ai = 0; _ai < ATTRS.length; _ai++) {
             var a = ATTRS[_ai];
             h += '<div class="xz-st-attr">' +
                 '<label>' + esc(a) + '</label>' +
+                '<div class="xz-attr-ctrl">' +
                 '<button type="button" data-xz-act="attr-dec" data-xz-attr="' + esc(a) + '" title="减 1" style="' + _ab + '">−</button>' +
-                '<input type="number" data-xz-field="attr" data-xz-attr="' + esc(a) + '" min="1" max="' + rule.cap + '" step="1" value="' + d.attrs[a] + '" style="flex:1 1 46px;min-width:40px;max-width:92px;text-align:center;">' +
+                '<input type="number" data-xz-field="attr" data-xz-attr="' + esc(a) + '" min="1" max="' + rule.cap + '" step="1" value="' + d.attrs[a] + '" style="text-align:center;">' +
                 '<button type="button" data-xz-act="attr-inc" data-xz-attr="' + esc(a) + '" title="加 1" style="' + _ab + '">+</button>' +
-                '</div>';
+                '</div></div>';
         }
         h += '</div>';
         /* ⚠ 这行是**读数**，不进 fold（`updateReadouts()` 靠 `#xz-st-points` 找它） */
@@ -11274,7 +11428,10 @@ d.attrs[a] = v;
            表现为"两个各自能滚的小窗口叠在一起"，截图里一眼就能看出来，
            但 DOM 查询（`.xz-st-prem` 取第一个）不会报错 —— 只会静默地少一半内容。
            ⇒ 已经删掉。别再补回来。 */
-        for (var _pi = 0; _pi < XZ_START_PRESETS.length; _pi++) {
+        /* 2026-11-26：第 4 页首次只渲染 12 条预设，其余点「显示全部」再补。
+           53 条一次性进 DOM 是第四页卡死/闪退的主要峰值之一。 */
+        var _premLimit = state.showAllPrem ? XZ_START_PRESETS.length : Math.min(12, XZ_START_PRESETS.length);
+        for (var _pi = 0; _pi < _premLimit; _pi++) {
             var _p = XZ_START_PRESETS[_pi];
             /* ★★★ v613：选中判定必须比 big **和** small ★★★
                20 条里有两组共用同一个 big（「幽月仙宫」两条、「霜霄仙阙」两条），
@@ -11330,6 +11487,10 @@ d.attrs[a] = v;
                 h += '</div>';
             }
             h += '</div>';
+        }
+        if (!state.showAllPrem && XZ_START_PRESETS.length > _premLimit) {
+            h += '<button type="button" class="xz-st-prem-pick" data-xz-act="prem-more" style="margin:6px 0;">'
+                + '显示全部 ' + XZ_START_PRESETS.length + ' 条 ▶</button>';
         }
         h += '</div>';
         h += '</div>';
@@ -11426,11 +11587,13 @@ d.attrs[a] = v;
         /* ★ v1.053：人物条目管理器入口**接回**第 4 页。
            第 4 页重写时它被一起删掉了 ⇒ DLC 勾选与人物条目管理在游戏里就再也点不到
            （_v470 的三条判据当场变红）。 */
-        h += '<div class="xz-st-cem">' +
-            '<span class="xz-st-cem-t">人物条目</span>' +
-            '<span class="xz-st-cem-d">若想游玩 DLC，可点这里</span>' +
-            '<button type="button" class="xz-st-cem-b" data-xz-startact="open-cem">人物条目查看管理器</button>' +
-            '</div>';
+        /* 2026-11-26：第 4 页**不再内置人物管理器入口** —— 按钮和它背后的管理器/DLC
+           代码都不在这页跑（作者：只隐藏没用，代码一转照样卡死玩家）。
+           想玩 DLC 的玩家点右下角人物悬浮球自行开关。 */
+        h += '<div class="xz-st-cem">'
+            + '<span class="xz-st-cem-t">DLC</span>'
+            + '<span class="xz-st-cem-d">想玩 DLC，请点右下角人物悬浮球自行开关。</span>'
+            + '</div>';
 
 
         /* ★★★ v582：写入期间必须给可见反馈 ★★★
@@ -11497,7 +11660,7 @@ d.attrs[a] = v;
         h += cardOpen('');
         h += '<div class="xz-st-head"><span class="xz-st-seal">开</span>'
             + '<span class="xz-st-title"><span class="xz-st-titlebox"><span>开局设置</span></span></span>'
-            + xzStartThemeBtnHtml() + wbVerLabelHtml() + '</div>';
+            + xzStartThemeBtnHtml() + '</div>';
         h += '<div class="xz-st-body">';
         h += wizBarHtml();
 
@@ -11507,20 +11670,19 @@ d.attrs[a] = v;
         else if (page === 1) h += pageWizBodyHtml(d);
         else if (page === 2) h += pageWizSkillHtml(d);
         else {
-            /* ★ v528：**每次切进第 4 页都重读一次 DLC 条目开关**。
-               为什么要绑"进页"而不是绑 render：进页是离散事件，读一次就够；
-               绑 render 会读 → 重绘 → 再读，转圈。
-               `_lastWizPage` 是用来识别"这一帧是不是刚切进来的"。 */
-            if (_lastWizPage !== page) {
-                _lastWizPage = page;
-                try { refreshDlcLive(true); } catch (eDL2) {}
-            }
+            /* 2026-11-26：第 4 页不再读 DLC 条目开关（那套管理器/DLC 代码会在这页跑，
+               是卡死玩家的一部分）。DLC 改由右下角人物悬浮球开关。 */
             h += pageWizPlaceHtml(d);
         }
 
         /* 翻页条只在第 1~3 页有；第 4 页自带「确认开局 / 重置」。
            ⚠ 但第 4 页仍需要一条「◀ 上一步」—— 否则玩家想改落点前面填的东西
              只能靠点上面的页签，而页签上没写"回退"。所以最后一页单独补一颗。 */
+        if (state.note) h += '<div class="xz-st-note' + (state.note.indexOf('⚠') === 0 ? ' warn' : '') + '">' + esc(state.note) + '</div>';
+        if (state.errText) h += errHtml();
+        h += '</div>';   /* ← 正文区（可滚动）到此为止 */
+
+        /* 翻页条在正文区**外面**，钉在卡片底部，不随内容滚走。 */
         if (page >= XZ_WIZ_PAGES.length - 1) {
             h += '<div class="xz-st-pager" style="border-top:none;padding-top:0;margin-top:2px;">' +
                  '<button type="button" class="xz-st-main xz-st-ghost" data-xz-act="page" data-xz-page="' + (page - 1) + '">◀ 上一步</button>' +
@@ -11528,10 +11690,7 @@ d.attrs[a] = v;
         } else {
             h += wizPagerHtml();
         }
-
-        if (state.note) h += '<div class="xz-st-note' + (state.note.indexOf('⚠') === 0 ? ' warn' : '') + '">' + esc(state.note) + '</div>';
-        if (state.errText) h += errHtml();
-        h += '</div></div>';
+        h += '</div>';   /* ← .xz-st-card 收口 */
 
         if (state.howto) h += renderHowtoOverlay();
         if (state.mistView) h += renderMistOverlay();
@@ -11889,6 +12048,7 @@ d.attrs[a] = v;
     }
 
     function render(force) {
+        refreshVersion();
         var hard = (force !== false);
         if (state.rendering || dead) return;
         state.rendering = true;
@@ -11921,6 +12081,7 @@ d.attrs[a] = v;
                ⚠ 加字段时顺手问一句：这个字段影响 buildHtml() 的输出吗？
                  影响就必须进来。不影响的（纯防重入标志）在注释里写明理由。 */
             var sig = [mounted, ours, state.done, state.tab, state.page,
+                       state.showAllPrem ? 1 : 0,
                        state.sectOpen || '',
                        state.dlcBox ? 1 : 0, Object.keys(state.dlcOpen || {}).join(','),
                        mes.getAttribute('mesid') || '', state.busy ? 1 : 0,
@@ -12836,24 +12997,7 @@ host.__xzGuard = true;
                  ⇒ 改走 `XZ05(name)`（本文件顶部，和 `XZ_SHARED` 同构：自身→parent→top→同源 iframe）。
                  **不要再写回 `globalThis.__XZ05__`** —— 它在本机探针里恒成立，探针会全绿。 */
             if (act === 'theme') { xzStartThemeToggle(); return; }
-            if (act === 'open-cem' || act === 'open-gallery') {
-                var _fn = XZ05(act === 'open-cem' ? 'xzCemOpen' : 'xzCemGallery');
-                if (typeof _fn !== 'function') {
-                    /* ⚠ 07 里没有 toast（05 才有）—— 提示走自己的 `state.note`，
-                       它渲染成卡内那行金色说明。别去调 toast，那是 05 IIFE 里的局部函数，
-                       跨 IIFE 不可见（`_v344_iife_scope` 会判悬空名直接挡发布）。 */
-                    state.note = act === 'open-cem'
-                        ? '管理器没加载起来（请重载一次楼层再试）'
-                        : '相册没加载起来（请重载一次楼层再试）';
-                    render(true);
-                    return;
-                }
-                try { _fn(); } catch (eX) {
-                    state.note = '打开失败：' + ((eX && eX.message) || eX);
-                    render(true);
-                }
-                return;
-            }
+
 
             /* ★ v73：四维 −/+ 按钮（移动端没有原生上下箭头，靠这个调） */
             if (act === 'attr-inc' || act === 'attr-dec') {
@@ -12983,7 +13127,18 @@ host.__xzGuard = true;
                  看起来像"点坏了"。formHtml 里也会再 clamp 一次（双保险，两边同源）。
                ⚠ clamp 之后**必须写回 `state.page`**，不是只用来渲染 ——
                  sig 读的是 state.page，不写回就等于没翻页（见 render 那行注释）。 */
+            if (act === 'start-play') {
+                if (!xzStartGateOk()) {
+                    try { state.note = '世界书未对齐或还没检测到，先导入卡内世界书再开始。'; render(true); } catch (eSP) {}
+                    return;
+                }
+                state.page = 1;
+                try { render(true); } catch (eSP2) {}
+                return;
+            }
             if (act === 'page') {
+                /* 第 1 页只能通过「开始游玩」进入第 2 页；页签与「下一步」都不许跳。 */
+                if ((Number(state.page) || 0) === 0) return;
                 var _pg = parseInt(t.getAttribute('data-xz-page'), 10);
                 if (isNaN(_pg)) _pg = 0;
                 if (_pg < 0) _pg = 0;
@@ -13196,12 +13351,13 @@ host.__xzGuard = true;
             }
             if (act === 'roll-all') {
                 /* ★ v72：只有法宝的「描述」在 roll-all 时保留（玩家手写的一句画面感不该被洗掉） */
-                var keep = (kind === '法宝') ? String(state.tpl[kind].效果 || state.tpl[kind].描述 || '') : '';
+                var keep = (kind === '法宝') ? String(state.tpl[kind].描述 || '') : '';
                 /* ★ v626：第三参 true = **连名字一起掷**。这颗按钮的语义就是"整条给我一份能用的"，
                    名字留空等于没兑现（作者 2026-11-16 点名两次）。
                    ⚠ 表单初始化 / 锻造台新建那两处**不传**，理由见 rollAll 上方注释。 */
                 rollAll(state.tpl[kind], kind, true);
-                if (kind === '法宝') { state.tpl[kind].效果 = keep; state.tpl[kind].描述 = keep; }
+                /* 2026-11-26：效果用 rollAll 新掷的那份；这里只把玩家手写的描述贴回去。 */
+                if (kind === '法宝' && keep) state.tpl[kind].描述 = keep;
                 /* 掷完把名字回给玩家看一眼 —— 否则名字是变了，但他不知道是掷出来的还是自己填的 */
                 var _rn = String(state.tpl[kind].名 || '');
                 state.note = _rn ? ('🎲 已随机：' + kind + '《' + _rn + '》，名字也一起掷了，可以改。') : ('🎲 已随机' + kind + '。');
@@ -13635,6 +13791,11 @@ host.__xzGuard = true;
             if (act === 'prem-toggle') {
                 var _tid = String(t.getAttribute('data-xz-prem') || '');
                 state.premOpen = (String(state.premOpen || '') === _tid) ? '' : _tid;
+                render(true);
+                return;
+            }
+            if (act === 'prem-more') {
+                state.showAllPrem = true;
                 render(true);
                 return;
             }
@@ -14470,6 +14631,8 @@ host.__xzGuard = true;
                         state.tpl = emptyTplState();
                         state.editing = { 法术: null, 心法: null, 法宝: null, 神通: null };
                         state.tab = '法宝';
+                        state.page = 0;
+                        state.showAllPrem = false;
                         state.done = guessDone();
                         state.override = false;
                         state.note = ''; state.errText = '';
