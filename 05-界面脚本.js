@@ -408,8 +408,8 @@ var XZ_VER_FLOOR = 'v1.50';
     function themeNow() {
         try {
             var v = localStorage.getItem('xzTheme');
-            return (v === 'day' || v === 'qing') ? v : 'night';
-        } catch (e) { return 'night'; }
+            return (v === 'day' || v === 'qing' || v === 'night') ? v : 'qing';
+        } catch (e) { return 'qing'; }
     }
     /* 循环顺序：夜墨 → 玄青 → 日光 → 夜墨。
        为什么玄青排在夜墨之后：两者都是深色，连着看一眼就知道差在底色冷暖和金色明度，
@@ -1604,6 +1604,9 @@ try { window.__XZ_MAP_ID__ = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAA
     }
     function xzWbVerRefresh(force) {
         if (state.wbVerReading && !force) return;
+        /* 2026-11-26：已经有结果就不再重扫。07 每 1.5 秒踢一次 force=true，
+           每次都把所有世界书重读一遍 —— 这就是“每次十几二十秒”的来源。 */
+        if (!force && state.wbVer) return;
         /* ★★★ v405：读之前先把卡版本**跨 iframe**推给 04。
            04 可能比 05 先跑完（它要先下载引擎），那时它已经落回自带号；
            而 04 的 `__XZ_SET_BUILD__` 挂在**它自己那个 window** 上，这里够不着。
@@ -1688,8 +1691,7 @@ try { window.__XZ_MAP_ID__ = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAA
         var tip = same
             ? ('本卡 ' + st.build + '，已是最新版本。\n（世界书《版本号测试》= ' + st.ver + '，与卡一致）\n' +
                '脚本与引擎会自动热更新，不需要重新导入卡。')
-            : ('本卡 ' + st.build + '。\n世界书还是 ' + st.ver + '，没跟上 —— 世界书不能热更新，\n' +
-               '请去酒馆「导入卡内世界书」（地球图标 / 更多菜单）覆盖一次，别只换 PNG。');
+            : ('没同步，请删掉旧世界书再替换更新卡（直接删卡无用）');
         /* 文字比旧版长（"世界书 v1.04" → "已是最新版本 v1.05"），字号收 0.5px 抵掉，
            免得把顶栏右侧那排按钮挤到换行。 */
         /* ★★★ v663（作者 2026-11-21）：「版本分页有歧义，给世界书版本字眼加上，
@@ -2033,6 +2035,9 @@ try { window.__XZ_MAP_ID__ = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAA
         if (typeof globalThis !== 'undefined') {
             if (typeof globalThis.__XZ05__ !== 'object' || globalThis.__XZ05__ === null) globalThis.__XZ05__ = {};
             globalThis.__XZ05__.xzWbVerState = function () { return state.wbVer; };
+            /* 2026-11-26：开局第 1 页不渲染状态栏时，state.wbVer 永远是 null。
+               07 通过这个入口主动踢一次重读，两处仍共用 05 的 state（唯一真相源）。 */
+            globalThis.__XZ05__.xzWbVerRefresh = function (force) { try { xzWbVerRefresh(!!force); } catch (eWbR) {} };
         }
     } catch (eExpWbV) {}
 /* 宽屏大字模式：只记住「要不要宽」，存在浏览器本地，不写进变量、不影响存档 */
@@ -4029,7 +4034,8 @@ function xzTypeOf(name, fbT, fbA) {
         '.xz-root .xz-view::-webkit-scrollbar-thumb{background:rgba(212,175,55,0.3);border-radius:2px;}',
 
         /* 1. 主角面板：双列卡片方格 Grid (一行两格) */
-        '.xz-root .xz-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}',
+        '.xz-root .xz-grid-2{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,0.88fr);gap:8px;align-items:stretch;}',
+        '.xz-root .xz-grid-2>*{min-width:0;}',
         /* ★ 2026-11-19：主角页那排统计格压紧（作者：「挤扁一点，面板不就紧凑了」）。
            只动 .xz-main-stats，别的 .xz-box 不受影响。 */
         '.xz-root .xz-main-stats > .xz-box{padding:8px 12px;}',
@@ -4041,11 +4047,12 @@ function xzTypeOf(name, fbT, fbA) {
            之前 grid-template-rows 写成 auto 1fr auto 时，1fr 按 auto-placement
            落到了第 1 行，左右两格被撑高，气运反而矮。现在明确三行：
            第 1 行自然高度、第 2 行气运独占 minmax(64px,1fr)、第 3 行自然高度。 */
-        '.xz-root .xz-main-stats{height:100%;grid-template-rows:auto minmax(64px,1fr) auto;align-content:start;}',
+        '.xz-root .xz-main-stats{height:auto;grid-template-rows:none;grid-auto-rows:auto;align-content:start;}',
         '.xz-root .xz-main-stats > .xz-fate{min-height:64px;}',
         /* 三张气运卡跟着变高（不然格高了、卡还是贴着顶） */
         '.xz-root .xz-main-stats > .xz-fate > .xz-box-v{flex:1 1 auto;align-items:stretch;}',
-        '.xz-root .xz-main-stats .xz-box{min-height:0;}',
+        '.xz-root .xz-main-stats .xz-box{min-height:0;height:auto;}',
+        '.xz-root .xz-main-stats .xz-box.xz-fate{min-height:60px;}',
         '.xz-root .xz-box{background:var(--dhl-reading);border:1px solid var(--dhl-border);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;justify-content:center;min-height:54px;transition:all 0.2s;box-shadow:0 4px 16px rgba(0,4,8,0.5);}.xz-root .xz-box:hover{border-color:var(--dhl-border-strong);box-shadow:var(--dhl-glow);}',
         /* 灵根格与气血格等高：高度写死、超出滚动（用户：灵根区固定宽高、只能滑，宽高对齐气血框） */
         /* ★★★ v476 第 4 条修正：`.xz-box-eq` 现在**只剩气血框一处**在用
@@ -4073,6 +4080,17 @@ function xzTypeOf(name, fbT, fbA) {
            （font-size 11.5px / weight 600 / color var(--xz-muted)），值用正文色，杜绝满屏金。 */
         '.xz-root  .xz-main-stats .xz-box-k{color:var(--xz-gold);font-size:11.5px;font-weight:var(--xz-fw);letter-spacing:0.04em;}',
         '.xz-root .xz-main-stats .xz-box-v{font-weight:var(--xz-fw-med);font-size:13.5px;color:var(--xz-text);}',
+        /* 2026-11-26：主角左格 = 头像 + 日期时辰；右格可用点。 */
+        '.xz-root .xz-main-left{display:flex;flex-direction:column;justify-content:center;gap:7px;min-width:0;overflow:hidden;}',
+        '.xz-root .xz-avatar{width:104px;height:128px;align-self:flex-start;flex:none;display:flex;align-items:center;justify-content:center;border:1px solid rgba(201,168,106,.42);border-radius:8px;background:linear-gradient(160deg,rgba(201,168,106,.14),rgba(0,0,0,.28));color:rgba(201,168,106,.65);font-size:28px;font-weight:700;cursor:pointer;overflow:hidden;}',
+        '.xz-root .xz-avatar img{width:100%;height:100%;object-fit:cover;display:block;}',
+        '.xz-root .xz-dt-bar{display:flex;align-items:center;gap:4px;padding:6px 8px;min-width:0;box-sizing:border-box;overflow:hidden;border:1px solid rgba(201,168,106,.3);border-radius:7px;background:linear-gradient(90deg,rgba(201,168,106,.10),rgba(201,168,106,.02));white-space:nowrap;}',
+        '.xz-root .xz-dt-k{font-size:9px;letter-spacing:.14em;white-space:nowrap;color:var(--xz-gold);}',
+        '.xz-root .xz-dt-v{font-size:12px;font-weight:600;white-space:nowrap;color:var(--xz-gold-bright);font-variant-numeric:tabular-nums;}',
+        '.xz-root .xz-dt-sep{width:1px;height:16px;flex:none;background:linear-gradient(180deg,transparent,rgba(201,168,106,.6),transparent);}',
+        '.xz-root .xz-avail{display:flex;align-items:center;justify-content:space-between;margin-top:6px;padding:5px 10px;box-sizing:border-box;width:100%;min-width:0;border:1px solid rgba(201,168,106,.28);border-radius:6px;background:rgba(201,168,106,.06);}',
+        '.xz-root .xz-avail span{font-size:10.5px;letter-spacing:.16em;color:var(--xz-gold);}',
+        '.xz-root .xz-avail b{font-size:14px;color:var(--xz-gold-bright);font-variant-numeric:tabular-nums;}',
         '.xz-root .xz-progress{height:4px;background:rgba(0,0,0,0.4);border-radius:2px;overflow:hidden;margin-top:4px;}',
         '.xz-root .xz-progress-fill{height:100%;background:linear-gradient(90deg,var(--xz-gold),var(--xz-gold-bright));border-radius:2px;}',
 
@@ -4273,6 +4291,7 @@ function xzTypeOf(name, fbT, fbA) {
         /* 2026-11-23（作者：人物档案要「一个个格子」，短的就成格子，不要宽条）：
        固定格宽 248px、左对齐流式排；1 个人物就是 1 个小格，不再铺满整行。 */
         '.xz-root .xz-npc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:10px;align-items:start;}',
+        '.xz-root .xz-npc-card{content-visibility:auto;contain-intrinsic-size:auto 96px;}',
         '.xz-root .xz-npc-grid .xz-npc-card{margin-bottom:0;min-width:0;padding:8px 8px 8px;}',
         '.xz-root .xz-npc-toprow{display:flex;align-items:flex-start;gap:8px;min-width:0;}',
         '.xz-root .xz-npc-ava{position:relative;flex:none;width:38px;height:38px;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;',
@@ -5171,6 +5190,45 @@ function xzTypeOf(name, fbT, fbA) {
          · 世界书版本渲染抛错     → 印一颗能点重读的灰标，**不许静默**
          · 天骄字段是「非天骄」    → 什么都不印（普通人不该挂个"非天骄"的牌子）
        ══════════════════════════════════════════════════════════════════════════ */
+    /* 2026-11-26：头像上传（点击头像 → 选图 → 压到 256px → localStorage）。 */
+    try {
+        var _avDoc = (function () { try { return (window.top && window.top.document) || document; } catch (eA0) { return document; } })();
+        if (_avDoc && !_avDoc.__xzAvatarBound) {
+            _avDoc.__xzAvatarBound = 1;
+            _avDoc.addEventListener('click', function (e) {
+                var el = (e.target && e.target.closest) ? e.target.closest('[data-xz-act="avatar-pick"]') : null;
+                if (!el) return;
+                var inp = _avDoc.getElementById('xz-avatar-file');
+                if (inp) { try { inp.click(); } catch (eA1) {} }
+            }, false);
+            _avDoc.addEventListener('change', function (e) {
+                var inp = e.target;
+                if (!inp || inp.id !== 'xz-avatar-file' || !inp.files || !inp.files[0]) return;
+                var f = inp.files[0];
+                var fr = new FileReader();
+                fr.onload = function () {
+                    try {
+                        var img = new Image();
+                        img.onload = function () {
+                            try {
+                                var max = 256, w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+                                var k = Math.min(1, max / Math.max(w, h));
+                                var cv = _avDoc.createElement('canvas');
+                                cv.width = Math.max(1, Math.round(w * k)); cv.height = Math.max(1, Math.round(h * k));
+                                cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+                                var data = cv.toDataURL('image/jpeg', 0.86);
+                                try { localStorage.setItem('xzAvatar', data); } catch (eA2) {}
+                                var box = _avDoc.querySelector('.xz-avatar');
+                                if (box) box.innerHTML = '<img src="' + data + '" alt="">';
+                            } catch (eA3) {}
+                        };
+                        img.src = String(fr.result || '');
+                    } catch (eA4) {}
+                };
+                fr.readAsDataURL(f);
+            }, false);
+        }
+    } catch (eAvB) {}
     function xzTopInfoHtml(part) {   /* ★ v1.053d：part = 'name' 只出名字行 / 'meta' 只出元信息三行 / 不传 = 全出 */
         var name = show(at('主角信息.姓名'), '待初始化');
         /* ★ v475（用户 2026-10-30）：「新弄一个变量，主角信息里面的，加个性别……界面脚本也同步显示」。
@@ -5271,12 +5329,12 @@ function xzTypeOf(name, fbT, fbA) {
                 直接换成**中文前缀**：「日期」「时辰」。文字在任何字体下都画得出来。
            ⚠ 别为了"好看看"再塞回 emoji：这个界面在手机/桌面/不同系统上都要能看，
              emoji 的渲染结果完全不受我们控制。 */
-        var timeStyle = 'color:var(--xz-gold-bright); border:1px solid var(--xz-border-strong); border-radius:3px; padding:1px 5px; white-space:nowrap;';
         hm += '<div class="xz-topinfo-line xz-topinfo-time">' +
-             '<span class="xz-top-time-box" style="display:flex;flex-wrap:wrap;gap:5px;align-items:center;">' +
-             '<span style="' + timeStyle + '">日期 ' + esc(date) + '</span>' +
-             '<span style="' + timeStyle + '">时辰 ' + esc(clock) + '</span>' +
-             '</span></div>';
+             '<div class="xz-dt-bar">' +
+             '<span class="xz-dt-k">日期</span><b class="xz-dt-v">' + esc(date) + '</b>' +
+             '<i class="xz-dt-sep" aria-hidden="true"></i>' +
+             '<span class="xz-dt-k">时辰</span><b class="xz-dt-v">' + esc(clock) + '</b>' +
+             '</div></div>';
         var h = '<div class="xz-topinfo">';
         if (part === 'name') h += hn;
         else if (part === 'meta') h += hm;
@@ -5511,58 +5569,16 @@ function xzTypeOf(name, fbT, fbA) {
              ★ 这和 MEMORY 里「定高 + overflow-y:auto ⇒ 会变的读数不许进滚区」是同一条规矩：
                属性点是"会变的读数"，只许固定在框底，绝不许交给滚动区。 */
         var blColor = xzSpiritRootTierColor(blTier);
-        h += '<div class="xz-box">';
-        /* ★ 2026-11-19：作者点名删掉「灵根」二字 —— 直接显示变量值。
-           （「然后灵根两个字删了，直接显示灵根变量就行」） */
-        h += '<div class="xz-box-v" style="font-weight:var(--xz-fw-med);color:' + blColor + ';margin-top:1px;">'
-            + '<span style="display:inline-block;padding:2px 10px;border-radius:9px;background:rgba(255,255,255,.04);'
-            + 'border:1px solid rgba(201,168,106,.30);">' + esc(blStr) + '</span>' +
-             '</div>';
-        /* ★ v72：灵根的「效果」直接摆在格子里（它是这条血的招牌，玩家要看得见）。
-           引擎不解析它，只作常驻被动展示，由叙事层执行。
-           ⚠ v74 修：这行**必须留在 .xz-box 里面**。早前把 '</div>' 提前了一行，效果行掉到格框外，
-             末尾还多关了一层 </div> —— 它提前闭合了 .xz-grid-2.xz-main-stats，把后面
-             「本命玄元属性 / 气血 / 机缘潜能 / 四维」四块挤出 grid：键名从金色掉回 --xz-text（发白）、
-             整页格子错位。一处结构错误，三处表象（效果外溢 + 字体变白 + 本命玄元属性像丢了）。 */
-        if (false) {   /* ★ 2026-11-18：灵根已无「效果」字段 ⇒ 本分支永不进入；注释留作病历 */
-          /* ★★★ v494：**只显示原文，一个字的加工都不做** ★★★
-             用户原话：「他妈的显示原文就行了啊」。
-             原来这里调 `xzEffDisplay()` 把 `机制串｜描写` 重新排版，再在下面贴一排
-             解析出来的数值标签 —— 同一件事在格子里出现三次（见上面那段病历）。
-             ⇒ 直接把作者写的那句话原样摆出来：不再重排、不再解析、不再贴标签。
-             ⚠ `esc()` 必须留：原文里的 `<` 不能当标签解释。 */
-          /* ★ 2026-11-18：这一行原样删掉（灵根无「效果」字段）。 */
-        }
-        /* ★★★ v536：把「检测更新」从悬浮球搬进灵根格（作者 2026-11-02）★★★
-           原话：「给检测更新的悬浮球做进状态栏里的主角里的灵根里吧，每15秒嗅探一次」。
-           ── 为什么搬 ──
-             悬浮球挂在酒馆页面顶上，手机端被 ST 的弹层（z-index 2147483647）和底部
-             safe-area 压掉，作者根本看不见 —— 它在桌面能看见、在手机上等于不存在。
-             灵根格是**每局都看**的地方，塞一行小字比浮层可靠得多。
-           ── 读数规矩 ──
-             这行是"会变的读数"，所以只做**一行**：状态 + 版本号，点一下就刷新页面。
-             不折、不滚、不弹窗（MEMORY：会变的读数不许折进滚动区）。 */
-        /* ★★★ v476（用户第 4 条修正）：「把可用属性点，改到和灵根一起」★★★
-           ⇒ 挪到**灵根格底部**（不再是气血框里那行）。
-           ⚠ `margin-top:auto` 是这一句的关键：灵根格现在是 height:auto、被 grid
-             的 stretch 拉得和右边「本命玄元属性」等高 ⇒ 属性点自动**贴到框底**，
-             左右两格的底部基线因此对齐。换成 `margin-top:8px` 它会紧跟在效果标签
-             后面浮在半空，右边那格矮的时候还会看起来像掉出框外。
-           ⚠ 别把这一行挪回 `xz-box-eq` 那种定高滚动区里 —— 见上面那段注释。 */
-        /* ★ v1.053d：元信息三行（变量补全/卡版本、世界书、日期时辰）搬到灵根格。
-           它们原来堆在右格名字下面，把「火系」和读数条挤成一团；
-           左格又因为只有两行灵根而空着一大片。两边正好换位。 */
-        h += xzTopInfoHtml('meta');
-        /* ★ 2026-11-19（作者）：「灵根那个框和四维这个框还有这么多空间，挤扁一点」
-           原来这里有一个 'flex:1 1 auto' 的空占位，专门把元信息与属性点**推到格底** ——
-           于是格子里留出一大片空白。现在删掉它，内容自然排下来，
-           属性点紧跟元信息（下面那行 margin-top:auto 也一并去掉）。 */
-        h += '<div style="display:flex;align-items:center;justify-content:space-between;'
-            + 'gap:6px;margin-top:8px;padding-top:6px;border-top:1px dashed rgba(201,168,106,.22);">'
-            + '<span style="flex:0 0 auto;font-size:11.5px;color:var(--xz-gold);letter-spacing:.04em;">可用属性点</span>'
-            + '<span style="flex:0 0 auto;font-size:13px;font-weight:var(--xz-fw-med);color:var(--xz-gold-bright);'
-            + 'font-variant-numeric:tabular-nums;white-space:nowrap;">' + pts + ' 点</span>'
+        /* 2026-11-26（作者）：左格改成「矩形头像 + 日期时辰」；灵根与可用点移到右格。 */
+        var _avatar = '';
+        try { _avatar = String(localStorage.getItem('xzAvatar') || ''); } catch (eAv0) { _avatar = ''; }
+        h += '<div class="xz-box xz-main-left">';
+        h += '<div class="xz-avatar" data-xz-act="avatar-pick" title="点击上传头像">'
+            + (_avatar ? ('<img src="' + esc(_avatar) + '" alt="">') : '<span>?</span>')
             + '</div>';
+        h += xzTopInfoHtml('meta');
+        h += '<div style="display:flex;justify-content:flex-end;margin-top:6px;">' + xzThemeBtnHtml() + '</div>';
+        h += '<input type="file" id="xz-avatar-file" accept="image/*" style="display:none;">';
         h += '</div>';
 
         // 格2: 玄元属性（v43 去掉"健康"标签；★ v77 伤势状态字段也已废除 —— 气血比例在格 3 的进度条里）
@@ -5600,8 +5616,13 @@ function xzTypeOf(name, fbT, fbA) {
            —— 灵根只有「灵根」一个字段，左边那格已经完整显示（品阶·属性系）；
               这格再写一遍「本命灵根 + 火系」是同一件事说两遍，还把四维往下挤。
            主题切换钮仍留在右上（它是界面设置，不属于灵根）。 */
-        h += '<div class="xz-box-k" style="justify-content:flex-end;">' + xzThemeBtnHtml() + '</div>';
         h += xzTopInfoHtml('name');
+        /* 2026-11-26：灵根移到右格（左格让给头像+日期）。 */
+        h += '<div class="xz-box-v" style="font-weight:var(--xz-fw-med);color:' + blColor + ';margin-top:6px;">'
+            + '<span style="display:inline-block;padding:2px 10px;border-radius:9px;background:rgba(255,255,255,.04);'
+            + 'border:1px solid rgba(201,168,106,.30);">' + esc(blStr) + '</span></div>';
+        /* 2026-11-26：可用点小框放在四维上方，只显示「可用点 N」。 */
+        h += '<div class="xz-avail" style="margin:6px 0 0;"><span>可用点</span><b>' + pts + '</b></div>';
 /* ★ v1.053d：四维搬进「本命玄元属性」格，2×2 —— 不再跨整行占掉一整排放空 */
         h += '<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin-top:5px;">';
         var attrsList = [
@@ -5619,6 +5640,7 @@ function xzTypeOf(name, fbT, fbA) {
             h += '</div>';
         });
         h += '</div>';
+
         h += '</div>';
 
         /* ★★★ 2026-11-19：气运上移并压成一行 ★★★
@@ -5655,7 +5677,7 @@ function xzTypeOf(name, fbT, fbA) {
             if (_d) {
                 var _dc = _DYQ[_d.q] || '#9aa0a6';
                 _dyCards += '<div style="flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:1px;'
-                    + 'padding:3px 6px;border-radius:6px;background:linear-gradient(160deg,rgba(255,255,255,.055),rgba(255,255,255,.015));'
+                    + 'min-height:40px;justify-content:center;padding:3px 6px;border-radius:6px;background:linear-gradient(160deg,rgba(255,255,255,.055),rgba(255,255,255,.015));'
                     + 'border:1px solid rgba(255,255,255,.12);">'
                     + '<div style="display:flex;align-items:center;gap:4px;min-width:0;">'
                     + '<span style="flex:none;font-size:9px;line-height:1;padding:2px 4px;border-radius:3px;'
@@ -5668,7 +5690,7 @@ function xzTypeOf(name, fbT, fbA) {
                     + '</div>';
             } else {
                 _dyCards += '<div style="flex:1 1 0;min-width:0;display:flex;align-items:center;justify-content:center;'
-                    + 'padding:3px 6px;border-radius:6px;border:1px dashed rgba(255,255,255,.14);'
+                    + 'min-height:40px;padding:3px 6px;border-radius:6px;border:1px dashed rgba(255,255,255,.14);'
                     + 'color:var(--xz-muted);font-size:10px;line-height:1.5;">空</div>';
             }
         }
@@ -6630,7 +6652,7 @@ function xzTypeOf(name, fbT, fbA) {
                 /* 动作插图池不进头像链（NSFW 素材，见上）。 */
                 s += '<div class="xz-npc-toprow">';
                 s += '<span class="xz-npc-ava">' + esc(String(name).slice(0, 1))
-                    + (_avUrl ? '<img src="' + esc(_avUrl) + '" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.remove()">' : '')
+                    + (_avUrl ? '<img src="' + esc(_avUrl) + '" alt="" referrerpolicy="no-referrer" loading="lazy" decoding="async" onerror="this.remove()">' : '')
                     + '</span>';
                 s += '<div class="xz-npc-fields">';
                 s += '<div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px; min-width:0;">';
@@ -7731,12 +7753,10 @@ function xzTypeOf(name, fbT, fbA) {
            以前只印一个，作者看到"卡版本 v1.171"就以为已经是最新（或反过来一直提示新版本）。 */
         h += '<div style="margin-top:14px;padding:10px;border:1px solid var(--xz-border-strong);border-radius:6px;font-size:11px;line-height:1.9;">'
             + '<div style="font-size:10.5px;color:var(--xz-muted);letter-spacing:.04em;margin-bottom:4px;">诊断</div>'
-            + '卡版本：<b style="color:var(--xz-gold-bright);">' + esc(_cv2 || '未知') + '</b>'
-            + '　实际运行：<b style="color:var(--xz-gold-bright);">' + esc(xzHotCurVer() || '未知') + '</b>'
-            + '　通道：<b>' + esc(_chan === 'dev' ? '开发' : '稳定') + '</b><br>'
-            + '本页脚本来自：<b style="word-break:break-all;">' + esc(_ref ? _ref.slice(0, 12) : '未知') + '</b>'
+            + '通道：<b>' + esc(_chan === 'dev' ? '开发' : '稳定') + '</b>'
+            + '　本页脚本来自：<b style="word-break:break-all;">' + esc(_ref ? _ref.slice(0, 12) : '未知') + '</b>'
             + '（' + (_ref && /^[0-9a-f]{40}$/.test(_ref) ? 'commit' : 'tag') + '）<br>'
-            + '线上版本：<b>' + esc(_online) + '</b>　上次检查：<b>' + esc(_last) + '</b>'
+            + '上次检查：<b>' + esc(_last) + '</b>'
             + '</div>';
         h += '<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">'
             + '<button type="button" class="xz-tianji-goto-btn" data-xz-act="hot-recheck" '
@@ -7753,12 +7773,6 @@ function xzTypeOf(name, fbT, fbA) {
         if (_vis && _vis.issue) {
             h += '<div class="xz-rpg-desc" style="font-size:11.5px;line-height:1.75;margin-top:12px;color:#ef4444;">'
                 + esc(_vis.title || '变量块格式异常') + '。点上面的「变量补全」打开面板，它会列出缺哪几项。</div>';
-        }
-        var st = state.wbVer;
-        if (st && (!st.ok || !st.same)) {
-            h += '<div class="xz-rpg-desc" style="font-size:11.5px;line-height:1.75;margin-top:12px;color:#fbbf24;">'
-                + '世界书没跟上：去酒馆「导入卡内世界书」（地球图标 / 更多菜单）整本覆盖一次，别只换 PNG。'
-                + '覆盖完点上面的 📖 徽章重读。</div>';
         }
         return h;
     }
@@ -14015,8 +14029,6 @@ var XZ_DM_BOXES=[[360,200,1520,660],
         /* ── 2026-11-22：地图正下方的「当前场景」面板（作者：「装进舆图里，
               放在舆图的下面，显示当前的」）。城名走变量 地理.大位置，
               图走 XZ_SCENE_IMG；不在城级地点/该城没图时给一行灰字，不留空洞。 */
-        h += xzMapScenePanelHtml(here);
-
         /* ── ★ v535：情报块降到地图下面（作者 2026-11-02「上面这些全部放地图下面」）──
            原来是「地图在上、情报在上」的顺序：玩家一进舆图页先看到三行字，
            地图被推到折叠线以下。作者要的是**地图先出现**，字跟在图后面。
@@ -14027,8 +14039,6 @@ var XZ_DM_BOXES=[[360,200,1520,660],
 
         /* ── 地点卡（v464 从状态栏顶栏搬进舆图）──
            ⚠ 全项目只有这一处调用；状态栏那边已经没有任何 `.xz-place-col`。 */
-        h += xzSectSideHtml();
-
         /* ── 单张资料卡（★ v310：地点与人物也在这里展列，百科页随之删除）──
            口径：卡片永远只有一张，内容按「点中的粒度」决定 ——
            州 → 域 → 地点 → 人物，一层层往下展，不叠第二张卡。 */
@@ -14126,6 +14136,15 @@ var XZ_DM_BOXES=[[360,200,1520,660],
             }
             h += '</div>';
         }
+
+        /* ── 2026-11-26：舆图配套的地点卡之后，才是「当前场景」图/信息 ──
+           作者：「舆图里的这一部分是和舆图配套的，但是被你放到最下面了，
+           中间隔着当前场景图和当前场景信息。」 */
+        h += xzMapScenePanelHtml(here);
+
+        /* 2026-11-26：宗门卡放到最后 —— 作者钦定顺序是
+           地图 → 图4（州/域资料卡） → 场景图 → 场景信息。 */
+        h += xzSectSideHtml();
 
         /* ── 人物卡：从地点里的「相关人物」点进来 ──
            数据优先取**变量人物列表**（剧情里活着的那个），取不到才退回百科参考表 ——
@@ -15282,6 +15301,7 @@ var XZ_DM_BOXES=[[360,200,1520,660],
                   · galAuto 变化 = 玩家点了一次按钮，本来就要重绘一次来换 ⏸/▶ 图标，进签名是对的；
                   · 切人 / 手动下一张 = 已有 portraitIdx 与 galNext 里的 render(true)，够用。 */
             state.galAuto ? 1 : 0,
+            state.npcShowAll ? 1 : 0,
             /* ★★★ v408（第七次踩同一个坑）：「事件总表」的分类筛选 `state.evCat`
                同样只活在内存里、同样在点击里改完就 render(true)。不进签名 ⇒ sig 不变 ⇒
                当场 return ⇒ 点分类没反应（要等玩家碰巧改了什么变量才跳过去）。
@@ -16104,7 +16124,7 @@ var XZ_DM_BOXES=[[360,200,1520,660],
                 if (act === 'wb-ver') {
                     var _bv = state.wbVer;
                     toast(_bv && _bv.ok
-                        ? ('世界书 ' + _bv.ver + ' ｜ 脚本 ' + _bv.build + (_bv.same ? '（一致）' : '（没同步，去「导入卡内世界书」）'))
+                        ? ('世界书 ' + _bv.ver + ' ｜ 脚本 ' + _bv.build + (_bv.same ? '（一致）' : '（没同步，请删掉旧世界书再替换更新卡（直接删卡无用））'))
                         : '正在重读世界书版本号…');
                     xzWbVerRefresh(true);
                     return;
@@ -16699,6 +16719,11 @@ var XZ_DM_BOXES=[[360,200,1520,660],
                    为什么要自己记：`render()` 是整块 `outerHTML` 替换，
                    原生开合态活不过一次重建，而 AI 每回一句变量就变 ⇒ 必然重建。
                    ⚠ 用 `? 0 : 1` 不用 `!x`：旧值可能是字符串，取反会混进布尔。 */
+                if (act === 'npc-more') {
+                    state.npcShowAll = true;
+                    render(true);
+                    return;
+                }
                 if (act === 'fold-skill' || act === 'fold-away' || act === 'fold-plot') {
                     var _foldKey = act === 'fold-skill' ? 'foldSkill'
                         : (act === 'fold-away' ? 'foldAway' : 'foldPlot');
@@ -24327,9 +24352,7 @@ var XZ_DM_BOXES=[[360,200,1520,660],
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%8D%83%E4%BB%9E%E9%9B%AA/%E5%8D%83%E4%BB%9E%E9%9B%AA_%E6%8E%88%E4%B9%B3%E6%89%8B%E4%BA%A4_1.webp"
       ],      "清衍静|喂奶": [
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E6%8E%88%E4%B9%B3%E6%89%8B%E4%BA%A4_1.webp"
-      ],      "沈清颜|喂奶": [
-        "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B2%88%E6%B8%85%E9%A2%9C/%E6%B2%88%E6%B8%85%E9%A2%9C_%E6%8E%88%E4%B9%B3%E6%89%8B%E4%BA%A4_1.webp"
-      ],      "小舞|喂奶": [
+      ],            "小舞|喂奶": [
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%B0%8F%E8%88%9E/%E5%B0%8F%E8%88%9E_%E5%96%82%E5%A5%B6_n1.webp",
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%B0%8F%E8%88%9E/%E5%B0%8F%E8%88%9E_%E5%96%82%E5%A5%B6_n2.webp",
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%B0%8F%E8%88%9E/%E5%B0%8F%E8%88%9E_%E5%96%82%E5%A5%B6_n3.webp",
@@ -24391,10 +24414,7 @@ var XZ_DM_BOXES=[[360,200,1520,660],
       ],      "清衍静|手交": [
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E6%89%8B%E4%BA%A4_1.webp",
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E6%89%8B%E4%BA%A4_2.webp"
-      ],      "沈清颜|手交": [
-        "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B2%88%E6%B8%85%E9%A2%9C/%E6%B2%88%E6%B8%85%E9%A2%9C_%E6%89%8B%E4%BA%A4_1.webp",
-        "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B2%88%E6%B8%85%E9%A2%9C/%E6%B2%88%E6%B8%85%E9%A2%9C_%E6%89%8B%E4%BA%A4_2.webp"
-      ],      "维琳娜|手交": [
+      ],            "维琳娜|手交": [
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BB%B4%E7%90%B3%E5%A8%9C/%E7%BB%B4%E7%90%B3%E5%A8%9C_%E6%89%8B%E4%BA%A4_1.webp"
       ],      "小舞|手交": [
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%B0%8F%E8%88%9E/%E5%B0%8F%E8%88%9E_%E6%89%8B%E4%BA%A4_n1.webp",
@@ -24464,9 +24484,7 @@ var XZ_DM_BOXES=[[360,200,1520,660],
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E4%B9%B3%E4%BA%A4_1.webp",
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E4%B9%B3%E4%BA%A4_2.webp",
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E4%B9%B3%E4%BA%A4_3.webp"
-      ],      "沈清颜|乳交": [
-        "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B2%88%E6%B8%85%E9%A2%9C/%E6%B2%88%E6%B8%85%E9%A2%9C_%E4%B9%B3%E4%BA%A4_1.webp"
-      ],      "维琳娜|乳交": [
+      ],            "维琳娜|乳交": [
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BB%B4%E7%90%B3%E5%A8%9C/%E7%BB%B4%E7%90%B3%E5%A8%9C_%E4%B9%B3%E4%BA%A4_1.webp"
       ],      "小舞|乳交": [
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E5%B0%8F%E8%88%9E/%E5%B0%8F%E8%88%9E_%E4%B9%B3%E4%BA%A4_n1.webp",
@@ -24546,9 +24564,7 @@ var XZ_DM_BOXES=[[360,200,1520,660],
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E5%AE%B5/%E6%B8%85%E5%AE%B5_%E8%B6%B3%E4%BA%A4_2.webp"
       ],      "清衍静|足交": [
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E8%B6%B3%E4%BA%A4_1.webp"
-      ],      "沈清颜|足交": [
-        "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B2%88%E6%B8%85%E9%A2%9C/%E6%B2%88%E6%B8%85%E9%A2%9C_%E8%B6%B3%E4%BA%A4_1.webp"
-      ],      "维琳娜|足交": [
+      ],            "维琳娜|足交": [
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BB%B4%E7%90%B3%E5%A8%9C/%E7%BB%B4%E7%90%B3%E5%A8%9C_%E8%B6%B3%E4%BA%A4_1.webp",
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BB%B4%E7%90%B3%E5%A8%9C/%E7%BB%B4%E7%90%B3%E5%A8%9C_%E8%B6%B3%E4%BA%A4_2.webp"
       ],      "小舞|足交": [
@@ -24747,14 +24763,7 @@ var XZ_DM_BOXES=[[360,200,1520,660],
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_1.webp",
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5%E7%89%B9%E5%86%99_1.webp",
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B8%85%E8%A1%8D%E9%9D%99/%E6%B8%85%E8%A1%8D%E9%9D%99_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5%E7%89%B9%E5%86%99_2.webp"
-      ],      "沈清颜|做爱": [
-        "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B2%88%E6%B8%85%E9%A2%9C/%E6%B2%88%E6%B8%85%E9%A2%9C_%E5%81%9A%E7%88%B1%E5%A5%B3%E4%B8%8A%E4%BD%8D_1.webp",
-        "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B2%88%E6%B8%85%E9%A2%9C/%E6%B2%88%E6%B8%85%E9%A2%9C_%E5%81%9A%E7%88%B1%E5%A5%B3%E4%B8%8A%E4%BD%8D_2.webp",
-        "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B2%88%E6%B8%85%E9%A2%9C/%E6%B2%88%E6%B8%85%E9%A2%9C_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_1.webp",
-        "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B2%88%E6%B8%85%E9%A2%9C/%E6%B2%88%E6%B8%85%E9%A2%9C_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5_2.webp",
-        "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B2%88%E6%B8%85%E9%A2%9C/%E6%B2%88%E6%B8%85%E9%A2%9C_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5%E7%89%B9%E5%86%99_1.webp",
-        "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E6%B2%88%E6%B8%85%E9%A2%9C/%E6%B2%88%E6%B8%85%E9%A2%9C_%E5%81%9A%E7%88%B1%E5%90%8E%E5%85%A5%E7%89%B9%E5%86%99_2.webp"
-      ],      "维琳娜|做爱": [
+      ],            "维琳娜|做爱": [
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BB%B4%E7%90%B3%E5%A8%9C/%E7%BB%B4%E7%90%B3%E5%A8%9C_%E5%81%9A%E7%88%B1_1.webp",
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BB%B4%E7%90%B3%E5%A8%9C/%E7%BB%B4%E7%90%B3%E5%A8%9C_%E5%81%9A%E7%88%B1_2.webp",
         "https://gcore.jsdelivr.net/gh/cesareborgia576-cloud/character-images@main/%E7%BB%B4%E7%90%B3%E5%A8%9C/%E7%BB%B4%E7%90%B3%E5%A8%9C_%E5%81%9A%E7%88%B1_3.webp",
