@@ -3215,7 +3215,9 @@
     try { if (typeof getWorldbookNames === 'function') all = getWorldbookNames() || []; } catch (e1) {}
     if (!Array.isArray(all)) all = [];
     for (var i = 0; i < all.length; i++) { if (/天元/.test(String(all[i]))) return all[i]; }
-    return all[0] || '';
+    /* 2026-11-26：找不到就返回空 —— **绝不拿"第一本"凑数**。
+       抓一本别的书去写，或者在空名字上写，都会让宿主新建世界书。 */
+    return '';
   }
 
   /* 写世界书条目。**这是唯一"让 AI 看到"的落点**，失败必须报出来，
@@ -3231,10 +3233,7 @@
          （前者调用会抛、后者根本不该进这条分支）。 */
       var _G = (typeof globalThis !== 'undefined') ? globalThis : {};
       var _upd = (typeof _G.updateWorldbookWith === 'function') ? _G.updateWorldbookWith : null;
-      var _crt = (typeof _G.createWorldbookEntries === 'function') ? _G.createWorldbookEntries : null;
-      var hasUpdate = !!_upd;
-      var hasCreate = !!_crt;
-      if (!hasUpdate && !hasCreate) { resolve({ ok: false, why: '酒馆助手未提供写世界书的接口' }); return; }
+      if (!_upd) { resolve({ ok: false, why: '酒馆助手未提供 updateWorldbookWith 接口（不新建世界书）' }); return; }
 
       function done(ok, why) { resolve({ ok: ok, why: why || '' }); }
 
@@ -3248,6 +3247,19 @@
           var hit = -1;
           for (var i = 0; i < list.length; i++) {
             if (list[i] && (list[i].name === entryName || list[i].comment === entryName)) { hit = i; break; }
+          }
+          if (hit < 0) {
+            /* 2026-11-26：条目不存在就**追加到这本已有书里**，
+               不再调 createWorldbookEntries —— 那会在宿主上反复新建世界书。 */
+            list.push({
+              name: entryName, content: content, enabled: true, disable: false, constant: true,
+              strategy: { type: 'constant', keys: [entryName], keys_secondary: { logic: 'and_any', keys: [] }, scan_depth: 'same_as_global' },
+              position: { type: 'at_depth', role: 0, depth: 4, order: 1002 },
+              probability: 100,
+              recursion: { prevent_incoming: true, prevent_outgoing: true, delay_until: null },
+              effect: { sticky: null, cooldown: null, delay: null }
+            });
+            return Array.isArray(wbData) ? list : Object.assign({}, wbData || {}, { entries: list });
           }
           if (hit >= 0) {
             var e = list[hit] = Object.assign({}, list[hit]);
@@ -3267,30 +3279,11 @@
           return Array.isArray(wbData) ? list : Object.assign({}, wbData || {}, { entries: list });
         };
 
-        if (hasUpdate) {
-          Promise.resolve(_upd(bookName, updater)).then(function () {
-            done(true);
-          }).catch(function (eU) { done(false, '写世界书失败：' + String(eU && eU.message || eU)); });
-          return;
-        }
-        /* 只有 create 没有 update：条目已存在就没法改了，只能报出来 */
-        if (hit_exists(wb, entryName)) { done(false, '这本世界书没有 update 接口，条目已存在无法改写'); return; }
-        Promise.resolve(_crt(bookName, [{
-          name: entryName, content: content, enabled: true, constant: true,
-          strategy: { type: 'constant', keys: [entryName], keys_secondary: { logic: 'and_any', keys: [] }, scan_depth: 'same_as_global' },
-          position: { type: 'at_depth', role: 0, depth: 4, order: 1002 },
-          probability: 100,
-          recursion: { prevent_incoming: true, prevent_outgoing: true, delay_until: null },
-          effect: { sticky: null, cooldown: null, delay: null }
-        }])).then(function () { done(true); })
-          .catch(function (eC) { done(false, '新建世界书条目失败：' + String(eC && eC.message || eC)); });
+        Promise.resolve(_upd(bookName, updater)).then(function () {
+          done(true);
+        }).catch(function (eU) { done(false, '写世界书失败：' + String(eU && eU.message || eU)); });
       }).catch(function (e0) { done(false, '读世界书失败：' + String(e0 && e0.message || e0)); });
 
-      function hit_exists(wb, nm) {
-        var list = Array.isArray(wb) ? wb : ((wb && Array.isArray(wb.entries)) ? wb.entries : []);
-        for (var i = 0; i < list.length; i++) { if (list[i] && (list[i].name === nm || list[i].comment === nm)) return true; }
-        return false;
-      }
     });
   }
 
